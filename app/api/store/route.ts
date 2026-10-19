@@ -8,17 +8,33 @@ export async function GET(){
  const store=row?JSON.parse(row.value) as typeof seed:seed;
  // Upgrade legacy catalogs without replacing prices, availability, contacts or admin changes.
  // The version is saved along with the catalog on the next admin edit, so intentional deletions stay deleted.
- if(row&&(store.catalogVersion||0)<1){
-  const white=seed.products.find(p=>p.id==='mouse')!;
-  const black=seed.products.find(p=>p.id==='logitech-pro-x-superlight-2-black')!;
-  const products=store.products.map(p=>p.id==='mouse'&&p.name.toLowerCase().includes('superlight 2')?{
-   ...p,name:p.name==='Logitech G Pro X Superlight 2'?white.name:p.name,category:'mouse',image:p.image||white.image,
-   variantGroup:white.variantGroup,colorHex:white.colorHex,
-   specs:{...white.specs,...p.specs,color:'Белый'}
-  }:p);
-  if(!products.some(p=>p.id==='mouse'))products.push(white);
-  if(!products.some(p=>p.id===black.id))products.push(black);
-  return Response.json({...store,products,catalogVersion:1},{headers:{'Cache-Control':'no-store'}});
+ if(row&&(store.catalogVersion||0)<2){
+  const oldVersion=store.catalogVersion||0;
+  let products=[...store.products];
+  // Upgrade older catalog snapshots first, preserving any merchant-edited prices,
+  // stock flags, descriptions, images and unrelated product records.
+  if(oldVersion<1){
+   const white=seed.products.find(p=>p.id==='mouse')!;
+   const black=seed.products.find(p=>p.id==='logitech-pro-x-superlight-2-black')!;
+   products=products.map(p=>p.id==='mouse'&&p.name.toLowerCase().includes('superlight 2')?{
+    ...p,name:p.name==='Logitech G Pro X Superlight 2'?white.name:p.name,category:'mouse',image:p.image||white.image,
+    variantGroup:white.variantGroup,colorHex:white.colorHex,
+    specs:{...white.specs,...p.specs,color:'Белый'}
+   }:p);
+   if(!products.some(p=>p.id==='mouse'))products.push(white);
+   if(!products.some(p=>p.id===black.id))products.push(black);
+  }
+  // Version 2: three separate Logitech SUPERSTRIKE products.
+  const newIds=['logitech-pro-x2-superstrike','logitech-pro-x3-superstrike-black','logitech-pro-x3-superstrike-pink'];
+  for(const id of newIds){
+   if(!products.some(p=>p.id===id)){
+    const product=seed.products.find(p=>p.id===id);
+    if(product)products.push(product);
+   }
+  }
+  // The next successful admin save persists this version in D1.
+  // Once saved, intentionally deleted products are not automatically recreated.
+  return Response.json({...store,products,catalogVersion:2},{headers:{'Cache-Control':'no-store'}});
  }
  return Response.json(store,{headers:{'Cache-Control':'no-store'}});
 }
