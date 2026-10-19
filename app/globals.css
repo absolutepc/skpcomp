@@ -56,7 +56,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 @media(prefers-reduced-motion:reduce){.catalog-page .catalog-subcategories>a{transition:none}}
 
 /* Individual catalog records share a model via variantGroup, without merging their URLs. */
-.card-image.variant-visual,.detail-art.variant-visual{background:#f6f6f6}
+.card-image.variant-visual,.detail-art.variant-visual{background:transparent}
 .card-image.variant-visual img,.detail-art.variant-visual img{object-fit:contain;display:block}
 .variant-picker{margin:24px 0 4px}
 .variant-label{font-size:13px;color:#aeb7b6;margin-bottom:13px}
