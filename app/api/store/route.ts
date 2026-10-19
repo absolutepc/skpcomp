@@ -8,7 +8,7 @@ export async function GET(){
  const store=row?JSON.parse(row.value) as typeof seed:seed;
  // Upgrade legacy catalogs without replacing prices, availability, contacts or admin changes.
  // The version is saved along with the catalog on the next admin edit, so intentional deletions stay deleted.
- if(row&&(store.catalogVersion||0)<4){
+ if(row&&(store.catalogVersion||0)<5){
   const oldVersion=store.catalogVersion||0;
   let products=[...store.products];
   // Upgrade older catalog snapshots first, preserving any merchant-edited prices,
@@ -65,9 +65,22 @@ export async function GET(){
     }
    }
   }
+  // Version 5: self-hosted, transparent product art. Do not overwrite merchant uploads.
+  if(oldVersion<5){
+   const oldCpuImages={"ryzen-7500f":"","intel-i5":"","ryzen-5-7500x3d":"https://mfcomputersolution.com/cdn/shop/files/7500x3d-1.webp?v=1772874700","ryzen-7-7800x3d":"https://gitec.ge/images/thumbs/0074970_7-7800x3d-tray_550.webp","ryzen-7-9800x3d":"https://quadrastores.com/cdn/shop/files/80684df4abbc93ab0000cd5c02481695.png?v=1756154488&width=1445"};
+   products=products.map(p=>{
+    const expected=oldCpuImages[p.id as keyof typeof oldCpuImages];
+    if(expected===undefined)return p;
+    const fallback=seed.products.find(x=>x.id===p.id);
+    if(!fallback)return p;
+    // Update empty and previous default sources; preserve custom product pictures.
+    if(!p.image||p.image===expected)return {...p,image:fallback.image};
+    return p;
+   });
+  }
   // The next successful admin save persists this version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
-  return Response.json({...store,products,catalogVersion:4},{headers:{'Cache-Control':'no-store'}});
+  return Response.json({...store,products,catalogVersion:5},{headers:{'Cache-Control':'no-store'}});
  }
  return Response.json(store,{headers:{'Cache-Control':'no-store'}});
 }
@@ -76,7 +89,7 @@ if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)retur
 if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'}});
 if(!await auth(r))return Response.json({error:'Войдите в административную панель'},{status:401});if(b.action==='check')return Response.json({ok:true});
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
-if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||(!/^https:\/\//.test(p.image)&&p.image!=='')))return Response.json({error:'Проверьте названия, цены и HTTPS-ссылки фотографий'},{status:400});
+if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||(!(/^https:\/\//.test(p.image)||/^\/products\/cpu\/[a-z0-9-]+\.svg$/.test(p.image)||p.image===''))))return Response.json({error:'Проверьте названия, цены и HTTPS-ссылки фотографий'},{status:400});
 if(d.products.some((p:any)=>p.specs!==undefined&&(!p.specs||typeof p.specs!=='object'||Array.isArray(p.specs)||Object.keys(p.specs).length>80||Object.entries(p.specs).some(([k,v])=>k.length>50||typeof v!=='string'||v.length>300))))return Response.json({error:'Проверьте характеристики товаров'},{status:400});
 if(d.products.some((p:any)=>(p.variantGroup!==undefined&&(typeof p.variantGroup!=='string'||p.variantGroup.length>80))||(p.colorHex!==undefined&&(typeof p.colorHex!=='string'||!/^#[0-9a-fA-F]{6}$/.test(p.colorHex)))))return Response.json({error:'Проверьте группу вариантов и HEX-код цвета'},{status:400});
 if(d.instagram&&!/^https:\/\/(www\.)?instagram\.com\//.test(d.instagram))return Response.json({error:'Введите ссылку Instagram'},{status:400});if(d.whatsapp&&!/^\d{10,15}$/.test(d.whatsapp))return Response.json({error:'Номер WhatsApp: 10–15 цифр без плюса'},{status:400});
