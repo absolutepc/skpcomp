@@ -8,7 +8,7 @@ export async function GET(){
  const store=row?JSON.parse(row.value) as typeof seed:seed;
  // Upgrade legacy catalogs without replacing prices, availability, contacts or admin changes.
  // The version is saved along with the catalog on the next admin edit, so intentional deletions stay deleted.
- if(row&&(store.catalogVersion||0)<3){
+ if(row&&(store.catalogVersion||0)<4){
   const oldVersion=store.catalogVersion||0;
   let products=[...store.products];
   // Upgrade older catalog snapshots first, preserving any merchant-edited prices,
@@ -54,9 +54,20 @@ export async function GET(){
    }
    return updated;
   });
+  // Version 4: add Ryzen 5 7500X3D, Ryzen 7 7800X3D and Ryzen 7 9800X3D.
+  // Keep all existing catalog entries and custom edits made by the shop owner.
+  if(oldVersion<4){
+   const ryzenIds=['ryzen-5-7500x3d','ryzen-7-7800x3d','ryzen-7-9800x3d'];
+   for(const id of ryzenIds){
+    if(!products.some(p=>p.id===id)){
+     const cpu=seed.products.find(p=>p.id===id);
+     if(cpu)products.push(cpu);
+    }
+   }
+  }
   // The next successful admin save persists this version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
-  return Response.json({...store,products,catalogVersion:3},{headers:{'Cache-Control':'no-store'}});
+  return Response.json({...store,products,catalogVersion:4},{headers:{'Cache-Control':'no-store'}});
  }
  return Response.json(store,{headers:{'Cache-Control':'no-store'}});
 }
