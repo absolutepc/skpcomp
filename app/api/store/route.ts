@@ -25,11 +25,14 @@ export async function GET(){
    if(!products.some(p=>p.id===black.id))products.push(black);
   }
   // Version 2: three separate Logitech SUPERSTRIKE products.
-  const newIds=['logitech-pro-x2-superstrike','logitech-pro-x3-superstrike-black','logitech-pro-x3-superstrike-pink'];
-  for(const id of newIds){
-   if(!products.some(p=>p.id===id)){
-    const product=seed.products.find(p=>p.id===id);
-    if(product)products.push(product);
+  // If the catalog is already at version 2, respect any deletions made in admin.
+  if(oldVersion<2){
+   const newIds=['logitech-pro-x2-superstrike','logitech-pro-x3-superstrike-black','logitech-pro-x3-superstrike-pink'];
+   for(const id of newIds){
+    if(!products.some(p=>p.id===id)){
+     const product=seed.products.find(p=>p.id===id);
+     if(product)products.push(product);
+    }
    }
   }
   // Version 3: use transparent original manufacturer images only for old default URLs.
