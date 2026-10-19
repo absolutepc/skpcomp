@@ -12,7 +12,7 @@ export async function GET(){
   const white=seed.products.find(p=>p.id==='mouse')!;
   const black=seed.products.find(p=>p.id==='logitech-pro-x-superlight-2-black')!;
   const products=store.products.map(p=>p.id==='mouse'&&p.name.toLowerCase().includes('superlight 2')?{
-   ...p,category:'mouse',image:p.image||white.image,
+   ...p,name:p.name==='Logitech G Pro X Superlight 2'?white.name:p.name,category:'mouse',image:p.image||white.image,
    variantGroup:white.variantGroup,colorHex:white.colorHex,
    specs:{...white.specs,...p.specs,color:'Белый'}
   }:p);
