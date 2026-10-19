@@ -8,7 +8,7 @@ export async function GET(){
  const store=row?JSON.parse(row.value) as typeof seed:seed;
  // Upgrade legacy catalogs without replacing prices, availability, contacts or admin changes.
  // The version is saved along with the catalog on the next admin edit, so intentional deletions stay deleted.
- if(row&&(store.catalogVersion||0)<2){
+ if(row&&(store.catalogVersion||0)<3){
   const oldVersion=store.catalogVersion||0;
   let products=[...store.products];
   // Upgrade older catalog snapshots first, preserving any merchant-edited prices,
@@ -32,9 +32,28 @@ export async function GET(){
     if(product)products.push(product);
    }
   }
+  // Version 3: use transparent original manufacturer images only for old default URLs.
+  // Keep any photos uploaded by the merchant instead of overwriting them.
+  const originalImages={"mouse":"https://www.maxgaming.com/bilder/artiklar/28011.jpg?m=1692975886","logitech-pro-x-superlight-2-black":"https://www.maxgaming.fi/bilder/artiklar/28010.jpg?m=1692971556","logitech-pro-x2-superstrike":"https://s7ap1.scene7.com/is/image/krisshop/ENLOGIG0043_detailImage01?fmt=webp","logitech-pro-x3-superstrike-black":"https://media.power-cdn.net/images/h-8754643e062d1e8c8928769bb49c09e3/products/4526616/4526616_4_1200x1200_w_g.jpg","logitech-pro-x3-superstrike-pink":"https://www.noelleeming.co.nz/on/demandware.static/-/Sites-nlg-master-catalog/default/dwba7d59af/images/hi-res/86/06/N256740_00.jpg"};
+  const transparentImages={"mouse":"https://resource.logitechg.com/w_544%2Ch_466%2Car_7%3A6%2Cc_pad%2Cq_auto%2Cf_auto%2Cdpr_1.0/d_transparent.gif/content/dam/gaming/en/products/pro-x-superlight-2/new-gallery-assets-2025/pro-x-superlight-2-mice-top-angle-white-gallery-1.png","logitech-pro-x-superlight-2-black":"https://resource.logitechg.com/w_544%2Ch_466%2Car_7%3A6%2Cc_pad%2Cq_auto%2Cf_auto%2Cdpr_1.0/d_transparent.gif/content/dam/gaming/en/products/pro-x-superlight-2/new-gallery-assets-2025/pro-x-superlight-2-mice-top-angle-black-gallery-1.png","logitech-pro-x2-superstrike":"https://resource.logitechg.com/w_544%2Ch_466%2Car_7%3A6%2Cc_pad%2Cq_auto%2Cf_auto%2Cdpr_1.0/d_transparent.gif/content/dam/gaming/en/products/pro-x2-superstrike-pdp/2026/pro-x2-superstrike-top-angle-lifestyle-gallery-2.png","logitech-pro-x3-superstrike-black":"https://resource.logitechg.com/w_544%2Ch_466%2Car_7%3A6%2Cc_pad%2Cq_auto%2Cf_auto%2Cdpr_1.0/d_transparent.gif/content/dam/gaming/en/products/pro-x3-superstrike-pdp/gallery/pro-x3-superstrike-mouse-midnight-black-top-angle-gallery-1.png","logitech-pro-x3-superstrike-pink":"https://resource.logitechg.com/w_544%2Ch_466%2Car_7%3A6%2Cc_pad%2Cq_auto%2Cf_auto%2Cdpr_1.0/d_transparent.gif/content/dam/gaming/en/products/pro-x3-superstrike-pdp/gallery/pro-x3-superstrike-mouse-magenta-eclipse-top-angle-gallery-1.png"};
+  const oldX2Name='Logitech G PRO X2 SUPERSTRIKE — белая / чёрные кнопки';
+  const oldX2Description='Беспроводная LIGHTSPEED · HITS · Lunar Eclipse · белый корпус, чёрные кнопки';
+  const correctedX2=seed.products.find(p=>p.id==='logitech-pro-x2-superstrike')!;
+  products=products.map(p=>{
+   const image=transparentImages[p.id as keyof typeof transparentImages];
+   const before=originalImages[p.id as keyof typeof originalImages];
+   if(!image)return p;
+   const updated={...p,image:!p.image||p.image===before?image:p.image};
+   if(p.id==='logitech-pro-x2-superstrike'){
+    return {...updated,name:p.name===oldX2Name?correctedX2.name:p.name,
+     description:p.description===oldX2Description?correctedX2.description:p.description,
+     specs:{...p.specs,color:p.specs?.color==='Белый / чёрные кнопки'?'Белый':p.specs?.color||'Белый'}};
+   }
+   return updated;
+  });
   // The next successful admin save persists this version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
-  return Response.json({...store,products,catalogVersion:2},{headers:{'Cache-Control':'no-store'}});
+  return Response.json({...store,products,catalogVersion:3},{headers:{'Cache-Control':'no-store'}});
  }
  return Response.json(store,{headers:{'Cache-Control':'no-store'}});
 }
