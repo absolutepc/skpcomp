@@ -1,0 +1,1 @@
+import "./globals.css"; export const metadata={icons:{icon:"/images/skp-logo.jpg"},title:"SKP — компьютеры, которые вдохновляют",description:"Готовые ПК, комплектующие, периферия и конфигуратор SKP"};export default function Layout({children}:{children:React.ReactNode}){return <html lang="ru"><body>{children}</body></html>}
