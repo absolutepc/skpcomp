@@ -54,3 +54,17 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 @media(min-width:701px) and (max-width:1200px){.catalog-page .catalog-subcategories{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:700px){.catalog-page .catalog-subcategories{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-bottom:20px}.catalog-page .catalog-subcategories>a{min-height:94px;padding:12px 6px;gap:8px;border-radius:9px;font-size:11px}.catalog-page .subcategory-icon{height:27px}.catalog-page .subcategory-icon svg{width:24px;height:24px}.catalog-page .catalog-tabs{margin-bottom:18px}}
 @media(prefers-reduced-motion:reduce){.catalog-page .catalog-subcategories>a{transition:none}}
+
+/* Individual catalog records share a model via variantGroup, without merging their URLs. */
+.card-image.variant-visual,.detail-art.variant-visual{background:#f6f6f6}
+.card-image.variant-visual img,.detail-art.variant-visual img{object-fit:contain;display:block}
+.variant-picker{margin:24px 0 4px}
+.variant-label{font-size:13px;color:#aeb7b6;margin-bottom:13px}
+.variant-label strong{color:#f3f4ef;font-weight:700}
+.variant-options{display:flex;flex-wrap:wrap;gap:10px}
+.variant-option{display:inline-flex;align-items:center;gap:9px;padding:10px 15px;border:1px solid #4c514c;border-radius:8px;background:#202321;color:#c7cec5;font-size:13px;transition:border-color .18s,background .18s}
+.variant-option:hover{border-color:#9fad8a;background:#292d27}
+.variant-option.selected{border-color:#d8fa7c;color:#d8fa7c;background:#d8fa7c12}
+.variant-swatch{width:19px;height:19px;display:inline-block;border-radius:50%;border:1px solid #8a8f8b;box-shadow:0 0 0 2px #202321;flex-shrink:0}
+.variant-option.selected .variant-swatch{box-shadow:0 0 0 2px #30352a}
+@media(max-width:700px){.variant-options{gap:8px}.variant-option{padding:9px 12px;font-size:12px}}
