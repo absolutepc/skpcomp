@@ -4,7 +4,7 @@ export const peripherals:Record<string,string>={monitor:'Мониторы',mouse
 export type Field={key:string;label:string;unit?:string;numeric?:boolean};
 const f=(key:string,label:string,unit?:string):Field=>({key,label,unit,numeric:!!unit});
 export const categoryFields:Record<string,Field[]>={
- cpu:[f('socket','Сокет'),f('memory','Тип памяти'),f('cores','Ядра','шт.'),f('threads','Потоки','шт.'),f('l3','Кэш L3','МБ'),f('frequency','Базовая частота','ГГц'),f('watts','Мощность','Вт'),f('graphics','Встроенная графика'),f('package','Комплектация')],
+ cpu:[f('socket','Сокет'),f('memory','Тип памяти'),f('cores','Ядра','шт.'),f('threads','Потоки','шт.'),f('l3','Кэш L3','МБ'),f('frequency','Базовая частота','ГГц'),f('boost','Макс. частота Boost','ГГц'),f('architecture','Архитектура'),f('watts','Мощность','Вт'),f('graphics','Встроенная графика'),f('package','Комплектация')],
  motherboard:[f('socket','Сокет'),f('chipset','Чипсет'),f('memory','Тип памяти'),f('form','Форм-фактор'),f('ramSlots','Слоты ОЗУ','шт.'),f('maxRam','Максимум ОЗУ','ГБ'),f('m2Slots','Слоты M.2','шт.'),f('wifi','Wi-Fi')],
  gpu:[f('gpu','Графический процессор'),f('vram','Видеопамять','ГБ'),f('videoMemory','Тип видеопамяти'),f('bus','Шина памяти','бит'),f('interface','Интерфейс'),f('length','Длина','мм'),f('watts','Потребление','Вт')],
  ram:[f('memory','Тип памяти'),f('capacity','Общий объём','ГБ'),f('modules','Количество модулей','шт.'),f('speed','Частота','МГц'),f('latency','Тайминги CL'),f('form','Форм-фактор'),f('rgb','Подсветка')],
