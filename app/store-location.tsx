@@ -23,7 +23,6 @@ export default function StoreLocation(){
    </div>
    <div className="store-contacts-layout">
      <div className="store-location-panel">
-       <div className="store-location-symbol"><MapPin size={29}/></div>
        <span className="store-location-kicker">АДРЕС МАГАЗИНА</span>
        <h2>SKP — компьютерный магазин</h2>
        <address>{STORE_ADDRESS}</address>
