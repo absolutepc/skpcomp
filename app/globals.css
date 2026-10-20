@@ -71,7 +71,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 
 
 /* SKP parametrically projected 3D PC assembly: self-contained, no WebGL bundle required. */
-.assembly-preview{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.64fr) minmax(290px,.75fr);border:1px solid #354a35;border-radius:16px;background:#111813;overflow:hidden;min-width:0;box-shadow:0 22px 65px #03080670;margin:3px 0 14px}
+.assembly-preview{padding:0;grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.64fr) minmax(290px,.75fr);border:1px solid #354a35;border-radius:16px;background:#111813;overflow:hidden;min-width:0;box-shadow:0 22px 65px #03080670;margin:3px 0 14px}
 .assembly-visual{background:linear-gradient(135deg,#0a100c,#162018 55%,#0b120d);min-width:0;position:relative;border-right:1px solid #34472d;min-height:430px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .assembly-topline{position:absolute;z-index:2;left:22px;right:20px;top:17px;display:flex;align-items:center;gap:8px;color:#e0f5b1;font-size:10px;letter-spacing:1.5px;font-weight:700;pointer-events:none}
 .assembly-led{height:7px;width:7px;border-radius:50%;background:#d2f865;box-shadow:0 0 12px #aaff5e;flex-shrink:0}
