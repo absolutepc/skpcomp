@@ -1,5 +1,8 @@
 'use client';
 
+// Archived prototype: not imported by the active configurator.
+import './assembly-preview.css';
+
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {PointerEvent as ReactPointerEvent,WheelEvent as ReactWheelEvent} from 'react';
 import {Maximize2,Minus,Plus,RotateCcw,Box,Layers,MousePointer2} from 'lucide-react';
