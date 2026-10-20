@@ -678,3 +678,43 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .skp-fps-row strong{font-size:12px}
  .skp-review-form{padding:16px}
 }
+
+/* SKP advanced game-FPS controls: graphics quality, RT and native/DLSS/FSR. */
+.skp-fps-heading h3{display:flex;align-items:center;gap:10px}
+.skp-fps-heading h3 svg{color:#ffe500;flex:0 0 auto}
+.skp-fps-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:0 0 21px}
+.skp-fps-setting{display:flex;flex-direction:column;gap:9px;min-width:0;padding:13px;border:1px solid #303823;border-radius:9px;background:#10150d}
+.skp-fps-setting-title{color:#b6bca9;font-size:10px;font-weight:750;letter-spacing:.35px}
+.skp-fps-choices{display:flex;align-items:center;flex-wrap:wrap;gap:5px}
+.skp-fps-choices button{min-height:31px;padding:7px 11px;border:1px solid #353c29;border-radius:6px;color:#d4d9ca;font-size:11px;font-weight:650;line-height:1.15;transition:background-color .15s,border-color .15s}
+.skp-fps-choices button:hover:not(:disabled){border-color:#9d9129}
+.skp-fps-choices button.current{background:#ffe500;border-color:#ffe500;color:#15180c}
+.skp-fps-choices button:disabled{opacity:.35;cursor:not-allowed}
+.skp-fps-rt-toggle{display:inline-flex;flex-direction:row;align-items:center;gap:9px;align-self:flex-start;margin:0;padding:7px 12px;border:1px solid #4b523a;border-radius:7px;color:#cbd0c1;font-size:11px;font-weight:700;cursor:pointer}
+.skp-fps-rt-toggle.active{color:#ffe500;border-color:#8d801d;background:#ffe5000d}
+.skp-fps-rt-toggle:has(input:disabled){opacity:.42;cursor:not-allowed}
+.skp-fps-rt-toggle input{width:15px;height:15px;margin:0;accent-color:#ffe500;cursor:inherit}
+.skp-fps-rt-toggle svg{flex:0 0 auto}
+.skp-fps-row .skp-fps-game{display:flex;align-items:center;flex:1;min-width:0;gap:12px;flex-wrap:wrap}
+.skp-fps-row .skp-fps-game>span:first-child{flex:0 1 auto}
+.skp-fps-row .skp-fps-game-tags{display:flex;flex:0 0 auto;align-items:center;gap:5px}
+.skp-fps-game-tags small{padding:3px 6px;border:1px solid #3d4634;border-radius:5px;color:#878e7e;font-size:9px;font-weight:700;white-space:nowrap}
+.skp-fps-game-tags small.active{color:#ffe500;border-color:#776d23;background:#ffe5000a}
+.skp-fps-feature-note{display:flex;align-items:flex-start;gap:7px;margin:16px 0 0;color:#b9c0a9;font-size:10px;line-height:1.7}
+.skp-fps-feature-note svg{flex-shrink:0;margin-top:2px;color:#d9c345}
+.skp-fps-note strong{font-weight:800;color:#dedeca}
+.skp-ready-fps .skp-fps-settings{grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+.skp-ready-fps .skp-fps-setting{padding:9px}
+.skp-ready-fps .skp-fps-choices button{min-height:27px;font-size:9px;padding:6px 8px}
+.skp-ready-fps .skp-fps-setting-title{font-size:9px}
+.skp-ready-fps .skp-fps-game{gap:5px}
+.skp-ready-fps .skp-fps-game-tags small{font-size:8px;padding:2px 4px}
+.skp-ready-fps .skp-fps-row strong{min-width:84px}
+.skp-ready-fps .skp-fps-heading h3 svg{width:15px;height:15px}
+@media(max-width:760px){
+ .skp-fps-settings{grid-template-columns:1fr}
+ .skp-fps-setting{padding:11px}
+ .skp-fps-choices button{font-size:10px;padding:7px 9px}
+ .skp-fps-row .skp-fps-game{gap:6px}
+ .skp-fps-game-tags small{font-size:8px}
+}
