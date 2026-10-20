@@ -1,4 +1,5 @@
 import {seed,Product} from './seed';
+import {productPhotos} from './product-photos';
 export const components:Record<string,string>={cpu:'Процессоры',motherboard:'Материнские платы',gpu:'Видеокарты',ram:'ОЗУ',ssd:'Накопители',psu:'Блоки питания',cooler:'Охлаждение',case:'Корпуса'};
 export const peripherals:Record<string,string>={monitor:'Мониторы',mouse:'Мышки',keyboard:'Клавиатуры',headphones:'Наушники',mousepad:'Коврики',microphone:'Микрофоны',mount:'Кронштейны',webcam:'Веб-камеры'};
 export type Field={key:string;label:string;unit?:string;numeric?:boolean};
@@ -23,7 +24,15 @@ export const categoryFields:Record<string,Field[]>={
  laptops:[f('cpu','Процессор'),f('gpu','Видеокарта'),f('capacity','ОЗУ','ГБ'),f('driveCapacity','Накопитель','ГБ'),f('diagonal','Диагональ','дюйм'),f('resolution','Разрешение'),f('refresh','Частота экрана','Гц')],
  furniture:[f('furnitureType','Тип мебели'),f('material','Материал'),f('color','Цвет'),f('width','Ширина','см'),f('load','Максимальная нагрузка','кг')]
 };
-export function normalizeProduct(p:Product):Product{const original=seed.products.find(x=>x.id===p.id&&x.name===p.name);return {...p,specs:{...(original as Product|undefined)?.specs,...p.specs},category:p.category==='peripherals'&&['monitor','mouse','keyboard'].includes(p.art)?p.art:p.category}}
+export function normalizeProduct(p:Product):Product{
+ const original=seed.products.find(x=>x.id===p.id&&x.name===p.name);
+ // A shop owner's custom photo must always take precedence over bundled catalog defaults.
+ // Older D1 catalogs may contain blank images or the previous schematic SVG illustrations.
+ const bundledPhoto=productPhotos[p.id];
+ const isLegacyIllustration=/^\/products\/(?:cpu|headphones)\/[^?#]+\.svg(?:[?#].*)?$/.test(p.image||'');
+ const image=p.category!=='mouse'&&bundledPhoto&&(!p.image||isLegacyIllustration)?bundledPhoto:p.image;
+ return {...p,image,specs:{...(original as Product|undefined)?.specs,...p.specs},category:p.category==='peripherals'&&['monitor','mouse','keyboard'].includes(p.art)?p.art:p.category};
+}
 export function fieldValue(p:Product,key:string):string{const explicit=p.specs?.[key];if(explicit!==undefined)return explicit;return ['socket','memory','brand'].includes(key)?String(p[key as 'socket'|'memory'|'brand']||''):key==='watts'&&p.watts?String(p.watts):''}
 export const splitValues=(v:string)=>v.split(/[|;]/).map(x=>x.trim()).filter(Boolean);
 export function inCategory(p:Product,category:string){const c=normalizeProduct(p).category;return category==='all'?true:category==='components'?c in components:category==='peripherals'?c in peripherals||c==='peripherals':c===category}
