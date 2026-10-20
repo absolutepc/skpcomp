@@ -1,5 +1,6 @@
 import {env} from 'cloudflare:workers';
 import {seed} from '../../../lib/seed';
+import {productPhotos} from '../../../lib/product-photos';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 async function token(){let a=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));return Array.from(new Uint8Array(a)).map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function auth(r:Request){return !!E.ADMIN_PASSWORD && (r.headers.get('cookie')||'').split(';').map(x=>x.trim()).includes('skp_admin='+await token())}
@@ -8,7 +9,7 @@ export async function GET(){
  const store=row?JSON.parse(row.value) as typeof seed:seed;
  // Upgrade legacy catalogs without replacing prices, availability, contacts or admin changes.
  // The version is saved along with the catalog on the next admin edit, so intentional deletions stay deleted.
- if(row&&(store.catalogVersion||0)<6){
+ if(row&&(store.catalogVersion||0)<7){
   const oldVersion=store.catalogVersion||0;
   let products=[...store.products];
   // Upgrade older catalog snapshots first, preserving any merchant-edited prices,
@@ -90,9 +91,19 @@ export async function GET(){
     }
    }
   }
+  // Version 7: local model-accurate photos for existing non-mouse products.
+  // Never replace store-owner uploaded images, prices, stock or descriptions.
+  if(oldVersion<7){
+   products=products.map(p=>{
+    const photo=p.category!=='mouse'?productPhotos[p.id]:undefined;
+    if(!photo)return p;
+    const legacySvg=/^\/products\/(?:cpu|headphones)\/[^?#]+\.svg(?:[?#].*)?$/.test(p.image||'');
+    return !p.image||legacySvg?{...p,image:photo}:p;
+   });
+  }
   // The next successful admin save persists this version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
-  return Response.json({...store,products,catalogVersion:6},{headers:{'Cache-Control':'no-store'}});
+  return Response.json({...store,products,catalogVersion:7},{headers:{'Cache-Control':'no-store'}});
  }
  return Response.json(store,{headers:{'Cache-Control':'no-store'}});
 }
@@ -101,7 +112,7 @@ if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)retur
 if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'}});
 if(!await auth(r))return Response.json({error:'Войдите в административную панель'},{status:401});if(b.action==='check')return Response.json({ok:true});
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
-if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||(!(/^https:\/\//.test(p.image)||/^\/products\/(?:cpu|headphones)\/[a-z0-9-]+\.svg$/.test(p.image)||p.image===''))))return Response.json({error:'Проверьте названия, цены и ссылки фотографий'},{status:400});
+if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||(!(/^https:\/\//.test(p.image)||/^\/products\/(?:cpu|headphones)\/[a-z0-9-]+\.svg$/.test(p.image)||/^\/products\/photos\/[a-z0-9-]+\.webp$/.test(p.image)||p.image===''))))return Response.json({error:'Проверьте названия, цены и ссылки фотографий'},{status:400});
 if(d.products.some((p:any)=>p.specs!==undefined&&(!p.specs||typeof p.specs!=='object'||Array.isArray(p.specs)||Object.keys(p.specs).length>80||Object.entries(p.specs).some(([k,v])=>k.length>50||typeof v!=='string'||v.length>300))))return Response.json({error:'Проверьте характеристики товаров'},{status:400});
 if(d.products.some((p:any)=>(p.variantGroup!==undefined&&(typeof p.variantGroup!=='string'||p.variantGroup.length>80))||(p.colorHex!==undefined&&(typeof p.colorHex!=='string'||!/^#[0-9a-fA-F]{6}$/.test(p.colorHex)))))return Response.json({error:'Проверьте группу вариантов и HEX-код цвета'},{status:400});
 if(d.instagram&&!/^https:\/\/(www\.)?instagram\.com\//.test(d.instagram))return Response.json({error:'Введите ссылку Instagram'},{status:400});if(d.whatsapp&&!/^\d{10,15}$/.test(d.whatsapp))return Response.json({error:'Номер WhatsApp: 10–15 цифр без плюса'},{status:400});
