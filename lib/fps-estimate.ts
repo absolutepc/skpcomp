@@ -36,9 +36,9 @@ function cpuScale(name:string){
 export type FpsHardware={gpu:string;cpu:string;ram?:string};
 export function fromReadyPC(p:Product):FpsHardware{
  const graphics=p.buildComponents?.gpu||[p.name,p.description].join(' ');
- const graphicsModel=graphics.match(/(?:RTX\\s*\\d{4}\\s*(?:Ti|Super)?|RX\\s*\\d{4}\\s*(?:XTX|XT)?)/i)?.[0]||'';
+ const graphicsModel=graphics.match(/(?:RTX\s*\d{4}\s*(?:Ti|Super)?|RX\s*\d{4}\s*(?:XTX|XT)?)/i)?.[0]||'';
  const processor=p.buildComponents?.cpu||p.description;
- const recognizedCpu=/(?:ryzen\\s*\\d|core\\s*i[3579]|i[3579]-\\d{4,5}|core\\s*ultra)/i.test(processor);
+ const recognizedCpu=/(?:ryzen\s*\d|core\s*i[3579]|i[3579]-\d{4,5}|core\s*ultra)/i.test(processor);
  return {gpu:graphicsModel,
   cpu:recognizedCpu?processor:'',
   ram:p.buildComponents?.ram||p.description};
