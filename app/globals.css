@@ -104,3 +104,5 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 @media(max-width:980px){.store-contacts-layout{grid-template-columns:minmax(240px,.95fr) minmax(0,1.1fr)}.store-location-panel{padding:24px 20px}.store-map-wrap{min-height:405px}}
 @media(max-width:750px){.store-contacts{padding-top:34px;padding-bottom:35px}.store-contacts-layout{grid-template-columns:1fr}.store-map-wrap{min-height:340px}.store-map-wrap iframe{min-height:330px}.store-location-panel{padding:25px 22px}.store-location-actions{flex-direction:row;flex-wrap:wrap}.store-location-actions .button{flex:1 1 180px}.store-contacts-head p{font-size:12px}.store-contacts-head h1{font-size:32px}}
 @media(max-width:480px){.store-map-bar{flex-wrap:wrap;font-size:10px;gap:6px;padding:13px}.store-location-panel address{font-size:15px}.store-location-panel{padding:21px 18px}}
+
+.second-slide-picture{display:flex;width:100%;height:100%;align-items:center;justify-content:center;overflow:hidden}.second-slide-photo{display:block;width:100%;height:100%;object-fit:contain;max-height:540px}.second-slide-fallback{object-fit:cover}@media(max-width:700px){.second-slide-photo{max-height:350px}}
