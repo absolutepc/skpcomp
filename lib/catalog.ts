@@ -30,7 +30,8 @@ export function normalizeProduct(p:Product):Product{
  // Older D1 catalogs may contain blank images or the previous schematic SVG illustrations.
  const bundledPhoto=productPhotos[p.id];
  const isLegacyIllustration=/^\/products\/(?:cpu|headphones)\/[^?#]+\.svg(?:[?#].*)?$/.test(p.image||'');
- const image=p.category!=='mouse'&&bundledPhoto&&(!p.image||isLegacyIllustration)?bundledPhoto:p.image;
+ // A defined gallery (even []) means the merchant has explicitly managed the photos.
+ const image=p.category!=='mouse'&&bundledPhoto&&p.gallery===undefined&&(!p.image||isLegacyIllustration)?bundledPhoto:p.image;
  return {...p,image,specs:{...(original as Product|undefined)?.specs,...p.specs},category:p.category==='peripherals'&&['monitor','mouse','keyboard'].includes(p.art)?p.art:p.category};
 }
 export function fieldValue(p:Product,key:string):string{const explicit=p.specs?.[key];if(explicit!==undefined)return explicit;return ['socket','memory','brand'].includes(key)?String(p[key as 'socket'|'memory'|'brand']||''):key==='watts'&&p.watts?String(p.watts):''}
