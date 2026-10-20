@@ -293,3 +293,58 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 @media(prefers-reduced-motion:reduce){
   .hero-carousel .second-slide-frame .second-slide-photo{transition:none}
 }
+
+
+/* SKP / launch hero artwork: exact Superstrike neon composition */
+.hero-carousel.mouse-launch.neon-first-slide{
+  background:radial-gradient(ellipse at 79% 68%,rgba(240,15,115,.17),transparent 52%),linear-gradient(110deg,#08090b 15%,#100910 70%,#07080a);
+}
+.hero-carousel.neon-first-slide .hero-visual{
+  position:relative;
+  align-self:stretch;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:none;
+  overflow:visible;
+}
+.hero-carousel.neon-first-slide .hero-visual::before{
+  content:"";
+  position:absolute;
+  inset:12% 3%;
+  background:radial-gradient(ellipse,rgba(233,30,111,.17),transparent 69%);
+  filter:blur(27px);
+  pointer-events:none;
+}
+.hero-carousel.neon-first-slide .first-slide-neon-photo{
+  display:block;
+  position:relative;
+  width:112%;
+  height:100%;
+  max-height:570px;
+  object-fit:contain;
+  object-position:center;
+  flex-shrink:0;
+  transform:translateX(1%) scale(1.055);
+  filter:drop-shadow(0 20px 32px rgba(0,0,0,.45));
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 14%,#000 100%);
+  mask-image:linear-gradient(to right,transparent 0%,#000 14%,#000 100%);
+}
+.hero-carousel.neon-first-slide .hero-copy{
+  position:relative;
+  z-index:2;
+}
+@media(max-width:1000px){
+  .hero-carousel.neon-first-slide .first-slide-neon-photo{
+    width:116%;transform:translateX(1%) scale(1.025);
+  }
+}
+@media(max-width:700px){
+  .hero-carousel.mouse-launch.neon-first-slide .hero-visual{height:295px;min-height:0;margin:0 -5%;overflow:hidden}
+  .hero-carousel.neon-first-slide .first-slide-neon-photo{
+    width:100%;height:100%;max-height:295px;
+    transform:none;object-fit:contain;
+    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 7%,#000 95%,transparent);
+    mask-image:linear-gradient(to bottom,transparent,#000 7%,#000 95%,transparent);
+  }
+}
