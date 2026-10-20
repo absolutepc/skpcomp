@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="660" viewBox="0 0 660 660" role="img" aria-label="Logitech G PRO X2 LIGHTSPEED, белый, иллюстрация без фона">
+<defs>
+ <linearGradient id="shell" x1=".12" y1=".15" x2=".87" y2=".95"><stop offset="0" stop-color="#ffffff"/><stop offset=".32" stop-color="#f7f9f9"/><stop offset=".67" stop-color="#e6e9eb"/><stop offset="1" stop-color="#c2cbd0"/></linearGradient>
+ <linearGradient id="edge" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#c2cbd0"/><stop offset=".51" stop-color="#e6e9eb"/><stop offset="1" stop-color="#777c80"/></linearGradient>
+ <radialGradient id="round" cx=".26" cy=".23" r=".9"><stop stop-color="#ffffff"/><stop offset=".22" stop-color="#f7f9f9"/><stop offset=".72" stop-color="#e6e9eb"/><stop offset="1" stop-color="#777c80"/></radialGradient>
+ <linearGradient id="padding" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a3a7aa"/><stop offset=".43" stop-color="#090b0c"/><stop offset="1" stop-color="#a3a7aa"/></linearGradient>
+ <filter id="shadow" x="-35%" y="-35%" width="170%" height="180%"><feDropShadow dx="1" dy="17" stdDeviation="13" flood-color="#000" flood-opacity=".31"/></filter>
+</defs>
+<g filter="url(#shadow)">
+<!-- curved padded headband with a visible opening -->
+<path d="M170 305 Q146 101 328 91 Q512 96 493 309" fill="none" stroke="#777c80" stroke-width="74" stroke-linecap="round"/>
+<path d="M170 305 Q146 101 328 91 Q512 96 493 309" fill="none" stroke="url(#shell)" stroke-width="63" stroke-linecap="round"/>
+<path d="M169 306 Q153 113 328 106 Q499 111 494 307" fill="none" stroke="#c2cbd0" stroke-width="24" stroke-linecap="round" opacity=".75"/>
+<path d="M174 272 Q178 129 327 123 Q478 126 489 272" fill="none" stroke="#ffffff" opacity=".35" stroke-width="5" stroke-linecap="round"/>
+<path d="M194 225 Q203 129 322 113 Q437 120 461 229" fill="none" stroke="#ffffff" stroke-opacity=".4" stroke-width="3"/>
+<!-- metal yokes -->
+<path d="M181 303 C130 281 100 312 115 376 L133 440" stroke="#c2cbd0" stroke-width="26" fill="none" stroke-linecap="round"/>
+<path d="M181 303 C130 281 100 312 115 376 L133 440" stroke="#f7f9f9" stroke-width="14" fill="none" stroke-linecap="round"/>
+<path d="M480 299 C529 281 564 326 547 392 L531 444" stroke="#c2cbd0" stroke-width="27" fill="none" stroke-linecap="round"/>
+<path d="M480 299 C529 281 564 326 547 392 L531 444" stroke="#f7f9f9" stroke-width="14" fill="none" stroke-linecap="round"/>
+<!-- left rear headset -->
+<g transform="rotate(-10 181 399)">
+<ellipse cx="180" cy="412" rx="93" ry="129" fill="#777c80" stroke="#c2cbd0" stroke-width="5"/>
+<ellipse cx="184" cy="415" rx="76" ry="114" fill="url(#edge)" stroke="#f7f9f9" stroke-opacity=".8" stroke-width="8"/>
+<ellipse cx="195" cy="416" rx="49" ry="85" fill="url(#padding)" stroke="#c2cbd0" stroke-width="12"/>
+<ellipse cx="198" cy="418" rx="33" ry="66" fill="#0f1114"/>
+</g>
+<!-- right outer housing, oval ear cushion and signature circular plate -->
+<g transform="rotate(12 443 416)">
+<ellipse cx="449" cy="416" rx="118" ry="146" fill="#777c80"/>
+<ellipse cx="444" cy="411" rx="111" ry="139" fill="url(#edge)" stroke="#c2cbd0" stroke-width="9"/>
+<ellipse cx="422" cy="414" rx="91" ry="121" fill="url(#shell)" stroke="#ffffff" stroke-opacity=".42" stroke-width="6"/>
+<ellipse cx="403" cy="416" rx="70" ry="98" fill="none" stroke="#c2cbd0" stroke-opacity=".9" stroke-width="20"/>
+<ellipse cx="429" cy="415" rx="79" ry="107" fill="url(#round)" stroke="#f7f9f9" stroke-width="6"/>
+<ellipse cx="430" cy="415" rx="65" ry="91" fill="url(#round)" stroke="#777c80" stroke-opacity=".52" stroke-width="3"/>
+<path d="M386 360 Q427 333 478 366" stroke="#fff" stroke-opacity=".23" stroke-width="5" fill="none"/>
+<g transform="translate(405 401)"><path d="M8 0 C3 -9 23 -14 28 1 M8 0 C-12 15 3 43 26 30 L26 12 L15 12" stroke="#4b535b" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+<ellipse cx="430" cy="415" rx="66" ry="92" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="3"/>
+</g>
+<!-- flexible microphone boom -->
+<path d="M344 491 Q331 544 271 562 Q209 582 159 550" stroke="#777c80" stroke-width="17" stroke-linecap="round" fill="none"/>
+<path d="M344 491 Q331 544 271 562 Q209 582 159 550" stroke="#c2cbd0" stroke-width="9" stroke-linecap="round" fill="none"/>
+<rect x="116" y="523" width="75" height="39" rx="19" fill="#111316" transform="rotate(-12 150 540)"/>
+<rect x="127" y="526" width="52" height="33" rx="15" fill="#24262a" transform="rotate(-12 150 540)"/>
+</g>
+</svg>
