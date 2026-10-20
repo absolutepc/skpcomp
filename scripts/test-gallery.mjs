@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {runInNewContext} from 'node:vm';
+import ts from 'typescript';
+
+const source=readFileSync(new URL('../lib/product-gallery.ts',import.meta.url),'utf8');
+const {outputText}=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}});
+const exports={};runInNewContext(outputText,{exports});
+const {getProductImages,updateProductGallery,isProductImageUrl,MAX_GALLERY_IMAGES}=exports;
+assert.equal(MAX_GALLERY_IMAGES,16);
+const url='/api/media?key=products/special-white/12345678-1234-4234-8234-123456789abc.webp';
+assert.equal(isProductImageUrl(url),true);
+assert.equal(isProductImageUrl('/api/media?key=products/../other.webp'),false);
+assert.equal(isProductImageUrl('javascript:alert(1)'),false);
+assert.equal(isProductImageUrl('http://example.org/opaque.png'),false);
+assert.equal(isProductImageUrl('/products/photos/rtx-5070.webp'),true);
+assert.equal(isProductImageUrl('https://cdn.example.com/transparent.webp'),true);
+const first={id:'one',image:'/products/photos/one.webp',gallery:[url,url]};
+const second={id:'two',image:'/products/photos/two.webp',gallery:[]};
+assert.equal(getProductImages(first).length,2);
+const replacement=updateProductGallery(first,[url,'/products/photos/one.webp',url]);
+assert.equal(replacement.image,url);
+assert.equal(replacement.gallery.length,1);
+assert.equal(first.image,'/products/photos/one.webp');
+assert.equal(getProductImages(second)[0],'/products/photos/two.webp');
+assert.equal(getProductImages(updateProductGallery(first,[])).length,0);
+assert.equal(getProductImages(updateProductGallery(first,Array.from({length:40},(_,i)=>'https://site.com/'+i+'.webp'))).length,16);
+console.log('Gallery tests passed: image ordering, duplicates, per-colour isolation and secure URLs.');
