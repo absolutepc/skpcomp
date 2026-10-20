@@ -13,24 +13,15 @@ return <section className={"hero hero-carousel"+(index===0?" mouse-launch":"")} 
 <div className="second-slide-premium" aria-label="Премиальная сборка игрового компьютера">
   <div className="second-slide-glow" aria-hidden="true"/>
   <div className="second-slide-frame">
-    <img className="second-slide-photo" src={slide.image} alt="Игровой компьютер с жёлтой подсветкой и жидкостным охлаждением" onError={e=>{const target=e.currentTarget;if(!target.dataset.fallback){target.dataset.fallback='1';target.src='/images/skp-reference.png';target.classList.add('second-slide-fallback')}}}/>
-    <svg className="second-slide-callout-lines" viewBox="0 0 680 465" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M 302 220 C 255 220 237 168 185 172 S 155 176 143 176"/>
-      <path d="M 328 318 C 273 326 251 355 205 357 S 159 357 143 357"/>
-      <path d="M 353 91 C 420 68 471 107 533 101"/>
-      <path d="M 503 243 C 557 233 561 295 538 300"/>
-      <circle cx="302" cy="220" r="4"/>
-      <circle cx="328" cy="318" r="4"/>
-      <circle cx="353" cy="91" r="4"/>
-      <circle cx="503" cy="243" r="4"/>
-    </svg>
-    <div className="second-slide-callout-label callout-cpu"><strong>ПРОЦЕССОР</strong><span>CPU</span></div>
-    <div className="second-slide-callout-label callout-gpu"><strong>ВИДЕОКАРТА</strong><span>GPU</span></div>
-    <div className="second-slide-callout-label callout-cooling"><strong>ОХЛАЖДЕНИЕ</strong><span>СЖО</span></div>
-    <div className="second-slide-callout-label callout-fans"><strong>ВЕНТИЛЯТОРЫ</strong><span>AIRFLOW</span></div>
+    <span className="second-slide-corner second-slide-corner-tl" aria-hidden="true"/>
+    <span className="second-slide-corner second-slide-corner-br" aria-hidden="true"/>
+    <img className="second-slide-photo" src={slide.image} alt="Игровой компьютер с синей подсветкой и жидкостным охлаждением" onError={e=>{const target=e.currentTarget;if(!target.dataset.fallback){target.dataset.fallback='1';target.src='/images/skp-reference.png';target.classList.add('second-slide-fallback')}}}/>
   </div>
   <div className="second-slide-badge"><span className="second-slide-badge-dot" aria-hidden="true"/> PREMIUM BUILD</div>
   <span className="second-slide-top-note">CUSTOM WATERCOOLING <span aria-hidden="true">/</span> SKP</span>
+  <div className="second-slide-chips" aria-label="Особенности сборки">
+    <span>RTX GRAPHICS</span><span>LIQUID COOLING</span><span>HIGH-END BUILD</span>
+  </div>
 </div>:slide.crop?<svg className="reference-art" viewBox={slide.crop} role="img" aria-label={slide.label}><image href={slide.image} width="1024" height="1536"/></svg>:<MouseScene/>}</div><div className="carousel-controls"><div className="carousel-dots" aria-label="Выбор слайда">{slides.map((s,i)=><button key={s.href} className={i===index?'current':''} aria-label={`Показать слайд ${i+1}: ${s.label}`} aria-current={i===index?'true':undefined} onClick={()=>setIndex(i)}><span/></button>)}</div><button className="carousel-arrow" aria-label="Предыдущий слайд" onClick={()=>move(-1)}><ArrowLeft size={19}/></button><button className="carousel-arrow" aria-label="Следующий слайд" onClick={()=>move(1)}><ArrowRight size={19}/></button></div><span className="visually-hidden" role="status" aria-live="polite">Слайд {index+1} из 3: {slide.label}</span></section>}
 function MouseScene(){return <div className="mouse-scene" role="img" aria-label="Logitech G Pro X3 Superstrike в цветах Magenta Eclipse и Midnight Black"><span className="mouse-scene-word" aria-hidden="true">PRO X3</span><div className="mouse-product-stage"><div className="mouse-object magenta-object"><svg viewBox="800 234 900 1692" aria-hidden="true"><image href="/images/pro-x3-magenta-hd.png" width="2500" height="2160"/></svg></div><div className="mouse-object black-object"><svg viewBox="800 234 900 1692" aria-hidden="true"><image href="/images/pro-x3-black-hd.png" width="2500" height="2160"/></svg></div></div><span className="mouse-scene-caption" aria-hidden="true">TWO COLORS. YOUR CHOICE.</span></div>}
 export function InstagramIcon(){return <svg className="social-brand instagram-brand" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="skp-instagram" x1="0" y1="1" x2="1" y2="0"><stop stopColor="#ffca53"/><stop offset=".35" stopColor="#f44150"/><stop offset=".7" stopColor="#c329a4"/><stop offset="1" stopColor="#6545d0"/></linearGradient></defs><rect width="32" height="32" rx="9" fill="url(#skp-instagram)"/><rect x="7" y="7" width="18" height="18" rx="5.5" fill="none" stroke="white" strokeWidth="2"/><circle cx="16" cy="16" r="4.3" fill="none" stroke="white" strokeWidth="2"/><circle cx="22" cy="10.6" r="1.25" fill="white"/></svg>}
