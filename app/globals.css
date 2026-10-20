@@ -145,11 +145,39 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   justify-content:center;
   width:min(100%,680px);
   height:clamp(350px,31vw,465px);
-  border:0;
+  border:1px solid rgba(255,214,10,.22);
   border-radius:16px;
-  background:transparent;
-  box-shadow:none;
+  background:linear-gradient(143deg,rgba(40,35,18,.22),rgba(13,11,6,.07) 62%,rgba(28,23,10,.14));
+  box-shadow:inset 0 0 0 1px rgba(255,226,120,.06),0 20px 55px rgba(0,0,0,.16);
   overflow:visible;
+}
+.hero-carousel .second-slide-frame::before{
+  content:"";
+  position:absolute;
+  inset:10px;
+  border:1px solid rgba(255,224,110,.08);
+  border-radius:9px;
+  pointer-events:none;
+}
+.hero-carousel .second-slide-corner{
+  position:absolute;
+  z-index:2;
+  width:28px;
+  height:28px;
+  border-color:#ffe14a;
+  border-style:solid;
+  opacity:.70;
+  pointer-events:none;
+}
+.hero-carousel .second-slide-corner-tl{
+  left:-1px;top:-1px;
+  border-width:2px 0 0 2px;
+  border-radius:15px 0 0 0;
+}
+.hero-carousel .second-slide-corner-br{
+  right:-1px;bottom:-1px;
+  border-width:0 2px 2px 0;
+  border-radius:0 0 15px 0;
 }
 .hero-carousel .second-slide-frame .second-slide-photo{
   position:relative;
@@ -214,11 +242,39 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   white-space:nowrap;
 }
 .hero-carousel .second-slide-top-note span{color:#d1a900;padding:0 4px}
+.hero-carousel .second-slide-chips{
+  position:absolute;
+  z-index:3;
+  left:26px;
+  bottom:10px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px;
+  max-width:calc(100% - 180px);
+}
+.hero-carousel .second-slide-chips>span{
+  display:inline-flex;
+  align-items:center;
+  min-height:27px;
+  padding:0 11px;
+  border:1px solid rgba(255,214,10,.18);
+  border-radius:5px;
+  background:rgba(20,17,9,.88);
+  backdrop-filter:blur(7px);
+  color:#fff0a8;
+  font-size:9px;
+  font-weight:650;
+  letter-spacing:.65px;
+  white-space:nowrap;
+}
 @media(max-width:1100px){
   .hero-carousel .second-slide-premium{min-height:365px;padding:27px 12px 30px}
   .hero-carousel .second-slide-frame{height:clamp(300px,35vw,395px)}
   .hero-carousel .second-slide-frame .second-slide-photo{transform:scale(1.17) translateY(-1%)}
   .hero-carousel .second-slide-premium:hover .second-slide-frame .second-slide-photo{transform:scale(1.185) translateY(-1%)}
+  .hero-carousel .second-slide-chips{left:14px;bottom:12px;max-width:calc(100% - 110px)}
+  .hero-carousel .second-slide-chips>span{font-size:8px;padding:0 8px}
   .hero-carousel .second-slide-top-note{left:15px}
   .hero-carousel .second-slide-badge{right:12px}
 }
@@ -230,79 +286,10 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   .hero-carousel .second-slide-premium:hover .second-slide-frame .second-slide-photo{transform:scale(1.13) translateY(-1%)}
   .hero-carousel .second-slide-badge{top:7px;right:11px;font-size:8px;padding:0 9px;height:26px}
   .hero-carousel .second-slide-top-note{top:12px;left:13px;font-size:7px;letter-spacing:.6px}
+  .hero-carousel .second-slide-chips{bottom:8px;left:11px;right:11px;max-width:none;gap:5px;justify-content:center}
+  .hero-carousel .second-slide-chips>span{min-height:24px;font-size:7px;padding:0 7px;letter-spacing:.25px}
   .hero-carousel .second-slide-glow{inset:9% 3% 14% 4%;filter:blur(22px)}
 }
 @media(prefers-reduced-motion:reduce){
   .hero-carousel .second-slide-frame .second-slide-photo{transition:none}
-}
-
-
-/* Curved technical callouts: paths and labels share the image-frame coordinates. */
-.hero-carousel .second-slide-callout-lines{
-  position:absolute;
-  inset:0;
-  z-index:2;
-  width:100%;
-  height:100%;
-  overflow:visible;
-  pointer-events:none;
-}
-.hero-carousel .second-slide-callout-lines path{
-  fill:none;
-  stroke:rgba(255,225,103,.80);
-  stroke-width:1.55;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  filter:drop-shadow(0 0 3px rgba(255,202,32,.35));
-}
-.hero-carousel .second-slide-callout-lines circle{
-  fill:#ffeb80;
-  stroke:#211c06;
-  stroke-width:1.8;
-  filter:drop-shadow(0 0 5px rgba(255,212,62,.66));
-}
-.hero-carousel .second-slide-callout-label{
-  position:absolute;
-  z-index:3;
-  width:clamp(108px,10.8vw,130px);
-  min-height:35px;
-  padding:7px 9px 7px 10px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:3px;
-  border:1px solid rgba(255,218,79,.26);
-  border-left:2px solid #ffe35b;
-  border-radius:4px;
-  background:rgba(9,11,9,.90);
-  box-shadow:0 6px 20px rgba(0,0,0,.30);
-  backdrop-filter:blur(7px);
-  pointer-events:none;
-}
-.hero-carousel .second-slide-callout-label strong{
-  color:#ffe57a;
-  font-size:9px;
-  font-weight:750;
-  line-height:1.2;
-  letter-spacing:.65px;
-}
-.hero-carousel .second-slide-callout-label span{
-  color:rgba(238,232,202,.75);
-  font-size:8px;
-  line-height:1.1;
-  letter-spacing:.8px;
-}
-.hero-carousel .callout-cpu{left:1.7%;top:37.8%;transform:translateY(-50%)}
-.hero-carousel .callout-gpu{left:1.7%;top:76.8%;transform:translateY(-50%)}
-.hero-carousel .callout-cooling{right:1.7%;top:21.7%;transform:translateY(-50%)}
-.hero-carousel .callout-fans{right:1.7%;top:64.5%;transform:translateY(-50%)}
-@media(max-width:1100px){
-  .hero-carousel .second-slide-callout-label{width:105px;padding:6px 7px 6px 8px}
-  .hero-carousel .second-slide-callout-label strong{font-size:8px}
-  .hero-carousel .second-slide-callout-label span{font-size:7px}
-}
-@media(max-width:700px){
-  /* Keep the PC legible on phones: callouts are for the larger technical view. */
-  .hero-carousel .second-slide-callout-lines,
-  .hero-carousel .second-slide-callout-label{display:none}
 }
