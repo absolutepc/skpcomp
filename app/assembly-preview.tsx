@@ -2,7 +2,7 @@
 
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {PointerEvent as ReactPointerEvent,WheelEvent as ReactWheelEvent} from 'react';
-import {Maximize2,Minus,Plus,RotateCcw,Box,Layers3,Move3D} from 'lucide-react';
+import {Maximize2,Minus,Plus,RotateCcw,Box,Layers3,MousePointer2} from 'lucide-react';
 import type {Product} from '../lib/seed';
 
 type Point=[number,number,number];
@@ -234,7 +234,7 @@ export default function AssemblyPreview({selected,products,activeStep,onSelectSt
        <path d="M35 447h630 M65 50h55 M580 50h55" stroke="#556c51" strokeWidth="1" opacity=".4"/>
        {solids.map((face,i)=><polygon key={i} points={face.points} fill={face.fill} fillOpacity={face.alpha}
          stroke={face.part===activeStep?'#b5d67a':face.stroke}
-         strokeOpacity={face.part===activeStep?.78:.35} strokeWidth={face.part===activeStep?.95:.5}
+         strokeOpacity={face.part===activeStep ? .78 : .35} strokeWidth={face.part===activeStep ? .95 : .5}
          strokeLinejoin="round"/>)}
        <g fill="#7c9480" fontSize="11" letterSpacing="1.5" fontFamily="monospace">
          <text x="27" y="42">X 440 MM</text><text x="27" y="59">Y 470 MM</text>
@@ -248,7 +248,7 @@ export default function AssemblyPreview({selected,products,activeStep,onSelectSt
        <button type="button" title="Отдалить" aria-label="Отдалить" onClick={()=>setZoom(v=>clamp(v-.13,.65,1.55))}><Minus size={17}/></button>
        <button type="button" title="Исходный вид" aria-label="Исходный вид" onClick={()=>{setYaw(-.34);setPitch(.17);setZoom(1)}}><Maximize2 size={17}/></button>
      </div>
-     <div className="assembly-hint"><Move3D size={15}/> Перетаскивай для вращения · прокрутка — масштаб</div>
+     <div className="assembly-hint"><MousePointer2 size={15}/> Перетаскивай для вращения · прокрутка — масштаб</div>
    </div>
    <div className="assembly-sidebar">
      <div className="assembly-side-heading"><div><span className="assembly-kicker">ВИЗУАЛИЗАЦИЯ СБОРКИ</span><h2>Компьютер внутри</h2></div><Box size={25}/></div>
