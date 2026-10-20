@@ -1,6 +1,7 @@
 import {env} from 'cloudflare:workers';
 import {seed} from '../../../lib/seed';
 import {productPhotos} from '../../../lib/product-photos';
+import {buildComponentFields} from '../../../lib/build-components';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 async function token(){let a=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));return Array.from(new Uint8Array(a)).map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function auth(r:Request){return !!E.ADMIN_PASSWORD && (r.headers.get('cookie')||'').split(';').map(x=>x.trim()).includes('skp_admin='+await token())}
@@ -114,6 +115,16 @@ if(!await auth(r))return Response.json({error:'Войдите в админис�
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
 if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||(!(/^https:\/\//.test(p.image)||/^\/products\/(?:cpu|headphones)\/[a-z0-9-]+\.svg$/.test(p.image)||/^\/products\/photos\/[a-z0-9-]+\.webp$/.test(p.image)||p.image===''))))return Response.json({error:'Проверьте названия, цены и ссылки фотографий'},{status:400});
 if(d.products.some((p:any)=>p.specs!==undefined&&(!p.specs||typeof p.specs!=='object'||Array.isArray(p.specs)||Object.keys(p.specs).length>80||Object.entries(p.specs).some(([k,v])=>k.length>50||typeof v!=='string'||v.length>300))))return Response.json({error:'Проверьте характеристики товаров'},{status:400});
+const validBuildFields=new Set<string>(buildComponentFields.map(field=>field.key));
+if(d.products.some((p:any)=>p.buildComponents!==undefined&&(
+ !p.buildComponents||typeof p.buildComponents!=='object'||Array.isArray(p.buildComponents)||
+ Object.keys(p.buildComponents).length>buildComponentFields.length||
+ Object.entries(p.buildComponents).some(([key,value])=>!validBuildFields.has(key)||typeof value!=='string'||value.length>300)
+)))return Response.json({error:'Проверьте комплектацию ПК'},{status:400});
+if(d.products.some((p:any)=>p.buildExtras!==undefined&&(
+ !Array.isArray(p.buildExtras)||p.buildExtras.length>20||
+ p.buildExtras.some((part:any)=>!part||typeof part!=='object'||typeof part.name!=='string'||part.name.length>80||typeof part.value!=='string'||part.value.length>300)
+)))return Response.json({error:'Проверьте дополнительные комплектующие'},{status:400});
 if(d.products.some((p:any)=>(p.variantGroup!==undefined&&(typeof p.variantGroup!=='string'||p.variantGroup.length>80))||(p.colorHex!==undefined&&(typeof p.colorHex!=='string'||!/^#[0-9a-fA-F]{6}$/.test(p.colorHex)))))return Response.json({error:'Проверьте группу вариантов и HEX-код цвета'},{status:400});
 if(d.instagram&&!/^https:\/\/(www\.)?instagram\.com\//.test(d.instagram))return Response.json({error:'Введите ссылку Instagram'},{status:400});if(d.whatsapp&&!/^\d{10,15}$/.test(d.whatsapp))return Response.json({error:'Номер WhatsApp: 10–15 цифр без плюса'},{status:400});
 await E.DB.prepare('INSERT INTO shop (id,value) VALUES (?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value').bind('catalog',JSON.stringify(d)).run();return Response.json({ok:true});}
