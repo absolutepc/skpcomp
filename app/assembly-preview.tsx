@@ -2,7 +2,7 @@
 
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {PointerEvent as ReactPointerEvent,WheelEvent as ReactWheelEvent} from 'react';
-import {Maximize2,Minus,Plus,RotateCcw,Box,Layers3,MousePointer2} from 'lucide-react';
+import {Maximize2,Minus,Plus,RotateCcw,Box,Layers,MousePointer2} from 'lucide-react';
 import type {Product} from '../lib/seed';
 
 type Point=[number,number,number];
@@ -258,7 +258,7 @@ export default function AssemblyPreview({selected,products,activeStep,onSelectSt
      <div className="assembly-part-list">{order.map((key,i)=><button type="button" key={key} className={'assembly-part '+(selected[key]?'installed ':'')+(activeStep===key?'focused':'')} onClick={()=>onSelectStep(key)} title={'Перейти к выбору: '+labels[key]}>
        <span className="assembly-part-num">{String(i+1).padStart(2,'0')}</span>
        <span className="assembly-part-name"><strong>{labels[key]}</strong><small>{selected[key]?products.find(p=>p.id===selected[key])?.name||'Выбрано':'Не выбрано'}</small></span>
-       <span className="assembly-part-state">{selected[key]?<Layers3 size={15}/>:<Plus size={15}/>}</span>
+       <span className="assembly-part-state">{selected[key]?<Layers size={15}/>:<Plus size={15}/>}</span>
      </button>)}</div>
      {blocking&&<p className="assembly-note">Некоторые выбранные детали появятся в 3D после установки материнской платы.</p>}
      <p className="assembly-note">Параметрический прототип: корпус 440 × 470 × 220 мм, ATX-плата 305 × 244 мм. Габариты остальных элементов типовые, а не точные CAD-модели выбранных брендов. Проверку совместимости перед покупкой сохраняем отдельно.</p>
