@@ -57,6 +57,8 @@ export function estimateFps(hardware:FpsHardware,resolution:FpsResolution){
   const resolutionFactor=1/Math.pow(pixels,.53*(1-game.cpuBound*.65));
   const cpuFactor=1+(processor-1)*(.25+game.cpuBound*.75);
   const avg=Math.round(game.fps5070*gpu*resolutionFactor*cpuFactor/5)*5;
-  return {id:game.id,name:game.name,low:Math.max(15,Math.round(avg*.8/5)*5),high:Math.max(20,Math.round(avg*1.2/5)*5)};
+  // Narrow display band (±8%); this is not a measured confidence interval.
+  const spread=Math.max(5,Math.round(avg*.08/5)*5);
+  return {id:game.id,name:game.name,low:Math.max(15,avg-spread),high:Math.max(20,avg+spread)};
  });
 }
