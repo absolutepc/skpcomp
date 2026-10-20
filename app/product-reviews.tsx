@@ -14,7 +14,7 @@ export default function ProductReviews({productId}:{productId:string}){
  const [message,setMessage]=useState('');
  useEffect(()=>{
   let active=true;setReviews([]);setMessage('');
-  fetch('/api/reviews?productId='+encodeURIComponent(productId)).then(r=>r.json()).then((d:{reviews?:Review[]})=>{if(active)setReviews(Array.isArray(d.reviews)?d.reviews:[])}).catch(()=>{if(active)setMessage('Отзывы пока не удалось загрузить')});
+  fetch('/api/reviews?productId='+encodeURIComponent(productId)).then(r=>r.json()).then(raw=>{const d=raw as {reviews?:Review[]};if(active)setReviews(Array.isArray(d.reviews)?d.reviews:[])}).catch(()=>{if(active)setMessage('Отзывы пока не удалось загрузить')});
   return()=>{active=false};
  },[productId]);
  const mean=reviews.length?(reviews.reduce((sum,r)=>sum+r.rating,0)/reviews.length).toFixed(1):null;
