@@ -2,6 +2,7 @@ import {env} from 'cloudflare:workers';
 import {seed} from '../../../lib/seed';
 import {productPhotos} from '../../../lib/product-photos';
 import {buildComponentFields} from '../../../lib/build-components';
+import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 async function token(){let a=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));return Array.from(new Uint8Array(a)).map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function auth(r:Request){return !!E.ADMIN_PASSWORD && (r.headers.get('cookie')||'').split(';').map(x=>x.trim()).includes('skp_admin='+await token())}
@@ -113,7 +114,12 @@ if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)retur
 if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'}});
 if(!await auth(r))return Response.json({error:'Войдите в административную панель'},{status:401});if(b.action==='check')return Response.json({ok:true});
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
-if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||(!(/^https:\/\//.test(p.image)||/^\/products\/(?:cpu|headphones)\/[a-z0-9-]+\.svg$/.test(p.image)||/^\/products\/photos\/[a-z0-9-]+\.webp$/.test(p.image)||p.image===''))))return Response.json({error:'Проверьте названия, цены и ссылки фотографий'},{status:400});
+if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||!isProductImageUrl(p.image)))return Response.json({error:'Проверьте названия, цены и ссылки фотографий'},{status:400});
+if(d.products.some((p:any)=>p.gallery!==undefined&&(
+ !Array.isArray(p.gallery)||p.gallery.length>=MAX_GALLERY_IMAGES||
+ p.gallery.some((url:unknown)=>typeof url!=='string'||!url||!isProductImageUrl(url))||
+ new Set([p.image,...p.gallery]).size!==1+p.gallery.length
+)))return Response.json({error:'Проверьте фотографии галереи: максимум 16, без дубликатов'},{status:400});
 if(d.products.some((p:any)=>p.specs!==undefined&&(!p.specs||typeof p.specs!=='object'||Array.isArray(p.specs)||Object.keys(p.specs).length>80||Object.entries(p.specs).some(([k,v])=>k.length>50||typeof v!=='string'||v.length>300))))return Response.json({error:'Проверьте характеристики товаров'},{status:400});
 const validBuildFields=new Set<string>(buildComponentFields.map(field=>field.key));
 if(d.products.some((p:any)=>p.buildComponents!==undefined&&(
