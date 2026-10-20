@@ -623,9 +623,10 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 .skp-fps-resolutions button.current{background:#ffe500;color:#17180d;font-weight:800}
 .skp-fps-hardware{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:13px}
 .skp-fps-hardware span{display:inline-block;border:1px solid #333d27;padding:6px 9px;border-radius:5px;color:#bbbfae;font-size:10px}
-.skp-fps-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.skp-fps-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border:1px solid #2a3024;border-radius:8px;background:#141811;color:#e7e9df;font-size:12px}
-.skp-fps-row strong{color:#ffe500;white-space:nowrap;font-size:14px}
+.skp-fps-list{display:grid;grid-template-columns:1fr;gap:8px}
+.skp-fps-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px;border:1px solid #2a3024;border-radius:8px;background:#141811;color:#e7e9df;font-size:12px}
+.skp-fps-row span{flex:1;min-width:0}
+.skp-fps-row strong{color:#ffe500;white-space:nowrap;font-size:14px;min-width:110px;text-align:right;font-variant-numeric:tabular-nums}
 .skp-fps-row strong small{font-size:9px;color:#aea77b;font-weight:500}
 .skp-fps-note,.skp-fps-empty{color:#a8ad9e;line-height:1.7;font-size:10px;margin:17px 0 0}
 .skp-fps-empty{font-size:12px}
