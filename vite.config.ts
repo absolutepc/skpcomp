@@ -26,6 +26,8 @@ const localBindingConfig = {
         },
       ]
     : [],
+  // Locally emulate an R2 bucket for admin media uploads even before production
+  // provisioning. Production must separately bind an actual bucket as MEDIA.
   r2_buckets: r2
     ? [
         {
@@ -33,7 +35,12 @@ const localBindingConfig = {
           bucket_name: "site-creator-r2",
         },
       ]
-    : [],
+    : [
+        {
+          binding: "MEDIA",
+          bucket_name: "skp-media-local",
+        },
+      ],
 };
 
 export default defineConfig(async ({ command }) => {
