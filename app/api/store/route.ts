@@ -4,9 +4,12 @@ import {productPhotos} from '../../../lib/product-photos';
 import {buildComponentFields} from '../../../lib/build-components';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
+// A fresh local D1 database has no tables until its first request.
+async function ensureShop(){await E.DB.prepare('CREATE TABLE IF NOT EXISTS shop (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)').run()}
 async function token(){let a=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));return Array.from(new Uint8Array(a)).map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function auth(r:Request){return !!E.ADMIN_PASSWORD && (r.headers.get('cookie')||'').split(';').map(x=>x.trim()).includes('skp_admin='+await token())}
 export async function GET(){
+ await ensureShop();
  const row=await E.DB.prepare('SELECT value FROM shop WHERE id=?').bind('catalog').first<{value:string}>();
  const store=row?JSON.parse(row.value) as typeof seed:seed;
  // Upgrade legacy catalogs without replacing prices, availability, contacts or admin changes.
@@ -133,4 +136,5 @@ if(d.products.some((p:any)=>p.buildExtras!==undefined&&(
 )))return Response.json({error:'Проверьте дополнительные комплектующие'},{status:400});
 if(d.products.some((p:any)=>(p.variantGroup!==undefined&&(typeof p.variantGroup!=='string'||p.variantGroup.length>80))||(p.colorHex!==undefined&&(typeof p.colorHex!=='string'||!/^#[0-9a-fA-F]{6}$/.test(p.colorHex)))))return Response.json({error:'Проверьте группу вариантов и HEX-код цвета'},{status:400});
 if(d.instagram&&!/^https:\/\/(www\.)?instagram\.com\//.test(d.instagram))return Response.json({error:'Введите ссылку Instagram'},{status:400});if(d.whatsapp&&!/^\d{10,15}$/.test(d.whatsapp))return Response.json({error:'Номер WhatsApp: 10–15 цифр без плюса'},{status:400});
+await ensureShop();
 await E.DB.prepare('INSERT INTO shop (id,value) VALUES (?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value').bind('catalog',JSON.stringify(d)).run();return Response.json({ok:true});}
