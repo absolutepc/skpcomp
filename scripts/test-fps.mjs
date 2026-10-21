@@ -84,4 +84,20 @@ assert.deepEqual(Array.from(prioritizeFpsRows(dlssOnlyRows,{rayTracing:false,ups
 const fsrRows=estimateFps(amd,'4K',{upscaling:'fsr'});
 assert.deepEqual(Array.from(prioritizeFpsRows(fsrRows,{rayTracing:false,upscaling:'fsr'}).slice(0,5),row=>row.id),
  ['cs2','dota2','bf6','warthunder','cyberpunk']);
+
+/* FPS is intentionally not exposed in the SKP storefront anymore.
+   Preserve the standalone estimate model for regression compatibility,
+   but prevent launcher icons, buttons or FPS panels from returning. */
+for(const file of ['app/shop.tsx','app/build-pages.tsx']){
+ const ui=readFileSync(new URL('../'+file,import.meta.url),'utf8');
+ assert.doesNotMatch(ui,/GamingFps|gaming-fps|fps-estimate|skp-fps-launch|skp-fps-inline-action|Проверить FPS|Игровая производительность/i,
+  file+' must not render an FPS launcher or import FPS UI');
+}
+const shop=readFileSync(new URL('../app/shop.tsx',import.meta.url),'utf8');
+const builds=readFileSync(new URL('../app/build-pages.tsx',import.meta.url),'utf8');
+assert.match(shop,/GitCompareArrows/,'Product comparison remains available');
+assert.match(builds,/Сравнить ПК/,'Ready PC comparison remains available');
+assert.match(builds,/Сохранить конфигурацию/,'Configurator saving remains available');
+assert.match(builds,/Добавить в корзину/,'Configurator checkout remains available');
+
 console.log('FPS model tests passed: presets, resolutions, feature support, feature priority, ready PCs and configurator.');
