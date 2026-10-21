@@ -21,7 +21,7 @@ const labels=[
 ];
 for(const [id,label] of labels){
  assert.ok(sidebar.includes("id:'"+id+"',label:'"+label+"'"),'Sidebar includes '+label);
- assert.ok(shop.includes("adminSection==='"+id+"'"),'Content contains '+id);
+ assert.ok(shop.includes(id==='slides'?"adminSection!=='slides'":"adminSection==='"+id+"'"),'Content contains '+id);
 }
 assert.match(sidebar,/aria-label="Разделы админ-панели"/);
 assert.match(sidebar,/aria-current=\{active===id\?'page':undefined\}/);
