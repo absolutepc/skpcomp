@@ -43,3 +43,26 @@
 .skp-saved-actions button:hover{color:#ffe500;border-color:#9d8b15}
 .skp-saved-empty{padding:17px;border:1px dashed #525c48;border-radius:8px;text-align:center}
 @media(max-width:650px){.skp-saved-builds{padding:16px}.skp-saved-controls>.button{flex:1 1 auto}.skp-saved-title h2{font-size:17px}.skp-saved-item{align-items:stretch;flex-direction:column}.skp-saved-actions{justify-content:flex-end}.skp-power-metrics{grid-template-columns:1fr 1fr}.skp-power-metrics>div:last-child{grid-column:1/-1}.skp-power-metrics small{min-height:0}}
+
+/* Builder product ordering: compatible products first; conflicts are optional below. */
+.config-page .component-steps>button>svg,
+.config-page .configuration-row>svg{stroke-width:1.5}
+.skp-compatible-heading{display:flex;align-items:center;gap:8px;margin:0 0 13px;color:#d9e8c6;font-size:12px;font-weight:750}
+.skp-compatible-heading svg{color:#c7e488;flex-shrink:0}
+.skp-compatible-heading small{color:#acbf9c;margin-left:auto}
+.skp-compatible-empty{display:flex;align-items:flex-start;gap:12px;padding:15px;margin:0 0 15px;border:1px dashed #45543b;border-radius:10px;color:#b1c0a4}
+.skp-compatible-empty svg{flex-shrink:0;margin-top:2px}
+.skp-compatible-empty p{font-size:11px;line-height:1.6;margin:0}
+.skp-builder-incompatible{margin:20px 0 0}
+.skp-incompatible-toggle{display:flex;align-items:center;justify-content:flex-start;gap:9px;width:100%;min-height:45px;padding:10px 13px;border:1px solid #574a36;background:#1b1b13;border-radius:9px;color:#d7c6aa;font-size:11px;font-weight:700;text-align:left;transition:border-color .2s,background .2s}
+.skp-incompatible-toggle:hover{border-color:#b49e51;background:#242319}
+.skp-incompatible-toggle>svg:first-child{color:#dda964;flex-shrink:0}
+.skp-incompatible-toggle>small{padding:2px 7px;background:#45382a;border-radius:6px;color:#ead4b2}
+.skp-incompatible-toggle>svg:last-child{margin-left:auto;transition:transform .2s}
+.skp-incompatible-toggle>svg.expanded{transform:rotate(180deg)}
+.skp-incompatible-toggle:focus-visible{outline:2px solid #ffe500;outline-offset:3px}
+.skp-incompatible-description{font-size:10px;line-height:1.5;color:#ad9e8e;margin:12px 0}
+.skp-incompatible-grid .component-card{opacity:.78;border-color:#4a3c31;background:#151611}
+.skp-incompatible-grid .component-card .compat-error{color:#e1ac8d}
+.skp-incompatible-grid .component-card .price-line button:disabled{cursor:not-allowed;opacity:.45}
+@media(prefers-reduced-motion:reduce){.skp-incompatible-toggle>svg:last-child{transition:none}}
