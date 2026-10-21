@@ -25,7 +25,7 @@ export const defaultHeroSlides:HeroSlide[]=[
  title:'ТВОЙ ИДЕАЛЬНЫЙ\nКОМПЬЮТЕР\nНАЧИНАЕТСЯ ЗДЕСЬ',highlightLine:1,
  description:'Современные комплектующие, готовые решения\nи всё для комфортной игры и работы.',
  primary:'Перейти в каталог',href:'/catalog/all',secondary:'Собрать ПК',secondHref:'/configurator',
- layout:'premium',image:'/images/skp-slide-2.png',image2:'',caption:'',caption2:''},
+ layout:'premium',image:'/images/skp-build-hero.png',image2:'',caption:'',caption2:''},
  {id:'skp-hero-rog',label:'ASUS ROG Azoth Extreme Edition 20 и Harpe II Extreme Edition 20 уже в SKP',
  eyebrow:'ASUS ROG · 20TH ANNIVERSARY',title:'ASUS ROG\nEDITION 20\nУЖЕ В SKP',highlightLine:1,
  description:'ASUS ROG Azoth Extreme Edition 20 Gaming Keyboard\nи ASUS ROG Harpe II Extreme Edition 20 Gaming Mouse уже в SKP.',
@@ -224,4 +224,14 @@ export function upgradeRogSwiftOledSlide(slides:HeroSlide[]|undefined,version=0)
  const result=[...current];
  result.splice(Math.min(3,result.length),0,updated);
  return result;
+}
+
+/** Refresh the original computer slide without overwriting owner-created art. */
+export const COMPUTER_HERO_IMAGE_VERSION=1;
+export function upgradeComputerHeroImage(slides:HeroSlide[]|undefined,version=0):HeroSlide[]{
+ const current=slides??defaultHeroSlides;
+ if(version>=COMPUTER_HERO_IMAGE_VERSION)return current;
+ return current.map(slide=>slide.id==='skp-hero-computer'&&
+  (!slide.image||slide.image==='/images/skp-slide-2.png')
+   ?{...slide,image:'/images/skp-build-hero.png'}:slide);
 }
