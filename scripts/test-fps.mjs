@@ -10,7 +10,7 @@ const {outputText}=ts.transpileModule(source,{
 });
 const exports={};
 runInNewContext(outputText,{exports});
-const {estimateFps,gameProfiles,fromReadyPC,fromConfigurator}=exports;
+const {estimateFps,gameProfiles,fromReadyPC,fromConfigurator,prioritizeFpsRows}=exports;
 assert.equal(gameProfiles.length,10,'All ten requested games must remain available');
 
 const white={gpu:'RTX 5070',cpu:'AMD Ryzen 5 7500F',ram:'32 GB DDR5'};
@@ -60,4 +60,28 @@ const config=fromConfigurator({cpu:'c1',gpu:'g1'},[
  {id:'c1',name:'Ryzen 7 7800X3D'},{id:'g1',name:'GeForce RTX 5070'}
 ]);
 assert.ok(estimateFps(config,'2K')?.length===10);
-console.log('FPS model tests passed: presets, resolutions, feature support, ready PCs and configurator.');
+// RT/DLSS do not affect every game; users should see supported titles first.
+const mixedOptions={rayTracing:true,upscaling:'dlss',upscalingQuality:'balanced'};
+const mixedRows=estimateFps(white,'FHD',mixedOptions);
+assert.equal(mixedRows.filter(row=>row.rayTracingApplied).length,2);
+assert.equal(mixedRows.filter(row=>row.upscalingApplied).length,4);
+const mixedSorted=prioritizeFpsRows(mixedRows,mixedOptions);
+assert.deepEqual(Array.from(mixedSorted.slice(0,2),row=>row.id),['warthunder','cyberpunk']);
+assert.deepEqual(Array.from(mixedSorted,row=>row.id).sort(),Array.from(mixedRows,row=>row.id).sort());
+assert.equal(mixedRows[0].id,'cs2','Raw profile order is unchanged');
+assert.equal(mixedSorted[0].rayTracingApplied,true);
+assert.ok(mixedRows.find(row=>row.id==='cyberpunk').high<
+ item(white,'FHD',{upscaling:'dlss',upscalingQuality:'balanced'},'cyberpunk').high,
+ 'RT must lower the estimate in compatible games');
+assert.equal(mixedRows.find(row=>row.id==='cs2').high,
+ item(white,'FHD',{upscaling:'dlss',upscalingQuality:'balanced'},'cs2').high,
+ 'Unsupported RT must not fabricate a performance change');
+const dlssOnlyRows=estimateFps(white,'FHD',{upscaling:'dlss'});
+assert.deepEqual(Array.from(prioritizeFpsRows(dlssOnlyRows,{rayTracing:false,upscaling:'dlss'}).slice(0,4),row=>row.id),
+ ['bf6','warthunder','rust','cyberpunk']);
+assert.deepEqual(Array.from(prioritizeFpsRows(dlssOnlyRows,{rayTracing:false,upscaling:'native'}),row=>row.id),
+ Array.from(dlssOnlyRows,row=>row.id),'Native mode must keep original order');
+const fsrRows=estimateFps(amd,'4K',{upscaling:'fsr'});
+assert.deepEqual(Array.from(prioritizeFpsRows(fsrRows,{rayTracing:false,upscaling:'fsr'}).slice(0,5),row=>row.id),
+ ['cs2','dota2','bf6','warthunder','cyberpunk']);
+console.log('FPS model tests passed: presets, resolutions, feature support, feature priority, ready PCs and configurator.');

@@ -910,3 +910,17 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   flex-basis:78px;width:78px;padding:0;
  }
 }
+
+/* FPS: clearly show which active graphics settings affect estimated games. */
+.skp-fps-effect-summary{
+ display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;
+ margin:0 0 15px;padding:11px 14px;border:1px solid #464726;
+ border-radius:9px;background:linear-gradient(105deg,#252816,#191e13);
+}
+.skp-fps-effect-summary span{color:#c7ccbb;font-size:11px;white-space:nowrap}
+.skp-fps-effect-summary strong{color:#ffe500;font-weight:800}
+.skp-fps-effect-summary small{margin-left:auto;color:#9fa98e;font-size:10px}
+@media(max-width:760px){
+ .skp-fps-effect-summary{padding:10px;gap:7px 11px}
+ .skp-fps-effect-summary small{margin-left:0;flex-basis:100%}
+}

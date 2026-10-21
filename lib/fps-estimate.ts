@@ -123,3 +123,17 @@ export function estimateFps(
   };
  });
 }
+
+/** Highlight rows that can actually respond to active graphics options.
+ * Other games keep their original, stable relative order and FPS values. */
+export function prioritizeFpsRows(
+ rows:ReadonlyArray<GameFpsEstimate>,
+ options:Pick<FpsOptions,'rayTracing'|'upscaling'>
+):GameFpsEstimate[]{
+ const priority=(row:GameFpsEstimate)=>
+  (options.rayTracing&&row.rayTracingApplied?2:0)+
+  (options.upscaling!=='native'&&row.upscalingApplied?1:0);
+ return rows.map((row,index)=>({row,index}))
+  .sort((a,b)=>priority(b.row)-priority(a.row)||a.index-b.index)
+  .map(({row})=>row);
+}
