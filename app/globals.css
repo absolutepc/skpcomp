@@ -878,7 +878,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .skp-fps-launch,.skp-fps-launch-action svg{transition:none!important}
 }
 
-/* Product detail: aligned actions in a single row; FPS is an icon-only button. */
+/* Product detail: aligned actions in a single row; compact FPS button. */
 .product-detail .skp-product-actions{
  display:flex;align-items:stretch;gap:8px;width:100%;max-width:100%;
  margin:0 0 10px;overflow-x:auto;overflow-y:hidden;
@@ -891,7 +891,10 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  font-size:11px;white-space:nowrap;
 }
 .product-detail .skp-product-actions>.skp-fps-inline-action{
- flex:0 0 54px;width:54px;padding:0;
+ flex:0 0 84px;width:84px;padding:0;gap:6px;
+}
+.product-detail .skp-product-actions .skp-fps-inline-label{
+ font-weight:800;letter-spacing:.4px;font-size:11px;
 }
 .product-detail .skp-product-actions>.skp-fps-inline-action svg{width:20px;height:20px}
 .product-detail .skp-product-actions>.note{
@@ -904,6 +907,6 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   height:48px;min-height:48px;padding:0 10px;gap:7px;font-size:10px;
  }
  .product-detail .skp-product-actions>.skp-fps-inline-action{
-  flex-basis:48px;width:48px;padding:0;
+  flex-basis:78px;width:78px;padding:0;
  }
 }
