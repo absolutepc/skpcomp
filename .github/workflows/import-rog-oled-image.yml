@@ -1,0 +1,54 @@
+name: Import full ASUS OLED monitor render
+on:
+  push:
+    branches: [fix/oled-hero-image-safe-stage]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and tightly frame genuine ASUS monitor render
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/images
+          curl -fLsS --retry 3 --retry-delay 1 \
+            'https://press.asus.com/assets/w_1920%2Ch_1920/d6d0cfb1-d847-4004-af57-b88445099207/ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png' \
+            -o /tmp/asus-rog-oled-original.png
+          file /tmp/asus-rog-oled-original.png
+          python3 -m pip install -q Pillow
+          python3 - <<'PY'
+          from PIL import Image, ImageChops
+          im=Image.open('/tmp/asus-rog-oled-original.png').convert('RGBA')
+          original_alpha=im.getchannel('A')
+          if original_alpha.getextrema()==(255,255):
+              print('Source is opaque; making white product-photography backdrop transparent.')
+              diff=ImageChops.difference(im.convert('RGB'), Image.new('RGB',im.size,'white'))
+              mask=diff.convert('L').point(lambda n: 255 if n>18 else 0)
+              im.putalpha(mask)
+          bounds=im.getchannel('A').getbbox()
+          assert bounds is not None, 'No visible monitor in the ASUS image'
+          pad=int(max(bounds[2]-bounds[0],bounds[3]-bounds[1])*.05)
+          left=max(0,bounds[0]-pad); top=max(0,bounds[1]-pad)
+          right=min(im.width,bounds[2]+pad); bottom=min(im.height,bounds[3]+pad)
+          im=im.crop((left,top,right,bottom))
+          if im.width>1400:
+              new_width=1400
+              im.resize((new_width,round(im.height*new_width/im.width)),Image.Resampling.LANCZOS)
+              im=im.resize((new_width,round(im.height*new_width/im.width)),Image.Resampling.LANCZOS)
+          out='public/images/rog-oled-pg27aqwp-g-hero.png'
+          im.save(out,optimize=True)
+          print(f'Original {bounds} -> cropped {im.size}, transparent bbox {im.getchannel("A").getbbox()}, size {__import__("os").path.getsize(out)}')
+          PY
+          test "$(file --mime-type -b public/images/rog-oled-pg27aqwp-g-hero.png)" = image/png
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/images/rog-oled-pg27aqwp-g-hero.png
+          if ! git diff --cached --quiet; then
+            git commit -m 'Store complete ASUS ROG Swift OLED product render'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
