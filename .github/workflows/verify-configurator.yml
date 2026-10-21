@@ -32,5 +32,6 @@ jobs:
           pnpm test:fps
           pnpm test:gallery
           pnpm test:hero
+          pnpm test:orders
       - name: Production build
         run: pnpm build

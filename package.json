@@ -15,7 +15,8 @@
     "test:fps": "node scripts/test-fps.mjs",
     "test:configurator": "node scripts/test-configurator.mjs",
     "test:gallery": "node scripts/test-gallery.mjs",
-    "test:hero": "node scripts/test-hero.mjs"
+    "test:hero": "node scripts/test-hero.mjs",
+    "test:orders": "node scripts/test-orders.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
