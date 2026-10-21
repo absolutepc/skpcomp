@@ -1,10 +1,10 @@
 'use client';
 import {useState} from 'react';
-import {Search,SlidersHorizontal,X,LayoutGrid,Cpu,CircuitBoard,Gpu,MemoryStick,HardDrive,Zap,Fan,PcCase,Monitor,Mouse,Keyboard,Headphones,RectangleHorizontal,Mic,MonitorUp,Webcam} from 'lucide-react';
+import {Search,SlidersHorizontal,X,LayoutGrid} from 'lucide-react';
+import {categoryIcons} from './catalog-icons';
 import {Product} from '../lib/seed';
 import {components,peripherals,categoryFields,fieldValue,splitValues,inCategory,matchesFilters,Facets,Ranges} from '../lib/catalog';
 const groups:Record<string,string>={all:'Все товары',components:'Комплектующие',peripherals:'Периферия',laptops:'Ноутбуки',furniture:'Компьютерная мебель'};
-const categoryIcons:Record<string,typeof Cpu>={cpu:Cpu,motherboard:CircuitBoard,gpu:Gpu,ram:MemoryStick,ssd:HardDrive,psu:Zap,cooler:Fan,case:PcCase,monitor:Monitor,mouse:Mouse,keyboard:Keyboard,headphones:Headphones,mousepad:RectangleHorizontal,microphone:Mic,mount:MonitorUp,webcam:Webcam};
 export default function CatalogPage({category,products,nav,card}:{category:string;products:Product[];nav:(p:string)=>void;card:(p:Product)=>React.ReactNode}){
  const [query,setQuery]=useState(''),[sort,setSort]=useState('popular'),[min,setMin]=useState(''),[max,setMax]=useState(''),[stock,setStock]=useState(false),[facets,setFacets]=useState<Facets>({}),[ranges,setRanges]=useState<Ranges>({}),[open,setOpen]=useState(false);
  const parent=category==='components'||category in components?'components':category==='peripherals'||category in peripherals?'peripherals':category;
