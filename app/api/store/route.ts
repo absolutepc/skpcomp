@@ -4,6 +4,7 @@ import {productPhotos} from '../../../lib/product-photos';
 import {buildComponentFields} from '../../../lib/build-components';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
 import {validateHeroSlides,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION} from '../../../lib/hero-slides';
+import {CATALOG_VERSION,FEATURED_MONITOR_ID,upgradeFeaturedMonitorProducts,linkFeaturedMonitorSlide} from '../../../lib/featured-monitor';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 // A fresh local D1 database has no tables until its first request.
 async function ensureShop(){await E.DB.prepare('CREATE TABLE IF NOT EXISTS shop (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)').run()}
@@ -15,7 +16,7 @@ export async function GET(){
  const store=row?JSON.parse(row.value) as typeof seed:seed;
  // Upgrade legacy catalogs without replacing prices, availability, contacts or admin changes.
  // The version is saved along with the catalog on the next admin edit, so intentional deletions stay deleted.
- if(row&&(store.catalogVersion||0)<7){
+ if(row&&(store.catalogVersion||0)<CATALOG_VERSION){
   const oldVersion=store.catalogVersion||0;
   let products=[...store.products];
   // Upgrade older catalog snapshots first, preserving any merchant-edited prices,
@@ -107,11 +108,19 @@ export async function GET(){
     return !p.image||legacySvg?{...p,image:photo}:p;
    });
   }
-  // The next successful admin save persists this version in D1.
+  // Version 8: showcase the ASUS ROG Swift OLED PG27AQWP-G Edition 20.
+  // Existing admin product records, stock settings and uploaded art are preserved.
+  if(oldVersion<8){
+   const monitor=seed.products.find(p=>p.id===FEATURED_MONITOR_ID)!;
+   products=upgradeFeaturedMonitorProducts(products,monitor,oldVersion);
+  }
+  // The next successful admin save persists the new catalog version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
-  return Response.json({...store,products,catalogVersion:7,heroSlides:upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),heroSlidesVersion:HERO_SLIDES_VERSION},{headers:{'Cache-Control':'no-store'}});
+  const slides=linkFeaturedMonitorSlide(
+   upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),products);
+  return Response.json({...store,products,catalogVersion:CATALOG_VERSION,heroSlides:slides,heroSlidesVersion:HERO_SLIDES_VERSION},{headers:{'Cache-Control':'no-store'}});
  }
- return Response.json({...store,heroSlides:upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),heroSlidesVersion:HERO_SLIDES_VERSION},{headers:{'Cache-Control':'no-store'}});
+ return Response.json({...store,heroSlides:linkFeaturedMonitorSlide(upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),store.products),heroSlidesVersion:HERO_SLIDES_VERSION},{headers:{'Cache-Control':'no-store'}});
 }
 export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});const b=await r.json() as any;
 if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin='+await token()+'; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800'}})}
