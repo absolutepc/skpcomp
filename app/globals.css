@@ -1294,3 +1294,25 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 .skp-slide-preview-tablet.hero-carousel.rog-oled-feature .carousel-controls{
  left:clamp(24px,16vw,270px);right:auto;bottom:13px;transform:none;
 }
+
+
+/* Real category photography supplied by the SKP owner.
+   Fill the entire tile and keep the category name legible on all screens. */
+.category{overflow:hidden}
+.category .skp-category-photo{
+ display:block;position:absolute;inset:0;
+ width:100%;height:100%;max-width:none;max-height:none;
+ object-fit:cover;object-position:center;
+ opacity:1;transition:transform .35s ease,filter .35s ease;
+}
+.category:hover .skp-category-photo{transform:scale(1.045)}
+.category .skp-category-photo-components{
+ object-position:center 44%;
+ filter:brightness(.84) contrast(1.07);
+}
+.category .skp-category-photo-laptops{object-position:center 49%}
+.category .skp-category-photo-peripherals{object-position:center 52%}
+.category:has(.skp-category-photo):after{
+ height:78px;background:linear-gradient(to top,#080a08e8 0%,#080a0896 45%,transparent 100%)
+}
+@media(prefers-reduced-motion:reduce){.category .skp-category-photo{transition:none}}
