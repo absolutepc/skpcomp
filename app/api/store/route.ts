@@ -3,7 +3,7 @@ import {seed} from '../../../lib/seed';
 import {productPhotos} from '../../../lib/product-photos';
 import {buildComponentFields} from '../../../lib/build-components';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
-import {validateHeroSlides,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION} from '../../../lib/hero-slides';
+import {validateHeroSlides,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION,upgradeComputerHeroImage,COMPUTER_HERO_IMAGE_VERSION} from '../../../lib/hero-slides';
 import {CATALOG_VERSION,FEATURED_MONITOR_ID,upgradeFeaturedMonitorProducts,linkFeaturedMonitorSlide} from '../../../lib/featured-monitor';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 // A fresh local D1 database has no tables until its first request.
@@ -117,10 +117,10 @@ export async function GET(){
   // The next successful admin save persists the new catalog version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
   const slides=linkFeaturedMonitorSlide(
-   upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),products);
-  return Response.json({...store,products,catalogVersion:CATALOG_VERSION,heroSlides:slides,heroSlidesVersion:HERO_SLIDES_VERSION},{headers:{'Cache-Control':'no-store'}});
+   upgradeComputerHeroImage(upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),store.computerHeroImageVersion),products);
+  return Response.json({...store,products,catalogVersion:CATALOG_VERSION,heroSlides:slides,heroSlidesVersion:HERO_SLIDES_VERSION,computerHeroImageVersion:COMPUTER_HERO_IMAGE_VERSION},{headers:{'Cache-Control':'no-store'}});
  }
- return Response.json({...store,heroSlides:linkFeaturedMonitorSlide(upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),store.products),heroSlidesVersion:HERO_SLIDES_VERSION},{headers:{'Cache-Control':'no-store'}});
+ return Response.json({...store,heroSlides:linkFeaturedMonitorSlide(upgradeComputerHeroImage(upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),store.computerHeroImageVersion),store.products),heroSlidesVersion:HERO_SLIDES_VERSION,computerHeroImageVersion:COMPUTER_HERO_IMAGE_VERSION},{headers:{'Cache-Control':'no-store'}});
 }
 export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});const b=await r.json() as any;
 if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin='+await token()+'; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800'}})}
