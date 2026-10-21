@@ -1275,24 +1275,51 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 }
 
 
-/* OLED slide: the ASUS photo includes the entire stand. Keep navigation on the
-   text side, instead of overlaying the monitor screen or its caption. */
-.hero-carousel.rog-oled-feature .carousel-controls{
- left:clamp(24px,16vw,270px);
- right:auto;
- bottom:13px;
+/* OLED monitor: unlike the other slides, its photo has a bounded art stage.
+   The entire monitor including its stand must fit above the carousel footer.
+   All positions are relative to this stage (also in admin preview), not to
+   the full-width banner. Do not move the shared carousel controls. */
+.hero-carousel.rog-oled-feature>.skp-slide-canvas{
+ inset:18px 4.5% auto auto;
+ width:47%;
+ height:calc(100% - 104px);
+ overflow:hidden;
+ z-index:1;
 }
-@media(max-width:700px){
- .hero-carousel.rog-oled-feature .carousel-controls{
-  left:50%;right:auto;bottom:10px;transform:translateX(-50%);
+.hero-carousel.rog-oled-feature .skp-slide-layer-image{
+ max-width:100%;max-height:100%;
+}
+.hero-carousel.rog-oled-feature .skp-slide-layer-image img{
+ width:100%;height:100%;max-height:100%;max-width:100%;
+ object-fit:contain;object-position:center;
+ filter:drop-shadow(0 17px 25px #0009);
+}
+.hero-carousel.rog-oled-feature .skp-slide-layer-caption{
+ font-size:clamp(9px,.78vw,11px);
+ font-weight:700;color:#e7d9b2;
+}
+@media(min-width:701px) and (max-width:1150px){
+ .hero-carousel.rog-oled-feature:not(.skp-slide-preview)>.skp-slide-canvas{
+  inset:16px 3.5% auto auto;width:49%;height:calc(100% - 94px)
  }
 }
-.skp-slide-preview-mobile.hero-carousel.rog-oled-feature .carousel-controls{
- left:50%;right:auto;bottom:10px;transform:translateX(-50%);
+.skp-slide-preview-tablet.hero-carousel.rog-oled-feature>.skp-slide-canvas{
+ inset:16px 3.5% auto auto;width:49%;height:calc(100% - 94px)
 }
-.skp-slide-preview-desktop.hero-carousel.rog-oled-feature .carousel-controls,
-.skp-slide-preview-tablet.hero-carousel.rog-oled-feature .carousel-controls{
- left:clamp(24px,16vw,270px);right:auto;bottom:13px;transform:none;
+@media(max-width:700px){
+ .hero-carousel.rog-oled-feature:not(.skp-slide-preview)>.skp-slide-canvas{
+  inset:auto 5% 78px 5%;
+  width:90%;height:230px;
+ }
+}
+.skp-slide-preview-mobile.hero-carousel.rog-oled-feature>.skp-slide-canvas{
+ inset:auto 5% 78px 5%;
+ width:90%;height:230px;
+}
+@media(max-width:380px){
+ .hero-carousel.rog-oled-feature:not(.skp-slide-preview)>.skp-slide-canvas{
+  bottom:76px;height:225px;
+ }
 }
 
 

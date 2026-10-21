@@ -70,7 +70,7 @@ assert.match(route,/upgradeFeaturedMonitorProducts\(products,monitor,oldVersion\
 assert.match(route,/linkFeaturedMonitorSlide\(/);
 assert.match(route,/catalogVersion:CATALOG_VERSION/);
 const hero=readFileSync(new URL('../lib/hero-slides.ts',import.meta.url),'utf8');
-assert.match(hero,/export const HERO_SLIDES_VERSION=3/,'Old saved slide layout receives the fix');
+assert.match(hero,/export const HERO_SLIDES_VERSION=4/,'Existing saved OLED slide adopts the full monitor photo and safe stage');
 const css=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
-assert.match(css,/\.hero-carousel\.rog-oled-feature \.carousel-controls/);
+assert.match(css,/\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas/,'Full monitor has a bounded art region');
 console.log('ASUS OLED tests passed: 160,000 ₽ catalog item, real manufacturer images, D1 migration, CTA and saved slide.');

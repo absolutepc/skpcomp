@@ -40,12 +40,13 @@ export const defaultHeroSlides:HeroSlide[]=[
   description:'Лимитированная серия к 20-летию ROG.\nTandem OLED · QHD 540 Гц · HD до 720 Гц.',
   primary:'Подробнее о мониторе',href:'/product/asus-rog-swift-oled-pg27aqwp-g-edition-20',
   secondary:'Все мониторы',secondHref:'/catalog/monitor',
-  layout:'rog',image:'https://dlcdnwebimgs.asus.com/gain/80E6E940-7255-4E74-AC75-E3A9B2DA0B36/w1000/h732',image2:'',caption:'ROG SWIFT OLED · EDITION 20',caption2:'',
+  layout:'rog',image:'/images/rog-oled-pg27aqwp-g-hero.png',image2:'',caption:'',caption2:'',
   layers:[{
-   id:'rog-swift-oled-monitor',image:'https://dlcdnwebimgs.asus.com/gain/80E6E940-7255-4E74-AC75-E3A9B2DA0B36/w1000/h732',caption:'PG27AQWP-G · EDITION 20',
-   x:75,y:44,width:54,height:74,captionX:75,captionY:85,
-   tablet:{x:74,y:44,width:54,height:70,captionX:74,captionY:85},
-   mobile:{x:50,y:73,width:96,height:36,captionX:50,captionY:92}
+   id:'rog-swift-oled-monitor',image:'/images/rog-oled-pg27aqwp-g-hero.png',caption:'',
+   // Coordinates are relative to the safe visual stage, never the whole banner.
+   x:50,y:50,width:100,height:96,captionX:50,captionY:95,
+   tablet:{x:50,y:50,width:100,height:96,captionX:50,captionY:95},
+   mobile:{x:50,y:50,width:100,height:94,captionX:50,captionY:95}
   }]
  }
 ];
@@ -188,13 +189,14 @@ export function setHeroBreakpointPlacement(
 }
 
 /**
- * Revision 3 gives the OLED slide an uncropped official ASUS studio photo
- * and safe positions; keep owner-uploaded images and prior slide ordering.
+ * Revision 4 replaces the unsuitable dark/oversized monitor shot with a
+ * full product cutout. All art is constrained inside a safe right-side stage;
+ * preserve owner-uploaded images, order and unrelated slides.
  * Never touch other slides; preserve the uploaded fourth-slide image and ID.
  * A store already upgraded to revision 1 may have intentionally deleted the
  * monitor slide, in which case it must not be resurrected.
  */
-export const HERO_SLIDES_VERSION=3;
+export const HERO_SLIDES_VERSION=4;
 export function upgradeRogSwiftOledSlide(slides:HeroSlide[]|undefined,version=0):HeroSlide[]{
  const current=slides??defaultHeroSlides;
  if(version>=HERO_SLIDES_VERSION)return current;
@@ -210,7 +212,8 @@ export function upgradeRogSwiftOledSlide(slides:HeroSlide[]|undefined,version=0)
  // resolution source; keep all other image URLs, including user uploads.
  const previousOfficialImages=new Set([
   'https://press.asus.com/assets/w_640%2Ch_640/4332432d-73e9-4785-b9d4-f432996f3af9/ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png',
-  'https://dlcdnwebimgs.asus.com/gain/80E6E940-7255-4E74-AC75-E3A9B2DA0B36/w1000/h732'
+  'https://dlcdnwebimgs.asus.com/gain/80E6E940-7255-4E74-AC75-E3A9B2DA0B36/w1000/h732',
+  '/images/rog-oled-pg27aqwp-g-hero.png'
  ]);
  const picture=legacyImage&&!previousOfficialImages.has(legacyImage)?legacyImage:preset.image;
  const updated:HeroSlide={...preset,id:existing?.id||preset.id,
