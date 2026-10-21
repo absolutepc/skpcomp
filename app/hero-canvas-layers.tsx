@@ -35,7 +35,7 @@ export default function HeroCanvasLayers({layers,editable=false,selectedId,onCha
  return <div className={'skp-slide-canvas'+(editable?' skp-slide-canvas-editable':'')} aria-label="Расположение изображений на слайде">
   {layers.map((layer,i)=><div key={layer.id} className="skp-slide-layer" style={{zIndex:i+1}}>
    <div className={'skp-slide-layer-image'+(selectedId===layer.id?' selected':'')}
-    style={{left:layer.x+'%',top:layer.y+'%',width:layer.width+'%',height:layer.height+'%'}}
+    style={{left:layer.x+'%',top:layer.y+'%',width:layer.width+'%',height:layer.height+'%',zIndex:i*2+1}}
     onPointerDown={event=>start(event,layer,'image')} onPointerMove={move} onPointerUp={stop} onPointerCancel={stop}
     role={editable?'button':undefined} tabIndex={editable?0:undefined}
     aria-label={editable?'Передвинуть изображение '+(i+1):undefined}
@@ -49,7 +49,7 @@ export default function HeroCanvasLayers({layers,editable=false,selectedId,onCha
     <img src={layer.image} alt={layer.caption||'Изображение '+(i+1)} draggable={false}/>
    </div>
    {layer.caption&&<div className={'skp-slide-layer-caption'+(selectedId===layer.id?' selected':'')}
-    style={{left:layer.captionX+'%',top:layer.captionY+'%'}}
+    style={{left:layer.captionX+'%',top:layer.captionY+'%',zIndex:i*2+2}}
     onPointerDown={event=>start(event,layer,'caption')} onPointerMove={move} onPointerUp={stop} onPointerCancel={stop}
     role={editable?'button':undefined} tabIndex={editable?0:undefined}
     aria-label={editable?'Передвинуть подпись '+(i+1):undefined}
