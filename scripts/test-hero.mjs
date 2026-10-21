@@ -26,13 +26,43 @@ const compiled=ts.transpileModule(source,{
 assert.equal(compiled.diagnostics?.filter(x=>x.category===ts.DiagnosticCategory.Error).length??0,0);
 const exports={};
 runInNewContext(compiled.outputText,{exports,Set,Array,Math,Number,JSON,crypto:{randomUUID:()=> '12345678-1234-4234-8234-123456789abc'}});
-const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,createHeroSlide,resolveHeroPlacement,setHeroBreakpointPlacement}=exports;
-assert.equal(defaultHeroSlides.length,3,'Three existing slides are initially preserved');
+const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,createHeroSlide,resolveHeroPlacement,setHeroBreakpointPlacement,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION}=exports;
+assert.equal(defaultHeroSlides.length,4,'Three original slides plus the curated ASUS ROG Swift OLED fourth slide');
 assert.equal(validateHeroSlides(defaultHeroSlides),true,'Existing slides validate');
 assert.equal(defaultHeroSlides[0].primary,'Перейти');
 assert.equal(defaultHeroSlides[0].href,'/product/logitech-pro-x3-superstrike-black');
 assert.equal(defaultHeroSlides[0].image,'/images/pro-x3-magenta-hd.png');
 assert.equal(defaultHeroSlides[0].image2,'/images/pro-x3-black-hd.png');
+assert.equal(defaultHeroSlides[3].id,'skp-hero-rog-swift-oled-edition-20');
+assert.equal(defaultHeroSlides[3].layout,'rog');
+assert.equal(defaultHeroSlides[3].title,'ROG SWIFT OLED\nPG27AQWP-G\nEDITION 20');
+assert.equal(defaultHeroSlides[3].highlightLine,2);
+assert.equal(defaultHeroSlides[3].href,'/catalog/monitor');
+assert.ok(defaultHeroSlides[3].image.includes('ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png'));
+assert.equal(defaultHeroSlides[3].layers.length,1);
+assert.equal(defaultHeroSlides[3].layers[0].mobile.x,50);
+assert.equal(defaultHeroSlides[3].layers[0].tablet.x,74);
+assert.equal(validateHeroSlides(defaultHeroSlides),true);
+const oldThree=defaultHeroSlides.slice(0,3);
+const upgradedFour=upgradeRogSwiftOledSlide(oldThree,0);
+assert.equal(upgradedFour.length,4,'Fourth slide appears for an existing three-slide store');
+assert.equal(upgradedFour[3].id,defaultHeroSlides[3].id);
+assert.equal(upgradedFour[2],oldThree[2],'Third ROG slide is unchanged');
+assert.equal(upgradeRogSwiftOledSlide(upgradedFour,0).length,4,'Repeated GET never duplicates slide');
+const savedPhoto='/api/media?key=slides/test-monitor/12345678-1234-4234-8234-123456789abc.webp';
+const existingMonitor={...defaultHeroSlides[3],id:'user-slide-4',
+ image:savedPhoto,layers:[{...defaultHeroSlides[3].layers[0],image:savedPhoto,
+  x:23,y:66,mobile:{x:36,y:60,width:35,height:42,captionX:36,captionY:79}}]};
+const migrated=upgradeRogSwiftOledSlide([...oldThree,existingMonitor],0);
+assert.equal(migrated.length,4,'Already uploaded fourth slide is migrated, not duplicated');
+assert.equal(migrated[3].id,existingMonitor.id,'Original slide record ID is retained');
+assert.equal(migrated[3].image,savedPhoto,'User uploaded photo is retained');
+assert.equal(migrated[3].layers[0].image,savedPhoto,'User uploaded media layer is retained');
+assert.equal(migrated[3].layers[0].x,75,'Hand-curated desktop coordinates replace broken admin positioning');
+assert.equal(migrated[3].layers[0].mobile.y,80,'Hand-curated mobile positioning is applied');
+assert.equal(upgradeRogSwiftOledSlide(oldThree,HERO_SLIDES_VERSION).length,3,
+ 'After an admin save, deleting the fourth slide remains intentional');
+
 assert.equal(validateHeroSlides([]),true,'The admin may remove all slides');
 assert.equal(validateHeroSlides(Array.from({length:MAX_HERO_SLIDES+1},(_,i)=>({...defaultHeroSlides[0],id:'slide-'+i}))),false);
 assert.equal(validateHeroSlides([...defaultHeroSlides,defaultHeroSlides[0]]),false,'Duplicate ids forbidden');
@@ -146,7 +176,7 @@ assert.match(css,/\.skp-slide-preview-mobile \.skp-slide-layer-image/,'Live mobi
 assert.match(css,/@media\(max-width:700px\)[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\) \.skp-slide-layer-image/,'Storefront selects mobile positions');
 assert.match(canvas,/onPointerMove=\{move\}/,'Canvas objects can be dragged');
 assert.match(canvas,/value\.part==='image'/,'Image and caption are positioned separately');
-assert.match(route,/heroSlides:store\.heroSlides\?\?defaultHeroSlides/,'Legacy catalog retains original slides');
+assert.match(route,/heroSlides:upgradeRogSwiftOledSlide\(store\.heroSlides,store\.heroSlidesVersion\)/,'Legacy and saved catalogs receive one-time OLED slide migration');
 assert.match(route,/validateHeroSlides\(d\.heroSlides\)/,'Server validates slider content');
 assert.match(media,/assetType'\)==='slide'/,'Slide uploads supported in R2');
 console.log('Hero tests passed: slide management, validation, defaults, image storage, responsive layout and autoplay.');

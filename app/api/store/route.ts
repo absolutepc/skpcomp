@@ -3,7 +3,7 @@ import {seed} from '../../../lib/seed';
 import {productPhotos} from '../../../lib/product-photos';
 import {buildComponentFields} from '../../../lib/build-components';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
-import {defaultHeroSlides,validateHeroSlides} from '../../../lib/hero-slides';
+import {validateHeroSlides,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION} from '../../../lib/hero-slides';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 // A fresh local D1 database has no tables until its first request.
 async function ensureShop(){await E.DB.prepare('CREATE TABLE IF NOT EXISTS shop (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)').run()}
@@ -109,9 +109,9 @@ export async function GET(){
   }
   // The next successful admin save persists this version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
-  return Response.json({...store,products,catalogVersion:7,heroSlides:store.heroSlides??defaultHeroSlides},{headers:{'Cache-Control':'no-store'}});
+  return Response.json({...store,products,catalogVersion:7,heroSlides:upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),heroSlidesVersion:HERO_SLIDES_VERSION},{headers:{'Cache-Control':'no-store'}});
  }
- return Response.json({...store,heroSlides:store.heroSlides??defaultHeroSlides},{headers:{'Cache-Control':'no-store'}});
+ return Response.json({...store,heroSlides:upgradeRogSwiftOledSlide(store.heroSlides,store.heroSlidesVersion),heroSlidesVersion:HERO_SLIDES_VERSION},{headers:{'Cache-Control':'no-store'}});
 }
 export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});const b=await r.json() as any;
 if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin='+await token()+'; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800'}})}
