@@ -1,9 +1,15 @@
 export const HERO_LAYOUTS=['logitech','premium','rog','single','duo'] as const;
 export type HeroLayout=typeof HERO_LAYOUTS[number];
+export const MAX_SLIDE_IMAGES=16;
+export type HeroLayer={
+ id:string;image:string;caption:string;
+ x:number;y:number;width:number;height:number;
+ captionX:number;captionY:number;
+};
 export type HeroSlide={
  id:string;label:string;eyebrow:string;title:string;highlightLine:number;description:string;
  primary:string;href:string;secondary:string;secondHref:string;
- layout:HeroLayout;image:string;image2:string;caption:string;caption2:string;
+ layout:HeroLayout;image:string;image2:string;caption:string;caption2:string;layers?:HeroLayer[];
 };
 export const MAX_HERO_SLIDES=12;
 export const defaultHeroSlides:HeroSlide[]=[
@@ -54,8 +60,27 @@ export function validateHeroSlides(value:unknown):value is HeroSlide[]{
   if(!(s.label as string).trim()||!(s.title as string).trim()||!(s.primary as string).trim())return false;
   if(typeof s.highlightLine!=='number'||!Number.isInteger(s.highlightLine)||s.highlightLine<0||s.highlightLine>=Math.max(1,(s.title as string).split('\n').length))return false;
   if(!isHeroLink(s.href)||!isHeroLink(s.secondHref)||!isHeroImageUrl(s.image)||!isHeroImageUrl(s.image2))return false;
-  if(!s.image)return false;
-  if(['logitech','rog','duo'].includes(s.layout as string)&&!s.image2)return false;
+  if(s.layers!==undefined){
+   if(!Array.isArray(s.layers)||s.layers.length<1||s.layers.length>MAX_SLIDE_IMAGES)return false;
+   const imageIds=new Set<string>();
+   for(const entry of s.layers){
+    if(!entry||typeof entry!=='object'||Array.isArray(entry))return false;
+    const layer=entry as Record<string,unknown>;
+    if(typeof layer.id!=='string'||!/^[a-zA-Z0-9_-]{1,90}$/.test(layer.id)||imageIds.has(layer.id))return false;
+    imageIds.add(layer.id);
+    if(typeof layer.image!=='string'||!layer.image||!isHeroImageUrl(layer.image))return false;
+    if(typeof layer.caption!=='string'||layer.caption.length>100)return false;
+    for(const name of ['x','y','captionX','captionY']){
+     if(typeof layer[name]!=='number'||!Number.isFinite(layer[name])||layer[name]<0||layer[name]>100)return false;
+    }
+    for(const name of ['width','height']){
+     if(typeof layer[name]!=='number'||!Number.isFinite(layer[name])||layer[name]<5||layer[name]>100)return false;
+    }
+   }
+  }else{
+   if(!s.image)return false;
+   if(['logitech','rog','duo'].includes(s.layout as string)&&!s.image2)return false;
+  }
  }
  return true;
 }
@@ -69,5 +94,44 @@ export function createHeroSlide():HeroSlide{
  return {id:'hero-'+crypto.randomUUID(),label:'Новый слайд',eyebrow:'НОВИНКА В SKP',
   title:'НОВЫЙ\nСЛАЙД',highlightLine:1,description:'Расскажите о вашем предложении.',
   primary:'Перейти',href:'/catalog/all',secondary:'Весь каталог',secondHref:'/catalog/all',
-  layout:'single',image:'/images/skp-slide-2.png',image2:'',caption:'',caption2:''};
+  layout:'single',image:'/images/config-reference.png',image2:'',caption:'',caption2:''};
+}
+
+const clamp=(n:number,min:number,max:number)=>Math.round(Math.min(max,Math.max(min,n))*10)/10;
+export function positionHeroLayer(layer:HeroLayer,changes:Partial<Pick<HeroLayer,'x'|'y'|'captionX'|'captionY'|'width'|'height'>>):HeroLayer{
+ const next={...layer};
+ for(const [field,value] of Object.entries(changes)){
+  if(typeof value!=='number'||!Number.isFinite(value))continue;
+  if(field==='width'||field==='height')next[field]=clamp(value,5,100);
+  else if(field==='x'||field==='y'||field==='captionX'||field==='captionY')next[field]=clamp(value,0,100);
+ }
+ return next;
+}
+/** Turn an existing preset into independently positioned assets without deleting its text or links. */
+export function enableHeroCanvas(slide:HeroSlide):HeroSlide{
+ if(slide.layers?.length)return slide;
+ const hasSecond=Boolean(slide.image2);
+ const positions=hasSecond?[65,86]:[72];
+ const urls=[slide.image,...(hasSecond?[slide.image2]:[])].filter(Boolean);
+ return {...slide,layers:urls.map((url,i)=>{
+  const x=positions[i]??72;
+  return {id:'image-'+i+'-'+slide.id,image:url,caption:i===0?slide.caption:slide.caption2,
+   x,y:48,width:hasSecond?22:39,height:hasSecond?58:72,captionX:x,captionY:85};
+ })};
+}
+export function addHeroLayer(slide:HeroSlide):HeroSlide{
+ const active=enableHeroCanvas(slide);
+ const layers=active.layers||[];
+ if(layers.length>=MAX_SLIDE_IMAGES)return active;
+ const index=layers.length;
+ const x=clamp(58+(index%4)*11,0,100);
+ const y=clamp(39+Math.floor(index/4)*10,0,100);
+ return {...active,layers:[...layers,{id:'layer-'+crypto.randomUUID(),
+  image:slide.image||'/images/skp-slide-2.png',caption:'',
+  x,y,width:22,height:48,captionX:x,captionY:clamp(y+34,0,100)}]};
+}
+export function removeHeroLayer(slide:HeroSlide,id:string):HeroSlide{
+ const list=slide.layers;
+ if(!list||list.length<=1)return slide;
+ return {...slide,layers:list.filter(image=>image.id!==id)};
 }

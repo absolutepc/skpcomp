@@ -2,6 +2,7 @@
 import {Fragment,useEffect,useRef,useState} from 'react';
 import {ArrowLeft,ArrowRight,Cpu,ShieldCheck,MessageCircle} from 'lucide-react';
 import {defaultHeroSlides,type HeroSlide} from '../lib/hero-slides';
+import HeroCanvasLayers from './hero-canvas-layers';
 
 export const HERO_AUTOPLAY_MS=5000;
 
@@ -87,7 +88,7 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
    </div>
    <div className="hero-benefits"><div><Cpu/><span>Подбор<br/>комплектующих</span></div><div><ShieldCheck/><span>Продуманная<br/>сборка</span></div><div><MessageCircle/><span>Помощь<br/>с выбором</span></div></div>
   </div>
-  <div className="hero-visual" key={'image-'+slide.id}><SlideImage slide={slide}/></div>
+  {slide.layers?.length?<HeroCanvasLayers layers={slide.layers}/>:<div className="hero-visual" key={'image-'+slide.id}><SlideImage slide={slide}/></div>}
   {slides.length>1&&<div className="carousel-controls">
    <div className="carousel-dots" aria-label="Выбор слайда">{slides.map((s,i)=><button key={s.id} className={i===activeIndex?'current':''} aria-label={`Показать слайд ${i+1}: ${s.label}`} aria-current={i===activeIndex?'true':undefined} onClick={()=>setIndex(i)}><span/></button>)}</div>
    <button className="carousel-arrow" aria-label="Предыдущий слайд" onClick={()=>move(-1)}><ArrowLeft size={19}/></button>
