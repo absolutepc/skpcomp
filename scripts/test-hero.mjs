@@ -26,13 +26,40 @@ const compiled=ts.transpileModule(source,{
 assert.equal(compiled.diagnostics?.filter(x=>x.category===ts.DiagnosticCategory.Error).length??0,0);
 const exports={};
 runInNewContext(compiled.outputText,{exports,Set,Array,Math,Number,JSON,crypto:{randomUUID:()=> '12345678-1234-4234-8234-123456789abc'}});
-const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,createHeroSlide,resolveHeroPlacement,setHeroBreakpointPlacement,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION}=exports;
+const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,createHeroSlide,resolveHeroPlacement,setHeroBreakpointPlacement,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION,upgradeComputerHeroImage,COMPUTER_HERO_IMAGE_VERSION}=exports;
 assert.equal(defaultHeroSlides.length,4,'Three original slides plus the curated ASUS ROG Swift OLED fourth slide');
 assert.equal(validateHeroSlides(defaultHeroSlides),true,'Existing slides validate');
 assert.equal(defaultHeroSlides[0].primary,'Перейти');
 assert.equal(defaultHeroSlides[0].href,'/product/logitech-pro-x3-superstrike-black');
 assert.equal(defaultHeroSlides[0].image,'/images/pro-x3-magenta-hd.png');
 assert.equal(defaultHeroSlides[0].image2,'/images/pro-x3-black-hd.png');
+
+assert.equal(defaultHeroSlides[1].id,'skp-hero-computer');
+assert.equal(defaultHeroSlides[1].image,'/images/skp-build-hero.png','The third displayed slide uses owner-uploaded PC image');
+assert.equal(COMPUTER_HERO_IMAGE_VERSION,1);
+const submittedPC=readFileSync(new URL('../public/images/skp-build-hero.png',import.meta.url));
+const {createHash}=await import('node:crypto');
+assert.equal(createHash('sha256').update(submittedPC).digest('hex'),
+ '9cadaceaa89379aca18e593627a8a1d5dc63f4c3560895bafd0cac2279c9d5ad',
+ 'Self-hosted image must match the exact uploaded original');
+assert.equal(submittedPC.readUInt32BE(16),800,'Image width remains 800px');
+assert.equal(submittedPC.readUInt32BE(20),800,'Image height remains 800px');
+const oldComputer={...defaultHeroSlides[1],image:'/images/skp-slide-2.png'};
+const customComputer={...defaultHeroSlides[1],image:'/api/media?key=slides/pc/12345678-1234-4234-8234-123456789abc.webp'};
+const unchangedOther=defaultHeroSlides[0];
+const upgradedPC=upgradeComputerHeroImage([unchangedOther,oldComputer],0);
+assert.equal(upgradedPC[0],unchangedOther,'Other slides remain untouched');
+assert.equal(upgradedPC[1].image,'/images/skp-build-hero.png','Existing D1 slide receives the requested artwork');
+assert.equal(upgradedPC[1].id,oldComputer.id,'Saved slide ID remains intact');
+assert.equal(upgradeComputerHeroImage([customComputer],0)[0].image,customComputer.image,
+ 'Never replace a custom uploaded photo');
+assert.equal(upgradeComputerHeroImage([oldComputer],COMPUTER_HERO_IMAGE_VERSION)[0],oldComputer,
+ 'Owner can change the picture again without future automatic resets');
+assert.match(route,/computerHeroImageVersion:COMPUTER_HERO_IMAGE_VERSION/,'Server marks this update as applied');
+assert.match(route,/upgradeComputerHeroImage\(upgradeRogSwiftOledSlide/,'Stored D1 slides use the image upgrade');
+assert.match(css,/\.hero-carousel \.skp-clean-computer-slide \.second-slide-frame \.second-slide-photo\{[\s\S]*?object-fit:contain;[\s\S]*?transform:scale\(1\.08\)/,
+ 'The new PC image uses restrained zoom and object containment');
+
 assert.equal(defaultHeroSlides[3].id,'skp-hero-rog-swift-oled-edition-20');
 assert.equal(defaultHeroSlides[3].layout,'rog');
 assert.equal(defaultHeroSlides[3].title,'ROG SWIFT OLED\nPG27AQWP-G\nEDITION 20');
