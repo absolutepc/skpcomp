@@ -117,3 +117,18 @@ export function candidateErrors(step:string,product:Product,selected:BuildSelect
  const next={...selected,[step]:product.id};
  return analyzeBuild(next,products).issues.filter(issue=>issue.severity==='error'&&issue.slots.includes(step));
 }
+
+/** Split already filtered/sorted product options without changing their relative order.
+ * Existing selections and unsupported products stay visible in the optional incompatible group.
+ */
+export function groupCandidateOptions(
+ step:string,options:ReadonlyArray<Product>,selected:BuildSelection,products:Product[]
+):{compatible:Array<{product:Product;issues:BuildIssue[]}>;incompatible:Array<{product:Product;issues:BuildIssue[]}>}{
+ const compatible:Array<{product:Product;issues:BuildIssue[]}>=[];
+ const incompatible:Array<{product:Product;issues:BuildIssue[]}>=[];
+ for(const product of options){
+  const issues=candidateErrors(step,product,selected,products);
+  (issues.length?incompatible:compatible).push({product,issues});
+ }
+ return {compatible,incompatible};
+}
