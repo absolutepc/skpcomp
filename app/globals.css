@@ -924,3 +924,210 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .skp-fps-effect-summary{padding:10px;gap:7px 11px}
  .skp-fps-effect-summary small{margin-left:0;flex-basis:100%}
 }
+
+/*
+ * Shared SKP hero contract: one height per viewport for every slide, including
+ * future slides. Text and art are constrained to these fixed slide dimensions.
+ */
+.hero-carousel,
+.hero-carousel.mouse-launch,
+.hero-carousel.rog-anniversary{
+ --skp-hero-height:560px;
+ height:var(--skp-hero-height);
+ min-height:var(--skp-hero-height);
+ max-height:var(--skp-hero-height);
+ grid-template-columns:48% 52%;
+ grid-template-rows:minmax(0,1fr);
+ overflow:hidden;
+}
+.hero-carousel .hero-copy,
+.hero-carousel.mouse-launch .hero-copy,
+.hero-carousel.rog-anniversary .hero-copy{
+ height:100%;
+ min-height:0;
+ align-self:stretch;
+ display:flex;
+ flex-direction:column;
+ align-items:flex-start;
+ justify-content:center;
+ padding:40px 15px 72px 20px;
+}
+.hero-carousel .hero-copy>.eyebrow{flex:0 0 auto}
+.hero-carousel .hero-copy>.hero-buttons,
+.hero-carousel .hero-copy>.hero-benefits{flex-shrink:0}
+.hero-carousel .hero-visual,
+.hero-carousel.mouse-launch .hero-visual,
+.hero-carousel.rog-anniversary .hero-visual{
+ height:100%;
+ min-height:0;
+ align-self:stretch;
+}
+.hero-carousel.mouse-launch{
+ background:radial-gradient(ellipse at 78% 44%,rgba(238,199,41,.14),transparent 52%),
+ linear-gradient(107deg,#050505 6%,#100f0a 73%,#070705);
+ border-bottom-color:#34351f;
+}
+.hero-carousel.mouse-launch:before{display:block}
+.hero-carousel.mouse-launch .hero-copy>.eyebrow{
+ display:flex;
+ width:auto;
+ padding:0;
+ margin-bottom:17px;
+ border:0;
+ background:none;
+ color:#e4ca83;
+ font-size:10px;
+ font-weight:700;
+ letter-spacing:1.35px;
+}
+.hero-carousel.mouse-launch .hero-copy>.eyebrow:before{display:none}
+.hero-carousel.mouse-launch h1,
+.hero-carousel.rog-anniversary .hero-copy h1{
+ font-size:clamp(30px,3.65vw,54px);
+ letter-spacing:-1.6px;
+ line-height:1.11;
+ max-width:630px;
+ margin-bottom:20px;
+}
+.hero-carousel.mouse-launch h1 span{color:#ffe500}
+.hero-carousel.mouse-launch .hero-copy>p,
+.hero-carousel.rog-anniversary .hero-copy>p{
+ max-width:615px;
+ color:#d7d4ca;
+ font-size:clamp(11px,.9vw,13px);
+ line-height:1.85;
+}
+.hero-carousel.mouse-launch .hero-buttons{margin-top:22px;gap:16px}
+.hero-carousel.mouse-launch .hero-buttons .button{min-height:44px}
+.hero-carousel.mouse-launch .hero-buttons .outline{background:#080a0a77;border-color:#86897d}
+.hero-carousel.mouse-launch .hero-benefits{margin-top:34px}
+.hero-carousel.mouse-launch .hero-visual{
+ margin:0 -5% 0 -3%;
+ background:none;
+ overflow:visible;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+.hero-carousel .mouse-duo-showcase{
+ position:relative;
+ isolation:isolate;
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ align-items:center;
+ gap:clamp(12px,2vw,36px);
+ width:100%;
+ height:100%;
+ min-height:0;
+ padding:45px 26px 47px 0;
+}
+.hero-carousel .mouse-duo-showcase::before{
+ content:"";
+ position:absolute;
+ z-index:-1;
+ inset:12% 0 12% 2%;
+ pointer-events:none;
+ background:radial-gradient(ellipse at 54% 48%,rgba(248,200,36,.16),rgba(109,72,4,.07) 47%,transparent 73%);
+ filter:blur(25px);
+}
+.hero-carousel .mouse-duo-product{
+ position:relative;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ height:100%;
+ min-width:0;
+}
+.hero-carousel .mouse-duo-photo{
+ display:block;
+ height:min(78%,350px);
+ width:100%;
+ max-width:250px;
+ overflow:visible;
+ filter:drop-shadow(0 26px 32px rgba(0,0,0,.56));
+}
+.hero-carousel .mouse-duo-magenta{transform:rotate(-10deg) translateY(-3%)}
+.hero-carousel .mouse-duo-black{transform:rotate(9deg) translateY(-3%)}
+.hero-carousel .mouse-duo-caption{
+ position:absolute;
+ z-index:2;
+ bottom:10%;
+ left:0;
+ right:0;
+ text-align:center;
+ color:#d7c99e;
+ font-size:clamp(8px,.72vw,10px);
+ font-weight:700;
+ letter-spacing:1.05px;
+ text-shadow:0 2px 12px #000;
+ white-space:nowrap;
+}
+@media(max-width:1150px) and (min-width:701px){
+ .hero-carousel,.hero-carousel.mouse-launch,.hero-carousel.rog-anniversary{
+  --skp-hero-height:500px;
+ }
+ .hero-carousel .hero-copy,.hero-carousel.mouse-launch .hero-copy,
+ .hero-carousel.rog-anniversary .hero-copy{
+  padding:30px 10px 64px 10px;
+ }
+ .hero-carousel.mouse-launch h1,.hero-carousel.rog-anniversary .hero-copy h1{
+  font-size:clamp(28px,3.2vw,43px);
+ }
+ .hero-carousel .mouse-duo-showcase{padding:30px 15px 45px 0;gap:8px}
+ .hero-carousel .mouse-duo-photo{height:min(77%,305px)}
+ .hero-carousel .mouse-duo-caption{font-size:8px;letter-spacing:.4px}
+}
+@media(max-width:700px){
+ .hero-carousel,.hero-carousel.mouse-launch,.hero-carousel.rog-anniversary{
+  --skp-hero-height:665px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:minmax(0,1fr) 270px;
+  padding-bottom:0;
+ }
+ .hero-carousel .hero-copy,.hero-carousel.mouse-launch .hero-copy,
+ .hero-carousel.rog-anniversary .hero-copy{
+  padding:24px 0 10px;
+  min-height:0;
+  height:100%;
+  justify-content:center;
+ }
+ .hero-carousel.mouse-launch .hero-copy>.eyebrow{font-size:8px;margin-bottom:15px}
+ .hero-carousel.mouse-launch h1,.hero-carousel.rog-anniversary .hero-copy h1{
+  font-size:clamp(29px,8vw,40px);
+  margin-bottom:13px;
+  letter-spacing:-1.1px;
+  line-height:1.13;
+ }
+ .hero-carousel.mouse-launch .hero-copy>p,.hero-carousel.rog-anniversary .hero-copy>p{
+  font-size:11px;line-height:1.6;
+ }
+ .hero-carousel .hero-copy>.hero-buttons{margin-top:17px;gap:10px;flex-wrap:wrap}
+ .hero-carousel .hero-copy>.hero-benefits{margin-top:20px;gap:13px;flex-wrap:wrap}
+ .hero-carousel .hero-benefits>div{gap:7px;font-size:8px}
+ .hero-carousel .hero-benefits svg{width:19px;height:19px}
+ .hero-carousel .hero-visual,.hero-carousel.mouse-launch .hero-visual,
+ .hero-carousel.rog-anniversary .hero-visual{
+  width:calc(100% + 10%);
+  height:270px;
+  min-height:0;
+  margin:0 -5%;
+  align-self:stretch;
+  overflow:hidden;
+ }
+ .hero-carousel .mouse-duo-showcase{min-height:0;height:100%;gap:5px;padding:15px 12px 34px}
+ .hero-carousel .mouse-duo-photo{height:min(86%,225px);max-width:155px}
+ .hero-carousel .mouse-duo-caption{bottom:5%;font-size:7px;letter-spacing:0;white-space:normal}
+ .hero-carousel .rog-duo-showcase{min-height:0;height:100%}
+ .hero-carousel .second-slide-premium{min-height:0;height:100%}
+ .hero-carousel .carousel-controls{bottom:12px}
+}
+@media(max-width:380px){
+ .hero-carousel,.hero-carousel.mouse-launch,.hero-carousel.rog-anniversary{
+  --skp-hero-height:700px;
+  grid-template-rows:minmax(0,1fr) 265px;
+ }
+ .hero-carousel .hero-copy>.hero-benefits{gap:10px}
+ .hero-carousel .hero-visual,.hero-carousel.mouse-launch .hero-visual,
+ .hero-carousel.rog-anniversary .hero-visual{height:265px}
+}
