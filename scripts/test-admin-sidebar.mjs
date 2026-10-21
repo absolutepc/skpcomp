@@ -73,6 +73,16 @@ assert.match(products,/onClick=\{\(\)=>onAdd\(newCategory\)\}/,'New products inh
 assert.match(css,/position:sticky/,'Desktop sidebar stays visible while scrolling');
 assert.match(css,/@media\(max-width:700px\)/,'Mobile navigation adapts');
 assert.match(css,/overflow-x:auto/,'Mobile sidebar scrolls horizontally');
+assert.match(css,/grid-template-columns:230px minmax\(0,1fr\)/,'Sidebar width does not depend on active panel content');
+assert.match(css,/\.skp-admin-menu\{display:grid;grid-template-columns:minmax\(0,1fr\)/,'All desktop menu rows use one full-width column');
+assert.match(css,/\.skp-admin-menu>\.skp-admin-tab\{width:100%;max-width:100%;min-width:0;box-sizing:border-box/,'Every desktop button stretches to sidebar width');
+assert.match(css,/grid-template-columns:19px minmax\(0,1fr\) 26px 16px/,'Icons, text, badge and chevron have stable columns');
+assert.match(css,/\.skp-admin-tab-count\.placeholder\{visibility:hidden\}/,'Invisible count still reserves badge space');
+assert.match(css,/\.skp-admin-tab\.active \.skp-admin-tab-chevron\{visibility:visible\}/,'Active arrow does not change button geometry');
+assert.match(css,/\.skp-admin-menu>\.skp-admin-tab\{flex:0 0 172px;width:172px/,'All mobile tabs share a uniform width');
+assert.match(sidebar,/className="skp-admin-tab-count placeholder" aria-hidden="true"/,'Badge column exists for all sections');
+assert.match(sidebar,/<ChevronRight className="skp-admin-tab-chevron" size=\{16\} aria-hidden="true"\/>/,'Arrow column exists for all sections');
+
 assert.match(categoryCss,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/,'Desktop subcategories use an icon grid');
 assert.match(categoryCss,/@media\(max-width:550px\)/,'Small-screen list is adapted');
 console.log('Admin tests passed: seven sections, 16 icon subcategories, laptops, image previews, clean header and preserved editors.');
