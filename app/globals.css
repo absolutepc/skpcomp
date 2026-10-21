@@ -1364,3 +1364,48 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  height:78px;background:linear-gradient(to top,#080a08e8 0%,#080a0896 45%,transparent 100%)
 }
 @media(prefers-reduced-motion:reduce){.category .skp-category-photo{transition:none}}
+
+
+/* SKP homepage hero refinement — shared navigation, clean computer
+   presentation and a restrained scale increase for the OLED monitor. */
+
+/* All slide arrows and pagination are centered on the same baseline.
+   Override the previous desktop right alignment and mobile right:50%. */
+.hero-carousel:not(.skp-slide-preview)>.carousel-controls{
+ left:50%;
+ right:auto;
+ bottom:16px;
+ transform:translateX(-50%);
+}
+@media(max-width:700px){
+ .hero-carousel:not(.skp-slide-preview)>.carousel-controls{
+  left:50%;right:auto;bottom:12px;transform:translateX(-50%);
+ }
+}
+
+/* Increase the OLED product by 12%, keeping its previously established
+   vertical centre; the stage is overflow-visible and the art is contained. */
+.hero-carousel.rog-oled-feature>.skp-slide-canvas .skp-slide-layer-image{
+ transform:translate(-50%,-50%) scale(1.12);
+ transform-origin:center;
+}
+@media(max-width:700px){
+ .hero-carousel.rog-oled-feature:not(.skp-slide-preview)>.skp-slide-canvas .skp-slide-layer-image{
+  transform:translate(-50%,-50%) scale(1.1);
+ }
+}
+.skp-slide-preview-mobile.hero-carousel.rog-oled-feature>.skp-slide-canvas .skp-slide-layer-image{
+ transform:translate(-50%,-50%) scale(1.1);
+}
+
+/* SKP computer hero: photograph only, without ornamental double frames,
+   their corner marks or overlaid promotional badges. */
+.hero-carousel .skp-clean-computer-slide .second-slide-frame{
+ border:0;
+ border-radius:0;
+ background:none;
+ box-shadow:none;
+}
+.hero-carousel .skp-clean-computer-slide .second-slide-frame::before{
+ content:none;
+}
