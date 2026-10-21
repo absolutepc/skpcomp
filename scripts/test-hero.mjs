@@ -5,11 +5,12 @@ import ts from 'typescript';
 
 const hero=readFileSync(new URL('../app/hero-slider.tsx',import.meta.url),'utf8');
 const editor=readFileSync(new URL('../app/admin-hero-slides.tsx',import.meta.url),'utf8');
+const canvas=readFileSync(new URL('../app/hero-canvas-layers.tsx',import.meta.url),'utf8');
 const shop=readFileSync(new URL('../app/shop.tsx',import.meta.url),'utf8');
 const route=readFileSync(new URL('../app/api/store/route.ts',import.meta.url),'utf8');
 const media=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf8');
 const css=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
-for(const [name,source] of [['hero',hero],['admin editor',editor]]){
+for(const [name,source] of [['hero',hero],['admin editor',editor],['layer renderer',canvas]]){
  const result=ts.transpileModule(source,{
   compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX},
   fileName:name+'.tsx',reportDiagnostics:true
@@ -23,8 +24,8 @@ const compiled=ts.transpileModule(source,{
 });
 assert.equal(compiled.diagnostics?.filter(x=>x.category===ts.DiagnosticCategory.Error).length??0,0);
 const exports={};
-runInNewContext(compiled.outputText,{exports,Set,Array,Math,Number,JSON});
-const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES}=exports;
+runInNewContext(compiled.outputText,{exports,Set,Array,Math,Number,JSON,crypto:{randomUUID:()=> '12345678-1234-4234-8234-123456789abc'}});
+const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,createHeroSlide}=exports;
 assert.equal(defaultHeroSlides.length,3,'Three existing slides are initially preserved');
 assert.equal(validateHeroSlides(defaultHeroSlides),true,'Existing slides validate');
 assert.equal(defaultHeroSlides[0].primary,'Перейти');
@@ -48,6 +49,36 @@ assert.equal(moveHeroSlide(defaultHeroSlides,0,1)[0].id,defaultHeroSlides[1].id,
 assert.equal(moveHeroSlide(defaultHeroSlides,2,-1)[1].id,defaultHeroSlides[2].id,'Move up');
 assert.equal(moveHeroSlide(defaultHeroSlides,0,-1)[0].id,defaultHeroSlides[0].id,'Out-of-bounds move is safe');
 assert.equal(defaultHeroSlides[0].id,'skp-hero-logitech','Reorder does not mutate original input');
+assert.equal(MAX_SLIDE_IMAGES,16,'Allow up to 16 independent images per slide');
+const upgraded=enableHeroCanvas(defaultHeroSlides[0]);
+assert.equal(upgraded.layers.length,2,'Original two-photo Logitech slide converts with both images');
+assert.equal(upgraded.layers[0].caption,'MAGENTA ECLIPSE');
+assert.equal(upgraded.layers[1].caption,'MIDNIGHT BLACK');
+assert.equal(upgraded.layers[0].image,defaultHeroSlides[0].image);
+assert.equal(validateHeroSlides([upgraded]),true,'Backward-compatible converted slide valid');
+assert.equal(enableHeroCanvas(upgraded),upgraded,'Enabling twice should not discard custom positions');
+const placed=positionHeroLayer(upgraded.layers[0],{x:111,y:-25,captionX:30.52,captionY:200,width:4,height:999});
+assert.equal(placed.x,100);assert.equal(placed.y,0);
+assert.equal(placed.captionX,30.5);assert.equal(placed.captionY,100);
+assert.equal(placed.width,5);assert.equal(placed.height,100);
+assert.equal(validateHeroSlides([{...upgraded,layers:[{...placed,x:120}]}]),false);
+assert.equal(validateHeroSlides([{...upgraded,layers:[{...placed,captionY:NaN}]}]),false);
+assert.equal(validateHeroSlides([{...upgraded,layers:[{...placed,image:'javascript:bad'}]}]),false);
+assert.equal(validateHeroSlides([{...upgraded,layers:[placed,placed]}]),false,'Duplicate layer IDs are forbidden');
+assert.equal(validateHeroSlides([{...upgraded,layers:[]}]),false,'A composed slide needs at least one image');
+const newSlide=enableHeroCanvas(createHeroSlide());
+assert.equal(newSlide.layers.length,1);
+assert.equal(validateHeroSlides([newSlide]),true);
+assert.equal(newSlide.layers[0].image,'/images/config-reference.png');
+const extended=addHeroLayer(newSlide);
+assert.equal(extended.layers.length,2);
+assert.equal(validateHeroSlides([extended]),true);
+assert.equal(removeHeroLayer(extended,extended.layers[0].id).layers.length,1);
+assert.equal(removeHeroLayer(newSlide,newSlide.layers[0].id).layers.length,1,'Last image cannot be removed');
+const atLimit={...newSlide,layers:Array.from({length:MAX_SLIDE_IMAGES},(_,i)=>({...newSlide.layers[0],id:'asset-'+i}))};
+assert.equal(validateHeroSlides([atLimit]),true);
+assert.equal(addHeroLayer(atLimit).layers.length,MAX_SLIDE_IMAGES);
+assert.equal(validateHeroSlides([{...atLimit,layers:[...atLimit.layers,{...atLimit.layers[0],id:'overflow'}]}]),false);
 
 assert.match(hero,/export const HERO_AUTOPLAY_MS=5000\b/);
 assert.match(hero,/window\.setTimeout\(\(\)=>setIndex\(current=>\(current\+1\)%slides\.length\),HERO_AUTOPLAY_MS\)/);
@@ -62,6 +93,7 @@ assert.match(hero,/slide\.description\.split/,'Description editable');
 assert.match(hero,/slide\.layout==='logitech'/,'Existing Logitech custom layout maintained');
 assert.match(hero,/slide\.layout==='rog'/,'Existing ROG custom layout maintained');
 assert.match(hero,/slide\.layout==='premium'/,'Existing premium layout maintained');
+assert.match(hero,/<HeroCanvasLayers layers=\{slide\.layers\}/,'Live positioned layers use shared canvas renderer');
 assert.match(css,/Shared SKP hero contract: one height per viewport/);
 for(const h of ['560px','500px','665px','700px'])assert.ok(css.includes('--skp-hero-height:'+h));
 assert.match(css,/height:var\(--skp-hero-height\);\s*min-height:var\(--skp-hero-height\);\s*max-height:var\(--skp-hero-height\);/);
@@ -73,6 +105,17 @@ assert.match(editor,/moveHeroSlide\(draft,index,1\)/);
 assert.match(editor,/draft\.filter\(s=>s\.id!==id\)/,'Delete slide');
 assert.match(editor,/createHeroSlide\(\)/,'Add slide');
 assert.match(editor,/validateHeroSlides\(draft\)/,'Check fields before saving');
+assert.match(editor,/enableHeroCanvas\(slide\)/,'Existing slides can enable manual positioning');
+assert.match(editor,/addHeroLayer\(slide\)/,'Multiple images are supported');
+assert.match(editor,/removeHeroLayer\(slide,layer\.id\)/,'Individual image removal');
+assert.match(editor,/skp-hero-live-preview/,'Preview renders edited slide');
+assert.match(editor,/previewMode==='mobile'/,'Responsive preview mode');
+assert.match(editor,/type="range"/,'Live positioning controls');
+assert.match(editor,/captionX/,'Caption has independent horizontal coordinate');
+assert.match(editor,/captionY/,'Caption has independent vertical coordinate');
+assert.match(canvas,/setPointerCapture\(event\.pointerId\)/,'Drag gestures capture pointer');
+assert.match(canvas,/onPointerMove=\{move\}/,'Canvas objects can be dragged');
+assert.match(canvas,/value\.part==='image'/,'Image and caption are positioned separately');
 assert.match(route,/heroSlides:store\.heroSlides\?\?defaultHeroSlides/,'Legacy catalog retains original slides');
 assert.match(route,/validateHeroSlides\(d\.heroSlides\)/,'Server validates slider content');
 assert.match(media,/assetType'\)==='slide'/,'Slide uploads supported in R2');
