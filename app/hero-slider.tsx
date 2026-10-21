@@ -126,8 +126,8 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
   onTouchEnd={e=>{if(touch.current!==null){const distance=e.changedTouches[0].clientX-touch.current;if(Math.abs(distance)>55)move(distance<0?1:-1);touch.current=null}}}>
   <HeroSlideContent slide={slide} nav={nav}/>
   {slides.length>1&&<div className="carousel-controls">
-   <div className="carousel-dots" aria-label="Выбор слайда">{slides.map((s,i)=><button key={s.id} className={i===activeIndex?'current':''} aria-label={`Показать слайд ${i+1}: ${s.label}`} aria-current={i===activeIndex?'true':undefined} onClick={()=>setIndex(i)}><span/></button>)}</div>
    <button className="carousel-arrow" aria-label="Предыдущий слайд" onClick={()=>move(-1)}><ArrowLeft size={19}/></button>
+   <div className="carousel-dots" role="group" aria-label="Выбор слайда">{slides.map((s,i)=><button key={s.id} className={i===activeIndex?'current':''} aria-label={`Показать слайд ${i+1}: ${s.label}`} aria-current={i===activeIndex?'true':undefined} onClick={()=>setIndex(i)}><span/></button>)}</div>
    <button className="carousel-arrow" aria-label="Следующий слайд" onClick={()=>move(1)}><ArrowRight size={19}/></button>
   </div>}
   <span className="visually-hidden" role="status" aria-live="polite">Слайд {activeIndex+1} из {slides.length}: {slide.label}</span>

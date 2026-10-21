@@ -231,6 +231,35 @@ assert.match(hero,/onMouseEnter=\{\(\)=>setInteractionPaused\(true\)\}/);
 assert.match(hero,/visibilitychange/);
 assert.match(hero,/if\(!slide\)return null/,'All slides may be deleted safely');
 assert.match(hero,/slides\.map\(\(s,i\)=>/,'Indicator count adapts to new slides');
+
+const controlsMarkup=hero.slice(hero.indexOf('{slides.length>1&&<div className="carousel-controls">'));
+assert.ok(controlsMarkup.indexOf('aria-label="Предыдущий слайд"')>=0);
+const previousPosition=controlsMarkup.indexOf('aria-label="Предыдущий слайд"');
+const indicatorsPosition=controlsMarkup.indexOf('className="carousel-dots"');
+const nextPosition=controlsMarkup.indexOf('aria-label="Следующий слайд"');
+assert.ok(previousPosition<indicatorsPosition&&indicatorsPosition<nextPosition,
+ 'Every slide must show previous arrow to the LEFT of dots and next arrow to the RIGHT');
+assert.match(controlsMarkup,/className="carousel-dots" role="group" aria-label="Выбор слайда"/,
+ 'The central pagination group is accessible');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots\{[\s\S]*?border-radius:999px;[\s\S]*?background:#090d09d9;/,
+ 'Pagination dots are enclosed in their own subtle rounded block');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?left:50%;[\s\S]*?transform:translateX\(-50%\)/,
+ 'The arrow/dots/arrow navigation is centered for ALL slides');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 39px;/,
+ 'Arrows are separate, equally-sized controls on both sides');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots button\{[\s\S]*?place-items:center;/,
+ 'Dots remain centered within their shared control block');
+assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots button\{[\s\S]*?clamp\(16px,5\.4vw,25px\)/,
+ 'Navigation adapts without overflow on mobile devices');
+assert.match(css,/\.hero-carousel \.skp-clean-computer-slide\{[\s\S]*?padding:36px 17px 67px 12px;/,
+ 'The owner-supplied PC slide has balanced spacing like the other slides');
+assert.match(css,/\.hero-carousel \.skp-clean-computer-slide \.second-slide-glow\{[\s\S]*?opacity:\.58;/,
+ 'PC image glow is toned down to match other product art');
+assert.match(css,/\.hero-carousel \.skp-clean-computer-slide \.second-slide-frame\{[\s\S]*?width:min\(100%,620px\);[\s\S]*?height:min\(100%,435px\);/,
+ 'Computer art stays inside a centered, bounded display area');
+assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel \.skp-clean-computer-slide\{[\s\S]*?padding:16px 10px 24px;/,
+ 'PC slide uses compact mobile spacing while keeping the same slide height');
+
 assert.match(hero,/key=\{s\.id\}/,'Repeated destinations can have distinct slides');
 assert.match(hero,/slide\.title\.split/,'Headline editable');
 assert.match(hero,/slide\.description\.split/,'Description editable');
