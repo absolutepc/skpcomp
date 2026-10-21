@@ -84,5 +84,7 @@ assert.match(sidebar,/className="skp-admin-tab-count placeholder" aria-hidden="t
 assert.match(sidebar,/<ChevronRight className="skp-admin-tab-chevron" size=\{16\} aria-hidden="true"\/>/,'Arrow column exists for all sections');
 
 assert.match(categoryCss,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/,'Desktop subcategories use an icon grid');
+assert.match(categoryCss,/\.skp-admin-products > section\.skp-admin-category-group\{[\s\S]*?margin:0 0 22px;[\s\S]*?padding:0;/,'Admin category groups do not inherit storefront section padding');
+assert.match(categoryCss,/\.skp-admin-products > section\.skp-admin-category-group:last-child\{margin-bottom:0\}/,'Last category group has no trailing gap');
 assert.match(categoryCss,/@media\(max-width:550px\)/,'Small-screen list is adapted');
 console.log('Admin tests passed: seven sections, 16 icon subcategories, laptops, image previews, clean header and preserved editors.');
