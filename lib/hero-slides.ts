@@ -198,7 +198,7 @@ export function upgradeRogSwiftOledSlide(slides:HeroSlide[]|undefined,version=0)
  const current=slides??defaultHeroSlides;
  if(version>=HERO_SLIDES_VERSION)return current;
  const preset=defaultHeroSlides.find(s=>s.id==='skp-hero-rog-swift-oled-edition-20')!;
- const existing=current.find(s=>s.id===preset.id||/PG27AQWP[\\s-]?G/i.test(s.label+' '+s.title));
+ const existing=current.find(s=>s.id===preset.id||/PG27AQWP[\s-]?G/i.test(s.label+' '+s.title));
  if(!existing&&version>=1)return current; // Respect a deliberate deletion after v1.
  if(!existing&&current.length>=MAX_HERO_SLIDES)return current;
  const legacyImage=existing?.layers?.find(layer=>layer.image&&
