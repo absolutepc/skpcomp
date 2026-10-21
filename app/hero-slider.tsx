@@ -32,17 +32,26 @@ function SlideImage({slide}:{slide:HeroSlide}){
    <span className="rog-duo-caption">{slide.caption2}</span>
   </div>
  </div>;
- if(slide.layout==='premium')return <div className="second-slide-premium" aria-label={slide.label}>
-  <div className="second-slide-glow" aria-hidden="true"/>
-  <div className="second-slide-frame">
-   <span className="second-slide-corner second-slide-corner-tl" aria-hidden="true"/>
-   <span className="second-slide-corner second-slide-corner-br" aria-hidden="true"/>
-   <img className="second-slide-photo" src={slide.image} alt={slide.label} onError={e=>{const target=e.currentTarget;if(!target.dataset.fallback){target.dataset.fallback='1';target.src='/images/skp-reference.png';target.classList.add('second-slide-fallback')}}}/>
-  </div>
-  <div className="second-slide-badge"><span className="second-slide-badge-dot" aria-hidden="true"/> PREMIUM BUILD</div>
-  <span className="second-slide-top-note">CUSTOM WATERCOOLING <span aria-hidden="true">/</span> SKP</span>
-  <div className="second-slide-chips" aria-label="Особенности сборки"><span>RTX GRAPHICS</span><span>LIQUID COOLING</span><span>HIGH-END BUILD</span></div>
- </div>;
+ if(slide.layout==='premium'){
+  const cleanComputer=slide.id==='skp-hero-computer';
+  return <div className={'second-slide-premium'+(cleanComputer?' skp-clean-computer-slide':'')} aria-label={slide.label}>
+   <div className="second-slide-glow" aria-hidden="true"/>
+   <div className="second-slide-frame">
+    {!cleanComputer&&<><span className="second-slide-corner second-slide-corner-tl" aria-hidden="true"/>
+     <span className="second-slide-corner second-slide-corner-br" aria-hidden="true"/></>}
+    <img className="second-slide-photo" src={slide.image} alt={slide.label}
+     onError={e=>{const target=e.currentTarget;if(!target.dataset.fallback){
+      target.dataset.fallback='1';target.src='/images/skp-reference.png';
+      target.classList.add('second-slide-fallback');
+     }}}/>
+   </div>
+   {!cleanComputer&&<>
+    <div className="second-slide-badge"><span className="second-slide-badge-dot" aria-hidden="true"/> PREMIUM BUILD</div>
+    <span className="second-slide-top-note">CUSTOM WATERCOOLING <span aria-hidden="true">/</span> SKP</span>
+    <div className="second-slide-chips" aria-label="Особенности сборки"><span>RTX GRAPHICS</span><span>LIQUID COOLING</span><span>HIGH-END BUILD</span></div>
+   </>}
+  </div>;
+ }
  if(slide.layout==='duo')return <div className="skp-hero-image-duo" aria-label={slide.label}>
   <figure><img src={slide.image} alt={slide.caption||slide.label}/>{slide.caption&&<figcaption>{slide.caption}</figcaption>}</figure>
   <figure><img src={slide.image2} alt={slide.caption2||slide.label}/>{slide.caption2&&<figcaption>{slide.caption2}</figcaption>}</figure>
