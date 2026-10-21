@@ -77,6 +77,28 @@ assert.equal(upgradeRogSwiftOledSlide(oldThree,1).length,3,'Revision 2 respects 
 assert.equal(upgradeRogSwiftOledSlide(migrated,HERO_SLIDES_VERSION),migrated,'Latest saved settings are never overwritten');
 assert.ok(defaultHeroSlides[3].layers[0].height<=100,'Monitor fits within a separately bounded stage');
 assert.ok(!css.includes('hero-carousel.rog-oled-feature .carousel-controls{'),'Carousel arrows keep the original shared positioning');
+
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?left:50%;[\s\S]*?right:auto;[\s\S]*?transform:translateX\(-50%\)/,
+ 'Carousel navigation is horizontally centered for every real slide');
+assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{/,
+ 'Carousel navigation stays centered on narrow screens');
+assert.match(css,/\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas \.skp-slide-layer-image\{[\s\S]*?scale\(1\.12\)/,
+ 'OLED device increases by twelve percent while preserving centering');
+assert.match(css,/\.skp-slide-preview-mobile\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas \.skp-slide-layer-image\{[\s\S]*?scale\(1\.1\)/,
+ 'The exact mobile preview uses a safe ten percent scale increase');
+assert.match(hero,/const cleanComputer=slide\.id==='skp-hero-computer'/,
+ 'Remove decorations only from the intended SKP computer slide');
+assert.match(hero,/cleanComputer\?' skp-clean-computer-slide':'/,
+ 'Computer hero has a dedicated style scope');
+assert.match(hero,/!cleanComputer&&<><span className="second-slide-corner/,
+ 'Other premium-layout slides may retain their corner decorations');
+assert.match(hero,/!cleanComputer&&<>[\s\S]*?second-slide-badge[\s\S]*?second-slide-top-note[\s\S]*?second-slide-chips/,
+ 'All premium badges, top notes and feature labels are absent from the SKP computer slide');
+assert.match(css,/\.hero-carousel \.skp-clean-computer-slide \.second-slide-frame\{[\s\S]*?border:0;[\s\S]*?background:none;[\s\S]*?box-shadow:none;/,
+ 'The computer photo frame and background are removed');
+assert.match(css,/\.hero-carousel \.skp-clean-computer-slide \.second-slide-frame::before\{[\s\S]*?content:none;/,
+ 'The nested ornamental frame is disabled');
+
 const fullCutout=readFileSync(new URL('../public/images/rog-oled-pg27aqwp-g-hero.png',import.meta.url));
 assert.equal(fullCutout.toString('hex',0,8),'89504e470d0a1a0a','Show a real, locally stored PNG, not a remote screen screenshot');
 assert.equal(fullCutout.readUInt32BE(16),1400,'Official ASUS image is optimized and tightly framed');
