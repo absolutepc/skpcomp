@@ -1273,3 +1273,24 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 .skp-slide-preview-mobile.hero-carousel.rog-oled-feature .skp-slide-layer-caption{
  font-size:9px;max-width:85%;padding:5px 9px;letter-spacing:.04em
 }
+
+
+/* OLED slide: the ASUS photo includes the entire stand. Keep navigation on the
+   text side, instead of overlaying the monitor screen or its caption. */
+.hero-carousel.rog-oled-feature .carousel-controls{
+ left:clamp(24px,16vw,270px);
+ right:auto;
+ bottom:13px;
+}
+@media(max-width:700px){
+ .hero-carousel.rog-oled-feature .carousel-controls{
+  left:50%;right:auto;bottom:10px;transform:translateX(-50%);
+ }
+}
+.skp-slide-preview-mobile.hero-carousel.rog-oled-feature .carousel-controls{
+ left:50%;right:auto;bottom:10px;transform:translateX(-50%);
+}
+.skp-slide-preview-desktop.hero-carousel.rog-oled-feature .carousel-controls,
+.skp-slide-preview-tablet.hero-carousel.rog-oled-feature .carousel-controls{
+ left:clamp(24px,16vw,270px);right:auto;bottom:13px;transform:none;
+}

@@ -34,5 +34,6 @@ jobs:
           pnpm test:hero
           pnpm test:orders
           pnpm test:admin
+          pnpm test:monitor
       - name: Production build
         run: pnpm build
