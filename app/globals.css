@@ -1250,3 +1250,26 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 .skp-slide-preview-mobile.hero-carousel .second-slide-premium{min-height:0;height:100%;padding:20px 11px 28px}
 .skp-slide-preview-mobile.hero-carousel .second-slide-frame{height:210px;max-height:100%}
 .skp-slide-preview-mobile.hero-carousel .carousel-controls{bottom:12px}
+
+/* ROG Swift OLED Edition 20: keep the full monitor art and caption away
+   from the carousel controls, without affecting the other ROG slide. */
+.hero-carousel.rog-oled-feature{
+ background:radial-gradient(ellipse at 76% 44%,rgba(180,129,23,.18),transparent 56%),linear-gradient(112deg,#050505 5%,#101008 75%,#090806);
+}
+.hero-carousel.rog-oled-feature .skp-slide-layer-image img{
+ object-fit:contain;filter:brightness(1.1) contrast(1.04) drop-shadow(0 22px 22px rgba(0,0,0,.58));
+}
+.hero-carousel.rog-oled-feature .skp-slide-layer-caption{
+ font-size:clamp(9px,.78vw,11px);
+ font-weight:700;letter-spacing:.09em;color:#e7d9b2;
+ padding:7px 13px;background:#060805bb;border:1px solid #a99a4847;
+ border-radius:20px;max-width:38%;white-space:normal;
+}
+@media(max-width:700px){
+ .hero-carousel.rog-oled-feature .skp-slide-layer-caption{
+  font-size:9px;max-width:85%;padding:5px 9px;letter-spacing:.04em;
+ }
+}
+.skp-slide-preview-mobile.hero-carousel.rog-oled-feature .skp-slide-layer-caption{
+ font-size:9px;max-width:85%;padding:5px 9px;letter-spacing:.04em
+}
