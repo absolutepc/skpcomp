@@ -33,7 +33,7 @@ function AnimatedFpsNumber({value,delay}:{value:number;delay:number}){
  return <span className="skp-fps-count">{current}</span>;
 }
 
-export default function GamingFps({hardware,compact=false}:{hardware:FpsHardware;compact?:boolean}){
+export default function GamingFps({hardware,compact=false,inlineAction=false}:{hardware:FpsHardware;compact?:boolean;inlineAction?:boolean}){
  const [open,setOpen]=useState(false);
  const [closing,setClosing]=useState(false);
  const [resolution,setResolution]=useState<FpsResolution>('FHD');
@@ -88,16 +88,18 @@ export default function GamingFps({hardware,compact=false}:{hardware:FpsHardware
  const techLabel=effectiveUpscaling==='dlss'?'DLSS':'FSR';
  return <>
   <button ref={trigger} type="button" aria-haspopup="dialog" aria-expanded={open}
-   className={'skp-fps-launch'+(compact?' skp-fps-launch-compact':'')} onClick={()=>{if(closeTimer.current)clearTimeout(closeTimer.current);setClosing(false);setOpen(true)}}>
-   <span className="skp-fps-launch-icon"><Gauge size={compact?19:25} aria-hidden="true"/></span>
-   <span className="skp-fps-launch-text"><strong>{compact?'Игровая производительность':'Проверить FPS в играх'}</strong><small>10 игр · FHD / 2K / 4K · настройки графики</small></span>
-   <span className="skp-fps-launch-action">Открыть <ArrowUpRight size={17} aria-hidden="true"/></span>
+   className={inlineAction?'button outline skp-fps-inline-action':'skp-fps-launch'+(compact?' skp-fps-launch-compact':'')} onClick={()=>{if(closeTimer.current)clearTimeout(closeTimer.current);setClosing(false);setOpen(true)}}>
+   {inlineAction?<><span>FPS в играх</span><Gauge size={18} aria-hidden="true"/></>:<>
+    <span className="skp-fps-launch-icon"><Gauge size={compact?19:25} aria-hidden="true"/></span>
+    <span className="skp-fps-launch-text"><strong>{compact?'Игровая производительность':'Проверить FPS в играх'}</strong><small>10 игр · FHD / 2K / 4K · настройки графики</small></span>
+    <span className="skp-fps-launch-action">Открыть <ArrowUpRight size={17} aria-hidden="true"/></span>
+   </>}
   </button>
   {open&&typeof document!=='undefined'&&createPortal(
    <div className={'skp-fps-overlay'+(closing?' is-closing':'')} onMouseDown={event=>{if(event.target===event.currentTarget)close()}}>
     <div ref={panel} className="skp-fps-modal" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
      <div className="skp-fps-modal-top">
-      <div className="skp-fps-modal-title"><span className="skp-fps-modal-logo"><Gauge size={26} aria-hidden="true"/></span>
+      <div className="skp-fps-modal-title">
        <div><span className="eyebrow">SKP / PERFORMANCE LAB</span><h2 id={titleId}>Игровая производительность</h2><p>Оцени FPS своей конфигурации в популярных играх</p></div>
       </div>
       <button ref={closeButton} type="button" onClick={close} className="skp-fps-modal-close" aria-label="Закрыть FPS-калькулятор"><X size={22}/></button>
