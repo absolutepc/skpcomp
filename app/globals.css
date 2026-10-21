@@ -771,3 +771,110 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .skp-admin-media-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .skp-gallery-lightbox{padding:60px 10px 88px}
 }
+
+
+/* SKP FPS Performance Lab: modal entry point, overlay and animated results. */
+.skp-fps-launch{
+ display:flex;align-items:center;gap:17px;width:100%;max-width:100%;
+ margin:26px 0;padding:21px 24px;min-height:96px;text-align:left;
+ border:1px solid #625c22;border-radius:13px;
+ background:radial-gradient(ellipse at 10% -40%,#ffe50024,transparent 60%),linear-gradient(115deg,#222411,#11150f 78%);
+ color:#f8f9ef;box-shadow:inset 0 1px #ffe50012,0 10px 35px #0004;
+ transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
+ cursor:pointer;
+}
+.skp-fps-launch:hover{transform:translateY(-2px);border-color:#ffe500;box-shadow:0 12px 34px #ffe50014}
+.skp-fps-launch:focus-visible{outline:2px solid #ffe500;outline-offset:4px}
+.skp-fps-launch-icon{flex:0 0 53px;width:53px;height:53px;display:flex;align-items:center;justify-content:center;
+ border:1px solid #8b802e;border-radius:12px;background:linear-gradient(145deg,#32351d,#15190f);color:#ffe500}
+.skp-fps-launch-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.skp-fps-launch-text strong{font-size:clamp(15px,1.5vw,19px);font-weight:850;letter-spacing:-.35px}
+.skp-fps-launch-text small{font-size:11px;color:#b6bea8;line-height:1.4}
+.skp-fps-launch-action{flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;color:#ffe500;font-weight:800;font-size:12px}
+.skp-fps-launch-action svg{transition:transform .2s ease}
+.skp-fps-launch:hover .skp-fps-launch-action svg{transform:translate(3px,-3px)}
+.skp-fps-launch-compact{min-height:56px;margin:13px 0 17px;padding:11px 12px;gap:9px;border-radius:9px}
+.skp-fps-launch-compact .skp-fps-launch-icon{flex-basis:34px;width:34px;height:34px;border-radius:8px}
+.skp-fps-launch-compact .skp-fps-launch-text{gap:4px}
+.skp-fps-launch-compact .skp-fps-launch-text strong{font-size:11px;line-height:1.3;letter-spacing:0}
+.skp-fps-launch-compact .skp-fps-launch-text small{font-size:9px;line-height:1.3}
+.skp-fps-launch-compact .skp-fps-launch-action{font-size:0;gap:0}
+.skp-fps-launch-compact .skp-fps-launch-action svg{width:17px}
+.skp-fps-overlay{
+ position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
+ padding:24px;background:rgba(3,5,3,.84);backdrop-filter:blur(13px);
+ animation:skp-fps-backdrop-in .27s ease both;
+}
+.skp-fps-overlay.is-closing{animation:skp-fps-backdrop-out .24s ease both}
+.skp-fps-modal{
+ position:relative;display:flex;flex-direction:column;
+ width:min(980px,100%);max-height:min(92dvh,940px);min-height:0;overflow-y:auto;overscroll-behavior:contain;
+ border:1px solid #706629;border-radius:18px;
+ background:radial-gradient(ellipse at 72% -17%,#e9d00015,transparent 44%),#10130e;
+ box-shadow:0 26px 110px #000d,0 0 65px #ffe5000c;
+ scrollbar-width:thin;scrollbar-color:#655f32 #171a13;
+ animation:skp-fps-panel-in .38s cubic-bezier(.16,1,.3,1) both;
+}
+.skp-fps-overlay.is-closing .skp-fps-modal{animation:skp-fps-panel-out .24s ease both}
+.skp-fps-modal-top{
+ position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:18px;
+ padding:24px 30px 21px;background:linear-gradient(110deg,#222616,#141710 80%);
+ border-bottom:1px solid #414329;
+}
+.skp-fps-modal-title{display:flex;align-items:center;gap:18px;min-width:0}
+.skp-fps-modal-logo{flex:0 0 54px;width:54px;height:54px;border:1px solid #796d24;
+ border-radius:14px;display:flex;align-items:center;justify-content:center;color:#ffe500;background:#ffe5000b}
+.skp-fps-modal-title .eyebrow{color:#c5b658;font-size:10px;letter-spacing:1.5px}
+.skp-fps-modal-title h2{margin:6px 0 4px;color:#f7f7ee;font-size:clamp(19px,2.6vw,29px);line-height:1.18;letter-spacing:-.7px}
+.skp-fps-modal-title p{margin:0;color:#aeb6a6;font-size:11px;line-height:1.5}
+.skp-fps-modal-close{flex:0 0 39px;display:flex;align-items:center;justify-content:center;
+ width:39px;height:39px;border:1px solid #525740;border-radius:9px;color:#d5d9c9;background:#262b1c}
+.skp-fps-modal-close:hover{border-color:#ffe500;color:#ffe500}
+.skp-fps-modal :is(button,input):focus-visible{outline:2px solid #ffe500;outline-offset:3px}
+.skp-fps-modal .skp-fps{margin:0;padding:25px 30px 28px;border:0;border-radius:0;background:transparent}
+.skp-fps-modal .skp-fps-heading{margin:0 0 17px}
+.skp-fps-modal .skp-fps-heading h3{font-size:17px;margin:5px 0 0;color:#f3f4e9}
+.skp-fps-modal .skp-fps-heading .eyebrow{font-size:9px;color:#bbb374}
+.skp-fps-modal .skp-fps-settings{margin-bottom:21px}
+.skp-fps-modal .skp-fps-hardware{margin-bottom:14px}
+.skp-fps-modal .skp-fps-list{gap:8px}
+.skp-fps-modal .skp-fps-row{
+ position:relative;animation:skp-fps-row-reveal .55s cubic-bezier(.2,.9,.2,1) both;
+ border-color:#2e3925;background:linear-gradient(105deg,#1a2115,#141a11);
+ padding:13px 16px;transition:border-color .18s ease,background-color .18s ease;
+}
+.skp-fps-modal .skp-fps-row:hover{border-color:#686126;background:#21281a}
+.skp-fps-modal .skp-fps-row strong{font-size:17px;font-weight:850;letter-spacing:.2px;min-width:158px}
+.skp-fps-modal .skp-fps-row strong small{font-size:10px}
+.skp-fps-count{font-variant-numeric:tabular-nums;display:inline-block;min-width:1ch}
+.skp-fps-modal .skp-fps-note{margin-bottom:0}
+@keyframes skp-fps-backdrop-in{from{opacity:0}to{opacity:1}}
+@keyframes skp-fps-backdrop-out{from{opacity:1}to{opacity:0}}
+@keyframes skp-fps-panel-in{from{opacity:0;transform:translateY(28px) scale(.96);filter:blur(6px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+@keyframes skp-fps-panel-out{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(14px) scale(.975)}}
+@keyframes skp-fps-row-reveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:760px){
+ .skp-fps-overlay{padding:0;align-items:flex-end}
+ .skp-fps-modal{width:100%;max-height:94dvh;border-radius:18px 18px 0 0;border-bottom:0}
+ .skp-fps-modal-top{padding:19px 17px;gap:10px}
+ .skp-fps-modal-title{gap:10px}
+ .skp-fps-modal-logo{width:40px;height:40px;flex-basis:40px;border-radius:10px}
+ .skp-fps-modal-logo svg{width:21px;height:21px}
+ .skp-fps-modal-title h2{font-size:19px}
+ .skp-fps-modal-title p{font-size:10px}
+ .skp-fps-modal-title .eyebrow{font-size:8px}
+ .skp-fps-modal .skp-fps{padding:19px 15px 28px}
+ .skp-fps-modal .skp-fps-row{padding:12px 11px}
+ .skp-fps-modal .skp-fps-row strong{min-width:122px;font-size:14px}
+ .skp-fps-launch{padding:14px 13px;min-height:76px;gap:10px}
+ .skp-fps-launch-icon{width:39px;height:39px;flex-basis:39px}
+ .skp-fps-launch-text strong{font-size:13px}
+ .skp-fps-launch-text small{font-size:9px}
+ .skp-fps-launch-action{font-size:0;gap:0}
+ .skp-fps-launch-compact{min-height:60px}
+}
+@media(prefers-reduced-motion:reduce){
+ .skp-fps-overlay,.skp-fps-overlay.is-closing,.skp-fps-modal,.skp-fps-overlay.is-closing .skp-fps-modal,
+ .skp-fps-modal .skp-fps-row{animation:none!important;filter:none!important;transform:none!important}
+ .skp-fps-launch,.skp-fps-launch-action svg{transition:none!important}
+}
