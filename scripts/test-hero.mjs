@@ -274,7 +274,7 @@ assert.match(css,/\.skp-slide-preview-mobile \.skp-slide-layer-image/,'Live mobi
 assert.match(css,/@media\(max-width:700px\)[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\) \.skp-slide-layer-image/,'Storefront selects mobile positions');
 assert.match(canvas,/onPointerMove=\{move\}/,'Canvas objects can be dragged');
 assert.match(canvas,/value\.part==='image'/,'Image and caption are positioned separately');
-assert.match(route,/heroSlides:linkFeaturedMonitorSlide\(upgradeRogSwiftOledSlide\(store\.heroSlides,store\.heroSlidesVersion\),store\.products\)/,'Catalog links slide to actual product');
+assert.match(route,/heroSlides:linkFeaturedMonitorSlide\(upgradeComputerHeroImage\(upgradeRogSwiftOledSlide\(store\.heroSlides,store\.heroSlidesVersion\),store\.computerHeroImageVersion\),store\.products\)/,'Catalog links the slide to the monitor product after both image migrations');
 assert.match(route,/validateHeroSlides\(d\.heroSlides\)/,'Server validates slider content');
 assert.match(media,/assetType'\)==='slide'/,'Slide uploads supported in R2');
 console.log('Hero tests passed: slide management, validation, defaults, image storage, responsive layout and autoplay.');
