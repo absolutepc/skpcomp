@@ -1,7 +1,7 @@
 'use client';
 import {Fragment,useEffect,useRef,useState} from 'react';
 import {ArrowLeft,ArrowRight,Cpu,ShieldCheck,MessageCircle} from 'lucide-react';
-import {defaultHeroSlides,type HeroSlide} from '../lib/hero-slides';
+import {defaultHeroSlides,type HeroSlide,type HeroBreakpoint,type HeroPlacement} from '../lib/hero-slides';
 import HeroCanvasLayers from './hero-canvas-layers';
 
 export const HERO_AUTOPLAY_MS=5000;
@@ -46,6 +46,41 @@ function SlideImage({slide}:{slide:HeroSlide}){
  </div>;
  return <div className="skp-hero-image-single"><img src={slide.image} alt={slide.label}/>{slide.caption&&<span>{slide.caption}</span>}</div>;
 }
+export function HeroSlideContent({slide,nav,editable=false,previewMode='desktop',selectedId,onSelect,onPositionChange}:{
+ slide:HeroSlide;nav?:(path:string)=>void;editable?:boolean;previewMode?:HeroBreakpoint;
+ selectedId?:string|null;onSelect?:(id:string)=>void;
+ onPositionChange?:(id:string,changes:Partial<HeroPlacement>)=>void;
+}){
+ const go=(path:string)=>(event:React.MouseEvent<HTMLAnchorElement>)=>{
+  event.preventDefault();nav?.(path);
+ };
+ return <>
+  <div className="hero-copy" key={'copy-'+slide.id} role="group" aria-roledescription="слайд"
+   aria-label={slide.label}>
+   <div className="eyebrow">{slide.eyebrow}</div>
+   <h1>{slide.title.split('\n').map((line,i)=><Fragment key={i}>{i>0&&<br/>}{i===slide.highlightLine?<span>{line}</span>:line}</Fragment>)}</h1>
+   <p>{slide.description.split('\n').map((line,i)=><Fragment key={i}>{i>0&&<br/>}{line}</Fragment>)}</p>
+   <div className="hero-buttons">
+    <a className="button light" href={slide.href} onClick={go(slide.href)}>{slide.primary}<ArrowRight size={18}/></a>
+    <a className="button outline" href={slide.secondHref} onClick={go(slide.secondHref)}>{slide.secondary}</a>
+   </div>
+   <div className="hero-benefits"><div><Cpu/><span>Подбор<br/>комплектующих</span></div><div><ShieldCheck/><span>Продуманная<br/>сборка</span></div><div><MessageCircle/><span>Помощь<br/>с выбором</span></div></div>
+  </div>
+  {slide.layers?.length?<HeroCanvasLayers layers={slide.layers} previewMode={previewMode} editable={editable} selectedId={selectedId} onSelect={onSelect} onChange={onPositionChange}/>:<div className="hero-visual" key={'image-'+slide.id}><SlideImage slide={slide}/></div>}
+
+ </>;
+}
+export function HeroSlidePreview({slide,previewMode,selectedId,onSelect,onPositionChange}:{
+ slide:HeroSlide;previewMode:HeroBreakpoint;selectedId?:string|null;
+ onSelect?:(id:string)=>void;onPositionChange?:(id:string,changes:Partial<HeroPlacement>)=>void;
+}){
+ return <section className={"hero hero-carousel skp-slide-preview skp-slide-preview-"+previewMode+
+ (slide.layout==='logitech'?" mouse-launch":slide.layout==='rog'?" rog-anniversary":"")}
+ aria-label={"Предпросмотр: "+slide.label}>
+  <HeroSlideContent slide={slide} editable previewMode={previewMode} selectedId={selectedId}
+   onSelect={onSelect} onPositionChange={onPositionChange}/>
+ </section>;
+}
 export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:string)=>void;items?:HeroSlide[]}){
  const slides=items;
  const [index,setIndex]=useState(0);
@@ -55,7 +90,6 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
  const activeIndex=Math.min(index,Math.max(0,slides.length-1));
  const slide=slides[activeIndex];
  const move=(direction:number)=>setIndex(i=>slides.length?(i+direction+slides.length)%slides.length:0);
- const go=(p:string)=>(e:React.MouseEvent<HTMLAnchorElement>)=>{e.preventDefault();nav(p)};
  useEffect(()=>{setIndex(i=>i>=slides.length?0:i)},[slides.length]);
  useEffect(()=>{
   const sync=()=>setPageHidden(document.hidden);
@@ -77,18 +111,7 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
   onKeyDown={e=>{if(e.key==='ArrowLeft'){e.preventDefault();move(-1)}if(e.key==='ArrowRight'){e.preventDefault();move(1)}}}
   onTouchStart={e=>{touch.current=e.touches[0].clientX}}
   onTouchEnd={e=>{if(touch.current!==null){const distance=e.changedTouches[0].clientX-touch.current;if(Math.abs(distance)>55)move(distance<0?1:-1);touch.current=null}}}>
-  <div className="hero-copy" key={'copy-'+slide.id} role="group" aria-roledescription="слайд"
-   aria-label={`${activeIndex+1} из ${slides.length}: ${slide.label}`}>
-   <div className="eyebrow">{slide.eyebrow}</div>
-   <h1>{slide.title.split('\n').map((line,i)=><Fragment key={i}>{i>0&&<br/>}{i===slide.highlightLine?<span>{line}</span>:line}</Fragment>)}</h1>
-   <p>{slide.description.split('\n').map((line,i)=><Fragment key={i}>{i>0&&<br/>}{line}</Fragment>)}</p>
-   <div className="hero-buttons">
-    <a className="button light" href={slide.href} onClick={go(slide.href)}>{slide.primary}<ArrowRight size={18}/></a>
-    <a className="button outline" href={slide.secondHref} onClick={go(slide.secondHref)}>{slide.secondary}</a>
-   </div>
-   <div className="hero-benefits"><div><Cpu/><span>Подбор<br/>комплектующих</span></div><div><ShieldCheck/><span>Продуманная<br/>сборка</span></div><div><MessageCircle/><span>Помощь<br/>с выбором</span></div></div>
-  </div>
-  {slide.layers?.length?<HeroCanvasLayers layers={slide.layers}/>:<div className="hero-visual" key={'image-'+slide.id}><SlideImage slide={slide}/></div>}
+  <HeroSlideContent slide={slide} nav={nav}/>
   {slides.length>1&&<div className="carousel-controls">
    <div className="carousel-dots" aria-label="Выбор слайда">{slides.map((s,i)=><button key={s.id} className={i===activeIndex?'current':''} aria-label={`Показать слайд ${i+1}: ${s.label}`} aria-current={i===activeIndex?'true':undefined} onClick={()=>setIndex(i)}><span/></button>)}</div>
    <button className="carousel-arrow" aria-label="Предыдущий слайд" onClick={()=>move(-1)}><ArrowLeft size={19}/></button>
