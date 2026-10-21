@@ -13,6 +13,7 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "test:fps": "node scripts/test-fps.mjs",
+    "test:configurator": "node scripts/test-configurator.mjs",
     "test:gallery": "node scripts/test-gallery.mjs"
   },
   "dependencies": {
