@@ -37,11 +37,11 @@ assert.equal(defaultHeroSlides[3].id,'skp-hero-rog-swift-oled-edition-20');
 assert.equal(defaultHeroSlides[3].layout,'rog');
 assert.equal(defaultHeroSlides[3].title,'ROG SWIFT OLED\nPG27AQWP-G\nEDITION 20');
 assert.equal(defaultHeroSlides[3].highlightLine,2);
-assert.equal(defaultHeroSlides[3].href,'/catalog/monitor');
-assert.ok(defaultHeroSlides[3].image.includes('ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png'));
+assert.equal(defaultHeroSlides[3].href,'/product/asus-rog-swift-oled-pg27aqwp-g-edition-20');
+assert.ok(defaultHeroSlides[3].image.includes('dlcdnwebimgs.asus.com/gain/80E6E940-7255-4E74-AC75-E3A9B2DA0B36'));
 assert.equal(defaultHeroSlides[3].layers.length,1);
 assert.equal(defaultHeroSlides[3].layers[0].mobile.x,50);
-assert.equal(defaultHeroSlides[3].layers[0].tablet.x,75);
+assert.equal(defaultHeroSlides[3].layers[0].tablet.x,74);
 assert.equal(validateHeroSlides(defaultHeroSlides),true);
 const oldThree=defaultHeroSlides.slice(0,3);
 const upgradedFour=upgradeRogSwiftOledSlide(oldThree,0);
@@ -58,20 +58,24 @@ assert.equal(migrated.length,4,'Already uploaded fourth slide is migrated, not d
 assert.equal(migrated[3].id,existingMonitor.id,'Original slide record ID is retained');
 assert.equal(migrated[3].image,savedPhoto,'User uploaded photo is retained');
 assert.equal(migrated[3].layers[0].image,savedPhoto,'User uploaded media layer is retained');
-assert.equal(migrated[3].layers[0].x,76,'Hand-curated desktop coordinates replace broken admin positioning');
+assert.equal(migrated[3].layers[0].x,75,'Hand-curated desktop coordinates replace broken admin positioning');
 assert.equal(migrated[3].layers[0].mobile.y,73,'Hand-curated mobile positioning is applied');
+assert.equal(migrated[3].href,'/product/asus-rog-swift-oled-pg27aqwp-g-edition-20');
 assert.equal(upgradeRogSwiftOledSlide(oldThree,HERO_SLIDES_VERSION).length,3,
  'After an admin save, deleting the fourth slide remains intentional');
-assert.equal(HERO_SLIDES_VERSION,2,'New curated layout runs once against old stores');
-assert.equal(defaultHeroSlides[3].layers[0].captionY,80,'Desktop caption stays clear of carousel arrows');
-assert.equal(defaultHeroSlides[3].layers[0].mobile.captionY,86,'Phone caption stays clear of carousel controls');
+assert.equal(HERO_SLIDES_VERSION,3,'Edition 20 artwork upgraded to complete official ASUS gallery image');
+assert.equal(defaultHeroSlides[3].layers[0].captionY,85,'Desktop caption stays clear of carousel arrows');
+assert.equal(defaultHeroSlides[3].layers[0].mobile.captionY,92,'Phone caption stays clear of carousel controls');
 assert.equal(validateHeroSlides([defaultHeroSlides[3]]),true);
 const resized=upgradeRogSwiftOledSlide([...oldThree,existingMonitor],1);
 assert.equal(resized.length,4,'Revision 1 store gets the better composition');
 assert.equal(resized[3].image,savedPhoto,'Revision 2 preserves uploaded media');
-assert.equal(resized[3].layers[0].x,76,'Revision 2 fixes saved positions');
+assert.equal(upgradeRogSwiftOledSlide([...oldThree,existingMonitor],2)[3].image,savedPhoto,'Revision 3 preserves photo uploaded in admin');
+assert.equal(resized[3].layers[0].x,75,'Revision 3 fixes saved positions');
 assert.equal(upgradeRogSwiftOledSlide(oldThree,1).length,3,'Revision 2 respects already deleted slide');
 assert.equal(upgradeRogSwiftOledSlide(migrated,HERO_SLIDES_VERSION),migrated,'Latest saved settings are never overwritten');
+assert.ok(defaultHeroSlides[3].layers[0].height<85,'Complete monitor safely fits into banner');
+assert.match(css,/\.hero-carousel\.rog-oled-feature \.carousel-controls\{[\s\S]*?right:auto/,'Only monitor slide moves controls off the product photo');
 
 
 assert.equal(validateHeroSlides([]),true,'The admin may remove all slides');
@@ -190,7 +194,7 @@ assert.match(css,/\.skp-slide-preview-mobile \.skp-slide-layer-image/,'Live mobi
 assert.match(css,/@media\(max-width:700px\)[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\) \.skp-slide-layer-image/,'Storefront selects mobile positions');
 assert.match(canvas,/onPointerMove=\{move\}/,'Canvas objects can be dragged');
 assert.match(canvas,/value\.part==='image'/,'Image and caption are positioned separately');
-assert.match(route,/heroSlides:upgradeRogSwiftOledSlide\(store\.heroSlides,store\.heroSlidesVersion\)/,'Legacy and saved catalogs receive one-time OLED slide migration');
+assert.match(route,/heroSlides:linkFeaturedMonitorSlide\(upgradeRogSwiftOledSlide\(store\.heroSlides,store\.heroSlidesVersion\),store\.products\)/,'Catalog links slide to actual product');
 assert.match(route,/validateHeroSlides\(d\.heroSlides\)/,'Server validates slider content');
 assert.match(media,/assetType'\)==='slide'/,'Slide uploads supported in R2');
 console.log('Hero tests passed: slide management, validation, defaults, image storage, responsive layout and autoplay.');
