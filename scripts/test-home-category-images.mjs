@@ -23,7 +23,7 @@ for(const item of images){
  assert.ok(css.includes('.skp-category-photo-'+item.category),'Responsive artwork style: '+item.category);
 }
 assert.match(shop,/loading="lazy" decoding="async"/);
-assert.match(shop,/href=\/images\/skp-reference.png/,'Unchanged fallback illustration for other site contexts');
+assert.match(shop,/href="\\/images\\/skp-reference\\.png"/,'Unchanged fallback illustration for other site contexts');
 assert.match(css,/\.category \.skp-category-photo\{[\s\S]*?object-fit:cover/);
 assert.match(css,/\.category:has\(\.skp-category-photo\):after/,'Category label gradient remains readable');
 assert.ok(!shop.includes("furniture:'/images/category-furniture"),'Furniture art remains unchanged');
