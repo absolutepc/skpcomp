@@ -5,6 +5,9 @@ import {defaultHeroSlides,type HeroSlide,type HeroBreakpoint,type HeroPlacement}
 import HeroCanvasLayers from './hero-canvas-layers';
 
 export const HERO_AUTOPLAY_MS=5000;
+export const isRogOledFeature=(slide:HeroSlide)=>slide.id==='skp-hero-rog-swift-oled-edition-20'||
+ /PG27AQWP[\s-]?G/i.test(slide.title+' '+slide.label);
+
 
 function SlideImage({slide}:{slide:HeroSlide}){
  if(slide.layout==='logitech')return <div className="mouse-duo-showcase" role="group" aria-label={slide.label}>
@@ -75,7 +78,8 @@ export function HeroSlidePreview({slide,previewMode,selectedId,onSelect,onPositi
  onSelect?:(id:string)=>void;onPositionChange?:(id:string,changes:Partial<HeroPlacement>)=>void;
 }){
  return <section className={"hero hero-carousel skp-slide-preview skp-slide-preview-"+previewMode+
- (slide.layout==='logitech'?" mouse-launch":slide.layout==='rog'?" rog-anniversary":"")}
+ (slide.layout==='logitech'?" mouse-launch":slide.layout==='rog'?" rog-anniversary":"")+
+ (isRogOledFeature(slide)?" rog-oled-feature":"")}
  aria-label={"Предпросмотр: "+slide.label}>
   <HeroSlideContent slide={slide} editable previewMode={previewMode} selectedId={selectedId}
    onSelect={onSelect} onPositionChange={onPositionChange}/>
@@ -103,7 +107,7 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
   return()=>window.clearTimeout(timeout);
  },[index,interactionPaused,pageHidden,slides.length]);
  if(!slide)return null;
- return <section className={"hero hero-carousel"+(slide.layout==='logitech'?" mouse-launch":slide.layout==='rog'?" rog-anniversary":"")}
+ return <section className={"hero hero-carousel"+(slide.layout==='logitech'?" mouse-launch":slide.layout==='rog'?" rog-anniversary":"")+(isRogOledFeature(slide)?" rog-oled-feature":"")}
   aria-label="Предложения SKP" aria-roledescription="карусель" tabIndex={0}
   onMouseEnter={()=>setInteractionPaused(true)} onMouseLeave={()=>setInteractionPaused(false)}
   onFocusCapture={()=>setInteractionPaused(true)}

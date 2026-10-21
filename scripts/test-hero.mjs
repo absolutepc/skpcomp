@@ -41,7 +41,7 @@ assert.equal(defaultHeroSlides[3].href,'/catalog/monitor');
 assert.ok(defaultHeroSlides[3].image.includes('ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png'));
 assert.equal(defaultHeroSlides[3].layers.length,1);
 assert.equal(defaultHeroSlides[3].layers[0].mobile.x,50);
-assert.equal(defaultHeroSlides[3].layers[0].tablet.x,74);
+assert.equal(defaultHeroSlides[3].layers[0].tablet.x,75);
 assert.equal(validateHeroSlides(defaultHeroSlides),true);
 const oldThree=defaultHeroSlides.slice(0,3);
 const upgradedFour=upgradeRogSwiftOledSlide(oldThree,0);
@@ -58,10 +58,21 @@ assert.equal(migrated.length,4,'Already uploaded fourth slide is migrated, not d
 assert.equal(migrated[3].id,existingMonitor.id,'Original slide record ID is retained');
 assert.equal(migrated[3].image,savedPhoto,'User uploaded photo is retained');
 assert.equal(migrated[3].layers[0].image,savedPhoto,'User uploaded media layer is retained');
-assert.equal(migrated[3].layers[0].x,75,'Hand-curated desktop coordinates replace broken admin positioning');
-assert.equal(migrated[3].layers[0].mobile.y,80,'Hand-curated mobile positioning is applied');
+assert.equal(migrated[3].layers[0].x,76,'Hand-curated desktop coordinates replace broken admin positioning');
+assert.equal(migrated[3].layers[0].mobile.y,73,'Hand-curated mobile positioning is applied');
 assert.equal(upgradeRogSwiftOledSlide(oldThree,HERO_SLIDES_VERSION).length,3,
  'After an admin save, deleting the fourth slide remains intentional');
+assert.equal(HERO_SLIDES_VERSION,2,'New curated layout runs once against old stores');
+assert.equal(defaultHeroSlides[3].layers[0].captionY,80,'Desktop caption stays clear of carousel arrows');
+assert.equal(defaultHeroSlides[3].layers[0].mobile.captionY,86,'Phone caption stays clear of carousel controls');
+assert.equal(validateHeroSlides([defaultHeroSlides[3]]),true);
+const resized=upgradeRogSwiftOledSlide([...oldThree,existingMonitor],1);
+assert.equal(resized.length,4,'Revision 1 store gets the better composition');
+assert.equal(resized[3].image,savedPhoto,'Revision 2 preserves uploaded media');
+assert.equal(resized[3].layers[0].x,76,'Revision 2 fixes saved positions');
+assert.equal(upgradeRogSwiftOledSlide(oldThree,1).length,3,'Revision 2 respects already deleted slide');
+assert.equal(upgradeRogSwiftOledSlide(migrated,HERO_SLIDES_VERSION),migrated,'Latest saved settings are never overwritten');
+
 
 assert.equal(validateHeroSlides([]),true,'The admin may remove all slides');
 assert.equal(validateHeroSlides(Array.from({length:MAX_HERO_SLIDES+1},(_,i)=>({...defaultHeroSlides[0],id:'slide-'+i}))),false);
@@ -142,6 +153,9 @@ assert.match(hero,/slide\.description\.split/,'Description editable');
 assert.match(hero,/slide\.layout==='logitech'/,'Existing Logitech custom layout maintained');
 assert.match(hero,/slide\.layout==='rog'/,'Existing ROG custom layout maintained');
 assert.match(hero,/slide\.layout==='premium'/,'Existing premium layout maintained');
+assert.match(hero,/isRogOledFeature\(slide\)/,'Specific fourth-slide class is present on hero');
+assert.match(css,/\.hero-carousel\.rog-oled-feature \.skp-slide-layer-caption/,'Scoped ROG OLED caption styling');
+
 assert.match(hero,/<HeroCanvasLayers layers=\{slide\.layers\}/,'Live positioned layers use shared canvas renderer');
 assert.match(css,/Shared SKP hero contract: one height per viewport/);
 for(const h of ['560px','500px','665px','700px'])assert.ok(css.includes('--skp-hero-height:'+h));

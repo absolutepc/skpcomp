@@ -15,6 +15,7 @@ import ProductGallery from './product-gallery';
 import AdminProductMedia from './admin-product-media';
 import AdminHeroSlides from './admin-hero-slides';
 import AdminSidebar,{adminSectionFromQuery,type AdminSection} from './admin-sidebar';
+import AdminProducts,{inAdminProductSection} from './admin-products';
 import {getProductImages} from '../lib/product-gallery';
 import {fromReadyPC} from '../lib/fps-estimate';
 import {GitCompareArrows} from 'lucide-react';
@@ -47,7 +48,15 @@ const img=(p:Product)=>(getProductImages(p)[0]?<img src={getProductImages(p)[0]}
 const card=(p:Product)=><article className="card" key={p.id}><div className={"card-image"+((p.variantGroup||p.id==="logitech-pro-x2-superstrike")?" variant-visual":"")}>{link('/product/'+p.id,img(p))}<button className={'favorite '+(favorites.includes(p.id)?'chosen':'')} aria-label="В избранное" onClick={()=>fav(p.id)}><Heart size={19} fill={favorites.includes(p.id)?'currentColor':'none'}/></button><span className="brand">{p.brand}</span>{p.category==='pc'&&<span className="tag">SKP BUILD</span>}</div><div className="card-meta"><span>{p.price===0?'Уточните цену и наличие':p.stock?'В наличии':'Под заказ'}</span></div>{link('/product/'+p.id,<h3>{p.name}</h3>)}<p>{p.description}</p><button type="button" className={'skp-compare-inline'+(compared.includes(p.id)?' selected':'')} onClick={()=>compare(p)}><GitCompareArrows size={15}/>{compared.includes(p.id)?'В сравнении':'Сравнить'}</button><div className="price-line"><strong>{p.price>0?money(p.price):'Цена по запросу'}</strong><button aria-label={p.price>0?'Добавить в корзину':'Цена не указана'} disabled={p.price===0} onClick={()=>add([p.id])}><ShoppingBag size={18}/></button></div></article>;
 const cat=path.split('/')[2];let shown=data.products.filter(p=>path==='/favorites'?favorites.includes(p.id):path==='/pc'?p.category==='pc':!cat||cat==='all'?true:cat==='components'?Object.keys(parts).includes(p.category):p.category===cat).filter(p=>(p.name+' '+p.description).toLowerCase().includes(query.toLowerCase())&&(!max||p.price<=Number(max)));if(sort!=='popular')shown.sort((a,b)=>sort==='low'?a.price-b.price:b.price-a.price);
 const product=data.products.find(p=>p.id===cat);const picked=Object.values(selected).map(id=>data.products.find(p=>p.id===id)).filter(Boolean) as Product[];const cpu=picked.find(p=>p.category==='cpu'),board=picked.find(p=>p.category==='motherboard'),ram=picked.find(p=>p.category==='ram'),psu=picked.find(p=>p.category==='psu');const watts=picked.filter(p=>['cpu','gpu'].includes(p.category)).reduce((s,p)=>s+p.watts,100);const problems=[cpu&&board&&cpu.socket!==board.socket?'Сокет процессора и материнской платы не совпадает':'',board&&ram&&board.memory!==ram.memory?'Тип памяти не соответствует материнской плате':'',psu&&psu.watts<watts*1.3?'Недостаточный запас мощности блока питания':''].filter(Boolean);const total=picked.reduce((s,p)=>s+p.price,0);
-return <><div className="topline"><span>Технологии. Характер. Твой SKP.</span><span>Подбор и сборка компьютеров <ArrowUpRight size={13}/></span></div><header><div className="header-inner">{link('/',<Logo/>)}<nav className={menu?'open':''}>{link('/','Главная',path==='/'?'active':'')}{Object.entries(cats).filter(([id])=>id!=='pc').map(([id,label])=>link('/catalog/'+id,label,path==='/catalog/'+id?'active':''))}{link('/pc','Готовые ПК',path==='/pc'?'active':'')}{link('/configurator','Конфигуратор',path==='/configurator'?'active':'')}{link('/contacts','Контакты',path==='/contacts'?'active':'')}</nav><div className="header-tools"><button aria-label="Поиск" onClick={()=>{nav('/catalog/all');setTimeout(()=>document.getElementById('search')?.focus(),50)}}><Search size={20}/></button>{link('/favorites',<Heart size={20}/>)}{link('/orders',<><PackageCheck size={20}/><span className="visually-hidden">Мои заказы</span></>)}{link('/cart',<><ShoppingBag size={20}/>{cart.length>0&&<b>{cart.length}</b>}</>)}<button className="mobile-menu" onClick={()=>setMenu(!menu)} aria-label="Меню"><Menu/></button></div></div></header>
+return <>
+{path!=='/admin'&&<div className="topline"><span>Технологии. Характер. Твой SKP.</span><span>Подбор и сборка компьютеров <ArrowUpRight size={13}/></span></div>}
+<header className={path==='/admin'?'skp-admin-header':undefined}>
+ <div className="header-inner">{link('/',<Logo/>)}
+ {path==='/admin'?<div className="skp-admin-header-tools">{link('/',<>На сайт <ArrowUpRight size={17}/></>,'skp-admin-home-link')}</div>:<>
+  <nav className={menu?'open':''}>{link('/','Главная',path==='/'?'active':'')}{Object.entries(cats).filter(([id])=>id!=='pc').map(([id,label])=>link('/catalog/'+id,label,path==='/catalog/'+id?'active':''))}{link('/pc','Готовые ПК',path==='/pc'?'active':'')}{link('/configurator','Конфигуратор',path==='/configurator'?'active':'')}{link('/contacts','Контакты',path==='/contacts'?'active':'')}</nav>
+  <div className="header-tools"><button aria-label="Поиск" onClick={()=>{nav('/catalog/all');setTimeout(()=>document.getElementById('search')?.focus(),50)}}><Search size={20}/></button>{link('/favorites',<Heart size={20}/>)}{link('/orders',<><PackageCheck size={20}/><span className="visually-hidden">Мои заказы</span></>)}{link('/cart',<><ShoppingBag size={20}/>{cart.length>0&&<b>{cart.length}</b>}</>)}<button className="mobile-menu" onClick={()=>setMenu(!menu)} aria-label="Меню"><Menu/></button></div>
+ </>}</div>
+</header>
 <main className={path.startsWith('/catalog/')||path==='/pc'||path==='/configurator'||path==='/compare'?'wide-shop':''}>{path==='/compare'?<ComparePage products={compared.map(id=>data.products.find(p=>p.id===id)).filter((p):p is Product=>!!p)} onRemove={removeCompared} onClear={clearCompare} nav={nav}/>:path==='/'?<><HeroSlider nav={nav} items={data.heroSlides}/><section className="category-section"><div className="categories">{Object.entries(cats).filter(([id])=>id!=='pc').map(([id,label])=>link('/catalog/'+id,<><ReferenceArt area={id}/><h3>{label}<span className="circle-arrow"><ArrowRight size={17}/></span></h3></>,'category'))}</div></section><section className="popular-section"><div className="section-head"><h2>Популярные товары</h2>{link('/catalog/all',<>Все товары <ArrowRight size={16}/></>,'text-link yellow')}</div><div className="grid home-products">{['rtx-5070','intel-i5','b760','ddr4','ssd-1tb','mouse'].map(id=>data.products.find(p=>p.id===id)).filter(Boolean).map(p=>card(p!))}</div></section><section className="dual-promos"><div className="promo"><ReferenceArt area="build"/><div><h2>Готовые ПК</h2><p>Продуманные сборки<br/>для игр, работы и стриминга.</p>{link('/pc',<>Смотреть сборки <ArrowRight size={17}/></>,'button light')}</div></div><div className="promo"><ReferenceArt area="config"/><div><h2>Конфигуратор ПК</h2><p>Собери компьютер под свои задачи<br/>с проверкой совместимости.</p>{link('/configurator',<>Собрать свой ПК <ArrowRight size={17}/></>,'button light')}</div></div></section><section className="quick-section"><div className="section-head"><h2>Популярные категории</h2>{link('/catalog/components',<>Все категории <ArrowRight size={16}/></>,'text-link yellow')}</div><div className="quick-categories">{Object.entries(parts).map(([key,label])=>link('/catalog/'+key,<><Art kind={key==='motherboard'?'board':key==='case'?'pc':key}/><span>{label}</span></>))}</div></section><section className="brand-section"><div className="section-head"><h2>Популярные бренды</h2></div><div className="brands"><span>ASUS</span><span>msi</span><span>GIGABYTE</span><span>ASRock</span><span>PALIT</span><span>intel</span><span>AMD</span><span>NVIDIA</span></div></section></>:path.startsWith('/product/')?<section>{link('/catalog/all','← Вернуться в каталог','back')}{product?<><div className="product-detail"><ProductGallery key={product.id} product={product} fallback={<Art kind={product.art} dark={product.id==='skp-black'}/>}/><div><div className="eyebrow">{product.brand}</div><h1>{product.name}</h1><span className="stock">● {product.price===0?'Цена и наличие уточняются':product.stock?'В наличии':'Под заказ'}</span>
 <p>{product.description}</p>
 {product.variantGroup&&<div className="variant-picker"><div className="variant-label">Цвет: <strong>{fieldValue(product,'color')||'Не указан'}</strong></div>
@@ -58,11 +67,12 @@ return <><div className="topline"><span>Технологии. Характер. 
 {auth&&<button onClick={async()=>{await api({action:'logout'});setAuth(false)}}><LogOut/> Выйти</button>}</div>
 {!auth?<form className="login" onSubmit={async e=>{e.preventDefault();const r=await api({action:'login',password});if(r.ok){setAuth(true);setPassword('')}else notify('Неверный пароль')}}><h2>Вход для владельца</h2><label>Пароль<input type="password" required autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}/></label><button className="button light">Войти <ArrowRight size={18}/></button></form>:
 <AdminSidebar active={adminSection} onChange={chooseAdminSection}
- productsCount={data.products.filter(p=>p.category!=='pc').length}
- pcsCount={data.products.filter(p=>p.category==='pc').length}>
+ productsCount={data.products.filter(p=>inAdminProductSection(p,'products')).length}
+ laptopsCount={data.products.filter(p=>inAdminProductSection(p,'laptops')).length}
+ pcsCount={data.products.filter(p=>inAdminProductSection(p,'pcs')).length}>
  {adminSection==='contacts'&&<>
   <form className="admin-settings" onSubmit={e=>{e.preventDefault();void save(data)}}>
-   <h2>Контакты и информация</h2>
+   <h2>Контакты</h2>
    <div className="form-grid">
     <label>Ссылка Instagram<input placeholder="https://www.instagram.com/…" value={data.instagram} onChange={e=>setData({...data,instagram:e.target.value})}/></label>
     <label>WhatsApp — номер без плюса<input placeholder="79XXXXXXXXX" value={data.whatsapp} onChange={e=>setData({...data,whatsapp:e.target.value})}/></label>
@@ -76,24 +86,15 @@ return <><div className="topline"><span>Технологии. Характер. 
   </div>
  </>}
  <div hidden={adminSection!=='slides'}><AdminHeroSlides slides={data.heroSlides} onSave={slides=>save({...data,heroSlides:slides})}/></div>
- {(adminSection==='products'||adminSection==='pcs')&&<>
-  <div className="skp-admin-panel-header"><div>
-   <h2>{adminSection==='pcs'?'Готовые ПК':'Товары'} <span className="muted">/ {data.products.filter(p=>adminSection==='pcs'?p.category==='pc':p.category!=='pc').length}</span></h2>
-   <p>{adminSection==='pcs'?'Управление готовыми сборками, их характеристиками и наличием.':'Комплектующие, периферия, ноутбуки и компьютерная мебель.'}</p>
-  </div><button className="button light" onClick={()=>setEditing({id:'product-'+Date.now(),name:'',category:adminSection==='pcs'?'pc':'peripherals',price:0,art:adminSection==='pcs'?'pc':'gpu',description:'',image:'',stock:true,brand:'',socket:'',memory:'',watts:0})}>
-   {adminSection==='pcs'?'Добавить ПК':'Добавить товар'} <Plus size={18}/></button></div>
-  <div className="admin-table">
-   {data.products.filter(p=>adminSection==='pcs'?p.category==='pc':p.category!=='pc').map(p=><div key={p.id}>
-    <span>{p.name}<small>{components[p.category]||peripherals[p.category]||cats[p.category]||p.category}</small></span>
-    <strong>{p.price>0?money(p.price):'Цена не задана'}</strong>
-    <button onClick={()=>setEditing(normalizeProduct(p))}>Изменить</button>
-    <button aria-label={'Удалить '+p.name} onClick={()=>{if(confirm('Удалить '+p.name+'?'))void save({...data,products:data.products.filter(x=>x.id!==p.id)})}}><Trash2 size={17}/></button>
-   </div>)}
-  </div>
-  {!data.products.some(p=>adminSection==='pcs'?p.category==='pc':p.category!=='pc')&&<div className="skp-admin-empty">
-   {adminSection==='pcs'?'Готовых ПК пока нет. Нажмите «Добавить ПК», чтобы создать первую сборку.':'Товаров пока нет. Нажмите «Добавить товар».'}
-  </div>}
- </>}
+ {(adminSection==='products'||adminSection==='pcs'||adminSection==='laptops')&&<AdminProducts
+  key={adminSection}
+  products={data.products} section={adminSection}
+  onAdd={category=>setEditing({id:'product-'+Date.now(),name:'',category,price:0,
+   art:({pc:'pc',laptops:'laptop',motherboard:'board',furniture:'chair'} as Record<string,string>)[category]||category,
+   description:'',image:'',stock:true,brand:'',socket:'',memory:'',watts:0})}
+  onEdit={product=>setEditing(normalizeProduct(product))}
+  onDelete={product=>{if(confirm('Удалить '+product.name+'?'))void save({...data,products:data.products.filter(p=>p.id!==product.id)})}}
+ />}
  {adminSection==='orders'&&<AdminOrders/>}
  {adminSection==='reviews'&&<AdminReviews/>}
 </AdminSidebar>}

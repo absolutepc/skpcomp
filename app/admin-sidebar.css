@@ -51,3 +51,14 @@
  .skp-admin-panel-header h2{font-size:20px}
 }
 @media(prefers-reduced-motion:reduce){.skp-admin-tab{transition:none}}
+
+/* Admin has its own restrained header. Public storefront navigation stays intact. */
+.skp-admin-header{background:#0c100b;border-bottom:1px solid #303c27}
+.skp-admin-header .header-inner{min-height:92px;max-width:1440px;justify-content:space-between;align-items:center}
+.skp-admin-header-tools{display:flex;align-items:center;justify-content:flex-end;min-width:0}
+.skp-admin-home-link{font-size:12px;font-weight:750;color:#dce2d3;display:inline-flex;gap:9px;align-items:center;border:1px solid #515d41;padding:10px 14px;border-radius:7px;transition:color .2s,border-color .2s}
+.skp-admin-home-link:hover{color:#ffe500;border-color:#b5aa31}
+@media(max-width:700px){
+ .skp-admin-header .header-inner{min-height:76px}
+ .skp-admin-home-link{font-size:11px;padding:8px 9px}
+}
