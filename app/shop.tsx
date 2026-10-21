@@ -27,9 +27,9 @@ const money=(n:number)=>new Intl.NumberFormat('ru-RU').format(n)+' ₽';
 function Logo(){return <svg className="store-logo" viewBox="145 430 825 335" role="img" aria-label="SKP — логотип магазина"><image href="/images/skp-logo.jpg" width="1080" height="1080"/></svg>}
 function ReferenceArt({area,className=''}:{area:string;className?:string}){
  const categoryPhotos:Record<string,string>={
-  laptops:'/images/category-laptops.webp',
+  laptops:'/images/category-laptops.jpg',
   components:'/images/category-components.webp',
-  peripherals:'/images/category-peripherals.webp'
+  peripherals:'/images/category-peripherals.jpg'
  };
  if(categoryPhotos[area])return <img className={'reference-art skp-category-photo skp-category-photo-'+area+' '+className}
   src={categoryPhotos[area]} alt={'Фотография категории «'+({laptops:'Ноутбуки',components:'Комплектующие',peripherals:'Периферия'} as Record<string,string>)[area]+'»'}
