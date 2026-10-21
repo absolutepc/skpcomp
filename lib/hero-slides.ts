@@ -31,7 +31,23 @@ export const defaultHeroSlides:HeroSlide[]=[
  description:'ASUS ROG Azoth Extreme Edition 20 Gaming Keyboard\nи ASUS ROG Harpe II Extreme Edition 20 Gaming Mouse уже в SKP.',
  primary:'Смотреть периферию',href:'/catalog/peripherals',secondary:'Весь каталог',secondHref:'/catalog/all',
  layout:'rog',image:'/images/asus-rog-azoth-extreme-edition-20.png',image2:'/images/asus-rog-harpe-ii-extreme-edition-20.png',
- caption:'AZOTH EXTREME · EDITION 20',caption2:'HARPE II EXTREME · EDITION 20'}
+ caption:'AZOTH EXTREME · EDITION 20',caption2:'HARPE II EXTREME · EDITION 20'},
+ {
+  id:'skp-hero-rog-swift-oled-edition-20',
+  label:'ASUS ROG Swift OLED PG27AQWP-G Edition 20',
+  eyebrow:'ASUS ROG · 20TH ANNIVERSARY',
+  title:'ROG SWIFT OLED\nPG27AQWP-G\nEDITION 20',highlightLine:2,
+  description:'ROG Swift OLED PG27AQWP-G Edition 20 —\nпремиальный OLED-монитор для киберспорта.',
+  primary:'Смотреть мониторы',href:'/catalog/monitor',
+  secondary:'Весь каталог',secondHref:'/catalog/all',
+  layout:'rog',image:'https://press.asus.com/assets/w_640%2Ch_640/4332432d-73e9-4785-b9d4-f432996f3af9/ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png',image2:'',caption:'ROG SWIFT OLED · EDITION 20',caption2:'',
+  layers:[{
+   id:'rog-swift-oled-monitor',image:'https://press.asus.com/assets/w_640%2Ch_640/4332432d-73e9-4785-b9d4-f432996f3af9/ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png',caption:'ROG SWIFT OLED · PG27AQWP-G · EDITION 20',
+   x:75,y:48,width:49,height:75,captionX:75,captionY:88,
+   tablet:{x:74,y:48,width:52,height:77,captionX:74,captionY:89},
+   mobile:{x:50,y:80,width:88,height:36,captionX:50,captionY:97}
+  }]
+ }
 ];
 const textLimits:Record<string,number>={
  label:120,eyebrow:110,title:150,description:500,primary:45,secondary:45,caption:80,caption2:80
@@ -169,4 +185,27 @@ export function setHeroBreakpointPlacement(
  const placement:HeroPlacement={x:updated.x,y:updated.y,width:updated.width,height:updated.height,
   captionX:updated.captionX,captionY:updated.captionY};
  return {...layer,[mode]:placement};
+}
+
+/**
+ * One-time upgrade of existing D1 stores: keep the merchant's slides,
+ * including the user's already-uploaded OLED monitor photo, and replace
+ * only the monitor slide's composition. The upgrade is persisted on the next
+ * regular admin save, so later intentional edits/deletion are respected.
+ */
+export const HERO_SLIDES_VERSION=1;
+export function upgradeRogSwiftOledSlide(slides:HeroSlide[]|undefined,version=0):HeroSlide[]{
+ const current=slides??defaultHeroSlides;
+ if(version>=HERO_SLIDES_VERSION)return current;
+ const preset=defaultHeroSlides.find(s=>s.id==='skp-hero-rog-swift-oled-edition-20')!;
+ const existing=current.find(s=>s.id===preset.id||/PG27AQWP[\s-]?G/i.test(s.label+' '+s.title));
+ const others=current.filter(s=>s!==existing&&s.id!==preset.id);
+ if(!existing&&others.length>=MAX_HERO_SLIDES)return others;
+ const uploaded=existing?.layers?.find(layer=>layer.image&&layer.image!=='/images/config-reference.png'&&layer.image!=='/images/skp-slide-2.png')?.image
+  ||(existing?.image&&existing.image!=='/images/config-reference.png'&&existing.image!=='/images/skp-slide-2.png'?existing.image:undefined);
+ const picture=uploaded||preset.image;
+ const updated:HeroSlide={...preset,id:existing?.id||preset.id,
+  image:picture,layers:preset.layers!.map(layer=>({...layer,id:existing?.layers?.[0]?.id||layer.id,image:picture}))};
+ others.splice(Math.min(3,others.length),0,updated);
+ return others;
 }
