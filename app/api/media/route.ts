@@ -1,7 +1,7 @@
 import {env} from 'cloudflare:workers';
 
 const E=env as unknown as {MEDIA?:R2Bucket;ADMIN_PASSWORD?:string};
-const MEDIA_KEY=/^products\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.webp$/;
+const MEDIA_KEY=/^(?:products|slides)\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.webp$/;
 const MAX_FILE_BYTES=8*1024*1024;
 const json=(data:object,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 async function authorized(request:Request){
@@ -36,16 +36,17 @@ export async function POST(request:Request){
  if(length>MAX_FILE_BYTES+100000)return json({error:'Слишком большой файл. Максимум 8 МБ.'},413);
  try{
   const data=await request.formData();
-  const file=data.get('file'),productId=data.get('productId');
-  if(typeof productId!=='string'||!/^[a-zA-Z0-9_-]{1,90}$/.test(productId))return json({error:'Некорректный ID товара'},400);
+  const file=data.get('file'),isSlide=data.get('assetType')==='slide';
+  const assetId=isSlide?data.get('slideId'):data.get('productId');
+  if(typeof assetId!=='string'||!/^[a-zA-Z0-9_-]{1,90}$/.test(assetId))return json({error:'Некорректный ID изображения'},400);
   if(!(file instanceof File)||file.size<50||file.size>MAX_FILE_BYTES||file.type!=='image/webp')
    return json({error:'Загрузите WebP с прозрачным фоном размером до 8 МБ.'},400);
   const bytes=new Uint8Array(await file.arrayBuffer());
   // Validate RIFF/WEBP signature; never trust the extension or browser MIME alone.
   if(String.fromCharCode(...bytes.slice(0,4))!=='RIFF'||String.fromCharCode(...bytes.slice(8,12))!=='WEBP')
    return json({error:'Повреждённый или неподдерживаемый WebP-файл'},400);
-  const key='products/'+productId+'/'+crypto.randomUUID()+'.webp';
-  await E.MEDIA.put(key,bytes,{httpMetadata:{contentType:'image/webp'},customMetadata:{productId}});
+  const key=(isSlide?'slides/':'products/')+assetId+'/'+crypto.randomUUID()+'.webp';
+  await E.MEDIA.put(key,bytes,{httpMetadata:{contentType:'image/webp'},customMetadata:isSlide?{slideId:assetId}:{productId:assetId}});
   return json({url:'/api/media?key='+key,key,size:file.size},201);
  }catch{return json({error:'Не удалось сохранить файл в R2. Проверьте настройки хранилища.'},503)}
 }

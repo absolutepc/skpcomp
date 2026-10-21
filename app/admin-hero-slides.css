@@ -1,0 +1,52 @@
+.skp-admin-hero{margin:25px 0 30px;padding:24px;border:1px solid #474d33;border-radius:15px;background:linear-gradient(130deg,#161b13,#0e110c)}
+.skp-admin-hero-heading{display:flex;align-items:start;justify-content:space-between;gap:14px}
+.skp-admin-hero-heading .eyebrow{font-size:10px;letter-spacing:1.3px;color:#ddc452}
+.skp-admin-hero h2{font-size:22px;margin:9px 0}
+.skp-admin-hero-heading p{font-size:12px;line-height:1.7;max-width:690px;color:#aab6a2;margin:8px 0 0}
+.skp-hero-count{font-size:12px;color:#b8c59d;white-space:nowrap}
+.skp-hero-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px 0}
+.skp-hero-toolbar .button{min-height:41px;gap:8px;padding:10px 14px}
+.skp-hero-toolbar .button:disabled{opacity:.45;cursor:not-allowed}
+.skp-hero-unsaved{font-size:11px;color:#efcd6c}
+.skp-hero-error,.skp-hero-success{border-radius:8px;padding:11px 12px;margin:12px 0;font-size:11px;line-height:1.6}
+.skp-hero-error{border:1px solid #a15b4a;color:#ffb1a2;background:#762c251c}
+.skp-hero-success{border:1px solid #6d8848;color:#c8e9ab;background:#364b241c}
+.skp-hero-empty{border:1px dashed #5e6448;border-radius:10px;padding:24px;color:#aeb5a4;text-align:center;font-size:12px}
+.skp-hero-admin-list{display:grid;gap:11px}
+.skp-hero-admin-item{border:1px solid #444e3a;border-radius:11px;background:#121611;overflow:hidden}
+.skp-hero-admin-row{display:flex;align-items:center;gap:14px;padding:11px}
+.skp-hero-thumb{width:94px;height:66px;background:#0b0d0b;border:1px solid #3c4835;flex-shrink:0;display:grid;place-items:center;border-radius:7px;overflow:hidden}
+.skp-hero-thumb img{width:100%;height:100%;object-fit:contain}
+.skp-hero-thumb svg{color:#9ba98f}
+.skp-hero-admin-info{flex:1;min-width:0}
+.skp-hero-admin-info strong{font-size:12px;line-height:1.5;display:block;overflow-wrap:anywhere;color:#eef0e3}
+.skp-hero-admin-info small{font-size:10px;line-height:1.5;display:block;margin-top:5px;color:#a0ac96}
+.skp-hero-admin-actions{display:flex;align-items:center;gap:5px}
+.skp-hero-admin-actions button{display:grid;place-items:center;width:32px;height:32px;padding:0;border:1px solid #4b5641;border-radius:7px;color:#d4decc}
+.skp-hero-admin-actions button:disabled{opacity:.25;cursor:default}
+.skp-hero-admin-actions button:not(:disabled):hover{border-color:#ffe500;color:#ffe500}
+.skp-hero-admin-actions .skp-hero-delete:not(:disabled):hover{border-color:#d47861;color:#ff9b87}
+.skp-hero-edit{padding:19px;border-top:1px solid #414b38;background:#0e120d}
+.skp-hero-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.skp-hero-fields label,.skp-hero-photo-control label{display:flex;flex-direction:column;min-width:0;gap:6px;font-size:11px;color:#cad5c3;font-weight:650}
+.skp-hero-fields input,.skp-hero-fields select,.skp-hero-fields textarea,.skp-hero-photo-control input{width:100%;min-width:0;color:#ebeee6;background:#090d09;border:1px solid #46523b;border-radius:7px;padding:11px 12px;font-size:12px;font-family:inherit}
+.skp-hero-fields textarea{resize:vertical}
+.skp-hero-fields input:focus,.skp-hero-fields textarea:focus,.skp-hero-fields select:focus,.skp-hero-photo-control input:focus{outline:1px solid #ffe500;border-color:#ffe500}
+.skp-hero-fields .skp-hero-wide{grid-column:1/-1}
+.skp-hero-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0 0}
+.skp-hero-photo-control{display:flex;flex-direction:column;align-items:stretch;gap:11px;padding:13px;border:1px solid #3b4633;border-radius:9px;background:#131810;min-width:0}
+.skp-hero-photo-control>strong{font-size:12px}
+.skp-hero-photo-preview{height:150px;display:grid;place-items:center;background:#0a0c09;border-radius:7px;overflow:hidden;border:1px solid #35412e}
+.skp-hero-photo-preview img{height:100%;width:100%;object-fit:contain}
+.skp-hero-photo-control button{width:fit-content;min-height:38px;font-size:10px;gap:6px}
+.skp-hero-media-note{font-size:10px;line-height:1.7;color:#92a48d;margin:17px 0 0}
+.skp-hero-hidden-input{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;opacity:0!important;pointer-events:none}
+@media(max-width:700px){
+ .skp-admin-hero{padding:15px}
+ .skp-hero-fields,.skp-hero-photos{grid-template-columns:1fr}
+ .skp-hero-admin-row{gap:9px;flex-wrap:wrap}
+ .skp-hero-thumb{width:65px;height:55px}
+ .skp-hero-admin-info{flex-basis:calc(100% - 85px)}
+ .skp-hero-admin-actions{margin-left:auto}
+ .skp-hero-edit{padding:13px}
+}

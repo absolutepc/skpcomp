@@ -3,6 +3,7 @@ import {seed} from '../../../lib/seed';
 import {productPhotos} from '../../../lib/product-photos';
 import {buildComponentFields} from '../../../lib/build-components';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
+import {defaultHeroSlides,validateHeroSlides} from '../../../lib/hero-slides';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 // A fresh local D1 database has no tables until its first request.
 async function ensureShop(){await E.DB.prepare('CREATE TABLE IF NOT EXISTS shop (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)').run()}
@@ -108,15 +109,16 @@ export async function GET(){
   }
   // The next successful admin save persists this version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
-  return Response.json({...store,products,catalogVersion:7},{headers:{'Cache-Control':'no-store'}});
+  return Response.json({...store,products,catalogVersion:7,heroSlides:store.heroSlides??defaultHeroSlides},{headers:{'Cache-Control':'no-store'}});
  }
- return Response.json(store,{headers:{'Cache-Control':'no-store'}});
+ return Response.json({...store,heroSlides:store.heroSlides??defaultHeroSlides},{headers:{'Cache-Control':'no-store'}});
 }
 export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});const b=await r.json() as any;
 if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin='+await token()+'; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800'}})}
 if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'}});
 if(!await auth(r))return Response.json({error:'Войдите в административную панель'},{status:401});if(b.action==='check')return Response.json({ok:true});
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
+if(!validateHeroSlides(d.heroSlides))return Response.json({error:'Проверьте настройки слайдов, ссылки и изображения. Максимум 12 слайдов.'},{status:400});
 if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||!isProductImageUrl(p.image)))return Response.json({error:'Проверьте названия, цены и ссылки фотографий'},{status:400});
 if(d.products.some((p:any)=>p.gallery!==undefined&&(
  !Array.isArray(p.gallery)||p.gallery.length>=MAX_GALLERY_IMAGES||
