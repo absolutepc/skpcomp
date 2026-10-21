@@ -174,7 +174,7 @@ assert.equal(isHeroImageUrl('/api/media?key=slides/../x.webp'),false);
 assert.equal(isHeroImageUrl('http://example.org/image.png'),false);
 assert.equal(isHeroLink('//external-site.com'),false);
 assert.equal(isHeroLink('/product/item-abc'),true);
-assert.equal(moveHeroSlide(defaultHeroSlides,0,1)[0].id,defaultHeroSlides[3].id,'Move down');
+assert.equal(moveHeroSlide(defaultHeroSlides,0,1)[0].id,defaultHeroSlides[1].id,'Move down');
 assert.equal(moveHeroSlide(defaultHeroSlides,2,-1)[1].id,defaultHeroSlides[2].id,'Move up');
 assert.equal(moveHeroSlide(defaultHeroSlides,0,-1)[0].id,defaultHeroSlides[0].id,'Out-of-bounds move is safe');
 assert.equal(defaultHeroSlides[0].id,'skp-hero-logitech','Reorder does not mutate original input');
