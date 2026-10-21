@@ -1168,3 +1168,85 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 .hero-carousel:has(>.skp-slide-canvas){isolation:isolate}
 .hero-carousel>.skp-slide-canvas{z-index:2}
 @media(max-width:700px){.hero-carousel>.skp-slide-canvas .skp-slide-layer-caption{font-size:clamp(8px,2vw,11px)}}
+
+
+/* A single coordinate contract for preview and storefront; breakpoint overrides
+   are relative to the full slide's bounds, not to the surrounding text grid. */
+.skp-slide-layer-image{
+ left:var(--skp-desktop-x);top:var(--skp-desktop-y);
+ width:var(--skp-desktop-width);height:var(--skp-desktop-height);
+}
+.skp-slide-layer-caption{left:var(--skp-desktop-x);top:var(--skp-desktop-y)}
+@media(min-width:701px) and (max-width:1150px){
+ .hero-carousel:not(.skp-slide-preview) .skp-slide-layer-image{
+  left:var(--skp-tablet-x);top:var(--skp-tablet-y);
+  width:var(--skp-tablet-width);height:var(--skp-tablet-height)
+ }
+ .hero-carousel:not(.skp-slide-preview) .skp-slide-layer-caption{left:var(--skp-tablet-x);top:var(--skp-tablet-y)}
+}
+@media(max-width:700px){
+ .hero-carousel:not(.skp-slide-preview) .skp-slide-layer-image{
+  left:var(--skp-mobile-x);top:var(--skp-mobile-y);
+  width:var(--skp-mobile-width);height:var(--skp-mobile-height)
+ }
+ .hero-carousel:not(.skp-slide-preview) .skp-slide-layer-caption{left:var(--skp-mobile-x);top:var(--skp-mobile-y)}
+}
+.skp-slide-preview-tablet .skp-slide-layer-image{
+ left:var(--skp-tablet-x);top:var(--skp-tablet-y);
+ width:var(--skp-tablet-width);height:var(--skp-tablet-height);
+}
+.skp-slide-preview-tablet .skp-slide-layer-caption{left:var(--skp-tablet-x);top:var(--skp-tablet-y)}
+.skp-slide-preview-mobile .skp-slide-layer-image{
+ left:var(--skp-mobile-x);top:var(--skp-mobile-y);
+ width:var(--skp-mobile-width);height:var(--skp-mobile-height);
+}
+.skp-slide-preview-mobile .skp-slide-layer-caption{left:var(--skp-mobile-x);top:var(--skp-mobile-y)}
+.skp-slide-preview-desktop .skp-slide-layer-image{
+ left:var(--skp-desktop-x);top:var(--skp-desktop-y);
+ width:var(--skp-desktop-width);height:var(--skp-desktop-height);
+}
+.skp-slide-preview-desktop .skp-slide-layer-caption{left:var(--skp-desktop-x);top:var(--skp-desktop-y)}
+/* The preview mounts the same hero JSX, fonts, image layers and background.
+   Force its breakpoint rules regardless of the admin browser viewport. */
+.skp-slide-preview.hero-carousel{margin:0;width:100%;min-width:0;overflow:hidden;box-sizing:border-box}
+.skp-slide-preview-desktop.hero-carousel{
+ --skp-hero-height:560px;display:grid;grid-template-columns:48% 52%;
+ grid-template-rows:minmax(0,1fr);padding-bottom:30px
+}
+.skp-slide-preview-tablet.hero-carousel{
+ --skp-hero-height:500px;display:grid;grid-template-columns:48% 52%;
+ grid-template-rows:minmax(0,1fr);padding-bottom:30px
+}
+.skp-slide-preview-tablet.hero-carousel .hero-copy{
+ padding:30px 10px 64px 10px;
+}
+.skp-slide-preview-tablet.hero-carousel.mouse-launch h1,
+.skp-slide-preview-tablet.hero-carousel.rog-anniversary .hero-copy h1{font-size:clamp(28px,3.2vw,43px)}
+.skp-slide-preview-mobile.hero-carousel{
+ --skp-hero-height:665px;display:grid;grid-template-columns:minmax(0,1fr);
+ grid-template-rows:minmax(0,1fr) 270px;padding-bottom:0;
+}
+.skp-slide-preview-mobile.hero-carousel .hero-copy{
+ padding:24px 0 10px;min-height:0;height:100%;justify-content:center;
+}
+.skp-slide-preview-mobile.hero-carousel.mouse-launch .hero-copy>.eyebrow{font-size:8px;margin-bottom:15px}
+.skp-slide-preview-mobile.hero-carousel.mouse-launch h1,
+.skp-slide-preview-mobile.hero-carousel.rog-anniversary .hero-copy h1{
+ font-size:32px;margin-bottom:13px;letter-spacing:-1.1px;line-height:1.13;
+}
+.skp-slide-preview-mobile.hero-carousel .hero-copy h1{font-size:32px;line-height:1.13;margin-bottom:13px;letter-spacing:-1.1px}
+.skp-slide-preview-mobile.hero-carousel .hero-copy>p{font-size:11px;line-height:1.6}
+.skp-slide-preview-mobile.hero-carousel .hero-copy>.hero-buttons{margin-top:17px;gap:10px;flex-wrap:wrap}
+.skp-slide-preview-mobile.hero-carousel .hero-copy>.hero-benefits{margin-top:20px;gap:13px;flex-wrap:wrap}
+.skp-slide-preview-mobile.hero-carousel .hero-benefits>div{gap:7px;font-size:8px}
+.skp-slide-preview-mobile.hero-carousel .hero-benefits svg{width:19px;height:19px}
+.skp-slide-preview-mobile.hero-carousel .hero-visual{
+ width:110%;height:270px;min-height:0;margin:0 -5%;align-self:stretch;overflow:hidden
+}
+.skp-slide-preview-mobile.hero-carousel .mouse-duo-showcase{min-height:0;height:100%;gap:5px;padding:15px 12px 34px}
+.skp-slide-preview-mobile.hero-carousel .mouse-duo-photo{height:min(86%,225px);max-width:155px}
+.skp-slide-preview-mobile.hero-carousel .mouse-duo-caption{bottom:5%;font-size:7px;letter-spacing:0;white-space:normal}
+.skp-slide-preview-mobile.hero-carousel .rog-duo-showcase{min-height:0;height:100%}
+.skp-slide-preview-mobile.hero-carousel .second-slide-premium{min-height:0;height:100%;padding:20px 11px 28px}
+.skp-slide-preview-mobile.hero-carousel .second-slide-frame{height:210px;max-height:100%}
+.skp-slide-preview-mobile.hero-carousel .carousel-controls{bottom:12px}
