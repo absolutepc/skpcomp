@@ -774,6 +774,9 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 
 
 /* SKP FPS Performance Lab: modal entry point, overlay and animated results. */
+.skp-fps-inline-action{white-space:nowrap;display:inline-flex;align-items:center;gap:9px;justify-content:center;vertical-align:middle}
+.skp-fps-inline-action svg{color:#ffe500;flex-shrink:0}
+.skp-fps-inline-action:hover{border-color:#ffe500;color:#ffe500}
 .skp-fps-launch{
  display:flex;align-items:center;gap:17px;width:100%;max-width:100%;
  margin:26px 0;padding:21px 24px;min-height:96px;text-align:left;
@@ -822,8 +825,6 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  border-bottom:1px solid #414329;
 }
 .skp-fps-modal-title{display:flex;align-items:center;gap:18px;min-width:0}
-.skp-fps-modal-logo{flex:0 0 54px;width:54px;height:54px;border:1px solid #796d24;
- border-radius:14px;display:flex;align-items:center;justify-content:center;color:#ffe500;background:#ffe5000b}
 .skp-fps-modal-title .eyebrow{color:#c5b658;font-size:10px;letter-spacing:1.5px}
 .skp-fps-modal-title h2{margin:6px 0 4px;color:#f7f7ee;font-size:clamp(19px,2.6vw,29px);line-height:1.18;letter-spacing:-.7px}
 .skp-fps-modal-title p{margin:0;color:#aeb6a6;font-size:11px;line-height:1.5}
@@ -858,8 +859,6 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .skp-fps-modal{width:100%;max-height:94dvh;border-radius:18px 18px 0 0;border-bottom:0}
  .skp-fps-modal-top{padding:19px 17px;gap:10px}
  .skp-fps-modal-title{gap:10px}
- .skp-fps-modal-logo{width:40px;height:40px;flex-basis:40px;border-radius:10px}
- .skp-fps-modal-logo svg{width:21px;height:21px}
  .skp-fps-modal-title h2{font-size:19px}
  .skp-fps-modal-title p{font-size:10px}
  .skp-fps-modal-title .eyebrow{font-size:8px}
