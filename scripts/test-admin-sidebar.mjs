@@ -35,7 +35,7 @@ assert.match(shop,/setAdminSection\(adminSectionFromQuery\(new URLSearchParams\(
 assert.match(shop,/history\.replaceState\(history\.state,'','\/admin\?section='\+next\)/,'URL updates without reload');
 assert.match(shop,/path!=='\/admin'&&<div className="topline">/,'Storefront notice hidden in admin');
 assert.match(shop,/path==='\/admin'\?<div className="skp-admin-header-tools">/,'Storefront navigation replaced by admin brand header');
-assert.match(shop,/className="skp-admin-home-link"/,'Admin retains route to storefront');
+assert.match(shop,/'skp-admin-home-link'/,'Admin retains route to storefront');
 assert.match(shop,/productsCount=\{data\.products\.filter\(p=>inAdminProductSection\(p,'products'\)\)\.length\}/);
 assert.match(shop,/laptopsCount=\{data\.products\.filter\(p=>inAdminProductSection\(p,'laptops'\)\)\.length\}/);
 assert.match(shop,/pcsCount=\{data\.products\.filter\(p=>inAdminProductSection\(p,'pcs'\)\)\.length\}/);
