@@ -20,18 +20,6 @@ export const defaultHeroSlides:HeroSlide[]=[
  primary:'Перейти',href:'/product/logitech-pro-x3-superstrike-black',secondary:'Весь каталог',secondHref:'/catalog/all',
  layout:'logitech',image:'/images/pro-x3-magenta-hd.png',image2:'/images/pro-x3-black-hd.png',
  caption:'MAGENTA ECLIPSE',caption2:'MIDNIGHT BLACK'},
- {id:'skp-hero-computer',label:'Твой идеальный компьютер',
- eyebrow:'КОМПЬЮТЕРЫ. КОМПЛЕКТУЮЩИЕ. ПЕРИФЕРИЯ',
- title:'ТВОЙ ИДЕАЛЬНЫЙ\nКОМПЬЮТЕР\nНАЧИНАЕТСЯ ЗДЕСЬ',highlightLine:1,
- description:'Современные комплектующие, готовые решения\nи всё для комфортной игры и работы.',
- primary:'Перейти в каталог',href:'/catalog/all',secondary:'Собрать ПК',secondHref:'/configurator',
- layout:'premium',image:'/images/skp-build-hero.png',image2:'',caption:'',caption2:''},
- {id:'skp-hero-rog',label:'ASUS ROG Azoth Extreme Edition 20 и Harpe II Extreme Edition 20 уже в SKP',
- eyebrow:'ASUS ROG · 20TH ANNIVERSARY',title:'ASUS ROG\nEDITION 20\nУЖЕ В SKP',highlightLine:1,
- description:'ASUS ROG Azoth Extreme Edition 20 Gaming Keyboard\nи ASUS ROG Harpe II Extreme Edition 20 Gaming Mouse уже в SKP.',
- primary:'Смотреть периферию',href:'/catalog/peripherals',secondary:'Весь каталог',secondHref:'/catalog/all',
- layout:'rog',image:'/images/asus-rog-azoth-extreme-edition-20.png',image2:'/images/asus-rog-harpe-ii-extreme-edition-20.png',
- caption:'AZOTH EXTREME · EDITION 20',caption2:'HARPE II EXTREME · EDITION 20'},
  {
   id:'skp-hero-rog-swift-oled-edition-20',
   label:'ASUS ROG Swift OLED PG27AQWP-G Edition 20',
@@ -48,7 +36,20 @@ export const defaultHeroSlides:HeroSlide[]=[
    tablet:{x:50,y:50,width:100,height:96,captionX:50,captionY:95},
    mobile:{x:50,y:50,width:100,height:94,captionX:50,captionY:95}
   }]
- }
+ },
+ {id:'skp-hero-rog',label:'ASUS ROG Azoth Extreme Edition 20 и Harpe II Extreme Edition 20 уже в SKP',
+ eyebrow:'ASUS ROG · 20TH ANNIVERSARY',title:'ASUS ROG\nEDITION 20\nУЖЕ В SKP',highlightLine:1,
+ description:'ASUS ROG Azoth Extreme Edition 20 Gaming Keyboard\nи ASUS ROG Harpe II Extreme Edition 20 Gaming Mouse уже в SKP.',
+ primary:'Смотреть периферию',href:'/catalog/peripherals',secondary:'Весь каталог',secondHref:'/catalog/all',
+ layout:'rog',image:'/images/asus-rog-azoth-extreme-edition-20.png',image2:'/images/asus-rog-harpe-ii-extreme-edition-20.png',
+ caption:'AZOTH EXTREME · EDITION 20',caption2:'HARPE II EXTREME · EDITION 20'},
+ {id:'skp-hero-computer',label:'Твой идеальный компьютер',
+ eyebrow:'КОМПЬЮТЕРЫ. КОМПЛЕКТУЮЩИЕ. ПЕРИФЕРИЯ',
+ title:'ТВОЙ ИДЕАЛЬНЫЙ\nКОМПЬЮТЕР\nНАЧИНАЕТСЯ ЗДЕСЬ',highlightLine:1,
+ description:'Современные комплектующие, готовые решения\nи всё для комфортной игры и работы.',
+ primary:'Перейти в каталог',href:'/catalog/all',secondary:'Собрать ПК',secondHref:'/configurator',
+ layout:'premium',image:'/images/skp-build-hero.png',image2:'',caption:'',caption2:''}
+
 ];
 const textLimits:Record<string,number>={
  label:120,eyebrow:110,title:150,description:500,primary:45,secondary:45,caption:80,caption2:80
@@ -234,4 +235,15 @@ export function upgradeComputerHeroImage(slides:HeroSlide[]|undefined,version=0)
  return current.map(slide=>slide.id==='skp-hero-computer'&&
   (!slide.image||slide.image==='/images/skp-slide-2.png')
    ?{...slide,image:'/images/skp-build-hero.png'}:slide);
+}
+
+/** Apply the owner's requested position 2↔4 exchange once to saved
+ * admin-managed slides. Slide records, uploads, labels and URLs stay intact.
+ * A subsequent admin save persists the new order and opt-out version marker. */
+export const HERO_SLIDE_ORDER_VERSION=1;
+export function swapSecondAndFourthHeroSlides(slides:HeroSlide[],version=0):HeroSlide[]{
+ if(version>=HERO_SLIDE_ORDER_VERSION||slides.length<4)return slides;
+ const result=[...slides];
+ [result[1],result[3]]=[result[3],result[1]];
+ return result;
 }

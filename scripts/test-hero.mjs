@@ -26,16 +26,19 @@ const compiled=ts.transpileModule(source,{
 assert.equal(compiled.diagnostics?.filter(x=>x.category===ts.DiagnosticCategory.Error).length??0,0);
 const exports={};
 runInNewContext(compiled.outputText,{exports,Set,Array,Math,Number,JSON,crypto:{randomUUID:()=> '12345678-1234-4234-8234-123456789abc'}});
-const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,createHeroSlide,resolveHeroPlacement,setHeroBreakpointPlacement,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION,upgradeComputerHeroImage,COMPUTER_HERO_IMAGE_VERSION}=exports;
-assert.equal(defaultHeroSlides.length,4,'Three original slides plus the curated ASUS ROG Swift OLED fourth slide');
+const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,createHeroSlide,resolveHeroPlacement,setHeroBreakpointPlacement,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION,upgradeComputerHeroImage,COMPUTER_HERO_IMAGE_VERSION,swapSecondAndFourthHeroSlides,HERO_SLIDE_ORDER_VERSION}=exports;
+assert.equal(defaultHeroSlides.length,4,'Four original slides remain available');
+assert.deepEqual(Array.from(defaultHeroSlides,slide=>slide.id),[
+ 'skp-hero-logitech','skp-hero-rog-swift-oled-edition-20','skp-hero-rog','skp-hero-computer'
+],'Fresh store: original second monitor and fourth computer slide swap places');
 assert.equal(validateHeroSlides(defaultHeroSlides),true,'Existing slides validate');
 assert.equal(defaultHeroSlides[0].primary,'Перейти');
 assert.equal(defaultHeroSlides[0].href,'/product/logitech-pro-x3-superstrike-black');
 assert.equal(defaultHeroSlides[0].image,'/images/pro-x3-magenta-hd.png');
 assert.equal(defaultHeroSlides[0].image2,'/images/pro-x3-black-hd.png');
 
-assert.equal(defaultHeroSlides[1].id,'skp-hero-computer');
-assert.equal(defaultHeroSlides[1].image,'/images/skp-build-hero.png','The third displayed slide uses owner-uploaded PC image');
+assert.equal(defaultHeroSlides[3].id,'skp-hero-computer');
+assert.equal(defaultHeroSlides[3].image,'/images/skp-build-hero.png','The third displayed slide uses owner-uploaded PC image');
 assert.equal(COMPUTER_HERO_IMAGE_VERSION,1);
 const submittedPC=readFileSync(new URL('../public/images/skp-build-hero.png',import.meta.url));
 const {createHash}=await import('node:crypto');
@@ -44,8 +47,8 @@ assert.equal(createHash('sha256').update(submittedPC).digest('hex'),
  'Self-hosted image must match the exact uploaded original');
 assert.equal(submittedPC.readUInt32BE(16),800,'Image width remains 800px');
 assert.equal(submittedPC.readUInt32BE(20),800,'Image height remains 800px');
-const oldComputer={...defaultHeroSlides[1],image:'/images/skp-slide-2.png'};
-const customComputer={...defaultHeroSlides[1],image:'/api/media?key=slides/pc/12345678-1234-4234-8234-123456789abc.webp'};
+const oldComputer={...defaultHeroSlides[3],image:'/images/skp-slide-2.png'};
+const customComputer={...defaultHeroSlides[3],image:'/api/media?key=slides/pc/12345678-1234-4234-8234-123456789abc.webp'};
 const unchangedOther=defaultHeroSlides[0];
 const upgradedPC=upgradeComputerHeroImage([unchangedOther,oldComputer],0);
 assert.equal(upgradedPC[0],unchangedOther,'Other slides remain untouched');
@@ -60,25 +63,25 @@ assert.match(route,/upgradeComputerHeroImage\(upgradeRogSwiftOledSlide/,'Stored 
 assert.match(css,/\.hero-carousel \.skp-clean-computer-slide \.second-slide-frame \.second-slide-photo\{[\s\S]*?object-fit:contain;[\s\S]*?transform:scale\(1\.08\)/,
  'The new PC image uses restrained zoom and object containment');
 
-assert.equal(defaultHeroSlides[3].id,'skp-hero-rog-swift-oled-edition-20');
-assert.equal(defaultHeroSlides[3].layout,'rog');
-assert.equal(defaultHeroSlides[3].title,'ROG SWIFT OLED\nPG27AQWP-G\nEDITION 20');
-assert.equal(defaultHeroSlides[3].highlightLine,2);
-assert.equal(defaultHeroSlides[3].href,'/product/asus-rog-swift-oled-pg27aqwp-g-edition-20');
-assert.equal(defaultHeroSlides[3].image,'/images/rog-oled-pg27aqwp-g-hero.png');
-assert.equal(defaultHeroSlides[3].layers.length,1);
-assert.equal(defaultHeroSlides[3].layers[0].mobile.x,50);
-assert.equal(defaultHeroSlides[3].layers[0].tablet.x,50);
+assert.equal(defaultHeroSlides[1].id,'skp-hero-rog-swift-oled-edition-20');
+assert.equal(defaultHeroSlides[1].layout,'rog');
+assert.equal(defaultHeroSlides[1].title,'ROG SWIFT OLED\nPG27AQWP-G\nEDITION 20');
+assert.equal(defaultHeroSlides[1].highlightLine,2);
+assert.equal(defaultHeroSlides[1].href,'/product/asus-rog-swift-oled-pg27aqwp-g-edition-20');
+assert.equal(defaultHeroSlides[1].image,'/images/rog-oled-pg27aqwp-g-hero.png');
+assert.equal(defaultHeroSlides[1].layers.length,1);
+assert.equal(defaultHeroSlides[1].layers[0].mobile.x,50);
+assert.equal(defaultHeroSlides[1].layers[0].tablet.x,50);
 assert.equal(validateHeroSlides(defaultHeroSlides),true);
-const oldThree=defaultHeroSlides.slice(0,3);
+const oldThree=[defaultHeroSlides[0],defaultHeroSlides[3],defaultHeroSlides[2]];
 const upgradedFour=upgradeRogSwiftOledSlide(oldThree,0);
 assert.equal(upgradedFour.length,4,'Fourth slide appears for an existing three-slide store');
-assert.equal(upgradedFour[3].id,defaultHeroSlides[3].id);
+assert.equal(upgradedFour[3].id,defaultHeroSlides[1].id);
 assert.equal(upgradedFour[2],oldThree[2],'Third ROG slide is unchanged');
 assert.equal(upgradeRogSwiftOledSlide(upgradedFour,0).length,4,'Repeated GET never duplicates slide');
 const savedPhoto='/api/media?key=slides/test-monitor/12345678-1234-4234-8234-123456789abc.webp';
-const existingMonitor={...defaultHeroSlides[3],id:'user-slide-4',
- image:savedPhoto,layers:[{...defaultHeroSlides[3].layers[0],image:savedPhoto,
+const existingMonitor={...defaultHeroSlides[1],id:'user-slide-4',
+ image:savedPhoto,layers:[{...defaultHeroSlides[1].layers[0],image:savedPhoto,
   x:23,y:66,mobile:{x:36,y:60,width:35,height:42,captionX:36,captionY:79}}]};
 const migrated=upgradeRogSwiftOledSlide([...oldThree,existingMonitor],0);
 assert.equal(migrated.length,4,'Already uploaded fourth slide is migrated, not duplicated');
@@ -91,9 +94,9 @@ assert.equal(migrated[3].href,'/product/asus-rog-swift-oled-pg27aqwp-g-edition-2
 assert.equal(upgradeRogSwiftOledSlide(oldThree,HERO_SLIDES_VERSION).length,3,
  'After an admin save, deleting the fourth slide remains intentional');
 assert.equal(HERO_SLIDES_VERSION,4,'Edition 20 artwork upgraded to self-hosted full device cutout');
-assert.equal(defaultHeroSlides[3].layers[0].caption,'','No floating model caption covers the product photo');
-assert.equal(defaultHeroSlides[3].layers[0].mobile.height,94,'Mobile cutout is constrained within its art stage');
-assert.equal(validateHeroSlides([defaultHeroSlides[3]]),true);
+assert.equal(defaultHeroSlides[1].layers[0].caption,'','No floating model caption covers the product photo');
+assert.equal(defaultHeroSlides[1].layers[0].mobile.height,94,'Mobile cutout is constrained within its art stage');
+assert.equal(validateHeroSlides([defaultHeroSlides[1]]),true);
 const resized=upgradeRogSwiftOledSlide([...oldThree,existingMonitor],1);
 assert.equal(resized.length,4,'Revision 1 store gets the better composition');
 assert.equal(resized[3].image,savedPhoto,'Revision 2 preserves uploaded media');
@@ -102,7 +105,7 @@ assert.equal(upgradeRogSwiftOledSlide([...oldThree,existingMonitor],2)[3].image,
 assert.equal(resized[3].layers[0].x,50,'Revision 4 prevents oversize placement');
 assert.equal(upgradeRogSwiftOledSlide(oldThree,1).length,3,'Revision 2 respects already deleted slide');
 assert.equal(upgradeRogSwiftOledSlide(migrated,HERO_SLIDES_VERSION),migrated,'Latest saved settings are never overwritten');
-assert.ok(defaultHeroSlides[3].layers[0].height<=100,'Monitor fits within a separately bounded stage');
+assert.ok(defaultHeroSlides[1].layers[0].height<=100,'Monitor fits within a separately bounded stage');
 assert.ok(!css.includes('hero-carousel.rog-oled-feature .carousel-controls{'),'Carousel arrows keep the original shared positioning');
 
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?left:50%;[\s\S]*?right:auto;[\s\S]*?transform:translateX\(-50%\)/,
@@ -165,7 +168,7 @@ assert.equal(validateHeroSlides([{...defaultHeroSlides[0],href:'javascript:alert
 assert.equal(validateHeroSlides([{...defaultHeroSlides[0],href:'https://example.org'}]),false,'Only internal navigation');
 assert.equal(validateHeroSlides([{...defaultHeroSlides[0],image:'data:image/svg+xml,a'}]),false);
 assert.equal(validateHeroSlides([{...defaultHeroSlides[0],layout:'duo',image2:''}]),false,'Two-image layouts require second image');
-assert.equal(validateHeroSlides([{...defaultHeroSlides[1],layout:'single',image:'/images/new.webp'}]),true,'New single-image slide can be saved');
+assert.equal(validateHeroSlides([{...defaultHeroSlides[3],layout:'single',image:'/images/new.webp'}]),true,'New single-image slide can be saved');
 assert.equal(isHeroImageUrl('/api/media?key=slides/hero-test/12345678-1234-4234-8234-123456789abc.webp'),true);
 assert.equal(isHeroImageUrl('/api/media?key=slides/../x.webp'),false);
 assert.equal(isHeroImageUrl('http://example.org/image.png'),false);
@@ -241,15 +244,17 @@ assert.ok(previousPosition<indicatorsPosition&&indicatorsPosition<nextPosition,
  'Every slide must show previous arrow to the LEFT of dots and next arrow to the RIGHT');
 assert.match(controlsMarkup,/className="carousel-dots" role="group" aria-label="Выбор слайда"/,
  'The central pagination group is accessible');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots\{[\s\S]*?border-radius:999px;[\s\S]*?background:#090d09d9;/,
- 'Pagination dots are enclosed in their own subtle rounded block');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?background:#0b0e0ad9;[\s\S]*?border:1px solid #6a765554;[\s\S]*?border-radius:999px;/,
+ 'The arrows and dots share ONE continuous elongated capsule');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots\{[\s\S]*?background:transparent;[\s\S]*?border:0;/,
+ 'Pagination dots do NOT have a second separate pill border');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?left:50%;[\s\S]*?transform:translateX\(-50%\)/,
  'The arrow/dots/arrow navigation is centered for ALL slides');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 39px;/,
- 'Arrows are separate, equally-sized controls on both sides');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 37px;/,
+ 'Arrows are separate, equally-sized controls inside the shared capsule');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots button\{[\s\S]*?place-items:center;/,
  'Dots remain centered within their shared control block');
-assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots button\{[\s\S]*?clamp\(16px,5\.4vw,25px\)/,
+assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots button\{[\s\S]*?clamp\(14px,4\.3vw,23px\)/,
  'Navigation adapts without overflow on mobile devices');
 assert.match(css,/\.hero-carousel \.skp-clean-computer-slide\{[\s\S]*?padding:36px 17px 67px 12px;/,
  'The owner-supplied PC slide has balanced spacing like the other slides');
@@ -303,7 +308,26 @@ assert.match(css,/\.skp-slide-preview-mobile \.skp-slide-layer-image/,'Live mobi
 assert.match(css,/@media\(max-width:700px\)[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\) \.skp-slide-layer-image/,'Storefront selects mobile positions');
 assert.match(canvas,/onPointerMove=\{move\}/,'Canvas objects can be dragged');
 assert.match(canvas,/value\.part==='image'/,'Image and caption are positioned separately');
-assert.match(route,/heroSlides:linkFeaturedMonitorSlide\(upgradeComputerHeroImage\(upgradeRogSwiftOledSlide\(store\.heroSlides,store\.heroSlidesVersion\),store\.computerHeroImageVersion\),store\.products\)/,'Catalog links the slide to the monitor product after both image migrations');
+assert.match(route,/const latestSlides=linkFeaturedMonitorSlide\(/,'Catalog still connects slides to monitor product');
+assert.match(route,/swapSecondAndFourthHeroSlides\(latestSlides,store\.heroSlideOrderVersion\)/,
+ 'Server applies one-time order swap to existing saved admin carousels');
+assert.match(route,/swapSecondAndFourthHeroSlides\(slides,store\.heroSlideOrderVersion\)/,
+ 'Legacy catalog migration also receives the order swap');
+assert.match(route,/heroSlideOrderVersion:HERO_SLIDE_ORDER_VERSION/,
+ 'GET responds with a version marker preserved by the next admin save');
+assert.equal(HERO_SLIDE_ORDER_VERSION,1);
+const legacySequence=[defaultHeroSlides[0],defaultHeroSlides[3],defaultHeroSlides[2],defaultHeroSlides[1]];
+const reordered=swapSecondAndFourthHeroSlides(legacySequence,0);
+assert.deepEqual(Array.from(reordered,x=>x.id),Array.from(defaultHeroSlides,x=>x.id),
+ 'Existing four-slide D1 store swaps the second and fourth slide exactly once');
+assert.notEqual(reordered,legacySequence,'The swap does not mutate the original array');
+assert.equal(legacySequence[1].id,'skp-hero-computer','The previous admin order is kept in memory');
+assert.equal(reordered[1],legacySequence[3],'User slide object and uploaded photos are preserved');
+assert.equal(reordered[3],legacySequence[1],'PC slide moves to position four without recreation');
+assert.equal(swapSecondAndFourthHeroSlides(reordered,HERO_SLIDE_ORDER_VERSION),reordered,
+ 'Later manual order changes are never swapped again after saving the marker');
+assert.equal(swapSecondAndFourthHeroSlides(legacySequence.slice(0,3),0).length,3,
+ 'Shortened lists from the admin remain untouched');
 assert.match(route,/validateHeroSlides\(d\.heroSlides\)/,'Server validates slider content');
 assert.match(media,/assetType'\)==='slide'/,'Slide uploads supported in R2');
 console.log('Hero tests passed: slide management, validation, defaults, image storage, responsive layout and autoplay.');

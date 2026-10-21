@@ -1428,8 +1428,8 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  }
 }
 
-/* Uniform slider navigation for every homepage slide:
-   previous arrow | independently framed indicator dots | next arrow. */
+/* One continuous elongated pill for the entire hero navigation:
+   previous arrow | pagination dots | next arrow, all INSIDE the same shape. */
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls{
  left:50%;
  right:auto;
@@ -1438,24 +1438,26 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  display:flex;
  align-items:center;
  justify-content:center;
- gap:clamp(8px,1vw,14px);
+ gap:clamp(5px,.85vw,12px);
  width:max-content;
- max-width:calc(100% - 24px);
- padding:0;
- background:none;
- border:0;
- border-radius:0;
- box-shadow:none;
- backdrop-filter:none;
+ max-width:calc(100% - 20px);
+ padding:6px 9px;
+ background:#0b0e0ad9;
+ border:1px solid #6a765554;
+ border-radius:999px;
+ box-shadow:0 9px 24px #0007;
+ backdrop-filter:blur(11px);
 }
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls .carousel-arrow{
- flex:0 0 39px;
- width:39px;
- height:39px;
+ flex:0 0 37px;
+ width:37px;
+ height:37px;
  display:grid;
  place-items:center;
- background:#0b100bdb;
- border:1px solid #777f6599;
+ background:#181e16;
+ border:1px solid #7c89696e;
+ color:#eaf0e3;
+ border-radius:50%;
 }
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls .carousel-arrow:hover,
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls .carousel-arrow:focus-visible{
@@ -1468,33 +1470,39 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  align-items:center;
  justify-content:center;
  gap:0;
- min-height:39px;
- padding:2px 9px;
- border:1px solid #60694b65;
- border-radius:999px;
- background:#090d09d9;
- backdrop-filter:blur(9px);
+ padding:0 2px;
+ min-height:35px;
+ background:transparent;
+ border:0;
+ border-radius:0;
+ box-shadow:none;
+ backdrop-filter:none;
 }
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls .carousel-dots button{
  display:grid;
  place-items:center;
- flex:0 0 27px;
- width:27px;
- height:33px;
+ flex:0 1 clamp(16px,2vw,26px);
+ width:clamp(16px,2vw,26px);
+ height:34px;
+ min-width:0;
 }
 @media(max-width:700px){
  .hero-carousel:not(.skp-slide-preview)>.carousel-controls{
   bottom:12px;
-  gap:8px;
+  gap:clamp(2px,1.2vw,7px);
+  padding:5px 7px;
  }
  .hero-carousel:not(.skp-slide-preview)>.carousel-controls .carousel-arrow{
-  width:35px;height:35px;flex-basis:35px;
+  flex-basis:34px;width:34px;height:34px;
  }
  .hero-carousel:not(.skp-slide-preview)>.carousel-controls .carousel-dots{
-  min-height:35px;padding:2px 6px;
+  min-height:32px;
+  padding:0 1px;
  }
  .hero-carousel:not(.skp-slide-preview)>.carousel-controls .carousel-dots button{
-  flex:0 1 clamp(16px,5.4vw,25px);width:clamp(16px,5.4vw,25px);height:30px;
+  flex:0 1 clamp(14px,4.3vw,23px);
+  width:clamp(14px,4.3vw,23px);
+  height:30px;
  }
 }
 
