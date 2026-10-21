@@ -1119,7 +1119,9 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .hero-carousel .mouse-duo-photo{height:min(86%,225px);max-width:155px}
  .hero-carousel .mouse-duo-caption{bottom:5%;font-size:7px;letter-spacing:0;white-space:normal}
  .hero-carousel .rog-duo-showcase{min-height:0;height:100%}
- .hero-carousel .second-slide-premium{min-height:0;height:100%}
+ .hero-carousel .hero-visual:has(>.second-slide-premium){height:270px;min-height:0;overflow:hidden}
+ .hero-carousel .second-slide-premium{min-height:0;height:100%;padding:20px 11px 28px}
+ .hero-carousel .second-slide-frame{height:210px;max-height:100%}
  .hero-carousel .carousel-controls{bottom:12px}
 }
 @media(max-width:380px){
@@ -1130,4 +1132,6 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .hero-carousel .hero-copy>.hero-benefits{gap:10px}
  .hero-carousel .hero-visual,.hero-carousel.mouse-launch .hero-visual,
  .hero-carousel.rog-anniversary .hero-visual{height:265px}
+ .hero-carousel .hero-visual:has(>.second-slide-premium){height:265px}
+ .hero-carousel .second-slide-frame{height:205px}
 }
