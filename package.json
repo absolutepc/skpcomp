@@ -18,7 +18,8 @@
     "test:hero": "node scripts/test-hero.mjs",
     "test:orders": "node scripts/test-orders.mjs",
     "test:admin": "node scripts/test-admin-sidebar.mjs",
-    "test:monitor": "node scripts/test-featured-monitor.mjs"
+    "test:monitor": "node scripts/test-featured-monitor.mjs",
+    "test:categories": "node scripts/test-home-category-images.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

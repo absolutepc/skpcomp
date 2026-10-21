@@ -546,3 +546,12 @@ The portable build runs Vinext directly without a host `timeout` command. The ma
 
 - [vinext Documentation](https://github.com/cloudflare/vinext)
 - [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+
+## Главная страница — фотографии категорий
+
+Карточки трёх категорий на главной странице используют **оригинальные загруженные владельцем фотографии** (без генерации):
+- `public/images/category-laptops.jpg` — «Ноутбуки» (исходный файл `AEYvg9hJbdXFmWL4XKPiHk.jpg`);
+- `public/images/category-components.webp` — «Комплектующие» (исходный файл `PC_Parts_Collection.webp`);
+- `public/images/category-peripherals.jpg` — «Периферия» (исходный файл `set.jpg`).
+
+Изображения лежат непосредственно в GitHub-проекте и не требуют подключения внешнего фотохостинга. Карточка «Компьютерная мебель» не менялась. Все подписи и ссылки категорий сохранены. Добавлен тест `pnpm test:categories`.
