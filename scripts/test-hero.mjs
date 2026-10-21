@@ -6,11 +6,12 @@ import ts from 'typescript';
 const hero=readFileSync(new URL('../app/hero-slider.tsx',import.meta.url),'utf8');
 const editor=readFileSync(new URL('../app/admin-hero-slides.tsx',import.meta.url),'utf8');
 const canvas=readFileSync(new URL('../app/hero-canvas-layers.tsx',import.meta.url),'utf8');
+const exactPreview=readFileSync(new URL('../app/scaled-hero-preview.tsx',import.meta.url),'utf8');
 const shop=readFileSync(new URL('../app/shop.tsx',import.meta.url),'utf8');
 const route=readFileSync(new URL('../app/api/store/route.ts',import.meta.url),'utf8');
 const media=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf8');
 const css=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
-for(const [name,source] of [['hero',hero],['admin editor',editor],['layer renderer',canvas]]){
+for(const [name,source] of [['hero',hero],['admin editor',editor],['layer renderer',canvas],['scaled preview',exactPreview]]){
  const result=ts.transpileModule(source,{
   compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX},
   fileName:name+'.tsx',reportDiagnostics:true
@@ -25,7 +26,7 @@ const compiled=ts.transpileModule(source,{
 assert.equal(compiled.diagnostics?.filter(x=>x.category===ts.DiagnosticCategory.Error).length??0,0);
 const exports={};
 runInNewContext(compiled.outputText,{exports,Set,Array,Math,Number,JSON,crypto:{randomUUID:()=> '12345678-1234-4234-8234-123456789abc'}});
-const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,createHeroSlide}=exports;
+const {defaultHeroSlides,validateHeroSlides,isHeroImageUrl,isHeroLink,moveHeroSlide,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,createHeroSlide,resolveHeroPlacement,setHeroBreakpointPlacement}=exports;
 assert.equal(defaultHeroSlides.length,3,'Three existing slides are initially preserved');
 assert.equal(validateHeroSlides(defaultHeroSlides),true,'Existing slides validate');
 assert.equal(defaultHeroSlides[0].primary,'Перейти');
@@ -78,6 +79,24 @@ assert.equal(removeHeroLayer(newSlide,newSlide.layers[0].id).layers.length,1,'La
 const atLimit={...newSlide,layers:Array.from({length:MAX_SLIDE_IMAGES},(_,i)=>({...newSlide.layers[0],id:'asset-'+i}))};
 assert.equal(validateHeroSlides([atLimit]),true);
 assert.equal(addHeroLayer(atLimit).layers.length,MAX_SLIDE_IMAGES);
+const originalMobile=resolveHeroPlacement(upgraded.layers[0],'mobile',0,2);
+const originalDesktop=resolveHeroPlacement(upgraded.layers[0],'desktop',0,2);
+assert.notEqual(originalMobile.y,originalDesktop.y,'Unconfigured mobile art moves below hero copy');
+const mobileMoved=setHeroBreakpointPlacement(upgraded.layers[0],'mobile',{x:25,y:80,width:46,captionX:29,captionY:94},0,2);
+assert.equal(mobileMoved.x,upgraded.layers[0].x,'Editing mobile position must not shift desktop');
+assert.equal(resolveHeroPlacement(mobileMoved,'mobile',0,2).x,25);
+assert.equal(resolveHeroPlacement(mobileMoved,'mobile',0,2).captionY,94);
+assert.equal(resolveHeroPlacement(mobileMoved,'desktop',0,2).x,upgraded.layers[0].x);
+const tabletMoved=setHeroBreakpointPlacement(mobileMoved,'tablet',{y:38,height:69},0,2);
+assert.equal(resolveHeroPlacement(tabletMoved,'tablet',0,2).y,38);
+assert.equal(resolveHeroPlacement(tabletMoved,'mobile',0,2).y,80,'Tablet and phone must stay independent');
+assert.equal(resolveHeroPlacement(tabletMoved,'desktop',0,2).height,upgraded.layers[0].height);
+const desktopMoved=setHeroBreakpointPlacement(tabletMoved,'desktop',{x:73},0,2);
+assert.equal(desktopMoved.x,73);
+assert.equal(resolveHeroPlacement(desktopMoved,'mobile',0,2).x,25,'Desktop edits preserve configured phone layout');
+assert.equal(validateHeroSlides([{...upgraded,layers:[desktopMoved,upgraded.layers[1]]}]),true);
+assert.equal(validateHeroSlides([{...upgraded,layers:[{...desktopMoved,mobile:{...desktopMoved.mobile,y:120}}]}]),false,'Validate mobile bounds');
+assert.equal(validateHeroSlides([{...upgraded,layers:[{...desktopMoved,tablet:{...desktopMoved.tablet,x:NaN}}]}]),false,'Validate tablet bounds');
 assert.equal(validateHeroSlides([{...atLimit,layers:[...atLimit.layers,{...atLimit.layers[0],id:'overflow'}]}]),false);
 
 assert.match(hero,/export const HERO_AUTOPLAY_MS=5000\b/);
@@ -110,10 +129,22 @@ assert.match(editor,/addHeroLayer\(slide\)/,'Multiple images are supported');
 assert.match(editor,/removeHeroLayer\(slide,layer\.id\)/,'Individual image removal');
 assert.match(editor,/skp-hero-live-preview/,'Preview renders edited slide');
 assert.match(editor,/previewMode==='mobile'/,'Responsive preview mode');
+assert.match(editor,/\['desktop','tablet','mobile'\]/,'Three independently editable viewport modes');
+assert.match(editor,/resolveHeroPlacement\(layer,previewMode,layerIndex,layers\.length\)/,'Sliders show breakpoint-specific values');
+assert.match(editor,/setHeroBreakpointPlacement\(layer,previewMode,fields,index/,'Editor saves responsive positions');
+assert.match(editor,/<ScaledHeroPreview slide=\{slide\} mode=\{previewMode\}/,'Editor mounts shared slide preview');
+assert.match(exactPreview,/width:1440,height:560/);
+assert.match(exactPreview,/width:900,height:500/);
+assert.match(exactPreview,/width:390,height:665/);
+assert.match(exactPreview,/<HeroSlidePreview slide=\{slide\} previewMode=\{mode\}/,'Preview uses the actual slide JSX');
+assert.match(exactPreview,/transform:'scale\('\+scale\+'\)'/,'Scaled preview keeps reference geometry');
 assert.match(editor,/type="range"/,'Live positioning controls');
 assert.match(editor,/captionX/,'Caption has independent horizontal coordinate');
 assert.match(editor,/captionY/,'Caption has independent vertical coordinate');
 assert.match(canvas,/setPointerCapture\(event\.pointerId\)/,'Drag gestures capture pointer');
+assert.match(canvas,/resolveHeroPlacement\(layer,previewMode,index,layers\.length\)/,'Dragging reads active breakpoint coordinates');
+assert.match(css,/\.skp-slide-preview-mobile \.skp-slide-layer-image/,'Live mobile preview has independent positions');
+assert.match(css,/@media\(max-width:700px\)[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\) \.skp-slide-layer-image/,'Storefront selects mobile positions');
 assert.match(canvas,/onPointerMove=\{move\}/,'Canvas objects can be dragged');
 assert.match(canvas,/value\.part==='image'/,'Image and caption are positioned separately');
 assert.match(route,/heroSlides:store\.heroSlides\?\?defaultHeroSlides/,'Legacy catalog retains original slides');
