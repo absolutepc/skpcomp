@@ -54,13 +54,13 @@ assert.equal(repaired.category,'monitor');
 
 const allSlides=slides.defaultHeroSlides;
 const linked=feature.linkFeaturedMonitorSlide(allSlides,after);
-assert.equal(linked[3].href,'/product/'+monitor.id,'Slide points to product');
+assert.equal(linked[1].href,'/product/'+monitor.id,'Slide points to product');
 assert.equal(linked[0],allSlides[0],'All other slides stay identical');
 const linkedOld=feature.linkFeaturedMonitorSlide(
- allSlides.map((item,i)=>i===3?{...item,href:'/catalog/monitor'}:item),
+ allSlides.map((item,i)=>i===1?{...item,href:'/catalog/monitor'}:item),
  withManual
 );
-assert.equal(linkedOld[3].href,'/product/hand-added-monitor','Existing user product ID is honored');
+assert.equal(linkedOld[1].href,'/product/hand-added-monitor','Existing user product ID is honored');
 assert.equal(feature.linkFeaturedMonitorSlide(allSlides,before),allSlides,
  'No monitor does not mutate slides');
 
