@@ -127,7 +127,7 @@ assert.match(editor,/validateHeroSlides\(draft\)/,'Check fields before saving');
 assert.match(editor,/enableHeroCanvas\(slide\)/,'Existing slides can enable manual positioning');
 assert.match(editor,/addHeroLayer\(slide\)/,'Multiple images are supported');
 assert.match(editor,/removeHeroLayer\(slide,layer\.id\)/,'Individual image removal');
-assert.match(editor,/skp-hero-live-preview/,'Preview renders edited slide');
+assert.match(editor,/<ScaledHeroPreview slide=\{slide\}/,'Preview renders shared real slide');
 assert.match(editor,/previewMode==='mobile'/,'Responsive preview mode');
 assert.match(editor,/\['desktop','tablet','mobile'\]/,'Three independently editable viewport modes');
 assert.match(editor,/resolveHeroPlacement\(layer,previewMode,layerIndex,layers\.length\)/,'Sliders show breakpoint-specific values');
