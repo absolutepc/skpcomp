@@ -38,10 +38,10 @@ assert.equal(defaultHeroSlides[3].layout,'rog');
 assert.equal(defaultHeroSlides[3].title,'ROG SWIFT OLED\nPG27AQWP-G\nEDITION 20');
 assert.equal(defaultHeroSlides[3].highlightLine,2);
 assert.equal(defaultHeroSlides[3].href,'/product/asus-rog-swift-oled-pg27aqwp-g-edition-20');
-assert.ok(defaultHeroSlides[3].image.includes('dlcdnwebimgs.asus.com/gain/80E6E940-7255-4E74-AC75-E3A9B2DA0B36'));
+assert.equal(defaultHeroSlides[3].image,'/images/rog-oled-pg27aqwp-g-hero.png');
 assert.equal(defaultHeroSlides[3].layers.length,1);
 assert.equal(defaultHeroSlides[3].layers[0].mobile.x,50);
-assert.equal(defaultHeroSlides[3].layers[0].tablet.x,74);
+assert.equal(defaultHeroSlides[3].layers[0].tablet.x,50);
 assert.equal(validateHeroSlides(defaultHeroSlides),true);
 const oldThree=defaultHeroSlides.slice(0,3);
 const upgradedFour=upgradeRogSwiftOledSlide(oldThree,0);
@@ -58,24 +58,41 @@ assert.equal(migrated.length,4,'Already uploaded fourth slide is migrated, not d
 assert.equal(migrated[3].id,existingMonitor.id,'Original slide record ID is retained');
 assert.equal(migrated[3].image,savedPhoto,'User uploaded photo is retained');
 assert.equal(migrated[3].layers[0].image,savedPhoto,'User uploaded media layer is retained');
-assert.equal(migrated[3].layers[0].x,75,'Hand-curated desktop coordinates replace broken admin positioning');
-assert.equal(migrated[3].layers[0].mobile.y,73,'Hand-curated mobile positioning is applied');
+assert.equal(migrated[3].layers[0].x,50,'Desktop image is now centered inside a bounded visual stage');
+assert.equal(migrated[3].layers[0].mobile.y,50,'Mobile image is centered inside its own bounded stage');
 assert.equal(migrated[3].href,'/product/asus-rog-swift-oled-pg27aqwp-g-edition-20');
 assert.equal(upgradeRogSwiftOledSlide(oldThree,HERO_SLIDES_VERSION).length,3,
  'After an admin save, deleting the fourth slide remains intentional');
-assert.equal(HERO_SLIDES_VERSION,3,'Edition 20 artwork upgraded to complete official ASUS gallery image');
-assert.equal(defaultHeroSlides[3].layers[0].captionY,85,'Desktop caption stays clear of carousel arrows');
-assert.equal(defaultHeroSlides[3].layers[0].mobile.captionY,92,'Phone caption stays clear of carousel controls');
+assert.equal(HERO_SLIDES_VERSION,4,'Edition 20 artwork upgraded to self-hosted full device cutout');
+assert.equal(defaultHeroSlides[3].layers[0].caption,'','No floating model caption covers the product photo');
+assert.equal(defaultHeroSlides[3].layers[0].mobile.height,94,'Mobile cutout is constrained within its art stage');
 assert.equal(validateHeroSlides([defaultHeroSlides[3]]),true);
 const resized=upgradeRogSwiftOledSlide([...oldThree,existingMonitor],1);
 assert.equal(resized.length,4,'Revision 1 store gets the better composition');
 assert.equal(resized[3].image,savedPhoto,'Revision 2 preserves uploaded media');
+assert.equal(upgradeRogSwiftOledSlide([...oldThree,existingMonitor],3)[3].image,savedPhoto,'Latest migration keeps merchant uploads');
 assert.equal(upgradeRogSwiftOledSlide([...oldThree,existingMonitor],2)[3].image,savedPhoto,'Revision 3 preserves photo uploaded in admin');
-assert.equal(resized[3].layers[0].x,75,'Revision 3 fixes saved positions');
+assert.equal(resized[3].layers[0].x,50,'Revision 4 prevents oversize placement');
 assert.equal(upgradeRogSwiftOledSlide(oldThree,1).length,3,'Revision 2 respects already deleted slide');
 assert.equal(upgradeRogSwiftOledSlide(migrated,HERO_SLIDES_VERSION),migrated,'Latest saved settings are never overwritten');
-assert.ok(defaultHeroSlides[3].layers[0].height<85,'Complete monitor safely fits into banner');
-assert.match(css,/\.hero-carousel\.rog-oled-feature \.carousel-controls\{[\s\S]*?right:auto/,'Only monitor slide moves controls off the product photo');
+assert.ok(defaultHeroSlides[3].layers[0].height<=100,'Monitor fits within a separately bounded stage');
+assert.ok(!css.includes('hero-carousel.rog-oled-feature .carousel-controls{'),'Carousel arrows keep the original shared positioning');
+const fullCutout=readFileSync(new URL('../public/images/rog-oled-pg27aqwp-g-hero.png',import.meta.url));
+assert.equal(fullCutout.toString('hex',0,8),'89504e470d0a1a0a','Show a real, locally stored PNG, not a remote screen screenshot');
+assert.equal(fullCutout.readUInt32BE(16),1400,'Official ASUS image is optimized and tightly framed');
+assert.ok(fullCutout.readUInt32BE(20)>1100&&fullCutout.readUInt32BE(20)<1400,'Entire device including stand is present');
+assert.match(css,/\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas\{[\s\S]*?height:calc\(100% - 104px\);[\s\S]*?overflow:hidden/,'Desktop image is bounded with room for carousel controls');
+assert.match(css,/\.skp-slide-preview-mobile\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas\{/,'Exact admin mobile preview uses bounded art');
+assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel\.rog-oled-feature:not\(\.skp-slide-preview\)>\.skp-slide-canvas\{/,'Mobile storefront stage bounds constrained');
+const desktopStage={height:560,top:18,bottom:86},tabletStage={height:500,top:16,bottom:78},mobileStage={height:665,bottom:78,stageHeight:230};
+for(const reference of [desktopStage,tabletStage]){
+ const stage=reference.height-reference.top-reference.bottom;
+ const top=reference.top+stage*(50-96/2)/100;
+ const bottom=reference.top+stage*(50+96/2)/100;
+ assert.ok(top>=0&&bottom<reference.height-70,'The whole desktop/tablet monitor stays inside banner above controls');
+}
+const mobileImageBottom=mobileStage.height-mobileStage.bottom-mobileStage.stageHeight+mobileStage.stageHeight*(50+94/2)/100;
+assert.ok(mobileImageBottom<mobileStage.height-70,'The full monitor fits above mobile carousel controls');
 
 
 assert.equal(validateHeroSlides([]),true,'The admin may remove all slides');
