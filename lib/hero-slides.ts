@@ -94,7 +94,7 @@ export function createHeroSlide():HeroSlide{
  return {id:'hero-'+crypto.randomUUID(),label:'Новый слайд',eyebrow:'НОВИНКА В SKP',
   title:'НОВЫЙ\nСЛАЙД',highlightLine:1,description:'Расскажите о вашем предложении.',
   primary:'Перейти',href:'/catalog/all',secondary:'Весь каталог',secondHref:'/catalog/all',
-  layout:'single',image:'/images/skp-slide-2.png',image2:'',caption:'',caption2:''};
+  layout:'single',image:'/images/config-reference.png',image2:'',caption:'',caption2:''};
 }
 
 const clamp=(n:number,min:number,max:number)=>Math.round(Math.min(max,Math.max(min,n))*10)/10;
