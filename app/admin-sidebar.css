@@ -1,17 +1,19 @@
 /* SKP admin layout. Sidebar is sticky on desktop and scrollable across small viewports. */
-.skp-admin-layout{display:grid;grid-template-columns:minmax(210px,250px) minmax(0,1fr);gap:24px;align-items:start;margin:25px 0 45px}
-.skp-admin-sidebar{position:sticky;top:24px;border:1px solid #383e2d;border-radius:14px;background:linear-gradient(155deg,#181d15,#0e120d 70%);padding:17px 11px 13px;min-width:0}
+.skp-admin-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:24px;align-items:start;margin:25px 0 45px}
+.skp-admin-sidebar{position:sticky;top:24px;width:100%;box-sizing:border-box;border:1px solid #383e2d;border-radius:14px;background:linear-gradient(155deg,#181d15,#0e120d 70%);padding:17px 11px 13px;min-width:0}
 .skp-admin-sidebar-caption{display:flex;align-items:center;gap:8px;padding:9px 11px 20px;color:#b7a93c;font-size:10px;font-weight:800;letter-spacing:1px}
 .skp-admin-sidebar-dot{width:7px;height:7px;border-radius:50%;background:#ffe500;box-shadow:0 0 10px #ffe50088}
-.skp-admin-menu{display:grid;gap:5px}
-.skp-admin-tab{width:100%;min-height:48px;padding:12px 12px;display:flex;justify-content:flex-start;gap:11px;align-items:center;text-align:left;color:#b6beae;border:1px solid transparent;border-radius:9px;transition:background .2s,border-color .2s,color .2s}
-.skp-admin-tab svg{flex:none}
+.skp-admin-menu{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;width:100%;min-width:0}
+.skp-admin-menu>.skp-admin-tab{width:100%;max-width:100%;min-width:0;box-sizing:border-box;min-height:48px;padding:12px 10px;display:grid;grid-template-columns:19px minmax(0,1fr) 26px 16px;justify-self:stretch;align-items:center;justify-content:stretch;column-gap:9px;text-align:left;color:#b6beae;border:1px solid transparent;border-radius:9px;transition:background .2s,border-color .2s,color .2s}
+.skp-admin-tab svg{flex:none;justify-self:center}
 .skp-admin-tab-label{flex:1;min-width:0;font-size:12px;font-weight:700;line-height:1.35}
 .skp-admin-tab:hover{border-color:#434c37;background:#22291c;color:#f6f7e8}
 .skp-admin-tab.active{color:#fff4a3;background:linear-gradient(100deg,#353a17,#212718);border-color:#a19327;box-shadow:inset 3px 0 0 #ffe500}
-.skp-admin-tab-count{flex:none;min-width:26px;padding:3px 5px;text-align:center;border-radius:5px;background:#f0f0d00a;border:1px solid #74775435;font-size:10px;font-weight:700}
+.skp-admin-tab-count{display:block;box-sizing:border-box;width:26px;min-width:26px;padding:3px 4px;text-align:center;border-radius:5px;background:#f0f0d00a;border:1px solid #74775435;font-size:10px;font-weight:700}
 .skp-admin-tab.active .skp-admin-tab-count{color:#ffe500;border-color:#ffe50050}
-.skp-admin-tab-chevron{color:#ffe500}
+.skp-admin-tab-count.placeholder{visibility:hidden}
+.skp-admin-tab-chevron{color:#ffe500;visibility:hidden}
+.skp-admin-tab.active .skp-admin-tab-chevron{visibility:visible}
 .skp-admin-sidebar-foot{padding:18px 11px 7px;color:#74816e;font-size:10px;line-height:1.5;border-top:1px solid #3b4636;margin-top:16px}
 .skp-admin-main{min-width:0;min-height:320px}
 .skp-admin-main .admin-settings{margin:0}
@@ -33,7 +35,7 @@
 .skp-admin-main .skp-admin-hero{margin:0 0 24px}
 @media(max-width:1000px){
  .skp-admin-layout{grid-template-columns:200px minmax(0,1fr);gap:15px}
- .skp-admin-tab{padding:11px 8px;gap:8px}
+ .skp-admin-menu>.skp-admin-tab{padding:11px 8px;column-gap:7px}
  .skp-admin-tab-label{font-size:11px}
  .skp-admin-main .admin-table>div{flex-wrap:wrap}
 }
@@ -42,7 +44,7 @@
  .skp-admin-sidebar{position:static;width:100%;padding:10px 10px 11px;border-radius:11px}
  .skp-admin-sidebar-caption{padding:3px 8px 9px}
  .skp-admin-menu{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding:4px 2px 8px;scroll-snap-type:x proximity}
- .skp-admin-tab{flex:none;width:auto;min-height:44px;padding:10px 12px;white-space:nowrap;scroll-snap-align:start}
+ .skp-admin-menu>.skp-admin-tab{flex:0 0 172px;width:172px;min-height:44px;padding:10px 10px;column-gap:7px;white-space:nowrap;scroll-snap-align:start}
  .skp-admin-tab-label{font-size:11px}
  .skp-admin-tab-chevron{display:none}
  .skp-admin-sidebar-foot{display:none}

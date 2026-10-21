@@ -48,8 +48,9 @@ export default function AdminSidebar({active,onChange,productsCount,laptopsCount
       aria-controls={'skp-admin-panel-'+id}>
       <Icon size={19} strokeWidth={1.8} aria-hidden="true"/>
       <span className="skp-admin-tab-label">{label}</span>
-      {count!==null&&<span className="skp-admin-tab-count">{count}</span>}
-      {active===id&&<ChevronRight className="skp-admin-tab-chevron" size={16} aria-hidden="true"/>}
+      {count!==null?<span className="skp-admin-tab-count">{count}</span>:
+       <span className="skp-admin-tab-count placeholder" aria-hidden="true"/>}
+      <ChevronRight className="skp-admin-tab-chevron" size={16} aria-hidden="true"/>
      </button>;
     })}
    </nav>
