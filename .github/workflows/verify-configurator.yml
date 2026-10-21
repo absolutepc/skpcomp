@@ -31,5 +31,6 @@ jobs:
           pnpm test:configurator
           pnpm test:fps
           pnpm test:gallery
+          pnpm test:hero
       - name: Production build
         run: pnpm build
