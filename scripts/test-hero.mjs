@@ -250,8 +250,8 @@ assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls
  'Pagination dots do NOT have a second separate pill border');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?left:50%;[\s\S]*?transform:translateX\(-50%\)/,
  'The arrow/dots/arrow navigation is centered for ALL slides');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 39px;/,
- 'Arrows are separate, equally-sized controls on both sides');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 37px;/,
+ 'Arrows are separate, equally-sized controls inside the shared capsule');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots button\{[\s\S]*?place-items:center;/,
  'Dots remain centered within their shared control block');
 assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots button\{[\s\S]*?clamp\(14px,4\.3vw,23px\)/,
