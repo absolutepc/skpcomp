@@ -40,9 +40,9 @@ export const defaultHeroSlides:HeroSlide[]=[
   description:'Лимитированная серия к 20-летию ROG.\nTandem OLED · QHD 540 Гц · HD до 720 Гц.',
   primary:'Смотреть мониторы',href:'/catalog/monitor',
   secondary:'Весь каталог',secondHref:'/catalog/all',
-  layout:'rog',image:'https://press.asus.com/assets/w_1920%2Ch_1920/d6d0cfb1-d847-4004-af57-b88445099207/ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png',image2:'',caption:'ROG SWIFT OLED · EDITION 20',caption2:'',
+  layout:'rog',image:'https://press.asus.com/assets/w_640%2Ch_640/4332432d-73e9-4785-b9d4-f432996f3af9/ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png',image2:'',caption:'ROG SWIFT OLED · EDITION 20',caption2:'',
   layers:[{
-   id:'rog-swift-oled-monitor',image:'https://press.asus.com/assets/w_1920%2Ch_1920/d6d0cfb1-d847-4004-af57-b88445099207/ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png',caption:'ROG SWIFT OLED · PG27AQWP-G · EDITION 20',
+   id:'rog-swift-oled-monitor',image:'https://press.asus.com/assets/w_640%2Ch_640/4332432d-73e9-4785-b9d4-f432996f3af9/ROG%20Swift%20OLED%20PG27AQWP-G%20Edition%2020.png',caption:'ROG SWIFT OLED · PG27AQWP-G · EDITION 20',
    x:76,y:42,width:44,height:63,captionX:76,captionY:80,
    tablet:{x:75,y:42,width:44,height:61,captionX:75,captionY:80},
    mobile:{x:50,y:73,width:86,height:29,captionX:50,captionY:89}
