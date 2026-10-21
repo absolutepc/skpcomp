@@ -1,10 +1,11 @@
 export const HERO_LAYOUTS=['logitech','premium','rog','single','duo'] as const;
 export type HeroLayout=typeof HERO_LAYOUTS[number];
 export const MAX_SLIDE_IMAGES=16;
-export type HeroLayer={
+export type HeroBreakpoint='desktop'|'tablet'|'mobile';
+export type HeroPlacement={x:number;y:number;width:number;height:number;captionX:number;captionY:number};
+export type HeroLayer=HeroPlacement&{
  id:string;image:string;caption:string;
- x:number;y:number;width:number;height:number;
- captionX:number;captionY:number;
+ tablet?:HeroPlacement;mobile?:HeroPlacement;
 };
 export type HeroSlide={
  id:string;label:string;eyebrow:string;title:string;highlightLine:number;description:string;
@@ -76,6 +77,16 @@ export function validateHeroSlides(value:unknown):value is HeroSlide[]{
     for(const name of ['width','height']){
      if(typeof layer[name]!=='number'||!Number.isFinite(layer[name])||layer[name]<5||layer[name]>100)return false;
     }
+    for(const mode of ['tablet','mobile']){
+     if(layer[mode]===undefined)continue;
+     const alternate=layer[mode];
+     if(!alternate||typeof alternate!=='object'||Array.isArray(alternate))return false;
+     for(const name of ['x','y','captionX','captionY','width','height']){
+      const value=(alternate as Record<string,unknown>)[name];
+      if(typeof value!=='number'||!Number.isFinite(value)||
+        value<(name==='width'||name==='height'?5:0)||value>100)return false;
+     }
+    }
    }
   }else{
    if(!s.image)return false;
@@ -134,4 +145,28 @@ export function removeHeroLayer(slide:HeroSlide,id:string):HeroSlide{
  const list=slide.layers;
  if(!list||list.length<=1)return slide;
  return {...slide,layers:list.filter(image=>image.id!==id)};
+}
+
+export function resolveHeroPlacement(layer:HeroLayer,mode:HeroBreakpoint,index=0,count=1):HeroPlacement{
+ const base:HeroPlacement={x:layer.x,y:layer.y,width:layer.width,height:layer.height,
+  captionX:layer.captionX,captionY:layer.captionY};
+ if(mode==='desktop')return base;
+ if(mode==='tablet')return layer.tablet??base;
+ if(layer.mobile)return layer.mobile;
+ // Old saved records did not distinguish mobile: turn right-side desktop art into
+ // a separate lower-stage composition that avoids the text at the top.
+ const x=count===1?50:Math.min(88,Math.max(12,50+(index-(count-1)/2)*Math.min(42,90/count)));
+ const mobileY=79;
+ return {x,y:mobileY,width:Math.min(85,count===1?72:Math.max(16,90/count)),
+  height:count===1?34:29,captionX:x,captionY:95};
+}
+export function setHeroBreakpointPlacement(
+ layer:HeroLayer,mode:HeroBreakpoint,changes:Partial<HeroPlacement>,index=0,count=1
+):HeroLayer{
+ if(mode==='desktop')return positionHeroLayer(layer,changes);
+ const current=resolveHeroPlacement(layer,mode,index,count);
+ const updated=positionHeroLayer({...layer,...current},changes);
+ const placement:HeroPlacement={x:updated.x,y:updated.y,width:updated.width,height:updated.height,
+  captionX:updated.captionX,captionY:updated.captionY};
+ return {...layer,[mode]:placement};
 }

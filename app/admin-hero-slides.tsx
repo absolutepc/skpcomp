@@ -1,8 +1,8 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {ArrowDown,ArrowUp,ImagePlus,Pencil,Plus,Save,Trash2,X} from 'lucide-react';
-import {createHeroSlide,defaultHeroSlides,HERO_LAYOUTS,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,moveHeroSlide,validateHeroSlides,enableHeroCanvas,addHeroLayer,removeHeroLayer,positionHeroLayer,type HeroLayer,type HeroSlide} from '../lib/hero-slides';
-import HeroCanvasLayers from './hero-canvas-layers';
+import {createHeroSlide,defaultHeroSlides,HERO_LAYOUTS,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,moveHeroSlide,validateHeroSlides,enableHeroCanvas,addHeroLayer,removeHeroLayer,resolveHeroPlacement,setHeroBreakpointPlacement,type HeroLayer,type HeroPlacement,type HeroBreakpoint,type HeroSlide} from '../lib/hero-slides';
+import ScaledHeroPreview from './scaled-hero-preview';
 import './admin-hero-slides.css';
 
 const layoutNames:Record<HeroSlide['layout'],string>={
@@ -38,16 +38,16 @@ export default function AdminHeroSlides({slides=defaultHeroSlides,onSave}:{slide
  const [error,setError]=useState('');
  const [success,setSuccess]=useState('');
  const [selected,setSelected]=useState<string|null>(null);
- const [previewMode,setPreviewMode]=useState<'desktop'|'mobile'>('desktop');
+ const [previewMode,setPreviewMode]=useState<HeroBreakpoint>('desktop');
  const picker=useRef<HTMLInputElement|null>(null);
  const uploadTarget=useRef<{id:string;layerId?:string;secondary?:boolean}|null>(null);
  useEffect(()=>{setDraft(slides);setDirty(false)},[slides]);
  const change=(next:HeroSlide[])=>{setDraft(next);setDirty(true);setError('');setSuccess('')};
  const edit=(id:string,fields:Partial<HeroSlide>)=>change(draft.map(s=>s.id===id?{...s,...fields}:s));
  const layerEdit=(id:string,layerId:string,fields:Partial<HeroLayer>)=>change(draft.map(slide=>slide.id===id?{
-  ...slide,layers:slide.layers?.map(layer=>layer.id===layerId?{
-   ...layer,...(fields.x!==undefined||fields.y!==undefined||fields.width!==undefined||fields.height!==undefined||fields.captionX!==undefined||fields.captionY!==undefined?
-     positionHeroLayer(layer,fields):{}),
+  ...slide,layers:slide.layers?.map((layer,index)=>layer.id===layerId?{
+   ...(fields.x!==undefined||fields.y!==undefined||fields.width!==undefined||fields.height!==undefined||fields.captionX!==undefined||fields.captionY!==undefined?
+     setHeroBreakpointPlacement(layer,previewMode,fields,index,slide.layers?.length||1):layer),
    ...(fields.image!==undefined?{image:fields.image}:{}),
    ...(fields.caption!==undefined?{caption:fields.caption}:{})
   }:layer)
@@ -152,22 +152,18 @@ export default function AdminHeroSlides({slides=defaultHeroSlides,onSave}:{slide
        </button>}
      </div>
      {!hasCanvas&&<p className="skp-hero-layout-notice">Сейчас используется исходное оформление слайда. Нажмите «Настроить свободное размещение», чтобы двигать изображения и подписи, добавлять новые фото и видеть результат до сохранения. Текущие фото и текст сохранятся.</p>}
-     <div className="skp-hero-preview-bar"><strong>Предпросмотр — изменения сразу видны</strong>
-      <div><button className={previewMode==='desktop'?'active':''} type="button" onClick={()=>setPreviewMode('desktop')}>Компьютер</button>
-       <button className={previewMode==='mobile'?'active':''} type="button" onClick={()=>setPreviewMode('mobile')}>Телефон</button></div>
+     <div className="skp-hero-preview-bar"><strong>Предпросмотр реального слайда — изменения видны сразу</strong>
+      <div>{(['desktop','tablet','mobile'] as HeroBreakpoint[]).map(mode=><button key={mode}
+       className={previewMode===mode?'active':''} type="button" onClick={()=>setPreviewMode(mode)}>
+       {mode==='desktop'?'Компьютер · 1440':mode==='tablet'?'Планшет · 900':'Телефон · 390'}
+      </button>)}</div>
      </div>
-     <div className={'skp-hero-preview-outer'+(previewMode==='mobile'?' mobile':'')}>
-      <div className={'skp-hero-live-preview'+(previewMode==='mobile'?' mobile':'')}>
-       <div className="skp-preview-copy"><small>{slide.eyebrow}</small>
-        <strong>{slide.title.split('\n').map((line,i)=><span key={i} className={i===slide.highlightLine?'accent':''}>{line}</span>)}</strong>
-        <p>{slide.description}</p><div className="skp-preview-buttons"><span>{slide.primary}</span><span>{slide.secondary}</span></div>
-       </div>
-       <HeroCanvasLayers layers={layers} editable={hasCanvas} selectedId={selected}
-        onSelect={setSelected}
-        onChange={(layerId,position)=>layerEdit(slide.id,layerId,position)}/>
-      </div>
+     <div className="skp-hero-preview-outer">
+      <ScaledHeroPreview slide={slide} mode={previewMode} selectedId={selected}
+       onSelect={setSelected} onPositionChange={(layerId,position)=>layerEdit(slide.id,layerId,position)}/>
      </div>
-     <p className="skp-hero-preview-hint">Перетащите фотографию или подпись внутри рамки. Можно также пользоваться ползунками и клавишами-стрелками (Shift — шаг 5%).</p>
+     <p className="skp-hero-preview-mode">Сейчас настраиваются позиции для режима: <strong>{previewMode==='desktop'?'Компьютер':previewMode==='tablet'?'Планшет':'Телефон'}</strong>. Размеры и расположение для других режимов сохраняются отдельно. Все изменения предпросмотра отображаются до сохранения.</p>
+     <p className="skp-hero-preview-hint">Перетаскивайте фотографию или подпись мышью внутри рамки. Ползунки и стрелки клавиатуры (Shift — шаг 5%) меняют только выбранное разрешение.</p>
 
      {hasCanvas?<div className="skp-hero-layer-list">{layers.map((layer,layerIndex)=><div className={'skp-hero-layer-editor'+(selected===layer.id?' selected':'')} key={layer.id}>
       <div className="skp-hero-layer-heading">
@@ -182,10 +178,14 @@ export default function AdminHeroSlides({slides=defaultHeroSlides,onSave}:{slide
       </div>
       <div className="skp-hero-position-grid">
        {([['x','Фото: по горизонтали'],['y','Фото: по вертикали'],['width','Ширина фото'],['height','Высота фото'],
-         ['captionX','Подпись: по горизонтали'],['captionY','Подпись: по вертикали']] as const).map(([name,title])=><label key={name}>{title} <output>{layer[name]}%</output>
-        <input type="range" min={name==='width'||name==='height'?5:0} max="100" step="1" value={layer[name]}
+         ['captionX','Подпись: по горизонтали'],['captionY','Подпись: по вертикали']] as const).map(([name,title])=><label key={name}>{title} <output>{resolveHeroPlacement(layer,previewMode,layerIndex,layers.length)[name]}%</output>
+        <input type="range" min={name==='width'||name==='height'?5:0} max="100" step="1" value={resolveHeroPlacement(layer,previewMode,layerIndex,layers.length)[name]}
          onChange={e=>layerEdit(slide.id,layer.id,{[name]:Number(e.target.value)})}/></label>)}
       </div>
+      {previewMode!=='desktop'&&<button className="skp-hero-reset-mode" type="button"
+       onClick={()=>edit(slide.id,{layers:layers.map(item=>item.id===layer.id?{...item,[previewMode]:undefined}:item)})}>
+       Сбросить позиции этого изображения для режима «{previewMode==='tablet'?'Планшет':'Телефон'}»
+      </button>}
       <label className="skp-hero-layer-caption">Подпись к изображению<input maxLength={100} placeholder="Например, MIDNIGHT BLACK" value={layer.caption} onChange={e=>layerEdit(slide.id,layer.id,{caption:e.target.value})}/></label>
      </div>)}</div>:<div className="skp-hero-photos">{([false,...(['logitech','rog','duo'].includes(slide.layout)?[true]:[])] as boolean[]).map(secondary=>{
       const key=secondary?'image2':'image',captionKey=secondary?'caption2':'caption',url=slide[key];
