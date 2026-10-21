@@ -73,10 +73,37 @@ assert.equal(saved.readSharedBuild('?build=%7B%22v%22%3A2%7D',products),null);
 assert.equal(saved.readSharedBuild('?build=%7Bbad',products),null);
 const legacyStore={getItem:key=>key==='skp-saved-build'?JSON.stringify(good):null,setItem(){}};
 assert.equal(saved.readSavedBuilds(legacyStore,products)[0]?.id,'legacy');
+const candidates=[byId('b760'),byId('b650')];
+const grouped=logic.groupCandidateOptions('motherboard',candidates,{cpu:'ryzen-7500f'},products);
+assert.equal(JSON.stringify(grouped.compatible.map(item=>item.product.id)),JSON.stringify(['b650']),
+ 'Compatible motherboard is presented first regardless of initial catalog order');
+assert.equal(JSON.stringify(grouped.incompatible.map(item=>item.product.id)),JSON.stringify(['b760']),
+ 'Incompatible motherboard remains in the secondary group');
+assert.equal(grouped.incompatible[0].issues.some(issue=>issue.code==='cpu-socket'),true,
+ 'Incompatible cards retain exact conflict reasons');
+const allCompatible=logic.groupCandidateOptions('cpu',[byId('ryzen-7-7800x3d'),byId('ryzen-7500f')],
+ {motherboard:'b650'},products);
+assert.equal(JSON.stringify(allCompatible.compatible.map(item=>item.product.id)),JSON.stringify(['ryzen-7-7800x3d','ryzen-7500f']),
+ 'Ordering inside the compatible group keeps the preexisting price/name sort');
+assert.equal(allCompatible.incompatible.length,0);
+const allIncompatible=logic.groupCandidateOptions('motherboard',[byId('b760')],{cpu:'ryzen-7500f'},products);
+assert.equal(allIncompatible.compatible.length,0);
+assert.equal(allIncompatible.incompatible.length,1);
+const iconSource=readFileSync(new URL('../app/catalog-icons.ts',import.meta.url),'utf8');
+for(const [category,icon] of Object.entries({cpu:'Cpu',motherboard:'CircuitBoard',gpu:'Gpu',ram:'MemoryStick',
+ ssd:'HardDrive',psu:'Zap',cooler:'Fan',case:'PcCase'})){
+ assert.ok(iconSource.includes(category+':'+icon),category+' icon matches catalog');
+}
+const catalogUI=readFileSync(new URL('../app/catalog-page.tsx',import.meta.url),'utf8');
+assert.match(catalogUI,/import \{categoryIcons\} from '\.\/catalog-icons'/);
 const builderUI=readFileSync(new URL('../app/build-pages.tsx',import.meta.url),'utf8');
 const shopUI=readFileSync(new URL('../app/shop.tsx',import.meta.url),'utf8');
-assert.match(builderUI,/candidateErrors\(step,p,selected,data\.products\)/);
+assert.match(builderUI,/groupCandidateOptions\(step,options,selected,data\.products\)/);
+assert.match(builderUI,/compatible\.map\(renderComponentOption\)/);
+assert.match(builderUI,/incompatible\.map\(renderComponentOption\)/);
+assert.match(builderUI,/aria-expanded=\{showIncompatible\}/);
+assert.match(builderUI,/\['gpu','Видеокарта',categoryIcons\.gpu\]/);
 assert.match(builderUI,/<BuildDiagnostics analysis=\{analysis\}/);
 assert.match(builderUI,/<SavedBuildLibrary /);
 assert.match(shopUI,/loaded=\{loaded\}/);
-console.log('Configurator tests passed: sockets, memory, dimensions, PSU, saved builds, share links and integration.');
+console.log('Configurator tests passed: compatibility grouping, shared icons, sockets, memory, dimensions, PSU, saved builds, share links and integration.');
