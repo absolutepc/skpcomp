@@ -1494,7 +1494,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   min-height:35px;padding:2px 6px;
  }
  .hero-carousel:not(.skp-slide-preview)>.carousel-controls .carousel-dots button{
-  flex-basis:25px;width:25px;height:30px;
+  flex:0 1 clamp(16px,5.4vw,25px);width:clamp(16px,5.4vw,25px);height:30px;
  }
 }
 
