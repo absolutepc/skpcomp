@@ -81,18 +81,32 @@ const fullCutout=readFileSync(new URL('../public/images/rog-oled-pg27aqwp-g-hero
 assert.equal(fullCutout.toString('hex',0,8),'89504e470d0a1a0a','Show a real, locally stored PNG, not a remote screen screenshot');
 assert.equal(fullCutout.readUInt32BE(16),1400,'Official ASUS image is optimized and tightly framed');
 assert.ok(fullCutout.readUInt32BE(20)>1100&&fullCutout.readUInt32BE(20)<1400,'Entire device including stand is present');
-assert.match(css,/\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas\{[\s\S]*?height:calc\(100% - 104px\);[\s\S]*?overflow:hidden/,'Desktop image is bounded with room for carousel controls');
-assert.match(css,/\.skp-slide-preview-mobile\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas\{/,'Exact admin mobile preview uses bounded art');
-assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel\.rog-oled-feature:not\(\.skp-slide-preview\)>\.skp-slide-canvas\{/,'Mobile storefront stage bounds constrained');
-const desktopStage={height:560,top:18,bottom:86},tabletStage={height:500,top:16,bottom:78},mobileStage={height:665,bottom:78,stageHeight:230};
-for(const reference of [desktopStage,tabletStage]){
- const stage=reference.height-reference.top-reference.bottom;
- const top=reference.top+stage*(50-96/2)/100;
- const bottom=reference.top+stage*(50+96/2)/100;
- assert.ok(top>=0&&bottom<reference.height-70,'The whole desktop/tablet monitor stays inside banner above controls');
+assert.match(css,/\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas\{[\s\S]*?top:50%;[\s\S]*?transform:translateY\(-50%\)/,
+ 'The complete monitor stage is vertically centered in the desktop banner');
+assert.match(css,/\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas \.skp-slide-layer-image\{[\s\S]*?left:50%;[\s\S]*?top:50%;[\s\S]*?height:94%;/,
+ 'The monitor itself is centered even when earlier D1 image coordinates are wrong');
+assert.match(css,/\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas \.skp-slide-layer-image img\{[\s\S]*?object-fit:contain;/,
+ 'The complete monitor is visible with no cropped edges');
+assert.match(css,/\.skp-slide-preview-tablet\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas\{[\s\S]*?top:50%;/,
+ 'Admin tablet preview also centers the image');
+assert.match(css,/\.skp-slide-preview-mobile\.hero-carousel\.rog-oled-feature>\.skp-slide-canvas\{[\s\S]*?height:230px;/,
+ 'Admin mobile preview uses a height-limited image area');
+assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel\.rog-oled-feature:not\(\.skp-slide-preview\)>\.skp-slide-canvas\{/,
+ 'Mobile storefront is constrained independently');
+for(const bannerHeight of [560,500]){
+ const stageHeight=bannerHeight-(bannerHeight===560?80:70);
+ const stageTop=(bannerHeight-stageHeight)/2;
+ const imageTop=stageTop+stageHeight*(.5-.94/2);
+ const imageBottom=stageTop+stageHeight*(.5+.94/2);
+ assert.ok(Math.abs((imageBottom+imageTop)/2-bannerHeight/2)<.001,
+  'The monitor is vertically centered within '+bannerHeight+'px banner');
+ assert.ok(imageTop>=0&&imageBottom<=bannerHeight,
+  'The monitor fits entirely in its '+bannerHeight+'px banner');
 }
-const mobileImageBottom=mobileStage.height-mobileStage.bottom-mobileStage.stageHeight+mobileStage.stageHeight*(50+94/2)/100;
-assert.ok(mobileImageBottom<mobileStage.height-70,'The full monitor fits above mobile carousel controls');
+const mobileStage={height:230,bottom:67,fill:.94};
+const mobileTop=665-mobileStage.bottom-mobileStage.height+mobileStage.height*(.5-mobileStage.fill/2);
+const mobileBottom=665-mobileStage.bottom-mobileStage.height+mobileStage.height*(.5+mobileStage.fill/2);
+assert.ok(mobileTop>0&&mobileBottom<665,'Entire mobile monitor remains within the hero');
 
 
 assert.equal(validateHeroSlides([]),true,'The admin may remove all slides');
