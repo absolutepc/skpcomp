@@ -3,6 +3,7 @@ name: Verify SKP configurator
 on:
   push:
     branches:
+      - main
       - feat/configurator-compatibility-power-saved-builds
   pull_request:
     branches:
