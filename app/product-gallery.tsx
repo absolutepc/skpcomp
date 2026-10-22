@@ -29,7 +29,7 @@ export default function ProductGallery({product,fallback}:{product:Product;fallb
     <button type="button" aria-label="Следующее фото" onClick={()=>change(1)}><ChevronRight size={20}/></button>
    </div>}
   </div>
-  {images.length>1&&<div className="skp-gallery-thumbnails" style={{gridTemplateColumns:`repeat(${Math.ceil(images.length/2)},minmax(0,78px))`}} role="group" aria-label="Фотографии товара">
+  {images.length>1&&<div className="skp-gallery-thumbnails" style={{gridTemplateColumns:`repeat(${Math.ceil(images.length/2)},minmax(0,128px))`}} role="group" aria-label="Фотографии товара">
    {images.map((src,i)=><button type="button" className={index===i?'active':''} key={src} aria-label={'Показать фото '+(i+1)} aria-pressed={index===i} onClick={()=>setActive(i)}><img src={src} alt=""/></button>)}
   </div>}
   {zoom&&current&&<div className="skp-gallery-lightbox" role="dialog" aria-modal="true" aria-label={'Просмотр фотографий: '+product.name} onClick={()=>setZoom(false)}>
