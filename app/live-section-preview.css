@@ -4,12 +4,13 @@
 .dual-promos .promo>.promo-copy{padding:26px 22px;min-width:0}
 .dual-promos .promo>.promo-copy h2{font-size:clamp(21px,2vw,30px)}
 .dual-promos .skp-live-preview{display:block;position:relative;min-width:0;height:220px;margin:18px 16px 18px 0;perspective:850px;border-radius:12px;outline-offset:3px}
-.skp-live-screen{height:100%;border:1px solid #55563b;border-radius:12px;overflow:hidden;background:#090b0b;box-shadow:0 15px 28px #0007;transform:rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));transition:transform .18s ease-out;pointer-events:none}
+.skp-live-screen{height:100%;border:1px solid #55563b;border-radius:12px;overflow:hidden;background:#090b0b;box-shadow:0 15px 28px #0007;pointer-events:none}
 .skp-live-chrome{height:25px;padding:0 9px;display:flex;align-items:center;gap:4px;background:#1b1e16;border-bottom:1px solid #353b25}
 .skp-live-chrome>span{width:4px;height:4px;background:#73795b;border-radius:50%}
 .skp-live-chrome>b{font-size:7px;letter-spacing:1px;font-weight:600;color:#ffe500;margin-left:8px}
-.skp-live-viewport{height:calc(100% - 25px);overflow:hidden}
-.skp-live-page{width:1100px;transform:scale(var(--preview-scale,.3));transform-origin:top left;pointer-events:none}
+.skp-live-viewport{height:calc(100% - 25px);overflow:hidden;perspective:850px;background:#090b0b}
+.skp-live-motion{height:100%;transform:scale(1.05) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));transform-origin:center;transition:transform .3s ease-out}
+.skp-live-page{width:1100px;transform:translate3d(var(--pan-x,0px),var(--pan-y,0px),0) scale(var(--preview-scale,.3));transform-origin:top left;pointer-events:none;transition:transform .3s ease-out;background:#090b0b}
 .skp-live-page>.build-hero{display:none}
 .skp-live-page>section.build-page{margin:0;padding:24px;width:1100px;max-width:none}
 .skp-live-page .ready-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -20,7 +21,7 @@
 .skp-live-page .task-tabs{flex-wrap:nowrap}
 @media(max-width:1000px) and (min-width:701px){.dual-promos{grid-template-columns:1fr}}
 @media(max-width:700px){.dual-promos .promo{grid-template-columns:1fr}.dual-promos .promo>.promo-copy{padding:24px 24px 12px}.dual-promos .skp-live-preview{margin:8px 24px 24px;height:230px}.dual-promos .promo>.promo-copy h2{font-size:25px}}
-@media(prefers-reduced-motion:reduce),(hover:none){.skp-live-screen{transform:none!important;transition:none}}
+@media(prefers-reduced-motion:reduce),(hover:none){.skp-live-motion{transform:none!important;transition:none}.skp-live-page{transition:none}}
 
 /* Keep the miniature's desktop layout even when the outer page is narrow. */
 .dual-promos .skp-live-page .builder-layout{display:grid;grid-template-columns:220px minmax(0,1fr) 260px}
