@@ -268,12 +268,11 @@ assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls
  'Dock has no floating panel border or drop shadow');
 assert.match(css,/@media\(max-width:700px\)\{\s*\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{\s*bottom:0;/,
  'Integrated controls also dock at the mobile slide boundary');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 37px;[\s\S]*?background:#1a2119b3;[\s\S]*?border:0;[\s\S]*?border-radius:0;/,
- 'Navigation arrows are discreet angled keys, no longer circled buttons');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow:first-child\{[\s\S]*?clip-path:polygon\(22% 0,100% 0,78% 100%,0 100%\);/,
- 'Previous button has a skewed quadrilateral silhouette');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow:last-child\{[\s\S]*?clip-path:polygon\(0 0,78% 0,100% 100%,22% 100%\);/,
- 'Next button mirrors previous silhouette');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 32px;[\s\S]*?background:#171d16;[\s\S]*?border:1px solid #3a4534;[\s\S]*?border-radius:7px;[\s\S]*?clip-path:none;/,
+ 'Arrows have matched compact, gently rounded shapes without diagonal clipping');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow:first-child,[\s\S]*?\.carousel-arrow:last-child\{\s*clip-path:none;/,
+ 'Both arrows share the same unobtrusive silhouette');
+
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow:focus-visible\{[\s\S]*?outline:2px solid #ffe500;/,
  'Keyboard focus retains a visible accent indicator');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots\{[\s\S]*?background:transparent;[\s\S]*?border:0;/,
