@@ -29,10 +29,11 @@ function ReferenceArt({area,className=''}:{area:string;className?:string}){
  const categoryPhotos:Record<string,string>={
   laptops:'/images/category-laptops.jpg',
   components:'/images/category-components.webp',
-  peripherals:'/images/category-peripherals.jpg'
+  peripherals:'/images/category-peripherals.jpg',
+  furniture:'/images/category-furniture.jpg'
  };
  if(categoryPhotos[area])return <img className={'reference-art skp-category-photo skp-category-photo-'+area+' '+className}
-  src={categoryPhotos[area]} alt={'Фотография категории «'+({laptops:'Ноутбуки',components:'Комплектующие',peripherals:'Периферия'} as Record<string,string>)[area]+'»'}
+  src={categoryPhotos[area]} alt={'Фотография категории «'+({laptops:'Ноутбуки',components:'Комплектующие',peripherals:'Периферия',furniture:'Компьютерная мебель'} as Record<string,string>)[area]+'»'}
   loading="lazy" decoding="async"/>;
  const regions:Record<string,string>={hero:'510 67 485 355',components:'50 465 200 130',peripherals:'287 465 207 130',laptops:'528 465 210 130',furniture:'776 463 198 113',build:'267 936 233 135',config:'782 936 198 135'};return <svg className={'reference-art '+className} viewBox={regions[area]||regions.hero} role="img" aria-label={area==='hero'?'Игровой компьютер с жёлтой подсветкой':'Иллюстрация раздела'}><image href="/images/skp-reference.png" width="1024" height="1536"/></svg>}
 function Art({kind='pc',dark=false}:{kind?:string;dark?:boolean}){return <svg className={'product-art '+kind} viewBox="0 0 400 330" role="img" aria-label="Иллюстрация товара"><defs><linearGradient id={'g'+kind+(dark?'d':'')} x1="0" y1="0" x2="1" y2="1"><stop stopColor={dark?'#35383c':'#fff'}/><stop offset="1" stopColor={dark?'#0d0f11':'#959da4'}/></linearGradient><radialGradient id="fan"><stop offset=".1" stopColor="#ffed89"/><stop offset=".3" stopColor="#99851a"/><stop offset=".55" stopColor="#24250c"/><stop offset=".75" stopColor="#ffe500"/><stop offset=".9" stopColor="#665c13"/><stop offset="1" stopColor="#11150c"/></radialGradient></defs>
