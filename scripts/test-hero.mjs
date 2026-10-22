@@ -244,24 +244,30 @@ assert.ok(previousPosition<indicatorsPosition&&indicatorsPosition<nextPosition,
  'Every slide must show previous arrow to the LEFT of dots and next arrow to the RIGHT');
 assert.match(controlsMarkup,/className="carousel-dots" role="group" aria-label="Выбор слайда"/,
  'The central pagination group is accessible');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?bottom:0;[\s\S]*?clip-path:polygon\(9% 0,91% 0,100% 100%,0 100%\);/,
- 'Unified arrow/dots/arrow trapezoid docks exactly at the hero bottom border');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls::before\{[\s\S]*?inset:1px;[\s\S]*?background:#0a0e0beF;[\s\S]*?clip-path:polygon\(9% 0,91% 0,100% 100%,0 100%\);/,
- 'A second nested trapezoid paints a thin outline without dividing the controls');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls>\*\{[\s\S]*?z-index:1;/,
- 'All buttons and dots sit over the inset trapezoid background');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?bottom:0;[\s\S]*?background:linear-gradient\(180deg,#121610 0%,#090b0b 100%\);[\s\S]*?clip-path:polygon\(11% 0,89% 0,100% 100%,0 100%\);/,
+ 'The unified tapered dock ends flush with the site background at the lower border');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls::before\{\s*content:none;/,
+ 'The unwanted decorative outline no longer appears as a separate framed layer');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?border:0;[\s\S]*?box-shadow:none;/,
+ 'Dock has no floating panel border or drop shadow');
 assert.match(css,/@media\(max-width:700px\)\{\s*\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{\s*bottom:0;/,
- 'Controls also dock flush to the mobile hero boundary');
+ 'Integrated controls also dock at the mobile slide boundary');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 37px;[\s\S]*?background:#1a2119b3;[\s\S]*?border:0;[\s\S]*?border-radius:0;/,
+ 'Navigation arrows are discreet angled keys, no longer circled buttons');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow:first-child\{[\s\S]*?clip-path:polygon\(22% 0,100% 0,78% 100%,0 100%\);/,
+ 'Previous button has a skewed quadrilateral silhouette');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow:last-child\{[\s\S]*?clip-path:polygon\(0 0,78% 0,100% 100%,22% 100%\);/,
+ 'Next button mirrors previous silhouette');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow:focus-visible\{[\s\S]*?outline:2px solid #ffe500;/,
+ 'Keyboard focus retains a visible accent indicator');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots\{[\s\S]*?background:transparent;[\s\S]*?border:0;/,
- 'Pagination dots do NOT have a second separate pill border');
+ 'Pagination dots merge into the shared dock without a second outlined section');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?left:50%;[\s\S]*?transform:translateX\(-50%\)/,
- 'The arrow/dots/arrow navigation is centered for ALL slides');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 37px;/,
- 'Arrows are separate, equally-sized controls inside the shared capsule');
+ 'Integrated navigation is centered for every slide');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots button\{[\s\S]*?place-items:center;/,
- 'Dots remain centered within their shared control block');
+ 'Dots remain centered and clickable');
 assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots button\{[\s\S]*?clamp\(14px,4\.3vw,23px\)/,
- 'Navigation adapts without overflow on mobile devices');
+ 'Navigation scales for narrow mobile layouts');
 assert.match(css,/\.hero-carousel \.skp-clean-computer-slide\{[\s\S]*?padding:36px 17px 67px 12px;/,
  'The owner-supplied PC slide has balanced spacing like the other slides');
 assert.match(css,/\.hero-carousel \.skp-clean-computer-slide \.second-slide-glow\{[\s\S]*?opacity:\.58;/,
