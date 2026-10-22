@@ -59,6 +59,10 @@ export async function GET(request:Request){
  if(!await adminAuth(request))return json({error:'Требуется авторизация администратора.'},401);
  try{
   await ensureOrders();
+  if(new URL(request.url).searchParams.get('summary')==='1'){
+   const summary=await E.DB.prepare("SELECT COUNT(*) AS orders, COALESCE(SUM(CASE WHEN status='completed' THEN total ELSE 0 END),0) AS completedAmount FROM skp_orders").first<{orders:number;completedAmount:number}>();
+   return json(summary||{orders:0,completedAmount:0});
+  }
   const rows=await E.DB.prepare('SELECT * FROM skp_orders ORDER BY created_at DESC,rowid DESC LIMIT 250').all<OrderRow>();
   return json({orders:(rows.results||[]).map(row=>toOrder(row))});
  }catch{return json({error:'Не удалось загрузить заказы.'},503)}
