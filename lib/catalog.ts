@@ -14,7 +14,16 @@ export const categoryFields:Record<string,Field[]>={
  cooler:[f('coolingType','Тип охлаждения'),f('socket','Поддерживаемые сокеты'),f('tdp','Рассеиваемая мощность','Вт'),f('height','Высота','мм'),f('radiator','Размер радиатора','мм'),f('fanSize','Размер вентилятора','мм'),f('rgb','Подсветка')],
  case:[f('form','Тип корпуса'),f('boardForm','Форм-фактор платы'),f('gpuLength','Максимальная длина GPU','мм'),f('coolerHeight','Высота кулера','мм'),f('fans','Вентиляторы в комплекте','шт.'),f('color','Цвет'),f('side','Боковая панель')],
  monitor:[f('diagonal','Диагональ','дюйм'),f('resolution','Разрешение'),f('panel','Матрица'),f('refresh','Частота обновления','Гц'),f('response','Время отклика','мс'),f('ports','Разъёмы'),f('curved','Изогнутый экран'),f('vesa','VESA')],
- mouse:[f('connection','Подключение'),f('sensor','Сенсор'),f('dpi','Разрешение сенсора','DPI'),f('polling','Частота опроса','Гц'),f('weight','Вес','г'),f('buttons','Кнопки','шт.'),f('color','Цвет')],
+ mouse:[
+  f('connection','Подключение'),f('sensor','Сенсор'),
+  f('dpi','Разрешение сенсора','DPI'),f('ips','Максимальная скорость отслеживания','IPS'),
+  f('acceleration','Максимальное ускорение','G'),f('polling','Частота опроса','Гц'),
+  f('batteryCapacity','Ёмкость батареи','мА·ч'),f('battery','Автономность','ч'),
+  f('weight','Вес','г'),f('buttons','Кнопки','шт.'),
+  f('switch','Переключатели'),f('switchLife','Ресурс переключателей','млн нажатий'),
+  f('shape','Форма корпуса'),f('length','Длина','мм'),f('width','Ширина','мм'),
+  f('height','Высота','мм'),f('rgb','Подсветка'),f('color','Цвет')
+ ],
  keyboard:[f('keyboardType','Тип клавиатуры'),f('format','Формат'),f('switch','Переключатели'),f('connection','Подключение'),f('layout','Раскладка'),f('hotswap','Hot-swap'),f('rgb','Подсветка'),f('color','Цвет')],
  headphones:[f('headphoneType','Тип наушников'),f('connection','Подключение'),f('microphone','Микрофон'),f('sound','Звук'),f('driver','Диаметр драйвера','мм'),f('battery','Автономность','ч'),f('impedance','Сопротивление','Ом'),f('noiseCancel','Шумоподавление'),f('color','Цвет')],
  mousepad:[f('material','Материал'),f('surface','Поверхность'),f('width','Ширина','мм'),f('depth','Глубина','мм'),f('thickness','Толщина','мм'),f('rgb','Подсветка'),f('color','Цвет')],
