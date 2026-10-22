@@ -244,8 +244,14 @@ assert.ok(previousPosition<indicatorsPosition&&indicatorsPosition<nextPosition,
  'Every slide must show previous arrow to the LEFT of dots and next arrow to the RIGHT');
 assert.match(controlsMarkup,/className="carousel-dots" role="group" aria-label="Выбор слайда"/,
  'The central pagination group is accessible');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?background:#0b0e0ad9;[\s\S]*?border:1px solid #6a765554;[\s\S]*?border-radius:999px;/,
- 'The arrows and dots share ONE continuous elongated capsule');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?bottom:0;[\s\S]*?clip-path:polygon\(9% 0,91% 0,100% 100%,0 100%\);/,
+ 'Unified arrow/dots/arrow trapezoid docks exactly at the hero bottom border');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls::before\{[\s\S]*?inset:1px;[\s\S]*?background:#0a0e0beF;[\s\S]*?clip-path:polygon\(9% 0,91% 0,100% 100%,0 100%\);/,
+ 'A second nested trapezoid paints a thin outline without dividing the controls');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls>\*\{[\s\S]*?z-index:1;/,
+ 'All buttons and dots sit over the inset trapezoid background');
+assert.match(css,/@media\(max-width:700px\)\{\s*\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{\s*bottom:0;/,
+ 'Controls also dock flush to the mobile hero boundary');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-dots\{[\s\S]*?background:transparent;[\s\S]*?border:0;/,
  'Pagination dots do NOT have a second separate pill border');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?left:50%;[\s\S]*?transform:translateX\(-50%\)/,
