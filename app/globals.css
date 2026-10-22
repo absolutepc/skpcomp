@@ -1432,6 +1432,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
    thin line BEHIND the navigation and climbs over the trapezoid's top and
    angled edges. The strip through the foot of the controls is hidden. */
 .hero-carousel:not(.skp-slide-preview){
+ --skp-hero-seam:#454d37;
  border-bottom:0;
 }
 .hero-carousel:not(.skp-slide-preview)::after{
@@ -1441,7 +1442,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  right:0;
  bottom:0;
  height:1px;
- background:#34351f;
+ background:var(--skp-hero-seam,#454d37);
  z-index:4;
  pointer-events:none;
 }
@@ -1460,7 +1461,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  width:max-content;
  max-width:calc(100% - 14px);
  padding:8px clamp(25px,2.6vw,36px) 3px;
- background:linear-gradient(180deg,#121610 0%,#090b0b 100%);
+ background:#080b09;
  border:0;
  border-radius:0;
  box-shadow:none;
@@ -1474,9 +1475,8 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  inset:0;
  z-index:0;
  pointer-events:none;
- background:#41492b;
- /* Draw 1-2px stroke up the left shoulder, across the raised top,
-    down the right shoulder; deliberately omit the bottom edge. */
+ background:var(--skp-hero-seam,#454d37);
+ /* One consistent accent-colored upper border and shoulders on every slide. */
  clip-path:polygon(
   11% 0,89% 0,100% 100%,
   calc(100% - 1px) 100%,calc(89% - 1px) 2px,
