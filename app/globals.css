@@ -1432,8 +1432,8 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
    thin line BEHIND the navigation and climbs over the trapezoid's top and
    angled edges. The strip through the foot of the controls is hidden. */
 .hero-carousel:not(.skp-slide-preview){
- --skp-hero-seam:#454d37;
  border-bottom:0;
+ --skp-hero-seam:#454d37;
 }
 .hero-carousel:not(.skp-slide-preview)::after{
  content:'';
