@@ -952,7 +952,12 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  justify-content:center;
  padding:40px 15px 72px 20px;
 }
-.hero-carousel .hero-copy>.eyebrow{flex:0 0 auto}
+.hero-carousel .hero-copy>.eyebrow{
+ flex:0 0 auto;
+ color:#e4ca83;
+ font-size:10px;
+ letter-spacing:1.35px;
+}
 .hero-carousel .hero-copy>.hero-buttons,
 .hero-carousel .hero-copy>.hero-benefits{flex-shrink:0}
 .hero-carousel .hero-visual,
@@ -981,6 +986,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  letter-spacing:1.35px;
 }
 .hero-carousel.mouse-launch .hero-copy>.eyebrow:before{display:none}
+.hero-carousel .hero-copy h1,
 .hero-carousel.mouse-launch h1,
 .hero-carousel.rog-anniversary .hero-copy h1{
  font-size:clamp(30px,3.65vw,54px);
@@ -990,6 +996,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  margin-bottom:20px;
 }
 .hero-carousel.mouse-launch h1 span{color:#ffe500}
+.hero-carousel .hero-copy>p,
 .hero-carousel.mouse-launch .hero-copy>p,
 .hero-carousel.rog-anniversary .hero-copy>p{
  max-width:615px;
@@ -1070,7 +1077,8 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .hero-carousel.rog-anniversary .hero-copy{
   padding:30px 10px 64px 10px;
  }
- .hero-carousel.mouse-launch h1,.hero-carousel.rog-anniversary .hero-copy h1{
+ .hero-carousel .hero-copy h1,
+.hero-carousel.mouse-launch h1,.hero-carousel.rog-anniversary .hero-copy h1{
   font-size:clamp(28px,3.2vw,43px);
  }
  .hero-carousel .mouse-duo-showcase{padding:30px 15px 45px 0;gap:8px}
@@ -1093,13 +1101,15 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   justify-content:center;
  }
  .hero-carousel.mouse-launch .hero-copy>.eyebrow{font-size:8px;margin-bottom:15px}
- .hero-carousel.mouse-launch h1,.hero-carousel.rog-anniversary .hero-copy h1{
+ .hero-carousel .hero-copy h1,
+.hero-carousel.mouse-launch h1,.hero-carousel.rog-anniversary .hero-copy h1{
   font-size:clamp(29px,8vw,40px);
   margin-bottom:13px;
   letter-spacing:-1.1px;
   line-height:1.13;
  }
- .hero-carousel.mouse-launch .hero-copy>p,.hero-carousel.rog-anniversary .hero-copy>p{
+ .hero-carousel .hero-copy>p,
+.hero-carousel.mouse-launch .hero-copy>p,.hero-carousel.rog-anniversary .hero-copy>p{
   font-size:11px;line-height:1.6;
  }
  .hero-carousel .hero-copy>.hero-buttons{margin-top:17px;gap:10px;flex-wrap:wrap}
@@ -1220,6 +1230,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 .skp-slide-preview-tablet.hero-carousel .hero-copy{
  padding:30px 10px 64px 10px;
 }
+.skp-slide-preview-tablet.hero-carousel .hero-copy h1,
 .skp-slide-preview-tablet.hero-carousel.mouse-launch h1,
 .skp-slide-preview-tablet.hero-carousel.rog-anniversary .hero-copy h1{font-size:clamp(28px,3.2vw,43px)}
 .skp-slide-preview-mobile.hero-carousel{
