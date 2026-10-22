@@ -25,7 +25,7 @@ export const categoryFields:Record<string,Field[]>={
  psu:[f('watts','Мощность','Вт'),f('certificate','Сертификат'),f('form','Форм-фактор'),f('modular','Модульные кабели'),f('standard','Стандарт ATX'),f('fanSize','Вентилятор','мм')],
  cooler:[f('coolingType','Тип охлаждения'),f('socket','Поддерживаемые сокеты'),f('tdp','Рассеиваемая мощность','Вт'),f('height','Высота','мм'),f('radiator','Размер радиатора','мм'),f('fanSize','Размер вентилятора','мм'),f('rgb','Подсветка')],
  case:[f('form','Тип корпуса'),f('boardForm','Форм-фактор платы'),f('gpuLength','Максимальная длина GPU','мм'),f('coolerHeight','Высота кулера','мм'),f('fans','Вентиляторы в комплекте','шт.'),f('color','Цвет'),f('side','Боковая панель')],
- monitor:[f('diagonal','Диагональ','дюйм'),f('resolution','Разрешение'),f('panel','Матрица'),f('refresh','Частота обновления','Гц'),f('response','Время отклика','мс'),f('ports','Разъёмы'),f('curved','Изогнутый экран'),f('vesa','VESA')],
+ monitor:[f('diagonal','Диагональ','дюйм'),f('resolution','Разрешение'),f('panel','Матрица'),f('refresh','Частота обновления','Гц'),f('response','Время отклика','мс'),f('ports','Разъёмы'),f('curved','Изогнутый экран'),f('vesa','VESA'),f('dualMode','Режимы экрана'),f('hdr','HDR'),f('gSync','Адаптивная синхронизация'),f('color','Цвет')],
  mouse:[
   f('connection','Подключение'),f('sensor','Сенсор'),
   f('dpi','Разрешение сенсора','DPI'),f('ips','Максимальная скорость отслеживания','IPS'),
@@ -36,7 +36,7 @@ export const categoryFields:Record<string,Field[]>={
   f('shape','Форма корпуса'),f('length','Длина','мм'),f('width','Ширина','мм'),
   f('height','Высота','мм'),f('rgb','Подсветка'),f('color','Цвет')
  ],
- keyboard:[f('keyboardType','Тип клавиатуры'),f('format','Формат'),f('switch','Переключатели'),f('connection','Подключение'),f('layout','Раскладка'),f('hotswap','Hot-swap'),f('rgb','Подсветка'),f('color','Цвет')],
+ keyboard:[f('keyboardType','Тип клавиатуры'),f('format','Формат'),f('switch','Переключатели'),f('connection','Подключение'),f('layout','Раскладка'),f('hotswap','Hot-swap'),f('rgb','Подсветка'),f('color','Цвет'),f('polling','Частота опроса','Гц'),f('display','Дисплей'),f('dimensions','Габариты')],
  headphones:[f('headphoneType','Тип наушников'),f('connection','Подключение'),f('microphone','Микрофон'),f('sound','Звук'),f('driver','Диаметр драйвера','мм'),f('battery','Автономность','ч'),f('impedance','Сопротивление','Ом'),f('noiseCancel','Шумоподавление'),f('color','Цвет')],
  mousepad:[f('material','Материал'),f('surface','Поверхность'),f('width','Ширина','мм'),f('depth','Глубина','мм'),f('thickness','Толщина','мм'),f('rgb','Подсветка'),f('color','Цвет')],
  microphone:[f('micType','Тип микрофона'),f('connection','Подключение'),f('pattern','Направленность'),f('sampleRate','Частота дискретизации','кГц'),f('bitDepth','Разрядность','бит'),f('mounting','Крепление')],

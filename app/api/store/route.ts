@@ -5,6 +5,7 @@ import {buildComponentFields} from '../../../lib/build-components';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
 import {validateHeroSlides,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION,upgradeComputerHeroImage,COMPUTER_HERO_IMAGE_VERSION,swapSecondAndFourthHeroSlides,HERO_SLIDE_ORDER_VERSION} from '../../../lib/hero-slides';
 import {CATALOG_VERSION,FEATURED_MONITOR_ID,upgradeFeaturedMonitorProducts,linkFeaturedMonitorSlide} from '../../../lib/featured-monitor';
+import {addRogProducts} from '../../../lib/rog-catalog';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 // A fresh local D1 database has no tables until its first request.
 async function ensureShop(){await E.DB.prepare('CREATE TABLE IF NOT EXISTS shop (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)').run()}
@@ -114,6 +115,7 @@ export async function GET(){
    const monitor=seed.products.find(p=>p.id===FEATURED_MONITOR_ID)!;
    products=upgradeFeaturedMonitorProducts(products,monitor,oldVersion);
   }
+  products=addRogProducts(products,seed.products,oldVersion);
   // The next successful admin save persists the new catalog version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
   const slides=linkFeaturedMonitorSlide(

@@ -2,14 +2,14 @@ import type {Product} from './seed';
 import type {HeroSlide} from './hero-slides';
 
 export const FEATURED_MONITOR_ID='asus-rog-swift-oled-pg27aqwp-g-edition-20';
-export const CATALOG_VERSION=8;
+export const CATALOG_VERSION=9;
 
 export function isFeaturedMonitor(product:Pick<Product,'id'|'name'>):boolean{
  return product.id===FEATURED_MONITOR_ID||/PG27AQWP[\s-]?G/i.test(product.name);
 }
 /** Add the monitor to existing D1 catalogs without losing merchant-entered data. */
 export function upgradeFeaturedMonitorProducts(products:Product[],official:Product,version:number):Product[]{
- if(version>=CATALOG_VERSION)return products;
+ if(version>=8)return products;
  const existing=products.find(isFeaturedMonitor);
  if(!existing)return [...products,official];
  return products.map(product=>product!==existing?product:{
