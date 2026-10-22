@@ -246,8 +246,14 @@ assert.match(controlsMarkup,/className="carousel-dots" role="group" aria-label="
  'The central pagination group is accessible');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?bottom:0;[\s\S]*?background:linear-gradient\(180deg,#121610 0%,#090b0b 100%\);[\s\S]*?clip-path:polygon\(11% 0,89% 0,100% 100%,0 100%\);/,
  'The unified tapered dock ends flush with the site background at the lower border');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls::before\{\s*content:none;/,
- 'The unwanted decorative outline no longer appears as a separate framed layer');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)\{\s*border-bottom:0;/,
+ 'Remove the original straight border from the carousel, instead of drawing it through the controls');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)::after\{[\s\S]*?bottom:0;[\s\S]*?height:1px;[\s\S]*?background:#34351f;[\s\S]*?z-index:4;/,
+ 'Replace the border with a drawn bottom divider that runs behind the raised control');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?bottom:0;[\s\S]*?z-index:5;/,
+ 'The navigation overlays the divider at the slider boundary');
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls::before\{[\s\S]*?content:'';[\s\S]*?background:#41492b;[\s\S]*?clip-path:polygon\([\s\S]*?11% 0,89% 0,100% 100%,[\s\S]*?calc\(100% - 1px\) 100%,calc\(89% - 1px\) 2px,[\s\S]*?calc\(11% \+ 1px\) 2px,1px 100%,0 100%[\s\S]*?\);/,
+ 'The thin boundary climbs each sloped side and crosses ABOVE the button, with no bottom border');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?border:0;[\s\S]*?box-shadow:none;/,
  'Dock has no floating panel border or drop shadow');
 assert.match(css,/@media\(max-width:700px\)\{\s*\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{\s*bottom:0;/,
