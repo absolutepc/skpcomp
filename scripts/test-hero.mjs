@@ -253,6 +253,11 @@ assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)\{[\s\S]*?--skp-hero
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?background:#080b09;/,
  'Buttons rest on a solid dark integrated background');
 
+assert.match(css,/\.hero-carousel\.mouse-launch:after\{display:none\}/,
+ 'Legacy Logitech slide style explains the missing border');
+assert.match(css,/\.hero-carousel\.mouse-launch:not\(\.skp-slide-preview\)::after\{\s*display:block;/,
+ 'Override legacy hiding rule only for the active Logitech storefront hero');
+
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)::after\{[\s\S]*?bottom:0;[\s\S]*?height:1px;[\s\S]*?background:var\(--skp-hero-seam,#454d37\);[\s\S]*?z-index:4;/,
  'Replace the border with a drawn bottom divider that runs behind the raised control');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?bottom:0;[\s\S]*?z-index:5;/,
