@@ -1,0 +1,27 @@
+.skp-product-specifications{border-top:1px solid #353c40;padding-top:25px;margin-top:30px}
+.skp-product-specifications>h3{margin:0 0 16px;font-size:15px}
+.skp-spec-list{margin:0}
+.skp-spec-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;padding:12px 0;border-bottom:1px solid #ffffff08;font-size:12px;line-height:1.65}
+.skp-spec-row dt{color:#929b9f;overflow-wrap:anywhere}
+.skp-spec-row dd{margin:0;text-align:right;color:#e1e3de;overflow-wrap:anywhere}
+.product-detail .skp-spec-details{margin:20px 0 0;gap:14px;border-color:#555d43;color:#ffe500}
+.skp-spec-details:hover{background:#ffe5000d;border-color:#ffe500}
+.skp-spec-dialog{padding:0;border:1px solid #454d37;border-radius:16px;background:#10130e;color:#f1f1ef;width:min(720px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 40px);overflow:hidden;box-shadow:0 28px 100px #000a}
+.skp-spec-dialog::backdrop{background:#000b;backdrop-filter:blur(5px)}
+.skp-spec-dialog-content{display:flex;flex-direction:column;max-height:calc(100dvh - 42px)}
+.skp-spec-dialog-heading{display:flex;align-items:flex-start;gap:20px;padding:26px 28px 20px;border-bottom:1px solid #353c2d;flex-shrink:0}
+.skp-spec-dialog-heading>div{min-width:0;flex:1}
+.skp-spec-dialog-heading h2{font-size:24px;line-height:1.25;letter-spacing:-.5px;margin:0}
+.skp-spec-dialog-heading p{font-size:12px;line-height:1.6;color:#a9ad9f;margin:10px 0 0;overflow-wrap:anywhere}
+.skp-spec-close{width:36px;height:36px;flex-shrink:0;border:1px solid #454d37;border-radius:9px;color:#d9ddce}
+.skp-spec-close:hover{color:#ffe500;border-color:#ffe500}
+.skp-spec-dialog-scroll{padding:8px 28px 24px;overflow-y:auto;overscroll-behavior:contain}
+.skp-spec-dialog[open]{animation:skp-spec-open .18s ease-out}
+@keyframes skp-spec-open{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){
+ .skp-spec-dialog-heading{padding:20px 18px 16px;gap:12px}
+ .skp-spec-dialog-heading h2{font-size:20px}
+ .skp-spec-dialog-scroll{padding:6px 18px 20px}
+ .skp-spec-row{gap:14px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.skp-spec-dialog[open]{animation:none}}
