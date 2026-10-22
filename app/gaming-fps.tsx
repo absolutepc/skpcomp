@@ -35,6 +35,8 @@ function AnimatedFpsNumber({value,delay}:{value:number;delay:number}){
 
 export default function GamingFps({hardware,compact=false,inlineAction=false}:{hardware:FpsHardware;compact?:boolean;inlineAction?:boolean}){
  const [open,setOpen]=useState(false);
+ const [laptopPower,setLaptopPower]=useState(hardware.gpuPowerWatts?.toString()||'');
+ const mobile=hardware.platform==='laptop';
  const [closing,setClosing]=useState(false);
  const [resolution,setResolution]=useState<FpsResolution>('FHD');
  const [preset,setPreset]=useState<GraphicsPreset>('high');
@@ -82,7 +84,7 @@ export default function GamingFps({hardware,compact=false,inlineAction=false}:{h
 
  const effectiveUpscaling=upscaling==='dlss'&&!canDlss?'native':upscaling;
  const effectiveRt=rayTracing&&canRt;
- const rows=estimateFps(hardware,resolution,{
+ const rows=estimateFps(mobile?{...hardware,gpuPowerWatts:Number(laptopPower)}:hardware,resolution,{
   preset,rayTracing:effectiveRt,upscaling:effectiveUpscaling,upscalingQuality
  });
  const techLabel=effectiveUpscaling==='dlss'?'DLSS':'FSR';
@@ -114,6 +116,12 @@ export default function GamingFps({hardware,compact=false,inlineAction=false}:{h
         {resolutions.map(mode=><button type="button" key={mode} aria-pressed={mode===resolution} className={mode===resolution?'current':''} onClick={()=>setResolution(mode)}>{mode}</button>)}
        </div>
       </div>
+      {mobile&&<div className="skp-fps-laptop-power">
+       <label>Мощность видеокарты ноутбука (TGP, Вт)
+        <input type="number" min="1" max="250" step="1" value={laptopPower} placeholder="Укажите по спецификации ноутбука" onChange={event=>setLaptopPower(event.target.value)}/>
+       </label>
+       <p>Ноутбучные GPU и CPU · работа от сети · режим производительности. Укажите максимальную мощность GPU с Dynamic Boost, если он предусмотрен. Это параметр расчёта, он не меняет настройки устройства.</p>
+      </div>}
       <div className="skp-fps-settings">
        <div className="skp-fps-setting"><span className="skp-fps-setting-title">Пресет графики</span><div className="skp-fps-choices" role="group" aria-label="Качество графики">
         {graphicsPresets.map(option=><button type="button" key={option.value} aria-pressed={preset===option.value} className={preset===option.value?'current':''} onClick={()=>setPreset(option.value)}>{option.label}</button>)}
@@ -132,7 +140,7 @@ export default function GamingFps({hardware,compact=false,inlineAction=false}:{h
         {effectiveRt&&<span>RT: <strong>{rtAffected} из {rows.length}</strong> игр</span>}
         {effectiveUpscaling!=='native'&&<span>{techLabel}: <strong>{upscalingAffected} из {rows.length}</strong> игр</span>}
         <small>Игры с активными эффектами показаны первыми</small>
-       </div>}<div className="skp-fps-hardware"><span>GPU: {hardware.gpu.split(' · ')[0]}</span><span>CPU: {hardware.cpu.split(' · ')[0]}</span></div>
+       </div>}<div className="skp-fps-hardware"><span>GPU: {hardware.gpu.split(' · ')[0]}{mobile?' · Laptop GPU · '+laptopPower+' Вт':''}</span><span>CPU: {hardware.cpu.split(' · ')[0]}</span></div>
        <div className="skp-fps-list">{displayedRows!.map((row,index)=><div className="skp-fps-row" key={row.id} style={{animationDelay:index*45+'ms'}}>
         <span className="skp-fps-game"><span>{row.name}</span><span className="skp-fps-game-tags">
          {effectiveRt&&<small className={row.rayTracingApplied?'active':''} title={row.rayTracingApplied?'Эффект RT учтён в оценке':'В данной игре RT не моделируется'}>{row.rayTracingApplied?'RT':'RT —'}</small>}
@@ -142,8 +150,9 @@ export default function GamingFps({hardware,compact=false,inlineAction=false}:{h
          <AnimatedFpsNumber value={row.low} delay={index*38}/>–<AnimatedFpsNumber value={row.high} delay={index*38+90}/> <small>FPS</small>
         </strong>
        </div>)}</div>
-      </>:<p className="skp-fps-empty">Чтобы рассчитать FPS, укажи в комплектации поддерживаемые процессор и видеокарту NVIDIA GeForce RTX или AMD Radeon RX.</p>}
+      </>:<p className="skp-fps-empty">{mobile?'Для оценки укажи TGP от 1 до 250 Вт и модели мобильных CPU и GPU в характеристиках ноутбука. Сейчас доступны отдельные расчётные профили RTX 40/50 Laptop; для неподдерживаемых компонентов оценка не выводится.':'Чтобы рассчитать FPS, укажи в комплектации поддерживаемые процессор и видеокарту NVIDIA GeForce RTX или AMD Radeon RX.'}</p>}
       <p className="skp-fps-feature-note"><Info size={14} aria-hidden="true"/> RT в модели учитывается только для Cyberpunk 2077 и War Thunder. DLSS/FSR применяются лишь к поддерживаемым играм; знак «—» означает, что эффект не учтён и FPS для игры не должен измениться. При выборе RT или масштабирования подходящие игры поднимаются в начало списка. DLSS доступен только с RTX.</p>
+      {mobile&&<p className="skp-fps-note">Ноутбучные коэффициенты и влияние TGP/ОЗУ являются приближением, а не замерами этой модели. Охлаждение, лимиты CPU, MUX/Optimus и режим питания могут заметно изменить результат. Неизвестный TGP не подменяется настольным значением.</p>}
       <p className="skp-fps-note">Это <strong>приблизительная расчётная модель</strong>, а не реальные игровые тесты и не гарантированный диапазон FPS. Пресеты, RT и масштабирование изменяют оценку условно; реализация DLSS/FSR и доступные режимы зависят от игры и версии. Генерация кадров не учитывается. 2K — 2560×1440, 4K — 3840×2160. Фактический FPS может существенно отличаться.</p>
      </section>
     </div>

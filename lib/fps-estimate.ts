@@ -63,7 +63,42 @@ function cpuTier(name:string):number|null{
  if(/(5600|5700|12400|12600)/i.test(name))return .86;
  return 1;
 }
-export type FpsHardware={gpu:string;cpu:string;ram?:string};
+export type FpsHardware={gpu:string;cpu:string;ram?:string;platform?:'desktop'|'laptop';gpuPowerWatts?:number};
+// Separate illustrative mobile profiles, not measured benchmarks. Scores are
+// model assumptions relative to the existing desktop RTX 5070 baseline.
+// Power reference points are in watts; do not interpret them as every laptop's TGP.
+// NVIDIA model/power specifications: https://www.nvidia.com/en-us/geforce/laptops/compare/
+const laptopGpuProfiles:Record<string,{score:number;watts:number}>={
+ '5090':{score:1.10,watts:150},'5080':{score:.95,watts:150},
+ '5070ti':{score:.77,watts:115},'5070':{score:.60,watts:100},
+ '5060':{score:.50,watts:100},'5050':{score:.39,watts:100},
+ '4090':{score:.95,watts:150},'4080':{score:.78,watts:150},
+ '4070':{score:.55,watts:115},'4060':{score:.46,watts:115},
+ '4050':{score:.33,watts:115}
+};
+function laptopGpuTier(hardware:FpsHardware):number|null{
+ const model=hardware.gpu.match(/\bRTX\s*(\d{4})\s*(Ti)?\b/i);
+ const profile=model?laptopGpuProfiles[model[1]+(model[2]?'ti':'')]:undefined;
+ const power=hardware.gpuPowerWatts;
+ if(!profile||!power||!Number.isFinite(power)||power<1||power>250)return null;
+ return profile.score*Math.min(1.12,Math.pow(power/profile.watts,.45));
+}
+function laptopCpuTier(name:string):number|null{
+ // Require a mobile family/suffix; never reuse the desktop CPU fallback.
+ if(!/(?:core\s*(?:ultra\s*[3579]|i[3579])|i[3579]-|ryzen\s*(?:[3579]|ai))/i.test(name))return null;
+ if(/\b\d{3,5}HX3D\b/i.test(name))return 1.10;
+ if(/\b\d{3,5}HX\b/i.test(name))return 1;
+ if(/\b\d{3,5}(?:HS|H)\b/i.test(name))return .90;
+ if(/\b\d{3,5}(?:U|V)\b/i.test(name))return .72;
+ if(/ryzen\s*ai\s*[3579]\s*(?:hx\s*)?\d{3}\b/i.test(name))return .90;
+ return null;
+}
+export function fromLaptop(p:Product):FpsHardware{
+ const power=Number((p.specs?.gpuPowerWatts||'').replace(',','.'));
+ return {platform:'laptop',gpu:p.specs?.gpu||'',cpu:p.specs?.cpu||'',
+  ram:p.specs?.capacity? p.specs.capacity+' GB':undefined,
+  gpuPowerWatts:Number.isFinite(power)&&power>0?power:undefined};
+}
 export function fromReadyPC(p:Product):FpsHardware{
  const graphics=p.buildComponents?.gpu||[p.name,p.description].join(' ');
  const graphicsModel=graphics.match(/(?:RTX\s*\d{4}\s*(?:Ti|Super)?|RX\s*\d{4}\s*(?:XTX|XT)?)/i)?.[0]?.trim()||'';
@@ -89,7 +124,9 @@ export function estimateFps(
  resolution:FpsResolution,
  requested:Partial<FpsOptions>={}
 ):GameFpsEstimate[]|null{
- const gpu=gpuTier(hardware.gpu),processor=cpuTier(hardware.cpu);
+ const mobile=hardware.platform==='laptop';
+ const gpu=mobile?laptopGpuTier(hardware):gpuTier(hardware.gpu);
+ const processor=mobile?laptopCpuTier(hardware.cpu):cpuTier(hardware.cpu);
  if(gpu===null||processor===null)return null;
  const opts={...defaultFpsOptions,...requested};
  const pixels=resolution==='FHD'?1:resolution==='2K'?1.78:4;
@@ -113,7 +150,9 @@ export function estimateFps(
   const gpuLimited=game.fps5070*gpu*resolutionScale*presetScale*cpuFactor*rayFactor;
   // Avoid unlimited FPS increases from faster GPUs/upscaling in CPU-heavy games.
   const cpuCeiling=game.fps5070*processor*(1.35+(1-game.cpuBound)*.75);
-  const average=Math.max(8,Math.round(Math.min(gpuLimited,cpuCeiling)/5)*5);
+  const memoryGb=mobile?Number.parseFloat(hardware.ram||''):NaN;
+  const memoryFactor=Number.isFinite(memoryGb)?(memoryGb<=8?.80:memoryGb<=16?.94:1):1;
+  const average=Math.max(8,Math.round(Math.min(gpuLimited,cpuCeiling)*memoryFactor/5)*5);
   // A narrow illustrative display band (±8%), not a confidence interval.
   const spread=Math.max(5,Math.round(average*.08/5)*5);
   return {
