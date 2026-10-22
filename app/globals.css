@@ -1428,13 +1428,30 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  }
 }
 
-/* Integrated hero navigation: a subtle tapered dock merges into the
-   #090b0b page background at the slider's bottom edge.  No visible frame
-   around the dock or the dots; beveled arrow keys replace circular buttons. */
+/* The lower separator is not a border on the hero box any more: it is a
+   thin line BEHIND the navigation and climbs over the trapezoid's top and
+   angled edges. The strip through the foot of the controls is hidden. */
+.hero-carousel:not(.skp-slide-preview){
+ border-bottom:0;
+}
+.hero-carousel:not(.skp-slide-preview)::after{
+ content:'';
+ position:absolute;
+ left:0;
+ right:0;
+ bottom:0;
+ height:1px;
+ background:#34351f;
+ z-index:4;
+ pointer-events:none;
+}
+/* One integrated dock: outline only on the UPPER edge and two shoulders.
+   No lower-edge line: the dark base flows into the next page section. */
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls{
  left:50%;
  right:auto;
  bottom:0;
+ z-index:5;
  transform:translateX(-50%);
  display:flex;
  align-items:center;
@@ -1452,7 +1469,23 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  isolation:isolate;
 }
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls::before{
- content:none;
+ content:'';
+ position:absolute;
+ inset:0;
+ z-index:0;
+ pointer-events:none;
+ background:#41492b;
+ /* Draw 1-2px stroke up the left shoulder, across the raised top,
+    down the right shoulder; deliberately omit the bottom edge. */
+ clip-path:polygon(
+  11% 0,89% 0,100% 100%,
+  calc(100% - 1px) 100%,calc(89% - 1px) 2px,
+  calc(11% + 1px) 2px,1px 100%,0 100%
+ );
+}
+.hero-carousel:not(.skp-slide-preview)>.carousel-controls>*{
+ position:relative;
+ z-index:1;
 }
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls .carousel-arrow{
  flex:0 0 37px;
