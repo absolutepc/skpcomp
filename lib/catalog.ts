@@ -1,6 +1,6 @@
 import {seed,Product} from './seed';
 import {productPhotos} from './product-photos';
-export const components:Record<string,string>={cpu:'Процессоры',motherboard:'Материнские платы',gpu:'Видеокарты',ram:'ОЗУ',ssd:'Накопители',psu:'Блоки питания',cooler:'Охлаждение',case:'Корпуса'};
+export const components:Record<string,string>={cpu:'Процессоры',motherboard:'Мат.платы',gpu:'Видеокарты',ram:'ОЗУ',ssd:'Накопители',psu:'Блоки питания',cooler:'Охлаждение',case:'Корпуса'};
 export const peripherals:Record<string,string>={monitor:'Мониторы',mouse:'Мышки',keyboard:'Клавиатуры',headphones:'Наушники',mousepad:'Коврики',microphone:'Микрофоны',mount:'Кронштейны',webcam:'Веб-камеры'};
 export type Field={key:string;label:string;unit?:string;numeric?:boolean};
 const f=(key:string,label:string,unit?:string):Field=>({key,label,unit,numeric:!!unit});
