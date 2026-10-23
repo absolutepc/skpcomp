@@ -72,3 +72,11 @@
 @media(max-width:1000px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:650px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:430px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Keep page geometry identical for short and long product lists.
+   Without a permanent scrollbar, filtering to a few items changes viewport
+   width and stretches every grid column. */
+html:has(.skp-admin-workspace){overflow-y:scroll;scrollbar-gutter:stable}
+.skp-admin-category-always-visible .skp-admin-category-group>div{width:100%;min-width:0}
+.skp-admin-category-always-visible .skp-admin-category-group button{width:100%;max-width:100%;box-sizing:border-box;flex-shrink:0}
+.skp-admin-category-always-visible .skp-admin-category-all button{box-sizing:border-box;width:132px;min-width:132px;max-width:132px}
