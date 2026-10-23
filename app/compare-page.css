@@ -99,3 +99,34 @@
 @media(max-width:1150px){.skp-cmp-heading{align-items:flex-start;flex-wrap:wrap}.skp-cmp-top-actions{margin-left:auto}.skp-cmp-hero{grid-template-columns:minmax(0,1fr) 170px minmax(0,1fr)}.skp-cmp-product-bottom{flex-direction:column;align-items:stretch}.skp-cmp-product-buy{flex-direction:row;justify-content:space-between;align-items:center}.skp-cmp-product-description h2{font-size:17px}.skp-cmp-versus>strong{font-size:72px}.skp-cmp-price-delta b{font-size:29px}}
 @media(max-width:750px){.skp-cmp{padding-top:18px!important}.skp-cmp-heading{display:block}.skp-cmp-top-actions{margin:17px 0;justify-content:space-between}.skp-cmp-hero{position:relative;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.skp-cmp-versus{grid-column:1/-1;grid-row:2;flex-direction:row;gap:20px;min-height:100px}.skp-cmp-product-right{grid-column:2;grid-row:1}.skp-cmp-product-left{grid-column:1;grid-row:1}.skp-cmp-product{min-height:290px}.skp-cmp-image-link{min-height:160px;padding:10px}.skp-cmp-product-image{height:155px}.skp-cmp-product-bottom{padding:0 12px 14px}.skp-cmp-product-buy{flex-wrap:wrap}.skp-cmp-product-buy strong{font-size:18px}.skp-cmp-cart-button{font-size:11px;padding:8px 10px}.skp-cmp-versus>strong{font-size:70px}.skp-cmp-price-delta{margin:0;width:180px}.skp-cmp-price-delta b{font-size:28px}.skp-cmp-summary{grid-template-columns:1fr}}
 @media(max-width:480px){.skp-cmp-top-actions{flex-direction:column;align-items:stretch}.skp-cmp-diff-toggle,.skp-cmp-clear{justify-content:center}.skp-cmp-product-description h2{font-size:13px}.skp-cmp-product-description p{font-size:10px}.skp-cmp-product-buy{flex-direction:column;align-items:stretch;gap:6px}.skp-cmp-product-buy strong{font-size:16px}.skp-cmp-cart-button{width:100%}.skp-cmp-price-delta{width:155px}}
+
+/* Refined compact switch: prevent global label/input rules from stacking it. */
+.skp-cmp .skp-cmp-top-actions .skp-cmp-diff-toggle{
+ display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;
+ gap:12px!important;width:auto!important;min-width:230px;height:45px;padding:0 14px!important;
+ margin:0!important;border:1px solid #293945;border-radius:9px;
+ background:#101a24;color:#e9edf1;font-size:12px;font-weight:600;line-height:1.3;white-space:nowrap
+}
+.skp-cmp .skp-cmp-diff-toggle>input[type="checkbox"]{
+ position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:0!important;
+ opacity:0;overflow:hidden;pointer-events:none
+}
+.skp-cmp .skp-cmp-diff-toggle .skp-cmp-switch{
+ position:relative;display:inline-block;flex:0 0 42px;width:42px;height:23px;border-radius:99px;
+ background:#37444f;border:1px solid #4a5661;box-shadow:inset 0 1px 3px #0006;
+ transition:background .2s ease,border-color .2s ease
+}
+.skp-cmp .skp-cmp-diff-toggle .skp-cmp-switch:before{
+ content:"";position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;
+ background:#f3f6f8;box-shadow:0 1px 4px #0007;transform:translateX(0);
+ transition:transform .2s ease,background .2s ease
+}
+.skp-cmp .skp-cmp-diff-toggle input:checked+.skp-cmp-switch{
+ background:#ffe000;border-color:#ffe000
+}
+.skp-cmp .skp-cmp-diff-toggle input:checked+.skp-cmp-switch:before{
+ transform:translateX(19px);background:#fff
+}
+.skp-cmp .skp-cmp-diff-toggle:hover{border-color:#53626d;background:#14212c}
+.skp-cmp .skp-cmp-diff-toggle:has(input:focus-visible){outline:2px solid #ffe000;outline-offset:3px}
+@media(max-width:480px){.skp-cmp .skp-cmp-top-actions .skp-cmp-diff-toggle{width:100%!important;justify-content:center!important;min-width:0}}
