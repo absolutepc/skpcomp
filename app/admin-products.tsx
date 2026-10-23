@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {Plus,Pencil,Eye,Trash2,ImageOff,ChevronLeft,ChevronRight,LayoutGrid,ChevronDown,X} from 'lucide-react';
+import {Plus,Pencil,Eye,Trash2,ImageOff,ChevronLeft,ChevronRight} from 'lucide-react';
 import {components,peripherals} from '../lib/catalog';
 import {getProductImages} from '../lib/product-gallery';
 import type {Product} from '../lib/seed';
@@ -44,15 +44,17 @@ export function AdminProductTable({items,onEdit,onDelete}:{items:Product[];onEdi
  </>;
 }
 export default function AdminProducts({products,section,search,onAdd,onEdit,onDelete}:{products:Product[];section:AdminProductSection;search:string;onAdd:(category:string)=>void;onEdit:(p:Product)=>void;onDelete:(p:Product)=>void}){
- const [category,setCategory]=useState(''),[tiles,setTiles]=useState(false);
+ const [category,setCategory]=useState('');
  const list=products.filter(p=>inAdminProductSection(p,section,category)).filter(p=>(p.name+' '+p.brand).toLowerCase().includes(search.toLowerCase()));
  const newCategory=section==='pcs'?'pc':section==='laptops'?'laptops':category&&category!=='other'?category:'cpu';
  const title=section==='pcs'?'Готовые ПК':section==='laptops'?'Ноутбуки':'Все товары';
  return <div className="skp-admin-products">
   <div className="skp-admin-panel-header"><div><h1>{title}</h1><p>Цены, наличие, фотографии и характеристики товаров.</p></div><button type="button" className="button light" onClick={()=>onAdd(newCategory)}><Plus size={18}/>Добавить {section==='pcs'?'ПК':section==='laptops'?'ноутбук':'товар'}</button></div>
   <div className="skp-admin-card">
-   {section==='products'&&<div className="skp-admin-filters"><button type="button" className={'skp-admin-category-trigger'+(category?' is-filtered':'')} aria-label="Выбрать категорию товаров" aria-expanded={tiles} onClick={()=>setTiles(!tiles)}><LayoutGrid size={17}/><span>{category?labels[category]||'Прочие товары':'Все категории'}</span><ChevronDown size={16} className={tiles?'skp-admin-chevron-open':''}/></button>{category&&<button type="button" className="skp-admin-category-reset" onClick={()=>setCategory('')} aria-label="Сбросить категорию"><X size={15}/>Сбросить</button>}</div>}
-   {tiles&&section==='products'&&<div className="skp-admin-category-picker"><div className="skp-admin-category-all"><button type="button" className={!category?'selected':''} onClick={()=>{setCategory('');setTiles(false)}}>Все категории</button></div>{[['Комплектующие',components],['Периферия',peripherals],['Другие категории',{furniture:'Компьютерная мебель',other:'Прочие товары'}]].map(([name,group])=><div key={name as string}><h3>{name as string}</h3><div>{Object.entries(group).map(([id,label])=><button type="button" key={id} className={id===category?'selected':''} onClick={()=>{setCategory(id);setTiles(false)}}>{label}<small>{products.filter(p=>inAdminProductSection(p,'products',id)).length}</small></button>)}</div></div>)}</div>}
+   {section==='products'&&<div className="skp-admin-category-picker skp-admin-category-always-visible">
+     <div className="skp-admin-category-all"><button type="button" className={!category?'selected':''} aria-pressed={!category} onClick={()=>setCategory('')}>Все категории <small>{products.filter(p=>inAdminProductSection(p,'products')).length}</small></button></div>
+     {([['Комплектующие',components],['Периферия',peripherals],['Другие категории',{furniture:'Компьютерная мебель',other:'Прочие товары'}]] as const).map(([name,group])=><div key={name} className="skp-admin-category-group"><h3>{name}</h3><div>{Object.entries(group).map(([id,label])=><button type="button" key={id} aria-pressed={id===category} className={id===category?'selected':''} onClick={()=>setCategory(id)}><span>{label}</span><small>{products.filter(p=>inAdminProductSection(p,'products',id)).length}</small></button>)}</div></div>)}
+   </div>}
    <AdminProductTable items={list} onEdit={onEdit} onDelete={onDelete}/>
   </div>
  </div>;
