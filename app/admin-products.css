@@ -51,3 +51,19 @@
 .skp-admin-category-all{margin-bottom:16px!important}
 .skp-admin-category-all button{font-weight:600}
 @media(max-width:550px){.skp-admin-category-trigger{width:100%}.skp-admin-category-reset{margin-left:auto}}
+
+/* Permanently visible category filters in the products section. */
+.skp-admin-category-always-visible{margin-bottom:20px;padding:16px;border-radius:10px}
+.skp-admin-category-always-visible .skp-admin-category-all{margin-bottom:16px!important}
+.skp-admin-category-always-visible .skp-admin-category-all button{display:inline-flex;align-items:center;justify-content:space-between;gap:18px;min-height:38px;padding:10px 14px;border-radius:8px}
+.skp-admin-category-always-visible .skp-admin-category-group{margin-bottom:16px}
+.skp-admin-category-always-visible .skp-admin-category-group:last-child{margin-bottom:0}
+.skp-admin-category-always-visible .skp-admin-category-group h3{margin:0 0 10px;font-weight:650;color:#2b303a}
+.skp-admin-category-always-visible .skp-admin-category-group>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.skp-admin-category-always-visible button{display:flex;align-items:center;gap:10px;min-width:0;min-height:36px}
+.skp-admin-category-always-visible button span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.skp-admin-category-always-visible button small{margin-left:auto;flex-shrink:0}
+.skp-admin-category-always-visible button:hover{background:#fffdf1;border-color:#e9d94b}
+.skp-admin-category-always-visible button.selected{background:#fff5b8;color:#292600;border-color:#e3c933}
+@media(max-width:1000px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:1fr}}
