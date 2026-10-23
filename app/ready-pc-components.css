@@ -102,3 +102,15 @@
 }
 @media(max-width:950px){.skp-ready-pc-parts-list{row-gap:9px}}
 @media(max-width:540px){.skp-ready-pc-parts-list{row-gap:7px}.skp-ready-pc-part-media img{max-height:168px}}
+
+/* Per-component optical sizing: balance wide GPU against cooler and case. */
+@media(min-width:951px){
+ .skp-ready-pc-part[data-part="gpu"] .skp-ready-pc-part-media img{transform:scale(.97)}
+ .skp-ready-pc-part[data-part="cooler"] .skp-ready-pc-part-media img{transform:scale(1.34)}
+ .skp-ready-pc-part[data-part="case"] .skp-ready-pc-part-media img{transform:scale(1.23)}
+}
+@media(max-width:950px){
+ .skp-ready-pc-part[data-part="gpu"] .skp-ready-pc-part-media img{transform:scale(.96)}
+ .skp-ready-pc-part[data-part="cooler"] .skp-ready-pc-part-media img{transform:scale(1.18)}
+ .skp-ready-pc-part[data-part="case"] .skp-ready-pc-part-media img{transform:scale(1.12)}
+}
