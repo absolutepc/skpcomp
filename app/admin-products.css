@@ -38,32 +38,55 @@
 @media(max-width:1000px){.skp-admin-category-picker>div>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:550px){.skp-admin-pagination>span{display:none}.skp-admin-pagination>div{margin-left:0}.skp-admin-filters>select{width:100%}}
 
-/* One compact category control below the global admin search. */
-.skp-admin-filters{margin-bottom:18px;gap:10px}
-.skp-admin-category-trigger{display:inline-flex;align-items:center;gap:11px;min-width:190px;max-width:100%;min-height:40px;padding:9px 13px!important;border:1px solid #e3e5eb!important;border-radius:9px!important;background:#f8f9fb!important;color:#292f39;font-size:12px!important;font-weight:600;transition:background .2s,border-color .2s}
-.skp-admin-category-trigger:hover,.skp-admin-category-trigger.is-filtered{background:#fffbea!important;border-color:#eadb72!important}
-.skp-admin-category-trigger span{flex:1;text-align:left}
-.skp-admin-category-trigger svg:last-child{transition:transform .2s}
-.skp-admin-chevron-open{transform:rotate(180deg)}
-.skp-admin-category-reset{display:inline-flex;align-items:center;gap:5px;padding:8px 10px!important;border:0!important;color:#747984;font-size:12px!important}
-.skp-admin-category-reset:hover{color:#222;background:#f2f3f6}
-.skp-admin-category-picker{border:1px solid #e8eaf0}
-.skp-admin-category-all{margin-bottom:16px!important}
-.skp-admin-category-all button{font-weight:600}
-@media(max-width:550px){.skp-admin-category-trigger{width:100%}.skp-admin-category-reset{margin-left:auto}}
-
-/* Permanently visible category filters in the products section. */
-.skp-admin-category-always-visible{margin-bottom:20px;padding:16px;border-radius:10px}
-.skp-admin-category-always-visible .skp-admin-category-all{margin-bottom:16px!important}
-.skp-admin-category-always-visible .skp-admin-category-all button{display:inline-flex;align-items:center;justify-content:space-between;gap:18px;min-height:38px;padding:10px 14px;border-radius:8px}
-.skp-admin-category-always-visible .skp-admin-category-group{margin-bottom:16px}
+/* Compact, borderless category filter layout */
+.skp-admin-category-always-visible{
+ margin:0 0 14px;
+ padding:0;
+ border:0;
+ border-radius:0;
+ background:transparent;
+ box-shadow:none;
+}
+.skp-admin-category-always-visible .skp-admin-category-all{margin:0 0 10px!important}
+.skp-admin-category-always-visible .skp-admin-category-group{margin:0 0 11px}
 .skp-admin-category-always-visible .skp-admin-category-group:last-child{margin-bottom:0}
-.skp-admin-category-always-visible .skp-admin-category-group h3{margin:0 0 10px;font-weight:650;color:#2b303a}
-.skp-admin-category-always-visible .skp-admin-category-group>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.skp-admin-category-always-visible button{display:flex;align-items:center;gap:10px;min-width:0;min-height:36px}
-.skp-admin-category-always-visible button span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
-.skp-admin-category-always-visible button small{margin-left:auto;flex-shrink:0}
-.skp-admin-category-always-visible button:hover{background:#fffdf1;border-color:#e9d94b}
-.skp-admin-category-always-visible button.selected{background:#fff5b8;color:#292600;border-color:#e3c933}
-@media(max-width:1000px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:550px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:1fr}}
+.skp-admin-category-always-visible .skp-admin-category-group h3{
+ margin:0 0 6px;font-size:11px;font-weight:600;line-height:1.3;color:#656d7b
+}
+.skp-admin-category-always-visible .skp-admin-category-group>div{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px
+}
+.skp-admin-category-always-visible button,
+.skp-admin-category-always-visible .skp-admin-category-all button{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ min-width:0;min-height:31px;padding:6px 10px;
+ border:1px solid transparent;border-radius:7px;
+ background:#f5f6f8;color:#525b69;font-size:11px;line-height:1.2;
+ transition:background .15s,border-color .15s,color .15s
+}
+.skp-admin-category-always-visible .skp-admin-category-all button{
+ display:inline-flex;gap:16px;font-weight:600
+}
+.skp-admin-category-always-visible button span{
+ min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.skp-admin-category-always-visible button small{
+ margin-left:auto;flex-shrink:0;color:#9099a7;font-size:10px
+}
+.skp-admin-category-always-visible button:hover{
+ background:#edeff3;color:#202631;border-color:transparent
+}
+.skp-admin-category-always-visible button.selected,
+.skp-admin-category-always-visible .skp-admin-category-all button.selected{
+ background:#fff2a6;border-color:#edd34c;color:#292600
+}
+.skp-admin-category-always-visible button.selected small{color:#756b25}
+@media(max-width:1000px){
+ .skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:550px){
+ .skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:400px){
+ .skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:1fr}
+}
