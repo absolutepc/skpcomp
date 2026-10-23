@@ -1,6 +1,7 @@
 import {adminCookie} from '../../../lib/admin-cookie';
 import {env} from 'cloudflare:workers';
 import {seed} from '../../../lib/seed';
+import {upgradeReadyPcDemos} from '../../../lib/ready-pc-demos';
 import {productPhotos} from '../../../lib/product-photos';
 import {buildComponentFields} from '../../../lib/build-components';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
@@ -15,7 +16,7 @@ async function auth(r:Request){return !!E.ADMIN_PASSWORD && (r.headers.get('cook
 export async function GET(){
  await ensureShop();
  const row=await E.DB.prepare('SELECT value FROM shop WHERE id=?').bind('catalog').first<{value:string}>();
- const store=row?JSON.parse(row.value) as typeof seed:seed;
+ const store=upgradeReadyPcDemos(row?JSON.parse(row.value) as typeof seed:seed);
  // Upgrade legacy catalogs without replacing prices, availability, contacts or admin changes.
  // The version is saved along with the catalog on the next admin edit, so intentional deletions stay deleted.
  if(row&&(store.catalogVersion||0)<CATALOG_VERSION){
