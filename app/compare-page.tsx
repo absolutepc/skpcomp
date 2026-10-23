@@ -87,7 +87,19 @@ export default function ComparePage({
       </div><div className="skp-cmp-product-buy"><strong>{money(right.price)}</strong><button type="button" className="skp-cmp-cart-button" disabled={!right.price} onClick={()=>onAddCart(right.id)}><ShoppingCart size={17}/>В корзину</button></div></div>
     </article>:<div className="skp-cmp-empty-slot"><GitCompareArrows size={40}/><h3>Добавьте второй товар</h3><p>Выберите модель из категории «{comparisonLabel(category)}».</p><button type="button" onClick={goBack}>Выбрать товар <ArrowRight size={16}/></button></div>}
    </div>
-   {right&&<><div className="skp-cmp-table-scroll"><div className="skp-cmp-specs" role="table" aria-label="Сравнение характеристик">
+   {right&&<><div className="skp-cmp-mobile-specs" aria-label="Мобильное сравнение характеристик">
+    <div className="skp-cmp-mobile-specs-heading">Характеристики <span>{rows.length}</span></div>
+    {rows.length?rows.map(row=>{
+      const lv=row.read(left),rv=row.read(right);
+      return <div className={'skp-cmp-mobile-spec'+(lv!==rv?' differs':'')} key={row.key}>
+        <div className="skp-cmp-mobile-spec-label">{row.label}</div>
+        <div className="skp-cmp-mobile-spec-values">
+         <span className="skp-cmp-mobile-left">{lv}</span>
+         <span className="skp-cmp-mobile-right">{rv}</span>
+        </div>
+      </div>;
+    }):<div className="skp-cmp-no-specs">Нет различающихся характеристик.</div>}
+   </div><div className="skp-cmp-table-scroll"><div className="skp-cmp-specs" role="table" aria-label="Сравнение характеристик">
     <div className="skp-cmp-spec-row skp-cmp-table-header" role="row"><div role="columnheader">{left.name}</div><div role="columnheader">Характеристика</div><div role="columnheader">{right.name}</div></div>
     {rows.length?rows.map(row=>{
      const lv=row.read(left),rv=row.read(right);
