@@ -44,7 +44,7 @@ export default function ReadyPcComponents({product,catalog}:{product:Product;cat
      {href?<a className="skp-ready-pc-part-image-link" href={href} aria-label={'Открыть '+matched.name}>{image?<img src={image} alt={matched.name} loading="lazy"/>:<Icon size={90} strokeWidth={1.3} aria-hidden="true"/>}</a>:<Icon size={90} strokeWidth={1.3} aria-hidden="true"/>}
     </div>
     <div className="skp-ready-pc-part-content">
-     <span className="skp-ready-pc-part-icon"><Icon size={23} strokeWidth={1.6}/></span><span className="skp-ready-pc-part-type">{row.label}</span>
+     <div className="skp-ready-pc-part-category"><span className="skp-ready-pc-part-icon"><Icon size={23} strokeWidth={1.6}/></span><span className="skp-ready-pc-part-type">{row.label}</span></div>
      <h3>{href?<a href={href}>{row.value}</a>:row.value}</h3>
      {details&&<p>{details}</p>}
      {href&&<a className="skp-ready-pc-part-more" href={href}>Перейти к товару <span aria-hidden="true">→</span></a>}
