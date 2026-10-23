@@ -13,3 +13,16 @@ export function addRogProducts(products:Product[],defaults:Product[],version:num
  });
  return result;
 }
+
+/** Version 10: link both PG27AQWP editions without changing merchant data. */
+export function groupRogMonitors(products:Product[],version:number):Product[]{
+ if(version>=10)return products;
+ return products.map(product=>{
+  const edition=product.id==='asus-rog-swift-oled-pg27aqwp-g-edition-20'||/pg27aqwp[\s-]?g\b/i.test(product.name);
+  const standard=product.id==='asus-rog-swift-oled-pg27aqwp-w'||/pg27aqwp[\s-]?w\b/i.test(product.name);
+  if(!edition&&!standard)return product;
+  return {...product,variantGroup:'asus-rog-swift-oled-pg27aqwp',
+   colorHex:product.colorHex||(edition?'#B39A61':'#C0C0C0'),
+   specs:{...product.specs,color:product.specs?.color||(edition?'Чёрный с золотыми акцентами':'Серебристый')}};
+ });
+}

@@ -1,3 +1,4 @@
+import {adminCookie} from '../../../lib/admin-cookie';
 import {env} from 'cloudflare:workers';
 import {seed} from '../../../lib/seed';
 import {productPhotos} from '../../../lib/product-photos';
@@ -5,7 +6,7 @@ import {buildComponentFields} from '../../../lib/build-components';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
 import {validateHeroSlides,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION,upgradeComputerHeroImage,COMPUTER_HERO_IMAGE_VERSION,swapSecondAndFourthHeroSlides,HERO_SLIDE_ORDER_VERSION} from '../../../lib/hero-slides';
 import {CATALOG_VERSION,FEATURED_MONITOR_ID,upgradeFeaturedMonitorProducts,linkFeaturedMonitorSlide} from '../../../lib/featured-monitor';
-import {addRogProducts} from '../../../lib/rog-catalog';
+import {addRogProducts,groupRogMonitors} from '../../../lib/rog-catalog';
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 // A fresh local D1 database has no tables until its first request.
 async function ensureShop(){await E.DB.prepare('CREATE TABLE IF NOT EXISTS shop (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)').run()}
@@ -116,6 +117,7 @@ export async function GET(){
    products=upgradeFeaturedMonitorProducts(products,monitor,oldVersion);
   }
   products=addRogProducts(products,seed.products,oldVersion);
+  products=groupRogMonitors(products,oldVersion);
   // The next successful admin save persists the new catalog version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
   const slides=linkFeaturedMonitorSlide(
@@ -139,8 +141,8 @@ export async function GET(){
   heroSlideOrderVersion:HERO_SLIDE_ORDER_VERSION},{headers:{'Cache-Control':'no-store'}});
 }
 export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});const b=await r.json() as any;
-if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin='+await token()+'; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800'}})}
-if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':'skp_admin=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'}});
+if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,await token(),28800)}})}
+if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,'',0)}});
 if(!await auth(r))return Response.json({error:'Войдите в административную панель'},{status:401});if(b.action==='check')return Response.json({ok:true});
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
 if(!validateHeroSlides(d.heroSlides))return Response.json({error:'Проверьте настройки слайдов, ссылки и изображения. Максимум 12 слайдов.'},{status:400});

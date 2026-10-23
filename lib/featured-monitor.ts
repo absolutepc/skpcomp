@@ -2,7 +2,7 @@ import type {Product} from './seed';
 import type {HeroSlide} from './hero-slides';
 
 export const FEATURED_MONITOR_ID='asus-rog-swift-oled-pg27aqwp-g-edition-20';
-export const CATALOG_VERSION=9;
+export const CATALOG_VERSION=10;
 
 export function isFeaturedMonitor(product:Pick<Product,'id'|'name'>):boolean{
  return product.id===FEATURED_MONITOR_ID||/PG27AQWP[\s-]?G/i.test(product.name);
