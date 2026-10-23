@@ -139,8 +139,8 @@ return <>
  {(adminSection==='products'||adminSection==='pcs'||adminSection==='laptops')&&<AdminProducts
   key={adminSection}
   products={data.products} section={adminSection} search={adminSearch}
-  onAdd={category=>setEditing({id:'product-'+Date.now(),name:'',category,price:0,
-   art:({pc:'pc',laptops:'laptop',motherboard:'board',furniture:'chair'} as Record<string,string>)[category]||category,
+  onAdd={category=>setEditing({id:'product-'+Date.now(),name:'',category:category.startsWith('furniture-')?'furniture':category,price:0,
+   art:({'furniture-chair':'chair','furniture-desk':'desk',pc:'pc',laptops:'laptop',motherboard:'board',furniture:'chair'} as Record<string,string>)[category]||category,
    description:'',image:'',stock:true,brand:'',socket:'',memory:'',watts:0})}
   onEdit={product=>setEditing(normalizeProduct(product))}
   onDelete={product=>{if(confirm('Удалить '+product.name+'?'))void save({...data,products:data.products.filter(p=>p.id!==product.id)})}}
