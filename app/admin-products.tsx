@@ -30,6 +30,7 @@ export function AdminProductTable({items,onEdit,onDelete}:{items:Product[];onEdi
  const visible=items.slice((current-1)*size,current*size);
  return <>
  <div className="skp-admin-table-scroll"><table className="skp-admin-data-table">
+  <colgroup><col style={{width:"6%"}}/><col style={{width:"33%"}}/><col style={{width:"16%"}}/><col style={{width:"12%"}}/><col style={{width:"14%"}}/><col style={{width:"19%"}}/></colgroup>
   <thead><tr><th>Фото</th><th>Название</th><th>Категория</th><th>Цена</th><th>Статус</th><th>Действия</th></tr></thead>
   <tbody>{visible.map(product=><tr key={product.id}><td><Photo product={product}/></td><td><button type="button" className="skp-admin-name" onClick={()=>onEdit(product)}>{product.name}</button><small className="skp-admin-brand-name">{product.brand}</small></td><td>{labels[product.category]||product.category}</td><td className="skp-admin-price">{product.price>0?money(product.price):'По запросу'}</td><td><span className={'skp-admin-stock '+(product.stock?'available':'unavailable')}>{product.stock?'В наличии':'Под заказ'}</span></td><td><div className="skp-admin-row-actions">
   <button type="button" title="Редактировать" aria-label={'Редактировать '+product.name} onClick={()=>onEdit(product)}><Pencil size={16}/></button>
