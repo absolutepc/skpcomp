@@ -24,24 +24,38 @@
 .skp-ready-pc-part-more{display:inline-flex;align-items:center;gap:12px;margin-top:12px;color:#ffe000;font-size:13px;font-weight:700;text-decoration:none}
 .skp-ready-pc-part-more:hover{color:#fff}
 .skp-ready-pc-part a:focus-visible{outline:2px solid #ffe000;outline-offset:3px}
+/* Unified horizontal compositions: image / diagonal info / image / diagonal info. */
 @media(min-width:951px){
- /* Both cells form one composition. The first dark panel projects over
-    the adjoining photo with a slanted edge; text itself is never clipped. */
- .skp-ready-pc-part:nth-child(odd){z-index:2}
- .skp-ready-pc-part:nth-child(even){z-index:1}
- .skp-ready-pc-part:nth-child(odd) .skp-ready-pc-part-content{background:transparent}
+ .skp-ready-pc-parts-list{column-gap:0;row-gap:1px}
+ .skp-ready-pc-part:nth-child(odd){z-index:2;overflow:visible}
+ .skp-ready-pc-part:nth-child(even){z-index:1;overflow:visible}
+ .skp-ready-pc-part,.skp-ready-pc-part.is-reverse{grid-template-columns:42% 58%;height:240px}
+ .skp-ready-pc-part-media,.skp-ready-pc-part.is-reverse .skp-ready-pc-part-media{
+   padding:5px 9px;overflow:hidden
+ }
+ .skp-ready-pc-part-media img{max-height:230px}
+ .skp-ready-pc-part-content,.skp-ready-pc-part.is-reverse .skp-ready-pc-part-content{
+   padding:18px 24px 18px 45px;background:transparent;overflow:visible
+ }
+ /* Trapezoid enters over its own photo on the left; on odd panels it
+    also stretches diagonally into the next component's photo. */
+ .skp-ready-pc-part-content::before{
+   inset:0 0 0 -50px;
+   clip-path:polygon(0 0,100% 0,100% 100%,50px 100%);
+   background:linear-gradient(112deg,#101519fa,#070a0dfd)
+ }
  .skp-ready-pc-part:nth-child(odd) .skp-ready-pc-part-content::before{
-   right:-55px;clip-path:polygon(0 0,calc(100% - 105px) 0,100% 100%,0 100%);
-   background:linear-gradient(108deg,#11181cfb,#06090cfd)
+   left:-50px;right:-100px;
+   clip-path:polygon(0 0,calc(100% - 100px) 0,100% 100%,50px 100%);
  }
- /* The right item's photo begins immediately after that diagonal, with no
-    visible vertical divider; reserve space so the product isn't hidden. */
- .skp-ready-pc-part:nth-child(even) .skp-ready-pc-part-media{padding-left:53px}
- .skp-ready-pc-part:nth-child(even) .skp-ready-pc-part-content{padding-left:36px;background:transparent}
  .skp-ready-pc-part:nth-child(even) .skp-ready-pc-part-content::before{
-   left:-31px;clip-path:polygon(31px 0,100% 0,100% 100%,0 100%);
-   background:linear-gradient(112deg,#11181cfb,#06090cfd)
+   left:-50px;right:0;
+   clip-path:polygon(0 0,100% 0,100% 100%,50px 100%)
  }
+ /* Keep the right-side image behind the sloping join, not under the text. */
+ .skp-ready-pc-part:nth-child(even) .skp-ready-pc-part-media{padding-left:84px}
+ .skp-ready-pc-part-category,.skp-ready-pc-part-content h3,
+ .skp-ready-pc-part-content p,.skp-ready-pc-part-more{position:relative;z-index:1}
 }
 @media(max-width:1200px){
  .skp-ready-pc-part,.skp-ready-pc-part.is-reverse{height:225px}
