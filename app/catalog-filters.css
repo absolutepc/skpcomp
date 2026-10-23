@@ -14,6 +14,6 @@
 .catalog-facets .skp-range-track input:disabled::-webkit-slider-thumb{cursor:default}
 .catalog-facets .skp-range-limits{display:flex;justify-content:space-between;color:#a9afa2;font-size:12px;margin:1px 0 12px;font-variant-numeric:tabular-nums}
 .catalog-facets .skp-range-inputs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
-.catalog-facets .skp-range-inputs label{display:flex;align-items:center;gap:5px;min-width:0;padding:8px;border:1px solid #3a3e35;border-radius:7px;background:#1d2021}
-.catalog-facets .skp-range-inputs label>span{color:#8e9589;font-size:12px}
-.catalog-facets .skp-range-inputs input{width:100%;min-width:0;padding:0;border:0;border-radius:0;background:transparent;color:#eee;font-size:13px}
+.catalog-facets .skp-range-inputs label{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;justify-content:flex-start;text-align:left;gap:7px;min-width:0;margin:0;padding:8px;border:1px solid #3a3e35;border-radius:7px;background:#1d2021}
+.catalog-facets .skp-range-inputs label>span{flex:0 0 auto;white-space:nowrap;color:#8e9589;font-size:12px}
+.catalog-facets .skp-range-inputs input{flex:1 1 0;width:0;min-width:0;padding:0;border:0;border-radius:0;background:transparent;color:#eee;font-size:13px}
