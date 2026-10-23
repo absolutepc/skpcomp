@@ -23,6 +23,6 @@ export default function ComparisonRadar({left,right,category}:{left:Product;righ
    </g>)}
   </svg>
   <figcaption><span><i/>Слева</span><span><i/>Справа</span></figcaption>
-  <p>Шкалы относительно двух товаров. ↓ — меньше лучше. — нет данных.{axes.some(a=>a.key.startsWith('fps-'))?' FPS — расчёт, FHD / высокие, без RT и апскейлинга.':''}</p>
+  <p>Шкалы относительно двух товаров. ↓ — меньше лучше. — нет данных. Единственное известное значение на оси показано на внешнем кольце; сравнение по этой оси недоступно.{axes.some(a=>a.values[0]===null||(right&&a.values[1]===null))?' Контур неполный: заполните характеристики товара.':''}{axes.some(a=>a.key.startsWith('fps-'))?' FPS — расчёт, FHD / высокие, без RT и апскейлинга.':''}</p>
  </figure>;
 }

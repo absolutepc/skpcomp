@@ -24,15 +24,21 @@ assert.equal(numericValue('0,2'),.2);assert.equal(numericValue(''),null);assert.
 assert.equal(numericValue('Infinity'),null);
 assert.equal(JSON.stringify(relativeValues(60,80,true)),JSON.stringify([1,.75]));
 assert.equal(JSON.stringify(relativeValues(4000,8000)),JSON.stringify([.5,1]));
-assert.equal(JSON.stringify(relativeValues(null,8000)),JSON.stringify([null,null]));
+assert.equal(JSON.stringify(relativeValues(null,8000)),JSON.stringify([null,1]));
 assert.equal(JSON.stringify(relativeValues(0,0)),JSON.stringify([1,1]));
 const product={id:'a',name:'Mouse A',category:'mouse',price:100,stock:true,brand:'Test',image:'',art:'mouse',description:'',socket:'',memory:'',watts:0,specs:{dpi:'32000',ips:'750',acceleration:'60',polling:'8000',battery:'90',weight:'60'}};
 const other={...product,id:'b',name:'Mouse B',specs:{...product.specs,weight:'80'}};
 const Radar=load('app/comparison-radar.tsx').default;
 const renderRadar=(b)=>renderToStaticMarkup(React.createElement(Radar,{left:product,right:b,category:'mouse'}));
 const full=renderRadar(other);assert.equal((full.match(/<polygon /g)||[]).length,7);assert(!full.includes('NaN'));
-const sparse=renderRadar({...other,specs:{}});assert.equal((sparse.match(/<polygon /g)||[]).length,5);assert(sparse.includes('нет данных'));
-assert(!renderRadar(undefined).includes('NaN'));
+const sparse=renderRadar({...other,specs:{}});assert.equal((sparse.match(/<polygon /g)||[]).length,6);assert(sparse.includes('нет данных'));
+const single=renderRadar(undefined);assert(!single.includes('NaN'));assert.equal((single.match(/<polygon /g)||[]).length,6);
+const partial=renderRadar({...other,specs:{polling:'4000'}});
+assert.equal((partial.match(/<polygon /g)||[]).length,6);
+assert.equal((partial.match(/<circle /g)||[]).length,7);
+assert(partial.includes('Контур неполный'));
+assert.equal(JSON.stringify(relativeValues(60,null,true)),JSON.stringify([1,null]));
+assert.equal(JSON.stringify(relativeValues(null,null)),JSON.stringify([null,null]));
 const Page=load('app/compare-page.tsx').default;
 for(const products of [[],[product],[product,other],[product,other,{...other,id:'c',name:'THIRD PRODUCT'}]]){
  const html=renderToStaticMarkup(React.createElement(Page,{products,onRemove(){},onClear(){},onAddCart(){},nav(){}}));
@@ -42,3 +48,8 @@ for(const products of [[],[product],[product,other],[product,other,{...other,id:
 }
 assert(comparisonMetrics('pc').every(m=>m.read({...product,category:'pc',description:''})===null||m.key==='price'));
 console.log('Comparison: category axes, normalization, missing data and 0/1/2-product rendering passed.');
+
+const pcie=comparisonMetrics('gpu').find(m=>m.key==='pcieVersion');
+for(const [raw,expected] of [['PCI Express 5.0',5],['PCIe 4.0 x16',4],['PCI-E x16',null],['',null],['PCIe 3,0',3]]){
+ assert.equal(pcie.read({...product,category:'gpu',specs:{interface:raw}}),expected);
+}

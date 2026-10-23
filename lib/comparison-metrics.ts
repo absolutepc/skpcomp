@@ -9,6 +9,11 @@ export function numericValue(raw:string):number|null{
  return Number.isFinite(value)?value:null;
 }
 const metric=(key:string,label:string,unit='',lowerBetter=false):RadarMetric=>({key,label,unit,lowerBetter,read:p=>key==='price'?(p.price>0?p.price:null):numericValue(fieldValue(p,key))});
+const pcieVersion:RadarMetric={key:'pcieVersion',label:'Версия PCIe',unit:'',read:p=>{
+ const raw=fieldValue(p,'interface').trim();
+ const match=raw.match(/^(?:PCI\s*(?:Express|[eе])\s*)(\d+(?:[.,]\d+)?)(?=\s|$|[xх×])/i);
+ return match?numericValue(match[1]):null;
+}};
 const price=metric('price','Цена','₽',true);
 const fps=(game:string,label:string):RadarMetric=>({key:'fps-'+game,label,unit:'FPS ≈',read:p=>{
  const rows=estimateFps(p.category==='laptops'?fromLaptop(p):fromReadyPC(p),'FHD');
@@ -16,9 +21,9 @@ const fps=(game:string,label:string):RadarMetric=>({key:'fps-'+game,label,unit:'
 }});
 const profiles:Record<string,RadarMetric[]>={
  mouse:[metric('dpi','Разрешение','DPI'),metric('ips','Скорость','IPS'),metric('acceleration','Ускорение','G'),metric('polling','Частота опроса','Гц'),metric('battery','Автономность','ч'),metric('weight','Вес','г',true)],
- cpu:[metric('cores','Ядра'),metric('threads','Потоки'),metric('boost','Boost','ГГц'),metric('l3','Кэш L3','МБ'),metric('watts','Мощность','Вт',true),price],
+ cpu:[metric('cores','Ядра'),metric('threads','Потоки'),metric('frequency','Базовая частота','ГГц'),metric('l3','Кэш L3','МБ'),metric('watts','Мощность','Вт',true),price],
  motherboard:[metric('ramSlots','Слоты ОЗУ'),metric('maxRam','Макс. ОЗУ','ГБ'),metric('pcieSlots','Слоты PCIe'),metric('gpuSlots','Слоты GPU'),metric('m2Slots','Слоты M.2'),price],
- gpu:[metric('vram','Видеопамять','ГБ'),metric('bus','Шина памяти','бит'),metric('watts','Потребление','Вт',true),metric('length','Длина','мм',true),metric('boost','Boost','МГц'),price],
+ gpu:[metric('vram','Видеопамять','ГБ'),metric('bus','Шина памяти','бит'),metric('watts','Потребление','Вт',true),metric('length','Длина','мм',true),pcieVersion,price],
  ram:[metric('capacity','Объём','ГБ'),metric('speed','Частота','МГц'),metric('latency','Задержка CL','',true),metric('modules','Модули'),metric('voltage','Напряжение','В'),price],
  ssd:[metric('capacity','Объём','ГБ'),metric('readSpeed','Чтение','МБ/с'),metric('writeSpeed','Запись','МБ/с'),metric('endurance','Ресурс','ТБ'),metric('iops','Операции','IOPS'),price],
  psu:[metric('watts','Мощность','Вт'),metric('fanSize','Вентилятор','мм'),metric('efficiency','КПД','%'),metric('noise','Шум','дБ',true),metric('warranty','Гарантия','мес.'),price],
@@ -39,7 +44,7 @@ export function comparisonMetrics(category:string):RadarMetric[]{return profiles
 // Each axis is relative to this pair, not an invented benchmark out of 100.
 // Missing data never becomes zero and is never joined into a filled polygon.
 export function relativeValues(a:number|null,b:number|null,lowerBetter=false):[number|null,number|null]{
- if(a===null||b===null)return [null,null];
+ if(a===null||b===null)return [a===null?null:1,b===null?null:1];
  if(a===b)return [1,1];
  if(lowerBetter){const min=Math.min(a,b);return [a===0?1:min/a,b===0?1:min/b]}
  const max=Math.max(a,b);return [a/max,b/max];

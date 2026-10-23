@@ -105,7 +105,7 @@
 /* Pair comparison: consistent side colours, six category-specific axes. */
 .skp-cmp::before{content:none}
 .skp-cmp-diff-toggle{flex-direction:row}
-.skp-cmp-hero{align-items:center;gap:16px;margin:24px 0}
+.skp-cmp-hero{align-items:start;gap:16px;margin:12px 0 24px}
 .skp-cmp-product{--side:#ffe000;min-height:310px;border:1.5px solid var(--side);box-shadow:0 5px 18px #ffe0000b,inset 0 -3px 0 var(--side)}
 .skp-cmp-product-right{--side:#00d7e8;box-shadow:0 5px 18px #00d7e80b,inset 0 -3px 0 var(--side)}
 .skp-cmp-product-image{height:170px}
@@ -117,7 +117,7 @@
 .skp-cmp-product-buy strong{color:var(--side);font-size:clamp(18px,1.6vw,25px)}
 .skp-cmp-product-right .skp-cmp-cart-button{background:var(--side);color:#001114}
 .skp-cmp-product-right .skp-cmp-cart-button:hover{background:#78f5ff}
-.skp-cmp-radar{min-width:0;width:100%;margin:0;align-self:center}
+.skp-cmp-radar{min-width:0;width:100%;margin:0;align-self:start}
 .skp-cmp-radar svg{width:100%;height:auto;display:block;overflow:visible}
 .skp-radar-grid{fill:none;stroke:#323c3a;stroke-width:1}
 .skp-radar-series{stroke-width:2;stroke-linejoin:round}
