@@ -9,7 +9,7 @@ export default function AdminDashboard({products,search,onAdd,onEdit,onDelete}:{
  useEffect(()=>{
   const controller=new AbortController();setSummary(null);setError('');
   fetch('/api/orders?summary=1',{credentials:'same-origin',cache:'no-store',signal:controller.signal})
-   .then(async response=>{const result=await response.json();if(!response.ok)throw Error(result.error||'Не удалось загрузить показатели заказов');return result as Summary})
+   .then(async response=>{const result=await response.json() as Summary & {error?:string};if(!response.ok)throw Error(result.error||'Не удалось загрузить показатели заказов');return result as Summary})
    .then(setSummary).catch(e=>{if(e.name!=='AbortError')setError(e.message)});
   return()=>controller.abort();
  },[revision]);
