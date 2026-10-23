@@ -69,3 +69,24 @@
 @media(max-width:950px){
  .skp-ready-pc-parts-list{column-gap:0;row-gap:1px}
 }
+
+/* Diagonal join between LEFT product information and RIGHT product image.
+   One pair shares a continuous row; the first panel crosses the center,
+   with a sloped right edge rather than an artificial straight seam. */
+@media(min-width:951px){
+ .skp-ready-pc-parts-list{column-gap:0;row-gap:1px;overflow:hidden}
+ .skp-ready-pc-part:nth-child(2n+1){z-index:3;overflow:visible}
+ .skp-ready-pc-part:nth-child(2n){z-index:1;overflow:visible}
+ .skp-ready-pc-part:nth-child(2n+1) .skp-ready-pc-part-content{
+  width:calc(100% + 116px);
+  min-width:0;
+  clip-path:polygon(0 0,calc(100% - 115px) 0,100% 100%,12% 100%);
+  background:linear-gradient(110deg,#11171af5,#070a0dfd);
+ }
+ .skp-ready-pc-part:nth-child(2n) .skp-ready-pc-part-media{
+  padding-left:86px;
+ }
+ .skp-ready-pc-part:nth-child(2n) .skp-ready-pc-part-content{
+  clip-path:polygon(0 0,100% 0,100% 100%,12% 100%);
+ }
+}
