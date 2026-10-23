@@ -29,38 +29,38 @@
  .skp-ready-pc-parts-list{column-gap:0;row-gap:1px}
  .skp-ready-pc-part:nth-child(odd){z-index:2;overflow:visible}
  .skp-ready-pc-part:nth-child(even){z-index:1;overflow:visible}
- .skp-ready-pc-part,.skp-ready-pc-part.is-reverse{grid-template-columns:42% 58%;height:240px}
+ .skp-ready-pc-part,.skp-ready-pc-part.is-reverse{grid-template-columns:53% 47%;height:240px}
  .skp-ready-pc-part-media,.skp-ready-pc-part.is-reverse .skp-ready-pc-part-media{
    padding:5px 9px;overflow:hidden
  }
  .skp-ready-pc-part-media img{max-height:230px}
  .skp-ready-pc-part-content,.skp-ready-pc-part.is-reverse .skp-ready-pc-part-content{
-   padding:18px 24px 18px 45px;background:transparent;overflow:visible
+   padding:18px 16px 18px 28px;background:transparent;overflow:visible
  }
  /* Trapezoid enters over its own photo on the left; on odd panels it
     also stretches diagonally into the next component's photo. */
  .skp-ready-pc-part-content::before{
    inset:0 0 0 -50px;
-   clip-path:polygon(0 0,100% 0,100% 100%,50px 100%);
+   clip-path:polygon(0 0,100% 0,100% 100%,35px 100%);
    background:linear-gradient(112deg,#101519fa,#070a0dfd)
  }
  .skp-ready-pc-part:nth-child(odd) .skp-ready-pc-part-content::before{
-   left:-50px;right:-100px;
-   clip-path:polygon(0 0,calc(100% - 100px) 0,100% 100%,50px 100%);
+   left:-35px;right:-65px;
+   clip-path:polygon(0 0,calc(100% - 65px) 0,100% 100%,35px 100%);
  }
  .skp-ready-pc-part:nth-child(even) .skp-ready-pc-part-content::before{
-   left:-50px;right:0;
+   left:-35px;right:0;
    clip-path:polygon(0 0,100% 0,100% 100%,50px 100%)
  }
  /* Keep the right-side image behind the sloping join, not under the text. */
- .skp-ready-pc-part:nth-child(even) .skp-ready-pc-part-media{padding-left:84px}
+ .skp-ready-pc-part:nth-child(even) .skp-ready-pc-part-media{padding-left:45px}
  .skp-ready-pc-part-category,.skp-ready-pc-part-content h3,
  .skp-ready-pc-part-content p,.skp-ready-pc-part-more{position:relative;z-index:1}
 }
 @media(max-width:1200px){
  .skp-ready-pc-part,.skp-ready-pc-part.is-reverse{height:225px}
- .skp-ready-pc-part-content,.skp-ready-pc-part.is-reverse .skp-ready-pc-part-content{padding:15px 15px 15px 23px}
- .skp-ready-pc-part:nth-child(even) .skp-ready-pc-part-content{padding-left:28px}
+ .skp-ready-pc-part-content,.skp-ready-pc-part.is-reverse .skp-ready-pc-part-content{padding:15px 12px 15px 19px}
+ .skp-ready-pc-part:nth-child(even) .skp-ready-pc-part-content{padding-left:21px}
  .skp-ready-pc-part-content h3{font-size:17px}
 }
 @media(max-width:950px){
