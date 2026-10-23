@@ -7,6 +7,8 @@ export default function ComparisonRadar({left,right,category}:{left:Product;righ
  const axes=comparisonMetrics(category).map(m=>{const a=m.read(left),b=right?m.read(right):null;return {...m,values:[a,b],ratios:relativeValues(a,b,m.lowerBetter)}});
  const format=(n:number|null,unit:string)=>n===null?'—':n.toLocaleString('ru-RU',{maximumFractionDigits:2})+(unit?' '+unit:'');
  return <figure className="skp-cmp-radar">
+  <figcaption><span><i/>Слева</span><span><i/>Справа</span></figcaption>
+  <p>Шкалы относительно двух товаров. ↓ — меньше лучше. — нет данных.{axes.some(a=>(a.values[0]===null)!==(a.values[1]===null))?' Единственное известное значение на оси показано на внешнем кольце; сравнение по этой оси недоступно.':''}{axes.some(a=>a.values[0]===null||(right&&a.values[1]===null))?' Контур неполный: заполните характеристики товара.':''}{axes.some(a=>a.key.startsWith('fps-'))?' FPS — расчёт, FHD / высокие, без RT и апскейлинга.':''}</p>
   <svg viewBox="0 0 460 420" role="img" aria-label="Шесть параметров сравнения: жёлтый — левый товар, бирюзовый — правый">
    <title>{'Характеристики '+left.name+(right?' и '+right.name:'')}</title>
    <desc>{axes.map(a=>a.label+': '+format(a.values[0],a.unit)+' / '+format(a.values[1],a.unit)).join('; ')}</desc>
@@ -22,7 +24,6 @@ export default function ComparisonRadar({left,right,category}:{left:Product;righ
     <text textAnchor="middle" y="36" className="skp-radar-value-right">{format(a.values[1],a.unit)}</text>
    </g>)}
   </svg>
-  <figcaption><span><i/>Слева</span><span><i/>Справа</span></figcaption>
-  <p>Шкалы относительно двух товаров. ↓ — меньше лучше. — нет данных. Единственное известное значение на оси показано на внешнем кольце; сравнение по этой оси недоступно.{axes.some(a=>a.values[0]===null||(right&&a.values[1]===null))?' Контур неполный: заполните характеристики товара.':''}{axes.some(a=>a.key.startsWith('fps-'))?' FPS — расчёт, FHD / высокие, без RT и апскейлинга.':''}</p>
+
  </figure>;
 }

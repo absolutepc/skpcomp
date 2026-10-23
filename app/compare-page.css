@@ -105,7 +105,7 @@
 /* Pair comparison: consistent side colours, six category-specific axes. */
 .skp-cmp::before{content:none}
 .skp-cmp-diff-toggle{flex-direction:row}
-.skp-cmp-hero{align-items:start;gap:16px;margin:12px 0 24px}
+.skp-cmp-hero{align-items:start;gap:16px;margin:12px 0 14px}
 .skp-cmp-product{--side:#ffe000;min-height:310px;border:1.5px solid var(--side);box-shadow:0 5px 18px #ffe0000b,inset 0 -3px 0 var(--side)}
 .skp-cmp-product-right{--side:#00d7e8;box-shadow:0 5px 18px #00d7e80b,inset 0 -3px 0 var(--side)}
 .skp-cmp-product-image{height:170px}
@@ -117,8 +117,8 @@
 .skp-cmp-product-buy strong{color:var(--side);font-size:clamp(18px,1.6vw,25px)}
 .skp-cmp-product-right .skp-cmp-cart-button{background:var(--side);color:#001114}
 .skp-cmp-product-right .skp-cmp-cart-button:hover{background:#78f5ff}
-.skp-cmp-radar{min-width:0;width:100%;margin:0;align-self:start}
-.skp-cmp-radar svg{width:100%;height:auto;display:block;overflow:visible}
+.skp-cmp-radar{min-width:0;width:100%;margin:-16px 0 0;align-self:start}
+.skp-cmp-radar svg{width:100%;max-width:380px;height:auto;display:block;overflow:visible;margin:0 auto}
 .skp-radar-grid{fill:none;stroke:#323c3a;stroke-width:1}
 .skp-radar-series{stroke-width:2;stroke-linejoin:round}
 .skp-radar-series-0{stroke:#ffe000;fill:#ffe00024}
@@ -132,7 +132,7 @@
 .skp-cmp-radar figcaption span{display:flex;align-items:center;gap:6px}
 .skp-cmp-radar figcaption i{width:8px;height:8px;border-radius:50%;background:#ffe000}
 .skp-cmp-radar figcaption span+span i{background:#00d7e8}
-.skp-cmp-radar p{font-size:10px;line-height:1.5;text-align:center;color:#929d99;margin:10px auto 0;max-width:310px}
+.skp-cmp-radar p{font-size:10px;line-height:1.5;text-align:center;color:#929d99;margin:6px auto 0;max-width:380px}
 .skp-cmp-table-header>div{padding:14px 16px;font-size:12px;font-weight:700}
 .skp-cmp-table-header>div:first-child{color:#ffe000;text-align:right}
 .skp-cmp-table-header>div:last-child{color:#00d7e8}
@@ -142,7 +142,7 @@
  .skp-cmp-hero{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
  .skp-cmp-product-left{grid-column:1;grid-row:1}
  .skp-cmp-product-right,.skp-cmp-empty-slot{grid-column:2;grid-row:1}
- .skp-cmp-radar{grid-row:2;grid-column:1/-1;max-width:440px;justify-self:center}
+ .skp-cmp-radar{margin:0;grid-row:2;grid-column:1/-1;max-width:440px;justify-self:center}
  .skp-cmp-product{align-self:stretch}
 }
 @media(max-width:480px){
