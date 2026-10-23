@@ -30,7 +30,7 @@ export default function ReadyPcComponents({product,catalog}:{product:Product;cat
  const rows=getBuildRows(product);
  if(!rows.length)return null;
  return <section className="skp-ready-pc-parts" aria-labelledby="skp-ready-pc-parts-title">
-  <div className="skp-ready-pc-parts-heading"><span>СОСТАВ СБОРКИ</span><h2 id="skp-ready-pc-parts-title">Комплектация</h2><p>Компоненты, установленные в этом компьютере</p></div>
+  <div className="skp-ready-pc-parts-heading"><h2 id="skp-ready-pc-parts-title">Комплектация</h2></div>
   <div className="skp-ready-pc-parts-grid">{rows.map(row=>{
    const matched=matchPart(row.value,row.key,catalog);
    const image=matched?getProductImages(matched)[0]:undefined;
