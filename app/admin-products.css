@@ -38,25 +38,37 @@
 @media(max-width:1000px){.skp-admin-category-picker>div>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:550px){.skp-admin-pagination>span{display:none}.skp-admin-pagination>div{margin-left:0}.skp-admin-filters>select{width:100%}}
 
-/* Compact icon category tiles; reuse the storefront category symbols. */
-.skp-admin-category-always-visible{margin:0 0 14px;padding:0;border:0;background:transparent;box-shadow:none;border-radius:0}
-.skp-admin-category-always-visible .skp-admin-category-all{margin:0 0 9px!important}
-.skp-admin-category-always-visible .skp-admin-category-group{margin:0 0 10px}
+/* Storefront-inspired compact category cards for admin products */
+.skp-admin-category-always-visible{margin:0 0 19px;padding:0;border:0;background:transparent;box-shadow:none;border-radius:0}
+.skp-admin-category-always-visible .skp-admin-category-all{margin:0 0 13px!important}
+.skp-admin-category-always-visible .skp-admin-category-group{margin:0 0 13px}
 .skp-admin-category-always-visible .skp-admin-category-group:last-child{margin:0}
-.skp-admin-category-always-visible .skp-admin-category-group h3{margin:0 0 6px;font-size:11px;font-weight:600;line-height:1.25;color:#656d7b}
-.skp-admin-category-always-visible .skp-admin-category-group>div{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
-.skp-admin-category-always-visible .skp-admin-category-group button{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:5px;min-width:0;min-height:49px;padding:7px 9px;border:1px solid transparent;border-radius:8px;background:#f5f6f8;color:#525b69;font-size:11px;line-height:1.2;transition:background .15s,border-color .15s,color .15s}
-.skp-admin-category-always-visible .skp-admin-category-chip-main{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;width:100%}
-.skp-admin-category-always-visible .skp-admin-category-chip-main>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
-.skp-admin-category-always-visible .skp-admin-category-chip-main small{flex-shrink:0;margin-left:auto;color:#9099a7;font-size:10px}
-.skp-admin-category-always-visible .skp-admin-category-chip-icon{display:flex;align-items:center;color:#798390}
-.skp-admin-category-always-visible .skp-admin-category-chip-icon svg{flex-shrink:0}
-.skp-admin-category-always-visible .skp-admin-category-all button{display:inline-flex;align-items:center;justify-content:space-between;gap:14px;min-height:32px;padding:6px 11px;border:1px solid transparent;border-radius:7px;background:#f5f6f8;color:#525b69;font-size:11px;font-weight:600}
-.skp-admin-category-always-visible .skp-admin-category-all small{color:#9099a7;font-size:10px}
-.skp-admin-category-always-visible button:hover{background:#edeff3!important;color:#202631}
-.skp-admin-category-always-visible button.selected{background:#fff2a6!important;border-color:#edd34c!important;color:#292600}
-.skp-admin-category-always-visible button.selected small,.skp-admin-category-always-visible button.selected .skp-admin-category-chip-icon{color:#756b25}
-@media(max-width:1350px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(5,minmax(0,1fr))}}
-@media(max-width:1100px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media(max-width:750px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:550px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.skp-admin-category-always-visible .skp-admin-category-group h3{margin:0 0 7px;font-size:11px;font-weight:650;color:#666e7a}
+.skp-admin-category-always-visible .skp-admin-category-group>div{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+.skp-admin-category-always-visible .skp-admin-category-group button,
+.skp-admin-category-always-visible .skp-admin-category-all button{
+ position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:9px;min-width:0;height:79px;padding:11px 7px 9px;border:1px solid #e8ebef;
+ border-radius:10px;background:#f9fafb;color:#646d77;text-align:center;
+ font-size:11px;font-weight:550;line-height:1.25;
+ transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease
+}
+.skp-admin-category-always-visible .skp-admin-category-all button{display:inline-flex;min-width:132px}
+.skp-admin-category-always-visible .skp-admin-category-chip-icon{display:flex;justify-content:center;align-items:center;color:#8a948e}
+.skp-admin-category-always-visible .skp-admin-category-chip-icon svg{width:23px;height:23px;flex-shrink:0}
+.skp-admin-category-always-visible .skp-admin-category-chip-main{display:block;min-width:0;width:100%}
+.skp-admin-category-always-visible .skp-admin-category-chip-main>span{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.skp-admin-category-always-visible .skp-admin-category-count,
+.skp-admin-category-always-visible .skp-admin-category-all small{
+ position:absolute;top:6px;right:7px;color:#9299a3;font-size:9px;font-weight:500;line-height:1
+}
+.skp-admin-category-always-visible button:hover{background:#f0f2f4!important;border-color:#cdd1d7!important;color:#262d35}
+.skp-admin-category-always-visible button.selected{background:#fff9d7!important;border-color:#e3ca36!important;color:#4e4400}
+.skp-admin-category-always-visible button.selected .skp-admin-category-chip-icon,
+.skp-admin-category-always-visible button.selected>svg{color:#a88f00}
+.skp-admin-category-always-visible button.selected small{color:#9e870b}
+@media(max-width:1450px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(7,minmax(0,1fr))}}
+@media(max-width:1250px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(max-width:1000px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:650px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:430px){.skp-admin-category-always-visible .skp-admin-category-group>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
