@@ -110,7 +110,7 @@ return <>
 {auth&&<button onClick={async()=>{await api({action:'logout'});setAuth(false)}}><LogOut/> Выйти</button>}</div>
 {!auth?<form className="login" onSubmit={async e=>{e.preventDefault();const r=await api({action:'login',password});if(r.ok){setAuth(true);setPassword('')}else notify('Неверный пароль')}}><h2>Вход для владельца</h2><label>Пароль<input type="password" required autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}/></label><button className="button light">Войти <ArrowRight size={18}/></button></form>:
 <AdminSidebar active={adminSection} onChange={chooseAdminSection}
- search={adminSearch} onSearch={value=>{setAdminSearch(value);setAdminSection('dashboard');history.replaceState(history.state,'','/admin?section=dashboard')}}
+ search={adminSearch} onSearch={setAdminSearch}
  onLogout={async()=>{await api({action:'logout'});setAuth(false);setEditing(null)}}
  productsCount={data.products.filter(p=>inAdminProductSection(p,'products')).length}
  laptopsCount={data.products.filter(p=>inAdminProductSection(p,'laptops')).length}
@@ -138,7 +138,7 @@ return <>
  <div hidden={adminSection!=='slides'}><AdminHeroSlides slides={data.heroSlides} onSave={slides=>save({...data,heroSlides:slides})}/></div>
  {(adminSection==='products'||adminSection==='pcs'||adminSection==='laptops')&&<AdminProducts
   key={adminSection}
-  products={data.products} section={adminSection}
+  products={data.products} section={adminSection} search={adminSearch}
   onAdd={category=>setEditing({id:'product-'+Date.now(),name:'',category,price:0,
    art:({pc:'pc',laptops:'laptop',motherboard:'board',furniture:'chair'} as Record<string,string>)[category]||category,
    description:'',image:'',stock:true,brand:'',socket:'',memory:'',watts:0})}
