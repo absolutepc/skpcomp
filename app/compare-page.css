@@ -199,3 +199,6 @@
  .skp-cmp .skp-cmp-product-image img{max-height:93px}
  .skp-cmp .skp-cmp-product-description h2{font-size:11px}
 }
+
+/* On narrow phones, prioritize the directly readable comparison values over the oversized radar plot. */
+@media(max-width:750px){.skp-cmp .skp-cmp-radar{display:none}}
