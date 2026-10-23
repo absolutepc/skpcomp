@@ -116,7 +116,7 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
   return()=>window.clearTimeout(timeout);
  },[index,interactionPaused,pageHidden,slides.length]);
  if(!slide)return null;
- return <section className={"hero hero-carousel"+(slide.layout==='logitech'?" mouse-launch":slide.layout==='rog'?" rog-anniversary":"")+(isRogOledFeature(slide)?" rog-oled-feature":"")}
+ return <section className={"hero hero-carousel"+(slide.layout==='logitech'?" mouse-launch":slide.layout==='rog'?" rog-anniversary":"")+(isRogOledFeature(slide)?" rog-oled-feature":"")+" skp-active-"+slide.id}
   aria-label="Предложения SKP" aria-roledescription="карусель" tabIndex={0}
   onMouseEnter={()=>setInteractionPaused(true)} onMouseLeave={()=>setInteractionPaused(false)}
   onFocusCapture={()=>setInteractionPaused(true)}
