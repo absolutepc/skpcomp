@@ -144,3 +144,29 @@
 .skp-cmp-summary-right .skp-cmp-summary-features svg{color:#d4c356}
 .skp-cmp .skp-cmp-top-actions .skp-cmp-diff-toggle{background:#161918;border-color:#363b38}
 .skp-cmp .skp-cmp-diff-toggle:hover{background:#222623;border-color:#565f57}
+
+/* Definitive graphite surfaces, restricted to /compare. */
+.skp-compare-page.skp-cmp{background:transparent!important;--cmp-blue:#e4ca29!important;--cmp-surface:#111312!important}
+.skp-compare-page.skp-cmp::before{background:radial-gradient(ellipse at top,#1b1d1b 0%,transparent 70%)!important}
+.skp-compare-page.skp-cmp .skp-cmp-product,
+.skp-compare-page.skp-cmp .skp-cmp-product-right{background:linear-gradient(150deg,#191b1a 0%,#0b0d0c 80%)!important;border-color:#353936!important;box-shadow:none!important}
+.skp-compare-page.skp-cmp .skp-cmp-table-scroll,
+.skp-compare-page.skp-cmp .skp-cmp-specs{background:#0d0f0e!important;border-color:#2b2f2c!important}
+.skp-compare-page.skp-cmp .skp-cmp-spec-row{background:#111312!important;border-color:#272b29!important}
+.skp-compare-page.skp-cmp .skp-cmp-spec-row:nth-child(even){background:#181a18!important}
+.skp-compare-page.skp-cmp .skp-cmp-spec-row:hover{background:#20231f!important}
+.skp-compare-page.skp-cmp .skp-cmp-spec-name{background:#0b0d0c!important}
+.skp-compare-page.skp-cmp .skp-cmp-price-delta,
+.skp-compare-page.skp-cmp .skp-cmp-clear,
+.skp-compare-page.skp-cmp .skp-cmp-empty-slot,
+.skp-compare-page.skp-cmp .skp-cmp-summary-card{background:#151715!important;border-color:#333732!important}
+.skp-compare-page.skp-cmp .skp-cmp-product-right .skp-cmp-cart-button{background:#272a27!important;color:#f4f5f1!important;border:1px solid #626a60!important}
+.skp-compare-page.skp-cmp .skp-cmp-product-right .skp-cmp-cart-button:hover{background:#383e37!important}
+.skp-compare-page.skp-cmp .skp-cmp-spec-right .skp-cmp-bar-track span{background:linear-gradient(90deg,#988922,#f6da2c)!important}
+.skp-compare-page.skp-cmp .skp-cmp-spec-left .skp-cmp-bar-track span{background:linear-gradient(90deg,#a78d00,#ffe000)!important}
+.skp-compare-page.skp-cmp .skp-cmp-diff-badge.better{background:#193b2a;color:#b3e8bf}
+.skp-compare-page.skp-cmp .skp-cmp-diff-badge.worse{background:#492727;color:#ffd0c7}
+.skp-compare-page.skp-cmp .skp-cmp-top-actions .skp-cmp-diff-toggle{background:#171a17!important;border-color:#343934!important}
+.skp-compare-page.skp-cmp .skp-cmp-summary-right .skp-cmp-summary-count strong,
+.skp-compare-page.skp-cmp .skp-cmp-summary-right .skp-cmp-summary-identity>svg,
+.skp-compare-page.skp-cmp .skp-cmp-summary-right .skp-cmp-summary-features svg{color:#e4ca29!important}
