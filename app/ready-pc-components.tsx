@@ -30,22 +30,22 @@ export default function ReadyPcComponents({product,catalog}:{product:Product;cat
  const rows=getBuildRows(product);
  if(!rows.length)return null;
  return <section className="skp-ready-pc-parts" aria-labelledby="skp-ready-pc-parts-title">
-  <div className="skp-ready-pc-parts-heading"><h2 id="skp-ready-pc-parts-title">Комплектация</h2></div>
+  <div className="skp-ready-pc-parts-heading"><span>КОМПЛЕКТАЦИЯ СБОРКИ</span><h2 id="skp-ready-pc-parts-title">Комплектация</h2><p>Все компоненты этой сборки подобраны для максимальной производительности и стабильной работы. Нажмите на компонент, чтобы узнать подробнее.</p></div>
   <div className="skp-ready-pc-parts-list">{rows.map((row,index)=>{
    const matched=matchPart(row.value,row.key,catalog);
    const image=matched?getProductImages(matched)[0]:undefined;
    const Icon=categoryIcons[matched?.category||row.key]||Package;
-   const details=matched?.description?.trim();
+   const details=matched?.description?.trim()||row.value;
    const href=matched?'/product/'+encodeURIComponent(matched.id):undefined;
    return <article className={'skp-ready-pc-part'+(index%2?' is-reverse':'')} key={row.key}>
     <div className="skp-ready-pc-part-media">
      {href?<a className="skp-ready-pc-part-image-link" href={href} aria-label={'Открыть '+matched.name}>{image?<img src={image} alt={matched.name} loading="lazy"/>:<Icon size={90} strokeWidth={1.3} aria-hidden="true"/>}</a>:<Icon size={90} strokeWidth={1.3} aria-hidden="true"/>}
     </div>
     <div className="skp-ready-pc-part-content">
-     <span className="skp-ready-pc-part-type">{row.label}</span>
+     <span className="skp-ready-pc-part-icon"><Icon size={23} strokeWidth={1.6}/></span><span className="skp-ready-pc-part-type">{row.label}</span>
      <h3>{href?<a href={href}>{row.value}</a>:row.value}</h3>
      {details&&<p>{details}</p>}
-     {href&&<a className="skp-ready-pc-part-more" href={href}>Узнать больше <span aria-hidden="true">↗</span></a>}
+     {href&&<a className="skp-ready-pc-part-more" href={href}>Перейти к товару <span aria-hidden="true">→</span></a>}
     </div>
    </article>;
   })}</div>
