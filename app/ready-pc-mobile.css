@@ -263,3 +263,18 @@
 @media(prefers-reduced-motion:reduce){
  .skp-ready-page .ready-filters.skp-ready-filter-drawer{transition:none}
 }
+
+/* Optional visual price and case-color controls in the mobile drawer. */
+.skp-ready-price-slider{display:none}
+@media(max-width:700px){
+ .skp-ready-page .ready-filters .skp-ready-price-slider{
+  display:block;width:100%;max-width:none;margin:14px 0 1px;padding:0;
+  min-height:22px;background:transparent;border:0;
+  accent-color:#ffe500;cursor:pointer;
+ }
+ .skp-ready-page .ready-filters .skp-ready-color-choice{gap:9px}
+ .skp-ready-color-swatch{display:inline-block;flex:0 0 17px;width:17px;height:17px;
+  border:1.5px solid #8a918a;border-radius:50%}
+ .skp-ready-color-swatch.white{background:#f2f2f2}
+ .skp-ready-color-swatch.black{background:#171b1b}
+}
