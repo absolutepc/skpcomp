@@ -27,7 +27,9 @@ function matchPart(value:string,key:string,catalog:Product[]):Product|undefined{
 }
 export default function ReadyPcComponents({product,catalog}:{product:Product;catalog:Product[]}){
  if(product.category!=='pc')return null;
- const rows=getBuildRows(product);
+ const requiredComponents=['cpu','gpu','motherboard','ram','ssd','psu','cooler','case'] as const;
+ const allRows=getBuildRows(product);
+ const rows=requiredComponents.flatMap(key=>allRows.filter(row=>row.key===key).slice(0,1));
  if(!rows.length)return null;
  return <section className="skp-ready-pc-parts" aria-labelledby="skp-ready-pc-parts-title">
   <div className="skp-ready-pc-parts-heading"><span>КОМПЛЕКТАЦИЯ СБОРКИ</span><h2 id="skp-ready-pc-parts-title">Комплектация</h2><p>Все компоненты этой сборки подобраны для максимальной производительности и стабильной работы. Нажмите на компонент, чтобы узнать подробнее.</p></div>
