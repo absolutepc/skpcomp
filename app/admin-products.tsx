@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {Plus,Pencil,Eye,Trash2,ImageOff,ChevronLeft,ChevronRight,Search,LayoutGrid,List} from 'lucide-react';
+import {Plus,Pencil,Eye,Trash2,ImageOff,ChevronLeft,ChevronRight,LayoutGrid,ChevronDown,X} from 'lucide-react';
 import {components,peripherals} from '../lib/catalog';
 import {getProductImages} from '../lib/product-gallery';
 import type {Product} from '../lib/seed';
@@ -43,18 +43,16 @@ export function AdminProductTable({items,onEdit,onDelete}:{items:Product[];onEdi
  <button type="button" aria-label="Следующая страница" disabled={current===pages} onClick={()=>setPage(current+1)}><ChevronRight size={17}/></button></div></div>
  </>;
 }
-export default function AdminProducts({products,section,onAdd,onEdit,onDelete}:{products:Product[];section:AdminProductSection;onAdd:(category:string)=>void;onEdit:(p:Product)=>void;onDelete:(p:Product)=>void}){
- const [category,setCategory]=useState(''),[search,setSearch]=useState(''),[tiles,setTiles]=useState(false);
+export default function AdminProducts({products,section,search,onAdd,onEdit,onDelete}:{products:Product[];section:AdminProductSection;search:string;onAdd:(category:string)=>void;onEdit:(p:Product)=>void;onDelete:(p:Product)=>void}){
+ const [category,setCategory]=useState(''),[tiles,setTiles]=useState(false);
  const list=products.filter(p=>inAdminProductSection(p,section,category)).filter(p=>(p.name+' '+p.brand).toLowerCase().includes(search.toLowerCase()));
  const newCategory=section==='pcs'?'pc':section==='laptops'?'laptops':category&&category!=='other'?category:'cpu';
  const title=section==='pcs'?'Готовые ПК':section==='laptops'?'Ноутбуки':'Все товары';
  return <div className="skp-admin-products">
   <div className="skp-admin-panel-header"><div><h1>{title}</h1><p>Цены, наличие, фотографии и характеристики товаров.</p></div><button type="button" className="button light" onClick={()=>onAdd(newCategory)}><Plus size={18}/>Добавить {section==='pcs'?'ПК':section==='laptops'?'ноутбук':'товар'}</button></div>
   <div className="skp-admin-card">
-   <div className="skp-admin-filters"><label className="skp-admin-local-search"><Search size={17}/><input aria-label="Поиск в разделе" placeholder="Название или бренд" value={search} onChange={e=>setSearch(e.target.value)}/></label>
-   {section==='products'&&<><select aria-label="Категория" value={category} onChange={e=>setCategory(e.target.value)}><option value="">Все категории</option>{Object.entries({...components,...peripherals,furniture:'Компьютерная мебель',other:'Прочие товары'}).map(([id,label])=><option key={id} value={id}>{label}</option>)}</select><button type="button" aria-label={tiles?'Скрыть категории':'Показать категории'} aria-expanded={tiles} onClick={()=>setTiles(!tiles)}>{tiles?<List size={19}/>:<LayoutGrid size={19}/>}Категории</button></>}
-   </div>
-   {tiles&&section==='products'&&<div className="skp-admin-category-picker">{[['Комплектующие',components],['Периферия',peripherals],['Другие категории',{furniture:'Компьютерная мебель',other:'Прочие товары'}]].map(([name,group])=><div key={name as string}><h3>{name as string}</h3><div>{Object.entries(group).map(([id,label])=><button type="button" key={id} className={id===category?'selected':''} onClick={()=>{setCategory(id);setTiles(false)}}>{label}<small>{products.filter(p=>inAdminProductSection(p,'products',id)).length}</small></button>)}</div></div>)}</div>}
+   {section==='products'&&<div className="skp-admin-filters"><button type="button" className={'skp-admin-category-trigger'+(category?' is-filtered':'')} aria-label="Выбрать категорию товаров" aria-expanded={tiles} onClick={()=>setTiles(!tiles)}><LayoutGrid size={17}/><span>{category?labels[category]||'Прочие товары':'Все категории'}</span><ChevronDown size={16} className={tiles?'skp-admin-chevron-open':''}/></button>{category&&<button type="button" className="skp-admin-category-reset" onClick={()=>setCategory('')} aria-label="Сбросить категорию"><X size={15}/>Сбросить</button>}</div>}
+   {tiles&&section==='products'&&<div className="skp-admin-category-picker"><div className="skp-admin-category-all"><button type="button" className={!category?'selected':''} onClick={()=>{setCategory('');setTiles(false)}}>Все категории</button></div>{[['Комплектующие',components],['Периферия',peripherals],['Другие категории',{furniture:'Компьютерная мебель',other:'Прочие товары'}]].map(([name,group])=><div key={name as string}><h3>{name as string}</h3><div>{Object.entries(group).map(([id,label])=><button type="button" key={id} className={id===category?'selected':''} onClick={()=>{setCategory(id);setTiles(false)}}>{label}<small>{products.filter(p=>inAdminProductSection(p,'products',id)).length}</small></button>)}</div></div>)}</div>}
    <AdminProductTable items={list} onEdit={onEdit} onDelete={onDelete}/>
   </div>
  </div>;
