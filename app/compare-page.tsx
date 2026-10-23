@@ -1,6 +1,6 @@
 'use client';
 import {useState} from 'react';
-import {ArrowLeft, ArrowRight, Check, ChevronRight, Cpu, Gauge, GitCompareArrows, Heart, Info, MemoryStick, Package, ShoppingCart, SlidersHorizontal, Trash2, X, Zap} from 'lucide-react';
+import {ArrowRight, Check, ChevronRight, Cpu, Gauge, GitCompareArrows, Info, MemoryStick, Package, ShoppingCart, SlidersHorizontal, Trash2, X, Zap} from 'lucide-react';
 import type {LucideIcon} from 'lucide-react';
 import type {Product} from '../lib/seed';
 import {categoryFields,components,peripherals,fieldValue,normalizeProduct} from '../lib/catalog';
@@ -96,7 +96,7 @@ export default function ComparePage({
        <p>{left.description}</p><span className="skp-cmp-availability">{left.stock?'В наличии':'Под заказ'}</span>
       </div><div className="skp-cmp-product-buy"><strong>{money(left.price)}</strong><button type="button" className="skp-cmp-cart-button" disabled={!left.price} onClick={()=>onAddCart(left.id)}><ShoppingCart size={17}/>В корзину</button></div></div>
     </article>}
-    <div className="skp-cmp-versus" aria-label="Против"><strong>VS</strong><div className="skp-cmp-price-delta"><span>Разница в цене</span><b>{deltaPrice===null?'—':(deltaPrice>0?'+':'')+percent(deltaPrice)}</b><small>{absolutePriceDifference===null?'Цена не указана':(deltaPrice===0?'Одинаковая цена':(deltaPrice!>0?'Правый дороже на ':'Правый дешевле на ')+money(absolutePriceDifference))}</small></div></div>
+    <div className="skp-cmp-versus" aria-label="Против"><strong>VS</strong><div className="skp-cmp-price-delta"><span>Разница в цене</span><b>{deltaPrice===null?'—':(deltaPrice>0?'+':'')+percent(deltaPrice)}</b><small>{absolutePriceDifference===null?'Цена не указана':(deltaPrice===0?'Одинаковая цена':(deltaPrice>0?'Правый дороже на ':'Правый дешевле на ')+money(absolutePriceDifference))}</small></div></div>
     {right?<article className="skp-cmp-product skp-cmp-product-right">
      <button type="button" className="skp-cmp-remove" onClick={()=>onRemove(right.id)} aria-label={'Убрать из сравнения '+right.name}><X size={17}/></button>
      <a href={'/product/'+right.id} className="skp-cmp-image-link" onClick={e=>{e.preventDefault();openProduct(right.id)}}><ComparisonImage product={right}/></a>
