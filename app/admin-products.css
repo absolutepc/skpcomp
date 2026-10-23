@@ -37,3 +37,17 @@
 .skp-admin-category-picker small{color:#9399a5}
 @media(max-width:1000px){.skp-admin-category-picker>div>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:550px){.skp-admin-pagination>span{display:none}.skp-admin-pagination>div{margin-left:0}.skp-admin-filters>select{width:100%}}
+
+/* One compact category control below the global admin search. */
+.skp-admin-filters{margin-bottom:18px;gap:10px}
+.skp-admin-category-trigger{display:inline-flex;align-items:center;gap:11px;min-width:190px;max-width:100%;min-height:40px;padding:9px 13px!important;border:1px solid #e3e5eb!important;border-radius:9px!important;background:#f8f9fb!important;color:#292f39;font-size:12px!important;font-weight:600;transition:background .2s,border-color .2s}
+.skp-admin-category-trigger:hover,.skp-admin-category-trigger.is-filtered{background:#fffbea!important;border-color:#eadb72!important}
+.skp-admin-category-trigger span{flex:1;text-align:left}
+.skp-admin-category-trigger svg:last-child{transition:transform .2s}
+.skp-admin-chevron-open{transform:rotate(180deg)}
+.skp-admin-category-reset{display:inline-flex;align-items:center;gap:5px;padding:8px 10px!important;border:0!important;color:#747984;font-size:12px!important}
+.skp-admin-category-reset:hover{color:#222;background:#f2f3f6}
+.skp-admin-category-picker{border:1px solid #e8eaf0}
+.skp-admin-category-all{margin-bottom:16px!important}
+.skp-admin-category-all button{font-weight:600}
+@media(max-width:550px){.skp-admin-category-trigger{width:100%}.skp-admin-category-reset{margin-left:auto}}
