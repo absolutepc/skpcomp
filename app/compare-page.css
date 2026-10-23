@@ -222,3 +222,50 @@
  .skp-compare-page.skp-cmp .skp-cmp-versus::before,
  .skp-compare-page.skp-cmp .skp-cmp-versus::after{top:50%}
 }
+
+/* Reference alignment: flat VS, no halo; price and cart share bottom row. */
+.skp-compare-page.skp-cmp .skp-cmp-versus{
+ background:transparent!important;
+ isolation:auto;
+}
+.skp-compare-page.skp-cmp .skp-cmp-versus::before,
+.skp-compare-page.skp-cmp .skp-cmp-versus::after{
+ content:none!important;
+ display:none!important;
+ background:none!important;
+ filter:none!important;
+}
+.skp-compare-page.skp-cmp .skp-cmp-versus>strong{
+ text-shadow:none!important;
+ filter:none!important;
+ color:#ffe000;
+}
+.skp-compare-page.skp-cmp .skp-cmp-product-bottom{
+ align-items:flex-end;
+ gap:16px;
+}
+.skp-compare-page.skp-cmp .skp-cmp-product-description{min-width:0;flex:1 1 auto}
+.skp-compare-page.skp-cmp .skp-cmp-product-buy{
+ display:flex;
+ flex-direction:row;
+ align-items:center;
+ justify-content:flex-end;
+ gap:15px;
+ flex:0 0 auto;
+}
+.skp-compare-page.skp-cmp .skp-cmp-product-buy strong{
+ font-size:clamp(18px,1.8vw,28px);
+ white-space:nowrap;
+ line-height:1.2;
+}
+.skp-compare-page.skp-cmp .skp-cmp-product-buy .skp-cmp-cart-button{
+ min-width:128px;
+}
+@media(max-width:1180px){
+ .skp-compare-page.skp-cmp .skp-cmp-product-bottom{flex-wrap:wrap}
+ .skp-compare-page.skp-cmp .skp-cmp-product-buy{width:100%;justify-content:space-between}
+}
+@media(max-width:480px){
+ .skp-compare-page.skp-cmp .skp-cmp-product-buy{gap:8px;flex-wrap:wrap}
+ .skp-compare-page.skp-cmp .skp-cmp-product-buy .skp-cmp-cart-button{width:auto;min-width:108px}
+}
