@@ -1,6 +1,6 @@
 'use client';
 import {useState} from 'react';
-import {ArrowRight, Check, ChevronRight, Cpu, Gauge, GitCompareArrows, Info, MemoryStick, Package, ShoppingCart, SlidersHorizontal, Trash2, X, Zap} from 'lucide-react';
+import {ArrowRight, ChevronRight, Cpu, Gauge, GitCompareArrows, Info, MemoryStick, Package, ShoppingCart, SlidersHorizontal, Trash2, X, Zap} from 'lucide-react';
 import type {LucideIcon} from 'lucide-react';
 import type {Product} from '../lib/seed';
 import {categoryFields,components,peripherals,fieldValue,normalizeProduct} from '../lib/catalog';
@@ -8,6 +8,7 @@ import {getBuildRows} from '../lib/build-components';
 import {getProductImages} from '../lib/product-gallery';
 import {categoryIcons} from './catalog-icons';
 import './compare-page.css';
+import ComparisonRadar from './comparison-radar';
 
 export const comparisonCategory=(product:Product)=>normalizeProduct(product).category;
 export function comparisonLabel(category:string){return components[category]||peripherals[category]||({pc:'Готовые ПК',laptops:'Ноутбуки',furniture:'Компьютерная мебель'} as Record<string,string>)[category]||category}
@@ -19,7 +20,7 @@ const icons:Record<string,LucideIcon>={
  memory:MemoryStick,ram:MemoryStick,speed:Gauge,boost:Gauge,frequency:Gauge,readSpeed:Gauge,writeSpeed:Gauge,
  core:Cpu,cores:Cpu,threads:Cpu,stock:Package
 };
-const lowerIsBetter=new Set(['watts','tdp','response','latency']);
+const lowerIsBetter=new Set(['watts','response','latency','weight']);
 const safeNumber=(text:string):number|null=>{
  if(!/^\s*-?\d+(?:[.,]\d+)?\s*$/.test(text))return null;
  const number=Number(text.trim().replace(',','.'));
@@ -35,12 +36,9 @@ export default function ComparePage({
  products:Product[];onRemove:(id:string)=>void;onClear:()=>void;onAddCart:(id:string)=>void;nav:(path:string)=>void
 }){
  const [onlyDiff,setOnlyDiff]=useState(false);
- const [leftId,setLeftId]=useState('');
- const [rightId,setRightId]=useState('');
  const category=products.length?comparisonCategory(products[0]):'';
- const items=products.filter(p=>comparisonCategory(p)===category);
- const left=items.find(p=>p.id===leftId)||items[0];
- const right=items.find(p=>p.id===rightId&&p.id!==left?.id)||items.find(p=>p.id!==left?.id);
+ const items=products.filter(p=>comparisonCategory(p)===category).slice(0,2);
+ const [left,right]=items;
  const allFields:CompareRow[]=category==='pc'
   ?Array.from(new Map(items.flatMap(p=>getBuildRows(p)).map(row=>[row.key,{key:row.key,label:row.label}])).values())
     .map(row=>({key:row.key,label:row.label,numeric:false,Icon:categoryIcons[row.key]||Package,
@@ -57,18 +55,6 @@ export default function ComparePage({
   {key:'stock',label:'Наличие',numeric:false,Icon:Package,read:(p:Product)=>p.stock?'В наличии':'Под заказ'}
  ].filter(row=>items.some(p=>row.read(p)!=='—'));
  const rows=allRows.filter(row=>!onlyDiff||!left||!right||row.read(left)!==row.read(right));
- const leftPrice=left?.price||0,rightPrice=right?.price||0;
- const deltaPrice=leftPrice&&rightPrice?(rightPrice-leftPrice)/leftPrice*100:null;
- const absolutePriceDifference=leftPrice&&rightPrice?Math.abs(rightPrice-leftPrice):null;
- const comparedMetrics=allRows.flatMap(row=>{
-  if(!row.numeric||!left||!right)return[];
-  const a=safeNumber(row.read(left)),b=safeNumber(row.read(right));
-  if(a===null||b===null||a===b)return[];
-  const leftBetter=row.lowerBetter?a<b:a>b;
-  return [{label:row.label,leftBetter}];
- });
- const leftAdvantages=comparedMetrics.filter(m=>m.leftBetter).map(m=>m.label);
- const rightAdvantages=comparedMetrics.filter(m=>!m.leftBetter).map(m=>m.label);
  const openProduct=(id:string)=>nav('/product/'+id);
  const goBack=()=>nav(category==='pc'?'/pc':'/catalog/'+(category||'all'));
  return <section className="skp-compare-page skp-cmp">
@@ -82,11 +68,6 @@ export default function ComparePage({
   </div>
   {!items.length?<div className="skp-cmp-empty"><GitCompareArrows size={52}/><h2>Пока нечего сравнивать</h2><p>Добавьте два товара одной категории, чтобы увидеть разницу.</p><button type="button" className="skp-cmp-cart-button" onClick={()=>nav('/catalog/all')}>Перейти в каталог <ArrowRight size={17}/></button></div>:
   <>
-   {items.length>2&&<div className="skp-cmp-pair-selectors">
-    <span>Выберите два товара для сравнения:</span>
-    <select aria-label="Товар слева" value={left?.id||''} onChange={e=>setLeftId(e.target.value)}>{items.filter(p=>p.id!==right?.id).map(p=><option value={p.id} key={p.id}>{p.name}</option>)}</select>
-    <select aria-label="Товар справа" value={right?.id||''} onChange={e=>setRightId(e.target.value)}>{items.filter(p=>p.id!==left?.id).map(p=><option value={p.id} key={p.id}>{p.name}</option>)}</select>
-   </div>}
    <div className="skp-cmp-hero">
     {left&&<article className="skp-cmp-product skp-cmp-product-left">
      <button type="button" className="skp-cmp-remove" onClick={()=>onRemove(left.id)} aria-label={'Убрать из сравнения '+left.name}><X size={17}/></button>
@@ -96,7 +77,7 @@ export default function ComparePage({
        <p>{left.description}</p><span className="skp-cmp-availability">{left.stock?'В наличии':'Под заказ'}</span>
       </div><div className="skp-cmp-product-buy"><strong>{money(left.price)}</strong><button type="button" className="skp-cmp-cart-button" disabled={!left.price} onClick={()=>onAddCart(left.id)}><ShoppingCart size={17}/>В корзину</button></div></div>
     </article>}
-    <div className="skp-cmp-versus" aria-label="Против"><strong>VS</strong><div className="skp-cmp-price-delta"><span>Разница в цене</span><b>{deltaPrice===null?'—':(deltaPrice>0?'+':'')+percent(deltaPrice)}</b><small>{absolutePriceDifference===null?'Цена не указана':(deltaPrice===0?'Одинаковая цена':(deltaPrice>0?'Правый дороже на ':'Правый дешевле на ')+money(absolutePriceDifference))}</small></div></div>
+    <ComparisonRadar left={left} right={right} category={category}/>
     {right?<article className="skp-cmp-product skp-cmp-product-right">
      <button type="button" className="skp-cmp-remove" onClick={()=>onRemove(right.id)} aria-label={'Убрать из сравнения '+right.name}><X size={17}/></button>
      <a href={'/product/'+right.id} className="skp-cmp-image-link" onClick={e=>{e.preventDefault();openProduct(right.id)}}><ComparisonImage product={right}/></a>
@@ -107,6 +88,7 @@ export default function ComparePage({
     </article>:<div className="skp-cmp-empty-slot"><GitCompareArrows size={40}/><h3>Добавьте второй товар</h3><p>Выберите модель из категории «{comparisonLabel(category)}».</p><button type="button" onClick={goBack}>Выбрать товар <ArrowRight size={16}/></button></div>}
    </div>
    {right&&<><div className="skp-cmp-table-scroll"><div className="skp-cmp-specs" role="table" aria-label="Сравнение характеристик">
+    <div className="skp-cmp-spec-row skp-cmp-table-header" role="row"><div role="columnheader">{left.name}</div><div role="columnheader">Характеристика</div><div role="columnheader">{right.name}</div></div>
     {rows.length?rows.map(row=>{
      const lv=row.read(left),rv=row.read(right);
      const ln=row.numeric?safeNumber(lv):null,rn=row.numeric?safeNumber(rv):null;
@@ -128,15 +110,9 @@ export default function ComparePage({
      </div>;
     }):<div className="skp-cmp-no-specs">Нет характеристик с выбранными условиями. Отключите переключатель «Показать только отличия».</div>}
    </div></div>
-   <div className="skp-cmp-summary">
-    {[{p:left,features:leftAdvantages,side:'left'},{p:right,features:rightAdvantages,side:'right'}].map(item=><div className={'skp-cmp-summary-card skp-cmp-summary-'+item.side} key={item.p.id}>
-      <div className="skp-cmp-summary-identity"><Gauge size={27}/><div><strong>Отличительные характеристики</strong><small>{item.p.name}</small></div></div>
-      <div className="skp-cmp-summary-count"><strong>{item.features.length}</strong><span>параметров с преимуществом</span></div>
-      <div className="skp-cmp-summary-features">{item.features.length?item.features.slice(0,3).map(label=><span key={label}><Check size={14}/>{label}</span>):<span><Info size={14}/>Нет подтверждённого преимущества по числовым параметрам</span>}</div>
-    </div>)}
-   </div>
    <p className="skp-cmp-note"><Info size={14}/>Полосы показывают относительные числовые значения характеристик. Более высокое значение не всегда означает лучшую производительность.</p>
    </>}
   </>}
  </section>;
 }
+
