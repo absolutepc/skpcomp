@@ -218,3 +218,18 @@
  .skp-cmp .skp-cmp-radar{display:block!important;max-width:440px;margin:6px auto 12px}
  .skp-cmp .skp-cmp-mobile-right{color:#00d7e8}
 }
+
+/* Mobile parameter labels centered, with a shorter end-of-page gap. */
+@media(max-width:750px){
+ .skp-cmp .skp-cmp-mobile-spec-label{
+  text-align:center;
+  margin-bottom:7px;
+  line-height:1.35;
+ }
+ .skp-cmp .skp-cmp-mobile-spec{padding:10px 12px}
+ .skp-cmp .skp-cmp-mobile-spec.differs .skp-cmp-mobile-spec-label:before{
+  position:relative;top:-1px
+ }
+ .skp-cmp .skp-cmp-note{margin:8px 0 0;line-height:1.35}
+ .skp-compare-page.skp-cmp{padding-bottom:8px!important;margin-bottom:0!important;min-height:0!important}
+}
