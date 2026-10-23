@@ -1,7 +1,8 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {Plus,Pencil,Eye,Trash2,ImageOff,ChevronLeft,ChevronRight} from 'lucide-react';
+import {Plus,Pencil,Eye,Trash2,ImageOff,ChevronLeft,ChevronRight,Armchair,Package} from 'lucide-react';
 import {components,peripherals} from '../lib/catalog';
+import {categoryIcons} from './catalog-icons';
 import {getProductImages} from '../lib/product-gallery';
 import type {Product} from '../lib/seed';
 import './admin-products.css';
@@ -53,7 +54,7 @@ export default function AdminProducts({products,section,search,onAdd,onEdit,onDe
   <div className="skp-admin-card">
    {section==='products'&&<div className="skp-admin-category-picker skp-admin-category-always-visible">
      <div className="skp-admin-category-all"><button type="button" className={!category?'selected':''} aria-pressed={!category} onClick={()=>setCategory('')}>Все категории <small>{products.filter(p=>inAdminProductSection(p,'products')).length}</small></button></div>
-     {([['Комплектующие',components],['Периферия',peripherals],['Другие категории',{furniture:'Компьютерная мебель',other:'Прочие товары'}]] as const).map(([name,group])=><div key={name} className="skp-admin-category-group"><h3>{name}</h3><div>{Object.entries(group).map(([id,label])=><button type="button" key={id} aria-pressed={id===category} className={id===category?'selected':''} onClick={()=>setCategory(id)}><span>{label}</span><small>{products.filter(p=>inAdminProductSection(p,'products',id)).length}</small></button>)}</div></div>)}
+     {([['Комплектующие',components],['Периферия',peripherals],['Другие категории',{furniture:'Компьютерная мебель',other:'Прочие товары'}]] as const).map(([name,group])=><div key={name} className="skp-admin-category-group"><h3>{name}</h3><div>{Object.entries(group).map(([id,label])=><button type="button" key={id} aria-pressed={id===category} className={id===category?'selected':''} onClick={()=>setCategory(id)}><span className="skp-admin-category-chip-main"><span>{label}</span><small>{products.filter(p=>inAdminProductSection(p,'products',id)).length}</small></span><span className="skp-admin-category-chip-icon">{(() => {const Icon=categoryIcons[id]||(id==='furniture'?Armchair:Package);return <Icon size={17} strokeWidth={1.75}/>})()}</span></button>)}</div></div>)}
    </div>}
    <AdminProductTable items={list} onEdit={onEdit} onDelete={onDelete}/>
   </div>
