@@ -101,7 +101,7 @@ export default function GamingFps({hardware,compact=false,inlineAction=false}:{h
    </>}
   </button>
   {open&&typeof document!=='undefined'&&createPortal(
-   <div className={'skp-fps-overlay'+(closing?' is-closing':'')} onMouseDown={event=>{if(event.target===event.currentTarget)close()}}>
+   <div className={'skp-fps-overlay'+(closing?' is-closing':'')} onClick={event=>{if(event.target===event.currentTarget)close()}}>
     <div ref={panel} className="skp-fps-modal" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
      <div className="skp-fps-modal-top">
       <div className="skp-fps-modal-title">

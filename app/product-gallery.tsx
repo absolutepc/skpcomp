@@ -34,7 +34,7 @@ export default function ProductGallery({product,fallback}:{product:Product;fallb
   </div>}
   {zoom&&current&&<div className="skp-gallery-lightbox" role="dialog" aria-modal="true" aria-label={'Просмотр фотографий: '+product.name} onClick={()=>setZoom(false)}>
     <button className="skp-lightbox-close" aria-label="Закрыть" onClick={()=>setZoom(false)}><X size={25}/></button>
-    <div className="skp-gallery-lightbox-image" onClick={event=>event.stopPropagation()}><img src={current} alt={product.name+' — фото '+(index+1)}/></div>
+    <div className="skp-gallery-lightbox-image"><img onClick={event=>event.stopPropagation()} src={current} alt={product.name+' — фото '+(index+1)}/></div>
     {images.length>1&&<div className="skp-lightbox-controls" onClick={event=>event.stopPropagation()}>
       <button aria-label="Предыдущее фото" onClick={()=>change(-1)}><ChevronLeft/></button><span>{index+1} из {images.length}</span><button aria-label="Следующее фото" onClick={()=>change(1)}><ChevronRight/></button>
     </div>}
