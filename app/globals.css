@@ -1746,7 +1746,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  }
  .card-image .skp-card-compare{
   display:flex;align-items:center;justify-content:center;
-  position:absolute;z-index:3;top:6px;right:40px;
+  position:absolute;z-index:3;top:42px;right:5px;
   width:30px;height:30px;padding:0;border:1px solid #52594eb8;
   border-radius:9px;background:#111711e6;color:#e8e9e5;
  }
@@ -1765,7 +1765,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  /* Ready PCs share the same overlay action rather than losing Compare. */
  .skp-ready-page .skp-ready-card .skp-ready-card-compare{
   display:flex;align-items:center;justify-content:center;
-  position:absolute;z-index:3;top:8px;right:43px;
+  position:absolute;z-index:3;top:44px;right:7px;
   width:29px;height:29px;padding:0;border:1px solid #667167;
   border-radius:50%;background:#101714e5;color:#e9ece5;
  }
@@ -1786,3 +1786,8 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .popular-section .home-products .card .price-line strong,
  .catalog-results .card .price-line strong{font-size:13px}
 }
+
+/* First and third built-in slides have no artwork nameplate; this also covers
+   older admin-saved layers that still contain the default captions. */
+.hero-carousel.skp-active-skp-hero-logitech .skp-slide-layer-caption,
+.hero-carousel.skp-active-skp-hero-rog .skp-slide-layer-caption{display:none}
