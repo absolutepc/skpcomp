@@ -13,23 +13,23 @@ function SlideImage({slide}:{slide:HeroSlide}){
  if(slide.layout==='logitech')return <div className="mouse-duo-showcase" role="group" aria-label={slide.label}>
   <div className="mouse-duo-product">
    <svg className="mouse-duo-photo mouse-duo-magenta" viewBox="800 234 900 1692" role="img" aria-label={slide.caption||'Первое изображение'}><image href={slide.image} width="2500" height="2160"/></svg>
-   <span className="mouse-duo-caption">{slide.caption}</span>
+   {slide.id!=='skp-hero-logitech'&&slide.caption&&<span className="mouse-duo-caption">{slide.caption}</span>}
   </div>
   <div className="mouse-duo-product">
    <svg className="mouse-duo-photo mouse-duo-black" viewBox="800 234 900 1692" role="img" aria-label={slide.caption2||'Второе изображение'}><image href={slide.image2} width="2500" height="2160"/></svg>
-   <span className="mouse-duo-caption">{slide.caption2}</span>
+   {slide.id!=='skp-hero-logitech'&&slide.caption2&&<span className="mouse-duo-caption">{slide.caption2}</span>}
   </div>
  </div>;
  if(slide.layout==='rog')return <div className="rog-duo-showcase" aria-label={slide.label}>
   <div className="rog-duo-product rog-duo-keyboard-frame">
    <img className="rog-duo-keyboard" src={slide.image} alt={slide.caption||slide.label} onError={e=>e.currentTarget.parentElement?.classList.add('image-missing')}/>
    <span className="rog-duo-placeholder">{slide.caption||slide.label}</span>
-   <span className="rog-duo-caption">{slide.caption}</span>
+   {slide.id!=='skp-hero-rog'&&slide.caption&&<span className="rog-duo-caption">{slide.caption}</span>}
   </div>
   <div className="rog-duo-product rog-duo-mouse-frame">
    <img className="rog-duo-mouse" src={slide.image2} alt={slide.caption2||slide.label} onError={e=>e.currentTarget.parentElement?.classList.add('image-missing')}/>
    <span className="rog-duo-placeholder">{slide.caption2||slide.label}</span>
-   <span className="rog-duo-caption">{slide.caption2}</span>
+   {slide.id!=='skp-hero-rog'&&slide.caption2&&<span className="rog-duo-caption">{slide.caption2}</span>}
   </div>
  </div>;
  if(slide.layout==='premium'){
