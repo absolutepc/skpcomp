@@ -83,3 +83,22 @@
  .skp-ready-pc-part-more{font-size:11px;margin-top:8px}
  .skp-ready-pc-part-media img{max-height:165px}
 }
+
+/* Spacing between horizontal pairs; no seam within a pair. */
+.skp-ready-pc-parts-list{row-gap:14px;column-gap:0;background:#07090b}
+.skp-ready-pc-part,.skp-ready-pc-part.is-reverse{background:#080b0d}
+.skp-ready-pc-part-media img{height:100%;max-height:225px;width:100%;max-width:100%;object-fit:contain;object-position:center;transform-origin:center}
+@media(min-width:951px){
+ .skp-ready-pc-part-media,.skp-ready-pc-part.is-reverse .skp-ready-pc-part-media{padding:6px 8px}
+ .skp-ready-pc-part[data-part="gpu"] .skp-ready-pc-part-media img,
+ .skp-ready-pc-part[data-part="ram"] .skp-ready-pc-part-media img,
+ .skp-ready-pc-part[data-part="ssd"] .skp-ready-pc-part-media img,
+ .skp-ready-pc-part[data-part="cooler"] .skp-ready-pc-part-media img{transform:scale(1.16)}
+ .skp-ready-pc-part[data-part="cpu"] .skp-ready-pc-part-media img,
+ .skp-ready-pc-part[data-part="motherboard"] .skp-ready-pc-part-media img,
+ .skp-ready-pc-part[data-part="psu"] .skp-ready-pc-part-media img,
+ .skp-ready-pc-part[data-part="case"] .skp-ready-pc-part-media img{transform:scale(1.04)}
+ .skp-ready-pc-part-image-link:hover img{filter:drop-shadow(0 16px 24px #000c) brightness(1.06)}
+}
+@media(max-width:950px){.skp-ready-pc-parts-list{row-gap:9px}}
+@media(max-width:540px){.skp-ready-pc-parts-list{row-gap:7px}.skp-ready-pc-part-media img{max-height:168px}}
