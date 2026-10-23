@@ -24,6 +24,7 @@ export default function ProductGallery({product,fallback}:{product:Product;fallb
  return <div className="skp-product-gallery">
   <div className={'skp-gallery-stage detail-art'+(product.variantGroup?' variant-visual':'')}>
    {current?<button type="button" className="skp-gallery-zoom-trigger" onClick={()=>setZoom(true)} title="Открыть фото на весь экран"><img src={current} alt={product.name+' — фото '+(index+1)}/><span><Expand size={17}/> Увеличить</span></button>:fallback}
+   {product.category==='pc'&&images.length>0&&<span className="skp-ready-gallery-counter">{index+1} / {images.length}</span>}
    {images.length>1&&<div className="skp-gallery-nav">
     <button type="button" aria-label="Предыдущее фото" onClick={()=>change(-1)}><ChevronLeft size={20}/></button>
     <button type="button" aria-label="Следующее фото" onClick={()=>change(1)}><ChevronRight size={20}/></button>
