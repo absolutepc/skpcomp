@@ -39,7 +39,7 @@ export default function ReadyPcComponents({product,catalog}:{product:Product;cat
    const Icon=categoryIcons[matched?.category||row.key]||Package;
    const details=matched?.description?.trim()||row.value;
    const href=matched?'/product/'+encodeURIComponent(matched.id):undefined;
-   return <article className={'skp-ready-pc-part'+(index%2?' is-reverse':'')} key={row.key}>
+   return <article className={'skp-ready-pc-part'+(index%2?' is-reverse':'')} key={row.key} data-part={row.key}>
     <div className="skp-ready-pc-part-media">
      {href?<a className="skp-ready-pc-part-image-link" href={href} aria-label={'Открыть '+matched.name}>{image?<img src={image} alt={matched.name} loading="lazy"/>:<Icon size={90} strokeWidth={1.3} aria-hidden="true"/>}</a>:<Icon size={90} strokeWidth={1.3} aria-hidden="true"/>}
     </div>
