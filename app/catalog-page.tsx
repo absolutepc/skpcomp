@@ -25,7 +25,7 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  const options=Array.from(new Set(base.flatMap(p=>splitValues(fieldValue(p,field.key))))).sort((a,b)=>a.localeCompare(b,'ru',{numeric:true}));
  const range=ranges[field.key]||{};
  const toggle=(option:string)=>setFacets({...facets,[field.key]:(facets[field.key]||[]).includes(option)?facets[field.key].filter(x=>x!==option):[...(facets[field.key]||[]),option]});
- const inline=(category==='cpu'&&['brand','socket','memory'].includes(field.key))||category==='motherboard';
+ const inline=!field.numeric;
  return <fieldset key={field.key}><legend>{field.label}{field.unit?`, ${field.unit}`:''}</legend>
  {field.numeric?<CatalogRange label={field.label} values={base.map(p=>fieldValue(p,field.key)).filter(v=>v.trim()!=='').map(v=>Number(v.replace(',','.')))} value={range} onChange={value=>setRanges({...ranges,[field.key]:value})}/>
  :options.length?<div className={inline?'skp-facet-buttons':'facet-values'}>{options.map(option=>inline?
