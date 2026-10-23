@@ -1624,3 +1624,165 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 .skp-fps-laptop-power label{display:flex;flex-direction:column;gap:9px;font-size:12px;color:#e1e3d5}
 .skp-fps-laptop-power input{width:100%;max-width:380px}
 .skp-fps-laptop-power p{margin:10px 0 0;font-size:11px;line-height:1.6;color:#aeb3a4}
+
+
+/* SKP / Mobile hero & product cards, tuned for 393 CSS px (iPhone 15 Pro).
+   Scope to the storefront; admin slide previews retain editable coordinates. */
+.card-image .skp-card-compare,
+.skp-ready-card .skp-ready-card-compare{display:none}
+@media(max-width:700px){
+ /* Reserve more of the existing carousel for hardware images and anchor copy
+    near the top instead of vertically centering it in an oversized row. */
+ .hero-carousel:not(.skp-slide-preview){
+  --skp-hero-height:650px;
+  grid-template-rows:minmax(0,1fr) 300px;
+ }
+ .hero-carousel:not(.skp-slide-preview) .hero-copy,
+ .hero-carousel:not(.skp-slide-preview).mouse-launch .hero-copy,
+ .hero-carousel:not(.skp-slide-preview).rog-anniversary .hero-copy{
+  padding:20px 0 4px;
+  justify-content:flex-start;
+  height:100%;min-height:0;
+ }
+ .hero-carousel:not(.skp-slide-preview) .hero-copy>.eyebrow{
+  margin-bottom:13px;
+ }
+ .hero-carousel:not(.skp-slide-preview) .hero-copy>.hero-buttons{
+  margin-top:14px;
+ }
+ .hero-carousel:not(.skp-slide-preview) .hero-copy>.hero-benefits{
+  margin-top:17px;
+ }
+ .hero-carousel:not(.skp-slide-preview) .hero-visual,
+ .hero-carousel:not(.skp-slide-preview).mouse-launch .hero-visual,
+ .hero-carousel:not(.skp-slide-preview).rog-anniversary .hero-visual{
+  height:300px;min-height:0;overflow:hidden;
+ }
+ /* First slide: both Logitech mice are kept fully inside the stage,
+    above the navigation dock rather than disappearing below it. */
+ .hero-carousel.skp-active-skp-hero-logitech:not(.skp-slide-preview) .mouse-duo-showcase{
+  height:100%;padding:8px 12px 52px;align-items:center;gap:7px;
+ }
+ .hero-carousel.skp-active-skp-hero-logitech:not(.skp-slide-preview) .mouse-duo-photo{
+  height:min(90%,219px);max-height:219px;max-width:159px;
+ }
+ .hero-carousel.skp-active-skp-hero-logitech:not(.skp-slide-preview) .mouse-duo-magenta{
+  transform:rotate(-10deg) translateY(-9%);
+ }
+ .hero-carousel.skp-active-skp-hero-logitech:not(.skp-slide-preview) .mouse-duo-black{
+  transform:rotate(9deg) translateY(-9%);
+ }
+ .hero-carousel.skp-active-skp-hero-logitech:not(.skp-slide-preview) .mouse-duo-caption{
+  bottom:15%;font-size:7px;
+ }
+ /* Third slide: shift the keyboard/mouse composition above the controls. */
+ .hero-carousel.skp-active-skp-hero-rog:not(.skp-slide-preview) .rog-duo-showcase{
+  height:100%;padding:10px 12px 48px 5px;
+  grid-template-columns:minmax(0,1.75fr) minmax(0,.75fr);
+ }
+ .hero-carousel.skp-active-skp-hero-rog:not(.skp-slide-preview) .rog-duo-product img{
+  height:215px;max-height:100%;
+ }
+ .hero-carousel.skp-active-skp-hero-rog:not(.skp-slide-preview) .rog-duo-keyboard{
+  transform:scale(1.04) translate(-2%,-6%);
+ }
+ .hero-carousel.skp-active-skp-hero-rog:not(.skp-slide-preview) .rog-duo-mouse{
+  transform:scale(1.09) translate(-3%,-6%);
+ }
+ .hero-carousel.skp-active-skp-hero-rog:not(.skp-slide-preview) .rog-duo-caption{
+  bottom:12%;
+ }
+ /* Fourth slide: present the entire PC rather than cropping its base. */
+ .hero-carousel.skp-active-skp-hero-computer:not(.skp-slide-preview) .second-slide-premium{
+  height:100%;min-height:0;padding:10px 10px 52px;
+ }
+ .hero-carousel.skp-active-skp-hero-computer:not(.skp-slide-preview) .second-slide-frame{
+  height:100%;max-height:237px;transform:translateY(-9px);
+ }
+ .hero-carousel.skp-active-skp-hero-computer:not(.skp-slide-preview) .second-slide-photo{
+  object-fit:contain;
+ }
+ /* Product cards: trim unused vertical space, while preserving two columns. */
+ .popular-section .home-products,.catalog-results .grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+ }
+ .popular-section .home-products .card,.catalog-results .card{
+  display:flex;flex-direction:column;min-width:0;padding:8px;
+  border-radius:12px;
+ }
+ .popular-section .home-products .card-image,.catalog-results .card-image{
+  width:100%;aspect-ratio:1.26;flex:none;
+ }
+ .popular-section .home-products .card-image>a,.catalog-results .card-image>a{
+  padding:2px;height:100%;
+ }
+ .popular-section .home-products .card-meta,.catalog-results .card-meta{
+  margin:6px 0 6px;min-height:0;font-size:9px;
+ }
+ .popular-section .home-products .card h3,.catalog-results .card h3{
+  margin:0 0 5px;min-height:0;font-size:12px;line-height:1.33;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  overflow:hidden;
+ }
+ .popular-section .home-products .card p,.catalog-results .card p{
+  margin:0 0 7px;min-height:0;font-size:10px;line-height:1.36;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  overflow:hidden;
+ }
+ .popular-section .home-products .card>.skp-compare-inline,
+ .catalog-results .card>.skp-compare-inline{display:none}
+ .popular-section .home-products .card .price-line,
+ .catalog-results .card .price-line{
+  margin-top:auto;padding-top:6px;gap:5px;align-items:center;
+ }
+ .popular-section .home-products .card .price-line strong,
+ .catalog-results .card .price-line strong{
+  font-size:clamp(13px,3.7vw,17px);letter-spacing:-.3px;white-space:nowrap;
+ }
+ .popular-section .home-products .card .price-line button,
+ .catalog-results .card .price-line button{
+  width:33px;min-width:33px;height:35px;
+ }
+ .card-image .skp-card-compare{
+  display:flex;align-items:center;justify-content:center;
+  position:absolute;z-index:3;top:6px;right:40px;
+  width:30px;height:30px;padding:0;border:1px solid #52594eb8;
+  border-radius:9px;background:#111711e6;color:#e8e9e5;
+ }
+ .card-image .favorite{
+  display:flex;align-items:center;justify-content:center;
+  z-index:3;top:6px;right:5px;
+  width:30px;height:30px;padding:0;border:1px solid #52594eb8;
+  border-radius:9px;background:#111711e6;color:#e8e9e5;
+ }
+ .card-image .skp-card-compare.selected,
+ .card-image .favorite.chosen{
+  color:#ffe500;border-color:#b3a121;
+ }
+ .card-image .skp-card-compare svg,
+ .card-image .favorite svg{width:17px;height:17px}
+ /* Ready PCs share the same overlay action rather than losing Compare. */
+ .skp-ready-page .skp-ready-card .skp-ready-card-compare{
+  display:flex;align-items:center;justify-content:center;
+  position:absolute;z-index:3;top:8px;right:43px;
+  width:29px;height:29px;padding:0;border:1px solid #667167;
+  border-radius:50%;background:#101714e5;color:#e9ece5;
+ }
+ .skp-ready-page .skp-ready-card .skp-ready-card-compare.selected{
+  color:#ffe500;border-color:#ffe500;
+ }
+}
+@media(max-width:380px){
+ .hero-carousel:not(.skp-slide-preview){
+  --skp-hero-height:665px;
+  grid-template-rows:minmax(0,1fr) 294px;
+ }
+ .hero-carousel:not(.skp-slide-preview) .hero-visual,
+ .hero-carousel:not(.skp-slide-preview).mouse-launch .hero-visual,
+ .hero-carousel:not(.skp-slide-preview).rog-anniversary .hero-visual{
+  height:294px;
+ }
+ .popular-section .home-products .card .price-line strong,
+ .catalog-results .card .price-line strong{font-size:13px}
+}
