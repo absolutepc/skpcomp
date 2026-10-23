@@ -85,8 +85,9 @@
  .skp-ready-page .ready-filters .price-inputs>span{display:block}
  .skp-ready-page .ready-filters .filter-reset{display:flex;margin:14px 0;grid-column:auto;font-size:11px}
  .skp-ready-filter-apply{
-  display:flex;position:sticky;bottom:-104px;left:0;width:100%;
-  min-height:46px;margin-top:14px;background:#ffe500;color:#10120d;
+  display:flex;position:fixed;bottom:15px;left:17px;right:17px;
+  width:calc(100% - 34px);z-index:3;
+  min-height:46px;margin:0;background:#ffe500;color:#10120d;
   border-radius:9px;font-size:12px;font-weight:850;
  }
  .skp-ready-page .ready-heading{margin:0 0 9px}
