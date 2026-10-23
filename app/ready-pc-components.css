@@ -22,3 +22,11 @@
 .skp-ready-pc-part a:focus-visible{outline:2px solid #ffe000;outline-offset:4px}
 @media(max-width:1100px){.skp-ready-pc-part-content h3{font-size:23px}.skp-ready-pc-part{min-height:290px}.skp-ready-pc-part-media{height:260px}}
 @media(max-width:750px){.skp-ready-pc-part,.skp-ready-pc-part.is-reverse{grid-template-columns:1fr;gap:0;padding:18px 0}.skp-ready-pc-part-media,.skp-ready-pc-part.is-reverse .skp-ready-pc-part-media{grid-column:1;grid-row:1;height:240px}.skp-ready-pc-part-content,.skp-ready-pc-part.is-reverse .skp-ready-pc-part-content{grid-column:1;grid-row:2;padding:15px 18px 26px}.skp-ready-pc-part-content h3{font-size:21px}.skp-ready-pc-part-content p{font-size:14px}.skp-ready-pc-part-type{font-size:15px}}
+
+/* Full-width hardware bands, aligned to the browser viewport rather than product content. */
+.skp-ready-pc-parts{width:100vw;max-width:none;position:relative;left:50%;margin-left:-50vw;margin-right:-50vw;box-sizing:border-box}
+.skp-ready-pc-parts-heading{max-width:1400px;margin-left:auto;margin-right:auto}
+.skp-ready-pc-parts-list{width:100%}
+.skp-ready-pc-part{box-sizing:border-box;width:100%;padding-left:max(28px,calc((100vw - 1400px)/2));padding-right:max(28px,calc((100vw - 1400px)/2))}
+.skp-ready-pc-part:first-child{border-top:0}
+@media(max-width:750px){.skp-ready-pc-part{padding-left:18px;padding-right:18px}}
