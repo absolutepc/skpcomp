@@ -18,7 +18,7 @@ export const defaultFpsGames:FpsGameAppearance[]=[
  {id:'warthunder',name:'War Thunder',image:steam(236390),enabled:true},
  {id:'squad',name:'Squad',image:steam(393380),enabled:true},
  {id:'dota2',name:'Dota 2',image:steam(570),enabled:true},
- {id:'warface',name:'Warface',image:steam(291480),enabled:true}
+ {id:'warface',name:'Warface',image:steam(3889960),enabled:true}
 ];
 const knownIds=new Set<string>(gameProfiles.map(x=>x.id));
 export function validFpsGameImage(value:string):boolean{
@@ -40,5 +40,9 @@ export function validateFpsGames(value:unknown):value is FpsGameAppearance[]{
 export function getConfiguredFpsGames(value:unknown):FpsGameAppearance[]{
  if(!validateFpsGames(value)||value===undefined)return defaultFpsGames.map(x=>({...x}));
  const saved=value as FpsGameAppearance[];
- return saved.map(x=>({...x})).filter(x=>knownIds.has(x.id));
+ // Older configurations used Steam app 291480 (Warface: Clutch).
+ // The active Warface published by Astrum Play uses app 3889960.
+ // Preserve custom admin images and replace only this exact legacy default.
+ return saved.map(x=>x.id==='warface'&&x.image===steam(291480)?
+  {...x,image:steam(3889960)}:{...x}).filter(x=>knownIds.has(x.id));
 }
