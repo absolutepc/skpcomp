@@ -1,3 +1,4 @@
+import {localAdminAccess} from '../../../lib/local-admin-access';
 import {env} from 'cloudflare:workers';
 
 const E=env as unknown as {MEDIA?:R2Bucket;ADMIN_PASSWORD?:string};
@@ -5,6 +6,7 @@ const MEDIA_KEY=/^(?:products|slides)\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.webp$
 const MAX_FILE_BYTES=8*1024*1024;
 const json=(data:object,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 async function authorized(request:Request){
+ if(localAdminAccess(request))return true;
  if(!E.ADMIN_PASSWORD)return false;
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));
  const token=Array.from(new Uint8Array(bytes)).map(b=>b.toString(16).padStart(2,'0')).join('');

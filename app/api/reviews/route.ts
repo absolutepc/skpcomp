@@ -1,3 +1,4 @@
+import {localAdminAccess} from '../../../lib/local-admin-access';
 import {env} from 'cloudflare:workers';
 
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
@@ -16,6 +17,7 @@ async function setup(){
  )`).run();
 }
 async function authorized(request:Request){
+ if(localAdminAccess(request))return true;
  if(!E.ADMIN_PASSWORD)return false;
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));
  const token=Array.from(new Uint8Array(bytes)).map(x=>x.toString(16).padStart(2,'0')).join('');

@@ -1,3 +1,4 @@
+import {localAdminAccess} from '../../../lib/local-admin-access';
 import {adminCookie} from '../../../lib/admin-cookie';
 import {env} from 'cloudflare:workers';
 import {seed} from '../../../lib/seed';
@@ -14,7 +15,7 @@ const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
 // A fresh local D1 database has no tables until its first request.
 async function ensureShop(){await E.DB.prepare('CREATE TABLE IF NOT EXISTS shop (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)').run()}
 async function token(){let a=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));return Array.from(new Uint8Array(a)).map(x=>x.toString(16).padStart(2,'0')).join('')}
-async function auth(r:Request){return !!E.ADMIN_PASSWORD && (r.headers.get('cookie')||'').split(';').map(x=>x.trim()).includes('skp_admin='+await token())}
+async function auth(r:Request){if(localAdminAccess(r))return true;return !!E.ADMIN_PASSWORD && (r.headers.get('cookie')||'').split(';').map(x=>x.trim()).includes('skp_admin='+await token())}
 export async function GET(){
  await ensureShop();
  const row=await E.DB.prepare('SELECT value FROM shop WHERE id=?').bind('catalog').first<{value:string}>();
