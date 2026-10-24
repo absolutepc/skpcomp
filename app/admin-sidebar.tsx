@@ -1,6 +1,6 @@
 'use client';
 import {useState,type ReactNode} from 'react';
-import {LayoutDashboard,ClipboardList,ContactRound,Images,MessageSquareQuote,Monitor,Package,Laptop,LogOut,ArrowUpRight,Menu,Search,X} from 'lucide-react';
+import {LayoutDashboard,ClipboardList,ContactRound,Images,MessageSquareQuote,Monitor,Package,Laptop,LogOut,ArrowUpRight,Menu,Search,X,Gamepad2} from 'lucide-react';
 import './admin-sidebar.css';
 export const ADMIN_SECTIONS=[
  {id:'dashboard',label:'Главная'},
@@ -10,13 +10,14 @@ export const ADMIN_SECTIONS=[
  {id:'orders',label:'Заказы'},
  {id:'reviews',label:'Отзывы'},
  {id:'slides',label:'Слайды'},
+ {id:'fps-games',label:'Игры FPS'},
  {id:'contacts',label:'Контакты'}
 ] as const;
 export type AdminSection=typeof ADMIN_SECTIONS[number]['id'];
 export function adminSectionFromQuery(value:string|null):AdminSection{
  return ADMIN_SECTIONS.find(item=>item.id===value)?.id??'dashboard';
 }
-const icons={dashboard:LayoutDashboard,contacts:ContactRound,slides:Images,products:Package,laptops:Laptop,pcs:Monitor,orders:ClipboardList,reviews:MessageSquareQuote};
+const icons={dashboard:LayoutDashboard,contacts:ContactRound,slides:Images,'fps-games':Gamepad2,products:Package,laptops:Laptop,pcs:Monitor,orders:ClipboardList,reviews:MessageSquareQuote};
 export default function AdminSidebar({active,onChange,productsCount,laptopsCount,pcsCount,children,search,onSearch,onLogout}:{
  active:AdminSection;onChange:(value:AdminSection)=>void;productsCount:number;laptopsCount:number;pcsCount:number;children:ReactNode;
  search:string;onSearch:(value:string)=>void;onLogout:()=>void;
