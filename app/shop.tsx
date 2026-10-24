@@ -10,6 +10,7 @@ import Installments from './installments';
 import {Checkout,OrderHistory,AdminOrders} from './orders';
 import StoreLocation,{STORE_ADDRESS} from './store-location';
 import {ReadyPC,Configurator} from './build-pages';
+import './custom-build-cart.css';
 import HeroSlider,{InstagramIcon,WhatsAppIcon} from './hero-slider';
 import ComparePage,{comparisonCategory} from './compare-page';
 import ProductReviews,{AdminReviews} from './product-reviews';
