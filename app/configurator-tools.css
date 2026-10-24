@@ -66,3 +66,15 @@
 .skp-incompatible-grid .component-card .compat-error{color:#e1ac8d}
 .skp-incompatible-grid .component-card .price-line button:disabled{cursor:not-allowed;opacity:.45}
 @media(prefers-reduced-motion:reduce){.skp-incompatible-toggle>svg:last-child{transition:none}}
+
+
+/* Compatibility checks already sit inside the configuration panel.
+   Avoid drawing a second outline/card around the same content. */
+.config-page .configuration-panel>.skp-build-checks{
+ margin:20px 0 16px;
+ padding:0;
+ border:0;
+ border-radius:0;
+ background:transparent;
+ box-shadow:none;
+}
