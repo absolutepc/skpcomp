@@ -102,6 +102,18 @@ assert.match(builds,/Сохранить конфигурацию/,'Configurator 
 assert.match(builds,/Добавить в корзину/,'Configurator checkout remains available');
 assert.match(shop,/GitCompareArrows/,'Product comparison remains available');
 assert.match(shop,/skp-card-compare/,'Desktop catalog comparison icon remains in the product image');
+// Opening or closing the FPS dialog must never shift the background page.
+const modalSource=readFileSync(new URL('../app/gaming-fps.tsx',import.meta.url),'utf8');
+assert.match(modalSource,/window\.innerWidth-document\.documentElement\.clientWidth/,
+ 'Scrollbar width is measured before locking desktop scrolling');
+assert.match(modalSource,/body\.style\.paddingRight=.*computedPadding\+scrollbarWidth/,
+ 'FPS modal compensates for the disappearing desktop scrollbar');
+assert.match(modalSource,/focus\(\{preventScroll:true\}\)/,
+ 'Modal focus does not scroll the underlying product page');
+assert.match(modalSource,/body\.style\.top=.*scrollY/,
+ 'Mobile Safari keeps the original document offset when locking scrolling');
+assert.match(modalSource,/window\.scrollTo\(scrollX,scrollY\)/,
+ 'Mobile scroll position is restored after closing FPS modal');
 const content=readFileSync(new URL('../app/fps-calculator-content.tsx',import.meta.url),'utf8');
 assert.match(content,/Выберите игру/,'FPS dialog has interactive game selection');
 assert.match(content,/Настройки/,'FPS dialog keeps graphics settings');
