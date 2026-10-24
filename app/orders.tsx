@@ -2,6 +2,7 @@
 import {useEffect,useState} from 'react';
 import {ArrowRight,CheckCircle2,ClipboardCopy,Clock3,PackageCheck,Phone,RefreshCw,ShoppingBag,XCircle} from 'lucide-react';
 import type {Product} from '../lib/seed';
+import {getProductImages} from '../lib/product-gallery';
 import {ORDER_HISTORY_STORAGE,ORDER_LABELS,ORDER_TRANSITIONS,groupCart,parseOrderKeys,rememberOrder,type OrderKey,type OrderStatus,type PublicOrder,type AdminOrder} from '../lib/orders';
 import './orders.css';
 
@@ -75,6 +76,13 @@ export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:string[];p
    <textarea id="order-access-code" readOnly rows={3} value={privateCode} onFocus={event=>event.currentTarget.select()}/>
    <button type="button" className="button outline" onClick={()=>void copy()}><ClipboardCopy size={16}/> Скопировать код</button>
   </div>
+  <div className="skp-admin-mobile-order-controls">
+    <div className="skp-admin-mobile-order-tabs" role="group" aria-label="Фильтр заказов">
+     {([['all','Все'],['processing','В процессе'],['assembled','Собраны'],['completed','Выполнены'],['cancelled','Отменены']] as const).map(([value,label])=>
+      <button type="button" key={value} aria-pressed={filter===value} className={filter===value?'selected':''} onClick={()=>setFilter(value)}>{label}</button>)}
+    </div>
+    <label className="skp-admin-mobile-order-search"><span>Поиск по заказам</span><input type="search" placeholder="Номер, покупатель или телефон" value={search} onChange={e=>setSearch(e.target.value)}/></label>
+   </div>
   {error&&<p className="skp-order-error" role="alert">{error}</p>}
   <div className="skp-order-buttons"><button className="button light" onClick={()=>nav('/orders')}>Мои заказы <ArrowRight size={16}/></button>
    {whatsapp&&<a className="button outline" rel="noopener noreferrer" target="_blank" href={'https://wa.me/'+whatsapp+'?text='+encodeURIComponent('Здравствуйте! Оформил заявку '+created.order.number+' на сайте SKP. Прошу подтвердить наличие и условия.')}>Написать менеджеру</a>}
@@ -144,9 +152,10 @@ export function OrderHistory({nav}:{nav:(p:string)=>void}){
   </form>
  </section>;
 }
-export function AdminOrders(){
+export function AdminOrders({products=[]}:{products?:Product[]}){
  const [orders,setOrders]=useState<AdminOrder[]>([]);
  const [filter,setFilter]=useState<'all'|OrderStatus>('all');
+ const [search,setSearch]=useState('');
  const [pending,setPending]=useState(false),[busy,setBusy]=useState(''),[error,setError]=useState('');
  async function load(){
   setPending(true);setError('');
@@ -164,13 +173,39 @@ export function AdminOrders(){
   catch(e){setError(e instanceof Error?e.message:'Не удалось изменить статус.');await load()}
   finally{setBusy('')}
  }
- const filtered=filter==='all'?orders:orders.filter(order=>order.status===filter);
+ const filtered=orders.filter(order=>(filter==='all'||order.status===filter)&&
+  (order.number+' '+order.customerName+' '+order.phone).toLowerCase().includes(search.trim().toLowerCase()));
  return <section className="skp-admin-orders" aria-label="Управление заказами">
   <div className="skp-admin-orders-header"><div><h2>Заказы <small>/ {orders.length}</small></h2><p>Меняйте этап выполнения. Отменённые и выполненные заказы закрыты для изменений.</p></div>
    <div><select aria-label="Фильтр заказов" value={filter} onChange={e=>setFilter(e.target.value as typeof filter)}><option value="all">Все статусы</option>{Object.entries(ORDER_LABELS).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select><button type="button" className="button outline" onClick={()=>void load()} disabled={pending}><RefreshCw size={15}/> Обновить</button></div>
   </div>
   {error&&<p className="skp-order-error" role="alert">{error}</p>}
-  {!filtered.length?<p className="skp-orders-lead">{pending?'Загрузка…':'Заказов с выбранным статусом нет.'}</p>:<div className="skp-admin-orders-list">{filtered.map(order=>
+  {!filtered.length?<p className="skp-orders-lead">{pending?'Загрузка…':'Заказов с выбранным статусом нет.'}</p>:<div className="skp-admin-orders-list">
+   <div className="skp-admin-mobile-orders-list">
+    {filtered.map(order=><article key={order.id} className="skp-admin-mobile-order">
+      <div className="skp-admin-mobile-order-top"><div><strong>{order.number}</strong><small>{datetime(order.createdAt)}</small></div><Status status={order.status}/></div>
+      <div className="skp-admin-mobile-order-details-head">
+       <div className="skp-admin-mobile-order-photos">
+        {order.items.slice(0,3).map(item=>{
+         const product=products.find(p=>p.id===item.productId);
+         const image=product?getProductImages(product)[0]:undefined;
+         return <span key={item.productId}>{image?<img src={image} alt="" loading="lazy"/>:<ShoppingBag size={18}/>}</span>;
+        })}
+       </div>
+       <strong>{money(order.total)}</strong>
+      </div>
+      <details className="skp-admin-mobile-order-expand"><summary>Подробнее о заказе</summary>
+       <p><b>Покупатель:</b> {order.customerName}</p><p><b>Телефон:</b> <a href={'tel:'+order.phone.replace(/[^\\d+]/g,'')}>{order.phone}</a></p>
+       {order.comment&&<p><b>Комментарий:</b> {order.comment}</p>}
+       <Lines order={order}/>
+       <div className="skp-admin-order-actions">{ORDER_TRANSITIONS[order.status].map(status=>
+        <button type="button" key={status} className={'button '+(status==='cancelled'?'outline':'light')} disabled={busy===order.id} onClick={()=>void change(order.id,status)}>
+         {status==='cancelled'?'Отменить заказ':'Перевести: '+ORDER_LABELS[status]}</button>
+       )}{!ORDER_TRANSITIONS[order.status].length&&<small>Заказ закрыт</small>}</div>
+      </details>
+    </article>)}
+   </div>
+   <div className="skp-admin-orders-desktop">{filtered.map(order=>
    <OrderCard key={order.id} order={order} extra={<div className="skp-admin-order-details">
     <p><strong>Покупатель:</strong> {order.customerName} · <a href={'tel:'+order.phone.replace(/[^\d+]/g,'')}><Phone size={13}/> {order.phone}</a></p>
     {order.comment&&<p><strong>Комментарий:</strong> {order.comment}</p>}
@@ -178,6 +213,6 @@ export function AdminOrders(){
      <button key={status} className={'button '+(status==='cancelled'?'outline':'light')} disabled={busy===order.id} onClick={()=>void change(order.id,status)}>
       {status==='cancelled'?'Отменить заказ':'Перевести: '+ORDER_LABELS[status]}</button>
     )}{!ORDER_TRANSITIONS[order.status].length&&<small>Заказ закрыт</small>}</div>
-   </div>}/>)}</div>}
+   </div>}/>)}</div></div>}
  </section>;
 }
