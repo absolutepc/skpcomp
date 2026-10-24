@@ -6,7 +6,7 @@
 .skp-spec-row dd{margin:0;text-align:right;color:#e1e3de;overflow-wrap:anywhere}
 .product-detail .skp-spec-details{margin:20px 0 0;gap:14px;border-color:#555d43;color:#ffe500}
 .skp-spec-details:hover{background:#ffe5000d;border-color:#ffe500}
-.skp-spec-dialog{padding:0;border:1px solid #454d37;border-radius:16px;background:#10130e;color:#f1f1ef;width:min(720px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 40px);overflow:hidden;box-shadow:0 28px 100px #000a}
+.skp-spec-dialog{padding:0;border:1px solid #454d37;border-radius:16px;background:#111315;color:#f1f1ef;width:min(720px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 40px);overflow:hidden;box-shadow:0 28px 100px #000a}
 .skp-spec-dialog::backdrop{background:#000b;backdrop-filter:blur(5px)}
 .skp-spec-dialog-content{display:flex;flex-direction:column;max-height:calc(100dvh - 42px)}
 .skp-spec-dialog-heading{display:flex;align-items:flex-start;gap:20px;padding:26px 28px 20px;border-bottom:1px solid #353c2d;flex-shrink:0}
