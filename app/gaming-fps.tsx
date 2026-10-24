@@ -15,20 +15,56 @@ export default function GamingFps({hardware,product,games,compact=false,inlineAc
  const panel=useRef<HTMLDivElement|null>(null);
  const closeButton=useRef<HTMLButtonElement|null>(null);
  const closeTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const closingRef=useRef(false);
  const titleId=useId();
  const close=()=>{
-  if(closing)return;
+  if(closingRef.current)return;
+  closingRef.current=true;
   setClosing(true);
   closeTimer.current=setTimeout(()=>{
-   setOpen(false);setClosing(false);trigger.current?.focus();
+   setOpen(false);
+   setClosing(false);
+   closingRef.current=false;
+   trigger.current?.focus({preventScroll:true});
   },CLOSE_DURATION);
  };
  useEffect(()=>()=>{if(closeTimer.current)clearTimeout(closeTimer.current)},[]);
  useEffect(()=>{
   if(!open)return;
-  const before=document.body.style.overflow;
-  document.body.style.overflow='hidden';
-  const focusFrame=requestAnimationFrame(()=>closeButton.current?.focus());
+  const body=document.body;
+  const saved={
+   overflow:body.style.overflow,
+   paddingRight:body.style.paddingRight,
+   position:body.style.position,
+   top:body.style.top,
+   left:body.style.left,
+   right:body.style.right,
+   width:body.style.width
+  };
+  const scrollX=window.scrollX;
+  const scrollY=window.scrollY;
+  const isPhone=window.matchMedia('(max-width:760px)').matches;
+  if(isPhone){
+   // Mobile Safari may keep scrolling behind an overflow:hidden body.
+   // Fix the body at its current position and restore that position on close.
+   body.style.position='fixed';
+   body.style.top=`-${scrollY}px`;
+   body.style.left=`-${scrollX}px`;
+   body.style.right='0';
+   body.style.width='100%';
+   body.style.overflow='hidden';
+  }else{
+   // Removing the viewport scrollbar would make the background page jump.
+   // Preserve exactly the space it occupied, including existing body padding.
+   const scrollbarWidth=Math.max(0,window.innerWidth-document.documentElement.clientWidth);
+   if(scrollbarWidth>0){
+    const computedPadding=parseFloat(getComputedStyle(body).paddingRight)||0;
+    body.style.paddingRight=`${computedPadding+scrollbarWidth}px`;
+   }
+   body.style.overflow='hidden';
+  }
+  // Prevent focus from scrolling the page under the overlay.
+  const focusFrame=requestAnimationFrame(()=>closeButton.current?.focus({preventScroll:true}));
   const onKey=(event:KeyboardEvent)=>{
    if(event.key==='Escape'){event.preventDefault();close();return}
    if(event.key!=='Tab'||!panel.current)return;
@@ -41,12 +77,23 @@ export default function GamingFps({hardware,product,games,compact=false,inlineAc
    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
   };
   document.addEventListener('keydown',onKey);
-  return()=>{document.body.style.overflow=before;cancelAnimationFrame(focusFrame);document.removeEventListener('keydown',onKey)};
- },[open,closing]);
+  return()=>{
+   cancelAnimationFrame(focusFrame);
+   document.removeEventListener('keydown',onKey);
+   body.style.overflow=saved.overflow;
+   body.style.paddingRight=saved.paddingRight;
+   body.style.position=saved.position;
+   body.style.top=saved.top;
+   body.style.left=saved.left;
+   body.style.right=saved.right;
+   body.style.width=saved.width;
+   if(isPhone)window.scrollTo(scrollX,scrollY);
+  };
+ },[open]);
 
  return <>
   <button ref={trigger} type="button" aria-haspopup="dialog" aria-expanded={open} aria-label={inlineAction?'Проверить FPS в играх':undefined} title={inlineAction?'FPS в играх':undefined}
-   className={inlineAction?'button outline skp-fps-inline-action':'skp-fps-launch'+(compact?' skp-fps-launch-compact':'')} onClick={()=>{if(closeTimer.current)clearTimeout(closeTimer.current);setClosing(false);setOpen(true)}}>
+   className={inlineAction?'button outline skp-fps-inline-action':'skp-fps-launch'+(compact?' skp-fps-launch-compact':'')} onClick={()=>{if(closeTimer.current)clearTimeout(closeTimer.current);closingRef.current=false;setClosing(false);setOpen(true)}}>
    {inlineAction?<><span className="skp-fps-inline-label">FPS</span><Gauge size={20} aria-hidden="true"/></>:<>
     <span className="skp-fps-launch-icon"><Gauge size={compact?19:25} aria-hidden="true"/></span>
     <span className="skp-fps-launch-text"><strong>{compact?'Игровая производительность':'Проверить FPS в играх'}</strong><small>10 игр · FHD / 2K / 4K · настройки графики</small></span>
