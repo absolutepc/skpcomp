@@ -4,10 +4,11 @@ import {createPortal} from 'react-dom';
 import {ArrowUpRight,Gauge} from 'lucide-react';
 import type {FpsHardware} from '../lib/fps-estimate';
 import type {Product} from '../lib/seed';
+import type {FpsGameAppearance} from '../lib/fps-game-catalog';
 import FpsCalculatorContent from './fps-calculator-content';
 
 const CLOSE_DURATION=240;
-export default function GamingFps({hardware,product,compact=false,inlineAction=false}:{hardware:FpsHardware;product?:Product;compact?:boolean;inlineAction?:boolean}){
+export default function GamingFps({hardware,product,games,compact=false,inlineAction=false}:{hardware:FpsHardware;product?:Product;games?:FpsGameAppearance[];compact?:boolean;inlineAction?:boolean}){
  const [open,setOpen]=useState(false);
  const [closing,setClosing]=useState(false);
  const trigger=useRef<HTMLButtonElement|null>(null);
@@ -55,7 +56,7 @@ export default function GamingFps({hardware,product,compact=false,inlineAction=f
   {open&&typeof document!=='undefined'&&createPortal(
    <div className={'skp-fps-overlay'+(closing?' is-closing':'')} onClick={event=>{if(event.target===event.currentTarget)close()}}>
     <div ref={panel} className="skp-fps-modal skp-fps-v2" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
-     <FpsCalculatorContent hardware={hardware} product={product} onClose={close} closeButton={closeButton} titleId={titleId}/>
+     <FpsCalculatorContent hardware={hardware} product={product} games={games} onClose={close} closeButton={closeButton} titleId={titleId}/>
     </div>
    </div>,document.body
   )}
