@@ -2,6 +2,7 @@
 import {useEffect,useState} from 'react';
 import {ArrowRight,CheckCircle2,ClipboardCopy,Clock3,PackageCheck,Phone,RefreshCw,ShoppingBag,XCircle} from 'lucide-react';
 import type {Product} from '../lib/seed';
+import {summarizeCart,cartGrandTotal,type CartEntry} from '../lib/custom-build-cart';
 import {getProductImages} from '../lib/product-gallery';
 import {ORDER_HISTORY_STORAGE,ORDER_LABELS,ORDER_TRANSITIONS,groupCart,parseOrderKeys,rememberOrder,type OrderKey,type OrderStatus,type PublicOrder,type AdminOrder} from '../lib/orders';
 import './orders.css';
@@ -29,7 +30,8 @@ function Steps({order}:{order:PublicOrder}){
 }
 function Lines({order}:{order:PublicOrder}){
  return <div className="skp-order-lines">{order.items.map(item=>
-  <div key={item.productId}><span>{item.name}<small>{item.quantity} шт. × {money(item.unitPrice)}</small></span><strong>{money(item.subtotal)}</strong></div>
+  <div key={item.productId}><span>{item.name}<small>{item.quantity} шт. × {money(item.unitPrice)}</small>
+ {item.components&&<details className="skp-order-build-details"><summary>Комплектация сборки</summary>{item.components.map(part=><div key={part.slot}>{part.label}: {part.name} — {money(part.price)}</div>)}<div>ОС: {item.os||'Без ОС'} (лицензия отдельно)</div><div>Сборка и проверка: {money(item.assemblyFee||0)}</div></details>}</span><strong>{money(item.subtotal)}</strong></div>
  )}<div className="skp-order-sum"><strong>Итого</strong><strong>{money(order.total)}</strong></div></div>;
 }
 function OrderCard({order,extra}:{order:PublicOrder;extra?:React.ReactNode}){
@@ -41,19 +43,19 @@ function OrderCard({order,extra}:{order:PublicOrder;extra?:React.ReactNode}){
   {extra}
  </article>;
 }
-export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:string[];products:Product[];whatsapp:string;onSuccess:()=>void;nav:(path:string)=>void}){
+export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:CartEntry[];products:Product[];whatsapp:string;onSuccess:()=>void;nav:(path:string)=>void}){
  const [name,setName]=useState(''),[phone,setPhone]=useState(''),[comment,setComment]=useState('');
  const [website,setWebsite]=useState('');
  const [submitting,setSubmitting]=useState(false),[error,setError]=useState('');
  const [created,setCreated]=useState<{order:PublicOrder;accessKey:string}|null>(null);
- const summary=groupCart(cart).map(item=>({...item,product:products.find(p=>p.id===item.id)})).filter((item):item is typeof item & {product:Product}=>!!item.product);
- const total=summary.reduce((sum,item)=>sum+item.product.price*item.quantity,0);
- const canSubmit=summary.length>0&&summary.length<=30&&summary.every(item=>item.product.price>0&&item.quantity<=20);
+ const summary=summarizeCart(cart,products);
+ const total=cartGrandTotal(summary);
+ const canSubmit=summary.length>0&&summary.length<=30&&summary.every(item=>item.valid&&item.quantity<=20);
  async function send(event:React.FormEvent){
   event.preventDefault();if(submitting||created)return;
   setSubmitting(true);setError('');
   try{
-   const response=await orderAPI({action:'create',name,phone,comment,website,items:summary.map(({id,quantity})=>({id,quantity}))});
+   const response=await orderAPI({action:'create',name,phone,comment,website,items:summary.map(item=>item.build?{...item.build,quantity:1}:{id:item.id,quantity:item.quantity})});
    if(!response.order||!response.accessKey)throw Error('Сервер не вернул данные заказа.');
    const order=response.order, accessKey=response.accessKey;
    setCreated({order,accessKey});
@@ -96,7 +98,8 @@ export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:string[];p
     <button type="submit" className="button light" disabled={!canSubmit||submitting}>{submitting?'Отправляем…':'Оформить заявку'} <ArrowRight size={16}/></button>
     {!canSubmit&&<p className="skp-order-error">Проверьте состав корзины: у каждого товара должна быть указана цена, не более 20 шт. одной позиции.</p>}
    </form>
-   <aside className="skp-checkout-summary"><h2>Ваш заказ</h2>{summary.map(({id,quantity,product})=><div key={id}><span>{product.name}<small>{quantity} шт. × {money(product.price)}</small></span><strong>{money(product.price*quantity)}</strong></div>)}<div className="skp-order-sum"><strong>Итого</strong><strong>{money(total)}</strong></div></aside>
+   <aside className="skp-checkout-summary"><h2>Ваш заказ</h2>{summary.map(item=><div key={item.id}><span>{item.name}<small>{item.quantity} шт. × {money(item.price)}</small>
+ {item.build&&<details className="skp-order-build-details"><summary>Комплектация ПК</summary>{item.details?.map(part=><div key={part.slot}>{part.label}: {part.name} — {money(part.price)}</div>)}<div>ОС: {item.os} (лицензия отдельно)</div><div>Сборка и проверка: {money(item.assemblyFee||0)}</div></details>}</span><strong>{money(item.price*item.quantity)}</strong></div>)}<div className="skp-order-sum"><strong>Итого</strong><strong>{money(total)}</strong></div></aside>
   </div>}
  </section>;
 }
