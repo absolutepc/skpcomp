@@ -20,7 +20,7 @@
 .skp-checkout-summary strong,.skp-order-lines strong{white-space:nowrap;font-size:13px}
 .skp-order-sum{display:flex;justify-content:space-between;gap:14px;padding:20px 0 0;font-size:17px}
 .skp-order-sum strong:last-child{color:#ffe500}
-.skp-order-error{padding:11px 14px;border:1px solid #8f4742;background:#2a2c2e52;color:#ffb1a2;font-size:12px;line-height:1.6;border-radius:8px}
+.skp-order-error{padding:11px 14px;border:1px solid #8f4742;background:#44211b52;color:#ffb1a2;font-size:12px;line-height:1.6;border-radius:8px}
 .skp-orders-empty{text-align:center;border:1px dashed #59614d;border-radius:12px;padding:45px 18px;color:#aebaa7}
 .skp-orders-empty>svg{color:#ffe500;margin-bottom:14px}
 .skp-orders-empty h2{margin:0 0 8px;color:#fff}
