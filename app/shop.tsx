@@ -99,7 +99,7 @@ return <>
 <header className={path==='/admin'?'skp-admin-header':undefined}>
  <div className="header-inner">{link('/',<Logo/>)}
  {path==='/admin'?<div className="skp-admin-header-tools">{link('/',<>На сайт <ArrowUpRight size={17}/></>,'skp-admin-home-link')}</div>:<>
-  <nav className={menu?'open':''}>{link('/','Главная',path==='/'?'active':'')}{Object.entries(cats).filter(([id])=>id!=='pc').map(([id,label])=>link('/catalog/'+id,label,path==='/catalog/'+id?'active':''))}{link('/pc','Готовые ПК',path==='/pc'?'active':'')}{link('/configurator','Конфигуратор',path==='/configurator'?'active':'')}{link('/contacts','Контакты',path==='/contacts'?'active':'')}</nav>
+  <nav className={menu?'open':''}>{link('/','Главная',path==='/'?'active':'')}{(['components','peripherals','furniture','laptops'] as const).map(id=>link('/catalog/'+id,cats[id],path==='/catalog/'+id?'active':''))}{link('/pc','Готовые ПК',path==='/pc'?'active':'')}{link('/configurator','Конфигуратор',path==='/configurator'?'active':'')}{link('/contacts','Контакты',path==='/contacts'?'active':'')}</nav>
   <div className="header-tools"><button type="button" aria-label="Открыть поиск товаров" aria-haspopup="dialog" aria-expanded={searchOpen} onClick={()=>{setMenu(false);setSearchOpen(true)}}><Search size={20}/></button>{link('/favorites',<Heart size={20}/>)}{link('/orders',<><PackageCheck size={20}/><span className="visually-hidden">Мои заказы</span></>)}{link('/cart',<><ShoppingBag size={20}/>{cart.length>0&&<b>{cart.length}</b>}</>)}<button className="mobile-menu" onClick={()=>setMenu(!menu)} aria-label="Меню"><Menu/></button></div>
  </>}</div>
 </header>
