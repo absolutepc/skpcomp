@@ -1,6 +1,7 @@
 import {adminCookie} from '../../../lib/admin-cookie';
 import {env} from 'cloudflare:workers';
 import {seed} from '../../../lib/seed';
+import {upgradeLogitechGamingMice} from '../../../lib/logitech-mouse-upgrade';
 import {upgradeReadyPcDemos} from '../../../lib/ready-pc-demos';
 import {validateFpsGames} from '../../../lib/fps-game-catalog';
 import {productPhotos} from '../../../lib/product-photos';
@@ -120,6 +121,9 @@ export async function GET(){
   }
   products=addRogProducts(products,seed.products,oldVersion);
   products=groupRogMonitors(products,oldVersion);
+  // Version 11: owner-approved Logitech prices and verified mouse specs.
+  // Preserve inventory, uploaded images, color links and unrelated products.
+  products=upgradeLogitechGamingMice(products,seed.products,oldVersion);
   // The next successful admin save persists the new catalog version in D1.
   // Once saved, intentionally deleted products are not automatically recreated.
   const slides=linkFeaturedMonitorSlide(
