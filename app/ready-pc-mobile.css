@@ -12,7 +12,7 @@
  .skp-ready-hero{
   display:block;position:relative;isolation:isolate;overflow:hidden;
   padding:17px 5% 11px;min-height:0;
-  background:linear-gradient(115deg,#080b0b 13%,#0a100c 70%,#080909);
+  background:linear-gradient(115deg,#080b0b 13%,#0e1012 70%,#080909);
   border-bottom:1px solid #283126;
  }
  .skp-ready-hero::after{
@@ -30,7 +30,7 @@
  .skp-ready-hero .build-perks{
   display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
   gap:6px;margin:25px 0 0;max-width:none;padding:12px 5px;
-  background:#0b100de3;border-top:1px solid #2a332b;border-bottom:1px solid #202720;
+  background:#0e1012e3;border-top:1px solid #2a332b;border-bottom:1px solid #202720;
  }
  .skp-ready-hero .build-perks>div{min-width:0;max-width:none;flex-basis:auto;flex-direction:column;gap:5px;text-align:center;justify-content:flex-start}
  .skp-ready-hero .build-perks svg{height:20px;width:20px;color:#ffe500;flex:none}
@@ -101,7 +101,7 @@
  .skp-ready-page .skp-ready-card{
   display:flex;flex-direction:column;min-width:0;height:100%;
   overflow:hidden;border:1px solid #303a34;border-radius:11px;
-  background:linear-gradient(160deg,#101a1d,#0b1112 65%,#101614);
+  background:linear-gradient(160deg,#101a1d,#0b1112 65%,#141618);
  }
  .skp-ready-page .skp-ready-card .build-card-art{
   position:relative;display:flex;align-items:center;justify-content:center;
@@ -115,7 +115,7 @@
  .skp-ready-page .skp-ready-card>.favorite{
   position:absolute;right:7px;top:8px;z-index:2;
   display:grid;place-items:center;width:29px;height:29px;padding:0;
-  border:1px solid #525851;border-radius:50%;background:#111715d9;
+  border:1px solid #525851;border-radius:50%;background:#151719d9;
  }
  .skp-ready-page .skp-ready-card .build-badge{
   left:7px;top:8px;z-index:2;background:#ffe500;color:#14160e;
