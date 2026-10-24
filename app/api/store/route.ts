@@ -2,6 +2,7 @@ import {adminCookie} from '../../../lib/admin-cookie';
 import {env} from 'cloudflare:workers';
 import {seed} from '../../../lib/seed';
 import {upgradeReadyPcDemos} from '../../../lib/ready-pc-demos';
+import {validateFpsGames} from '../../../lib/fps-game-catalog';
 import {productPhotos} from '../../../lib/product-photos';
 import {buildComponentFields} from '../../../lib/build-components';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
