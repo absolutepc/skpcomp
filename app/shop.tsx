@@ -121,7 +121,7 @@ return <>
  productsCount={data.products.filter(p=>inAdminProductSection(p,'products')).length}
  laptopsCount={data.products.filter(p=>inAdminProductSection(p,'laptops')).length}
  pcsCount={data.products.filter(p=>inAdminProductSection(p,'pcs')).length}>
- {adminSection==='dashboard'&&<AdminDashboard products={data.products} search={adminSearch}
+ {adminSection==='dashboard'&&<AdminDashboard products={data.products} search={adminSearch} onOrders={()=>chooseAdminSection('orders')}
   onAdd={()=>setEditing({id:'product-'+Date.now(),name:'',category:'cpu',price:0,art:'cpu',description:'',image:'',stock:true,brand:'',socket:'',memory:'',watts:0})}
   onEdit={product=>setEditing(normalizeProduct(product))}
   onDelete={product=>{if(confirm('Удалить '+product.name+'?'))void save({...data,products:data.products.filter(p=>p.id!==product.id)})}}
