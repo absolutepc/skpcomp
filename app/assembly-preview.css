@@ -2,19 +2,19 @@
  * Not imported by the active SKP configurator. Kept for future activation.
  */
 /* SKP parametrically projected 3D PC assembly: self-contained, no WebGL bundle required. */
-.assembly-preview{padding:0;grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.64fr) minmax(290px,.75fr);border:1px solid #354a35;border-radius:16px;background:#111813;overflow:hidden;min-width:0;box-shadow:0 22px 65px #03080670;margin:3px 0 14px}
-.assembly-visual{background:linear-gradient(135deg,#0a100c,#162018 55%,#0b120d);min-width:0;position:relative;border-right:1px solid #34472d;min-height:430px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.assembly-preview{padding:0;grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.64fr) minmax(290px,.75fr);border:1px solid #354a35;border-radius:16px;background:#151719;overflow:hidden;min-width:0;box-shadow:0 22px 65px #03080670;margin:3px 0 14px}
+.assembly-visual{background:linear-gradient(135deg,#0e1012,#1c1e20 55%,#0f1113);min-width:0;position:relative;border-right:1px solid #34472d;min-height:430px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .assembly-topline{position:absolute;z-index:2;left:22px;right:20px;top:17px;display:flex;align-items:center;gap:8px;color:#e0f5b1;font-size:10px;letter-spacing:1.5px;font-weight:700;pointer-events:none}
 .assembly-led{height:7px;width:7px;border-radius:50%;background:#d2f865;box-shadow:0 0 12px #aaff5e;flex-shrink:0}
 .assembly-version{margin-left:auto;letter-spacing:.7px;color:#7f997f;font-size:9px;white-space:nowrap}
 .assembly-svg{display:block;width:100%;max-height:480px;min-height:360px;touch-action:none;cursor:grab;user-select:none}
 .assembly-svg:active{cursor:grabbing}
 .assembly-svg:focus-visible{outline:2px solid #d9fb77;outline-offset:-4px}
-.assembly-controls{position:absolute;bottom:42px;right:21px;display:flex;gap:5px;background:#0b120de8;border:1px solid #354634;border-radius:10px;padding:5px}
+.assembly-controls{position:absolute;bottom:42px;right:21px;display:flex;gap:5px;background:#0f1113e8;border:1px solid #354634;border-radius:10px;padding:5px}
 .assembly-controls button{width:32px;height:32px;display:grid;place-items:center;border:1px solid transparent;border-radius:7px;color:#ceddc1;transition:background .2s,color .2s}
 .assembly-controls button:hover,.assembly-controls button:focus-visible{background:#d9f47a21;color:#e7fbac}
 .assembly-hint{position:absolute;bottom:16px;left:23px;display:flex;align-items:center;gap:7px;color:#8ca188;font-size:9px;pointer-events:none}
-.assembly-sidebar{min-width:0;padding:24px 20px 21px;background:linear-gradient(155deg,#1a2318,#0d130e);display:flex;flex-direction:column}
+.assembly-sidebar{min-width:0;padding:24px 20px 21px;background:linear-gradient(155deg,#1e2022,#101214);display:flex;flex-direction:column}
 .assembly-side-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
 .assembly-side-heading>svg{color:#d7f881;flex-shrink:0;stroke-width:1.5}
 .assembly-kicker{color:#b2bd9d;letter-spacing:1.55px;font-size:9px}
@@ -22,18 +22,18 @@
 .assembly-copy{font-size:10px;color:#abbba8;line-height:1.75;margin:0 0 22px}
 .assembly-meter{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#aebfa8;font-size:10px}
 .assembly-meter strong{font-size:12px;color:#e8f5c7;white-space:nowrap}
-.assembly-meter-track{height:4px;background:#314131;border-radius:10px;overflow:hidden;margin:11px 0 17px}
+.assembly-meter-track{height:4px;background:#393b3d;border-radius:10px;overflow:hidden;margin:11px 0 17px}
 .assembly-meter-track span{height:100%;background:#d9f475;display:block;border-radius:10px;transition:width .4s ease}
 .assembly-part-list{display:grid;grid-template-columns:1fr;gap:5px}
-.assembly-part{display:flex;align-items:center;gap:9px;border:1px solid #344235;border-radius:8px;padding:7px 10px;min-width:0;width:100%;text-align:left;justify-content:flex-start;background:#101711;color:#b6c3b1}
-.assembly-part:hover{background:#253022;border-color:#758a62}
+.assembly-part{display:flex;align-items:center;gap:9px;border:1px solid #344235;border-radius:8px;padding:7px 10px;min-width:0;width:100%;text-align:left;justify-content:flex-start;background:#141618;color:#b6c3b1}
+.assembly-part:hover{background:#2a2c2e;border-color:#758a62}
 .assembly-part.focused{border-color:#d3ec7b;background:#d3ec7b10}
 .assembly-part.installed .assembly-part-num{color:#def4a9}
 .assembly-part-num{font-size:10px;color:#829082;font-variant-numeric:tabular-nums;flex-shrink:0}
 .assembly-part-name{min-width:0;flex:1;display:block}
 .assembly-part-name strong{display:block;font-size:10px;font-weight:700;color:#dbe7d3}
 .assembly-part-name small{display:block;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#82937f;margin-top:2px}
-.assembly-part-state{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;flex-shrink:0;color:#9bad98;background:#233021}
+.assembly-part-state{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;flex-shrink:0;color:#9bad98;background:#292b2d}
 .assembly-part.installed .assembly-part-state{background:#c6ed6921;color:#cbed84}
 .assembly-note{font-size:9px;line-height:1.6;color:#8f9f8a;margin:15px 0 0}
 .assembly-note:first-of-type{margin-top:11px}
