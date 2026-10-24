@@ -60,7 +60,7 @@ assert.match(route,/originMatches\(request\)/,'Mutating requests validate origin
 const ui=readFileSync(new URL('../app/shop.tsx',import.meta.url),'utf8');
 assert.match(ui,/path==='\/checkout'\?<Checkout/);
 assert.match(ui,/path==='\/orders'\?<OrderHistory/);
-assert.match(ui,/<AdminOrders\/>/);
+assert.match(ui,/<AdminOrders products=\{data\.products\}\/>/,'Admin orders receive product images for mobile lists');
 assert.match(ui,/Обсудить заказ <MessageCircle/,'Existing WhatsApp option preserved');
 const buyer=readFileSync(new URL('../app/orders.tsx',import.meta.url),'utf8');
 assert.match(buyer,/ORDER_HISTORY_STORAGE/);
