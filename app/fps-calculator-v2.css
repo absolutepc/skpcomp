@@ -79,16 +79,16 @@
 .skp-fps-v2-games-strip::-webkit-scrollbar{display:none}
 .skp-fps-v2-game-tile{
  position:relative;display:flex;flex-direction:column;align-items:center;
- justify-content:flex-start;flex:0 0 96px;width:96px;min-height:110px;
- gap:0;padding:0;overflow:hidden;background:#12191c;border:1px solid #313941;
+ justify-content:flex-start;flex:0 0 96px;width:96px;height:117px;min-height:117px;max-height:117px;
+ box-sizing:border-box;align-self:flex-start;gap:0;padding:0;overflow:hidden;background:#12191c;border:1px solid #313941;
  border-radius:12px;scroll-snap-align:start;color:#edf0f1;
 }
 .skp-fps-v2-game-tile.selected{
- border:2px solid #ffe500;padding:0;box-shadow:0 0 0 1px #ffe50040,0 0 17px #ffe50040;
+ border-color:#ffe500;padding:0;box-shadow:0 0 0 1px #ffe50040,0 0 17px #ffe50040;
 }
 .skp-fps-v2-cover{
  position:relative;isolation:isolate;display:grid;place-items:center;
- overflow:hidden;flex:0 0 77px;width:100%;height:77px;border-radius:9px 9px 3px 3px;
+ overflow:hidden;flex:0 0 77px;width:100%;height:77px;min-height:77px;border-radius:9px 9px 3px 3px;
  background:linear-gradient(140deg,#bd7e23,#1d2633 60%,#0a0f13);
 }
 .skp-fps-v2-cover:before{
@@ -106,7 +106,7 @@
 }
 .skp-fps-v2-game-name{
  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
- overflow:hidden;min-height:29px;text-align:center;
+ overflow:hidden;flex:0 0 38px;height:38px;min-height:38px;max-height:38px;text-align:center;
  font-size:10px;line-height:1.25;color:#f1f2f3;max-width:100%;width:100%;
  padding:5px 4px 2px;box-sizing:border-box;
 }
@@ -268,9 +268,9 @@
  .skp-fps-v2-games-navigation{grid-template-columns:31px minmax(0,1fr) 31px;gap:7px}
  .skp-fps-v2-games-navigation>.skp-fps-v2-carousel-arrow:first-child{display:grid}
  .skp-fps-v2-carousel-arrow{height:50px;width:31px}
- .skp-fps-v2-game-tile{flex-basis:85px;width:85px;min-height:101px;gap:0}
- .skp-fps-v2-cover{width:100%;height:70px;flex-basis:70px}
- .skp-fps-v2-game-name{font-size:9px}
+ .skp-fps-v2-game-tile{flex-basis:85px;width:85px;height:108px;min-height:108px;max-height:108px;gap:0}
+ .skp-fps-v2-cover{width:100%;height:69px;min-height:69px;flex-basis:69px}
+ .skp-fps-v2-game-name{font-size:9px;flex-basis:37px;height:37px;min-height:37px;max-height:37px}
  .skp-fps-v2-settings-grid{grid-template-columns:1fr;gap:10px}
  .skp-fps-v2-select{font-size:11px;gap:5px}
  .skp-fps-v2-select-field{height:46px}
