@@ -76,13 +76,6 @@ export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:string[];p
    <textarea id="order-access-code" readOnly rows={3} value={privateCode} onFocus={event=>event.currentTarget.select()}/>
    <button type="button" className="button outline" onClick={()=>void copy()}><ClipboardCopy size={16}/> Скопировать код</button>
   </div>
-  <div className="skp-admin-mobile-order-controls">
-    <div className="skp-admin-mobile-order-tabs" role="group" aria-label="Фильтр заказов">
-     {([['all','Все'],['processing','В процессе'],['assembled','Собраны'],['completed','Выполнены'],['cancelled','Отменены']] as const).map(([value,label])=>
-      <button type="button" key={value} aria-pressed={filter===value} className={filter===value?'selected':''} onClick={()=>setFilter(value)}>{label}</button>)}
-    </div>
-    <label className="skp-admin-mobile-order-search"><span>Поиск по заказам</span><input type="search" placeholder="Номер, покупатель или телефон" value={search} onChange={e=>setSearch(e.target.value)}/></label>
-   </div>
   {error&&<p className="skp-order-error" role="alert">{error}</p>}
   <div className="skp-order-buttons"><button className="button light" onClick={()=>nav('/orders')}>Мои заказы <ArrowRight size={16}/></button>
    {whatsapp&&<a className="button outline" rel="noopener noreferrer" target="_blank" href={'https://wa.me/'+whatsapp+'?text='+encodeURIComponent('Здравствуйте! Оформил заявку '+created.order.number+' на сайте SKP. Прошу подтвердить наличие и условия.')}>Написать менеджеру</a>}
@@ -179,6 +172,13 @@ export function AdminOrders({products=[]}:{products?:Product[]}){
   <div className="skp-admin-orders-header"><div><h2>Заказы <small>/ {orders.length}</small></h2><p>Меняйте этап выполнения. Отменённые и выполненные заказы закрыты для изменений.</p></div>
    <div><select aria-label="Фильтр заказов" value={filter} onChange={e=>setFilter(e.target.value as typeof filter)}><option value="all">Все статусы</option>{Object.entries(ORDER_LABELS).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select><button type="button" className="button outline" onClick={()=>void load()} disabled={pending}><RefreshCw size={15}/> Обновить</button></div>
   </div>
+  <div className="skp-admin-mobile-order-controls">
+    <div className="skp-admin-mobile-order-tabs" role="group" aria-label="Фильтр заказов">
+     {([['all','Все'],['processing','В процессе'],['assembled','Собраны'],['completed','Выполнены'],['cancelled','Отменены']] as const).map(([value,label])=>
+      <button type="button" key={value} aria-pressed={filter===value} className={filter===value?'selected':''} onClick={()=>setFilter(value)}>{label}</button>)}
+    </div>
+    <label className="skp-admin-mobile-order-search"><span>Поиск по заказам</span><input type="search" placeholder="Номер, покупатель или телефон" value={search} onChange={e=>setSearch(e.target.value)}/></label>
+   </div>
   {error&&<p className="skp-order-error" role="alert">{error}</p>}
   {!filtered.length?<p className="skp-orders-lead">{pending?'Загрузка…':'Заказов с выбранным статусом нет.'}</p>:<div className="skp-admin-orders-list">
    <div className="skp-admin-mobile-orders-list">
@@ -195,7 +195,7 @@ export function AdminOrders({products=[]}:{products?:Product[]}){
        <strong>{money(order.total)}</strong>
       </div>
       <details className="skp-admin-mobile-order-expand"><summary>Подробнее о заказе</summary>
-       <p><b>Покупатель:</b> {order.customerName}</p><p><b>Телефон:</b> <a href={'tel:'+order.phone.replace(/[^\\d+]/g,'')}>{order.phone}</a></p>
+       <p><b>Покупатель:</b> {order.customerName}</p><p><b>Телефон:</b> <a href={'tel:'+order.phone.replace(/[^\d+]/g,'')}>{order.phone}</a></p>
        {order.comment&&<p><b>Комментарий:</b> {order.comment}</p>}
        <Lines order={order}/>
        <div className="skp-admin-order-actions">{ORDER_TRANSITIONS[order.status].map(status=>
