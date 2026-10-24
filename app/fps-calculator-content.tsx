@@ -163,20 +163,20 @@ export default function FpsCalculatorContent({hardware,product,games,onClose,clo
      </label>
     </div>
     {(canRt||safeUpscaling!=='native'||laptop)&&<div className="skp-fps-v2-additional">
-     <div className="skp-fps-v2-extra-quality">
-      {safeUpscaling!=='native'&&<label className="skp-fps-v2-miniselect">Режим {safeUpscaling.toUpperCase()}
-       <select value={quality} onChange={event=>setQuality(event.target.value as UpscalingQuality)}>
-        {upscalingQualities.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
-       </select>
-      </label>}
-     </div>
-     <div className="skp-fps-v2-extra-ray">
-      {canRt&&<button type="button" className="skp-fps-v2-ray" role="switch" aria-checked={enabledRT}
+     {canRt&&<div className="skp-fps-v2-extra-ray">
+      <button type="button" className="skp-fps-v2-ray" role="switch" aria-checked={enabledRT}
        onClick={()=>setRayTracing(!enabledRT)}>
        <span className="skp-fps-v2-ray-switch" aria-hidden="true"><span/></span>
        <span className="skp-fps-v2-ray-label">Трассировка лучей <small>Если поддерживается игрой</small></span>
-      </button>}
-     </div>
+      </button>
+     </div>}
+     {safeUpscaling!=='native'&&<div className="skp-fps-v2-extra-quality">
+      <label className="skp-fps-v2-miniselect">Режим {safeUpscaling.toUpperCase()}
+       <select value={quality} onChange={event=>setQuality(event.target.value as UpscalingQuality)}>
+        {upscalingQualities.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
+       </select>
+      </label>
+     </div>}
      <div className="skp-fps-v2-extra-tgp">
       {laptop&&<label className="skp-fps-v2-tgp">Мощность GPU (TGP, Вт)
        <input type="number" min="1" max="250" step="1" placeholder="Укажите TGP" value={tgp} onChange={event=>setTgp(event.target.value)}/>
