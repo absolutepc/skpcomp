@@ -50,7 +50,7 @@ export default function ReadyPcMobileDetail({product,catalog,add,fav,favorites,c
   <div className="skp-ready-mobile-actions">
    <button type="button" onClick={()=>fav(product.id)} aria-pressed={favorites.includes(product.id)}><Heart size={19} fill={favorites.includes(product.id)?'currentColor':'none'}/><span>{favorites.includes(product.id)?'В избранном':'В избранное'}</span></button>
    <button type="button" onClick={()=>compare(product)} aria-pressed={compared.includes(product.id)}><GitCompareArrows size={19}/><span>{compared.includes(product.id)?'В сравнении':'Сравнить'}</span></button>
-   <GamingFps key={product.id} hardware={fromReadyPC(product)} inlineAction/>
+   <GamingFps key={product.id} product={product} hardware={fromReadyPC(product)} inlineAction/>
    <button type="button" onClick={()=>void share()}><Share2 size={19}/><span>Поделиться</span></button>
   </div>
   <div className="skp-ready-mobile-perks">
