@@ -1868,12 +1868,12 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   padding:0;
   border:0;
   border-radius:10px;
-  background:#151a1dcc;
+  background:transparent;
   color:#e6ebed;
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
   cursor:pointer;
-  transition:background-color .15s,color .15s;
+  transition:color .15s;
  }
  .card-image .favorite,
  .skp-ready-page .skp-ready-card>.favorite{top:9px}
@@ -1884,7 +1884,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .skp-ready-page .skp-ready-card>.favorite:hover,
  .skp-ready-page .skp-ready-card>.skp-ready-card-compare:hover{
   color:#ffe500;
-  background:#23251eee;
+  background:transparent;
  }
  .card-image .favorite.chosen,
  .card-image .skp-card-compare.selected,
