@@ -148,6 +148,7 @@ if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':adm
 if(!await auth(r))return Response.json({error:'Войдите в административную панель'},{status:401});if(b.action==='check')return Response.json({ok:true});
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
 if(!validateHeroSlides(d.heroSlides))return Response.json({error:'Проверьте настройки слайдов, ссылки и изображения. Максимум 12 слайдов.'},{status:400});
+if(!validateFpsGames(d.fpsGames))return Response.json({error:'Проверьте список игр FPS: названия, изображения, порядок и доступность.'},{status:400});
 if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||!isProductImageUrl(p.image)))return Response.json({error:'Проверьте названия, цены и ссылки фотографий'},{status:400});
 if(d.products.some((p:any)=>p.gallery!==undefined&&(
  !Array.isArray(p.gallery)||p.gallery.length>=MAX_GALLERY_IMAGES||
