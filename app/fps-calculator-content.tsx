@@ -3,14 +3,14 @@ import {useEffect,useRef,useState} from 'react';
 import {ArrowLeft,ArrowRight,ChevronDown,Cpu,HardDrive,Info,MemoryStick,Monitor,Settings2,Video,X} from 'lucide-react';
 import type {RefObject} from 'react';
 import type {Product} from '../lib/seed';
+import type {FpsGameAppearance} from '../lib/fps-game-catalog';
+import {getConfiguredFpsGames} from '../lib/fps-game-catalog';
 import {getProductImages} from '../lib/product-gallery';
 import type {FpsHardware,FpsResolution,GraphicsPreset,UpscalingTechnology,UpscalingQuality} from '../lib/fps-estimate';
-import {estimateFps,gameProfiles,graphicsPresets,resolutions,upscalingQualities,supportsDlss,supportsRayTracing} from '../lib/fps-estimate';
+import {estimateFps,graphicsPresets,resolutions,upscalingQualities,supportsDlss,supportsRayTracing} from '../lib/fps-estimate';
 import './fps-calculator-v2.css';
 
-const gameOrder=['cs2','valorant','pubg','rust','cyberpunk','bf6','warthunder','squad','dota2','warface'];
-const orderedGames=[...gameProfiles].sort((a,b)=>gameOrder.indexOf(a.id)-gameOrder.indexOf(b.id));
-const coverText:Record<string,string>={cs2:'CS2',valorant:'VAL',pubg:'PUBG',rust:'RUST',cyberpunk:'2077',bf6:'BF',warthunder:'WT',squad:'SQUAD',dota2:'DOTA',warface:'WF'};
+
 const screenLabels:Record<FpsResolution,string>={FHD:'1920 × 1080 (Full HD)','2K':'2560 × 1440 (2K)','4K':'3840 × 2160 (4K)'};
 function AnimatedValue({value,delay=0}:{value:number;delay?:number}){
  const [current,setCurrent]=useState(value);
@@ -31,18 +31,28 @@ function AnimatedValue({value,delay=0}:{value:number;delay?:number}){
  },[value,delay]);
  return <span className="skp-fps-count">{current}</span>;
 }
+function GameArtwork({name,image}:{name:string;image:string}){
+ const [failed,setFailed]=useState(false);
+ useEffect(()=>setFailed(false),[image]);
+ return <span className="skp-fps-v2-cover">{!failed&&image?
+  <img src={image} alt={name} loading="lazy" onError={()=>setFailed(true)}/>:
+  <strong>{name}</strong>}</span>;
+}
 function StageTitle({number,children,extra}:{number:number;children:React.ReactNode;extra?:React.ReactNode}){
  return <div className="skp-fps-v2-stage-title">
   <span className="skp-fps-v2-stage-number">{number}</span>
   <h3>{children}</h3>{extra&&<div className="skp-fps-v2-stage-extra">{extra}</div>}
  </div>;
 }
-export default function FpsCalculatorContent({hardware,product,onClose,closeButton,titleId}:{
- hardware:FpsHardware;product?:Product;onClose:()=>void;
+export default function FpsCalculatorContent({hardware,product,games,onClose,closeButton,titleId}:{
+ hardware:FpsHardware;product?:Product;games?:FpsGameAppearance[];onClose:()=>void;
  closeButton:RefObject<HTMLButtonElement|null>;titleId:string;
 }){
  const laptop=hardware.platform==='laptop';
- const [gameId,setGameId]=useState<string>('cs2');
+ const allGames=getConfiguredFpsGames(games).filter(game=>game.enabled);
+ const orderedGames=allGames.length?allGames:getConfiguredFpsGames(undefined).slice(0,1);
+ const [gameId,setGameId]=useState<string>(orderedGames[0].id);
+ const currentGameId=orderedGames.some(game=>game.id===gameId)?gameId:orderedGames[0].id;
  const [resolution,setResolution]=useState<FpsResolution>('FHD');
  const [preset,setPreset]=useState<GraphicsPreset>('high');
  const [upscaling,setUpscaling]=useState<UpscalingTechnology>('native');
@@ -56,8 +66,8 @@ export default function FpsCalculatorContent({hardware,product,onClose,closeButt
  const calculated=estimateFps(laptop?{...hardware,gpuPowerWatts:Number(tgp)}:hardware,resolution,{
   preset,rayTracing:enabledRT,upscaling:safeUpscaling,upscalingQuality:quality
  });
- const chosenGame=orderedGames.find(g=>g.id===gameId)||orderedGames[0];
- const chosen=calculated?.find(row=>row.id===gameId);
+ const chosenGame=orderedGames.find(g=>g.id===currentGameId)||orderedGames[0];
+ const chosen=calculated?.find(row=>row.id===currentGameId);
  const average=chosen?Math.round((chosen.low+chosen.high)/2):0;
  // Percentile-like indicators are illustrative model estimates, not sampled frame times.
  const oneLow=Math.max(1,Math.round(average*.76));
@@ -67,7 +77,7 @@ export default function FpsCalculatorContent({hardware,product,onClose,closeButt
  const graphics=product?.buildComponents?.gpu||product?.specs?.gpu||hardware.gpu||'Не указана';
  const memory=product?.buildComponents?.ram||(product?.specs?.capacity?product.specs.capacity+' ГБ':'')||hardware.ram||'Не указана';
  const storage=product?.buildComponents?.ssd||product?.specs?.storage||product?.specs?.ssd||'Не указан';
- const gameIndex=orderedGames.findIndex(game=>game.id===gameId);
+ const gameIndex=orderedGames.findIndex(game=>game.id===currentGameId);
  const changeGame=(direction:-1|1)=>{
   const nextIndex=Math.max(0,Math.min(orderedGames.length-1,gameIndex+direction));
   if(nextIndex!==gameIndex)setGameId(orderedGames[nextIndex].id);
@@ -80,7 +90,7 @@ export default function FpsCalculatorContent({hardware,product,onClose,closeButt
   const target=current.getBoundingClientRect();
   const destination=container.scrollLeft+target.left-wrap.left-(wrap.width-target.width)/2;
   container.scrollTo({left:Math.max(0,destination),behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
- },[gameId]);
+ },[currentGameId]);
  useEffect(()=>{if(!canDlss&&upscaling==='dlss')setUpscaling('native')},[upscaling,canDlss]);
  useEffect(()=>{if(!canRt&&rayTracing)setRayTracing(false)},[rayTracing,canRt]);
  return <>
@@ -111,9 +121,9 @@ export default function FpsCalculatorContent({hardware,product,onClose,closeButt
     <div className="skp-fps-v2-games-navigation">
      <button className="skp-fps-v2-carousel-arrow" type="button" onClick={()=>changeGame(-1)} disabled={gameIndex<=0} aria-label="Выбрать предыдущую игру"><ArrowLeft size={21}/></button>
      <div className="skp-fps-v2-games-strip" ref={gamesScroller} role="group" aria-label="Игры для расчёта FPS">
-      {orderedGames.map(game=><button type="button" className={'skp-fps-v2-game-tile game-'+game.id+(gameId===game.id?' selected':'')} key={game.id}
-       aria-pressed={gameId===game.id} onClick={()=>setGameId(game.id)}>
-       <span className="skp-fps-v2-cover"><strong>{coverText[game.id]||game.name.slice(0,4)}</strong></span>
+      {orderedGames.map(game=><button type="button" className={'skp-fps-v2-game-tile game-'+game.id+(currentGameId===game.id?' selected':'')} key={game.id}
+       aria-pressed={currentGameId===game.id} onClick={()=>setGameId(game.id)}>
+       <GameArtwork name={game.name} image={game.image}/>
        <span className="skp-fps-v2-game-name">{game.name}</span>
       </button>)}
      </div>
@@ -152,20 +162,26 @@ export default function FpsCalculatorContent({hardware,product,onClose,closeButt
       </span>
      </label>
     </div>
-    {(safeUpscaling!=='native'||canRt||laptop)&&<div className="skp-fps-v2-additional">
-     {safeUpscaling!=='native'&&<label className="skp-fps-v2-miniselect">Режим {safeUpscaling.toUpperCase()}
-      <select value={quality} onChange={event=>setQuality(event.target.value as UpscalingQuality)}>
-       {upscalingQualities.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
-      </select>
-     </label>}
-     {canRt&&<label className="skp-fps-v2-ray">
-      <input type="checkbox" checked={enabledRT} onChange={event=>setRayTracing(event.target.checked)}/>
-      <span className="skp-fps-v2-ray-switch" aria-hidden="true"><span/></span>
-      <span className="skp-fps-v2-ray-label">Трассировка лучей <small>Если поддерживается игрой</small></span>
-     </label>}
-     {laptop&&<label className="skp-fps-v2-tgp">Мощность GPU (TGP, Вт)
-      <input type="number" min="1" max="250" step="1" placeholder="Укажите TGP" value={tgp} onChange={event=>setTgp(event.target.value)}/>
-     </label>}
+    {(canRt||safeUpscaling!=='native'||laptop)&&<div className="skp-fps-v2-additional">
+     <div className="skp-fps-v2-extra-quality">
+      {safeUpscaling!=='native'&&<label className="skp-fps-v2-miniselect">Режим {safeUpscaling.toUpperCase()}
+       <select value={quality} onChange={event=>setQuality(event.target.value as UpscalingQuality)}>
+        {upscalingQualities.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
+       </select>
+      </label>}
+     </div>
+     <div className="skp-fps-v2-extra-ray">
+      {canRt&&<button type="button" className="skp-fps-v2-ray" role="switch" aria-checked={enabledRT}
+       onClick={()=>setRayTracing(!enabledRT)}>
+       <span className="skp-fps-v2-ray-switch" aria-hidden="true"><span/></span>
+       <span className="skp-fps-v2-ray-label">Трассировка лучей <small>Если поддерживается игрой</small></span>
+      </button>}
+     </div>
+     <div className="skp-fps-v2-extra-tgp">
+      {laptop&&<label className="skp-fps-v2-tgp">Мощность GPU (TGP, Вт)
+       <input type="number" min="1" max="250" step="1" placeholder="Укажите TGP" value={tgp} onChange={event=>setTgp(event.target.value)}/>
+      </label>}
+     </div>
     </div>}
    </section>
    <section className="skp-fps-v2-stage skp-fps-v2-results">
