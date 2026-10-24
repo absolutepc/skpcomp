@@ -20,7 +20,7 @@ export const defaultFpsGames:FpsGameAppearance[]=[
  {id:'dota2',name:'Dota 2',image:steam(570),enabled:true},
  {id:'warface',name:'Warface',image:steam(291480),enabled:true}
 ];
-const knownIds=new Set(gameProfiles.map(x=>x.id));
+const knownIds=new Set<string>(gameProfiles.map(x=>x.id));
 export function validFpsGameImage(value:string):boolean{
  if(value===''||value.startsWith('/images/'))return value.length<=500;
  try{const u=new URL(value);return u.protocol==='https:'&&u.username===''&&u.password===''&&value.length<=1000}catch{return false}
