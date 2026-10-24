@@ -354,3 +354,41 @@
 @media(prefers-reduced-motion:reduce){
  .skp-admin-workspace .skp-admin-sidebar{transition:none}
 }
+
+/* Dashboard shows verified recent orders on phones; desktop keeps the catalog preview. */
+.skp-admin-mobile-recent-orders{display:none}
+@media(max-width:700px){
+ .skp-admin-workspace .skp-admin-mobile-recent-orders{display:block;margin-top:4px}
+ .skp-admin-workspace .skp-admin-dashboard>.skp-admin-card{display:none}
+ .skp-admin-workspace .skp-admin-mobile-recent-heading{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:0 1px;margin-bottom:12px
+ }
+ .skp-admin-workspace .skp-admin-mobile-recent-heading h2{font-size:17px!important;margin:0;color:#f3f5f5}
+ .skp-admin-workspace .skp-admin-mobile-recent-heading button{
+  display:flex;align-items:center;gap:8px;color:#ffe500;font-size:12px
+ }
+ .skp-admin-workspace .skp-admin-mobile-recent-heading button span{font-size:20px;line-height:1}
+ .skp-admin-workspace .skp-admin-mobile-recent-order{
+  display:flex;align-items:center;gap:10px;width:100%;padding:10px 9px;margin-bottom:8px;
+  border:1px solid #2c383d;border-radius:11px;background:#141d21;text-align:left;
+  color:#f4f6f6;min-width:0
+ }
+ .skp-admin-mobile-recent-photo{
+  display:grid;place-items:center;flex:0 0 49px;width:49px;height:49px;
+  border-radius:7px;background:#f4f4f4;color:#737c7d;overflow:hidden
+ }
+ .skp-admin-mobile-recent-photo img{display:block;width:100%;height:100%;object-fit:contain}
+ .skp-admin-mobile-recent-photo>span{font-size:10px;font-weight:900;color:#141719}
+ .skp-admin-mobile-recent-main{display:flex;flex-direction:column;min-width:0;flex:1;gap:5px}
+ .skp-admin-mobile-recent-main>strong{font-size:11px;color:#f7f8f8}
+ .skp-admin-mobile-recent-main small{font-size:9px;color:#9cabaf}
+ .skp-admin-mobile-recent-end{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:92px}
+ .skp-admin-mobile-recent-end>strong{font-size:11px;color:#fafafa;white-space:nowrap}
+ .skp-admin-mobile-recent-end small{padding:4px 6px;border-radius:6px;font-size:9px;background:#40340e;color:#f5d44e}
+ .skp-admin-mobile-recent-end .status-assembled{background:#132e44;color:#91bfff}
+ .skp-admin-mobile-recent-end .status-completed{background:#113c2c;color:#6ce1a5}
+ .skp-admin-mobile-recent-end .status-cancelled{background:#452229;color:#ff9ea7}
+ .skp-admin-mobile-no-orders{margin:0;padding:21px;text-align:center;font-size:12px;
+  color:#a5b3b7;border:1px dashed #314047;border-radius:10px}
+}
