@@ -1857,7 +1857,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .skp-ready-page .skp-ready-card>.favorite,
  .skp-ready-page .skp-ready-card>.skp-ready-card-compare{
   position:absolute;
-  right:9px;
+  right:2px;
   z-index:4;
   display:flex;
   align-items:center;
@@ -1866,14 +1866,14 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   height:35px;
   margin:0;
   padding:0;
-  border:1px solid #495052;
+  border:0;
   border-radius:10px;
   background:#151a1dcc;
   color:#e6ebed;
   backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px);
   cursor:pointer;
-  transition:background-color .15s,border-color .15s,color .15s;
+  transition:background-color .15s,color .15s;
  }
  .card-image .favorite,
  .skp-ready-page .skp-ready-card>.favorite{top:9px}
@@ -1883,7 +1883,6 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .card-image .skp-card-compare:hover,
  .skp-ready-page .skp-ready-card>.favorite:hover,
  .skp-ready-page .skp-ready-card>.skp-ready-card-compare:hover{
-  border-color:#ffe500;
   color:#ffe500;
   background:#23251eee;
  }
@@ -1891,7 +1890,6 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  .card-image .skp-card-compare.selected,
  .skp-ready-page .skp-ready-card>.favorite.chosen,
  .skp-ready-page .skp-ready-card>.skp-ready-card-compare.selected{
-  border-color:#ffe500;
   color:#ffe500;
  }
  .card-image .favorite svg,
