@@ -11,6 +11,7 @@ export type PowerEstimate={
 export type BuildAnalysis={issues:BuildIssue[];power:PowerEstimate;checked:number};
 const coreSlots=['cpu','motherboard','ram','gpu','ssd','psu','case','cooler'] as const;
 const allowedSlots=[...coreSlots,'os','extras'];
+const OS_IDS=['windows-10','windows-11'] as const;
 const toNum=(v:unknown):number|null=>{
  if(typeof v==='number')return Number.isFinite(v)&&v>0?v:null;
  if(typeof v!=='string')return null;
@@ -32,6 +33,7 @@ export function sanitizeBuildSelection(raw:unknown,products:Product[]):BuildSele
  for(const slot of allowedSlots){
   const id=(raw as Record<string,unknown>)[slot];
   if(typeof id!=='string'||id.length>100)continue;
+  if(slot==='os'&&OS_IDS.some(option=>option===id)){result.os=id;continue}
   const p=products.find(item=>item.id===id);
   if(p&&(p.category===slot||(slot==='extras'&&p.category==='peripherals')))result[slot]=id;
  }
