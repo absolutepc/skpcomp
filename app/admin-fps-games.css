@@ -1,0 +1,47 @@
+.skp-admin-fps-games{width:100%;max-width:1200px;margin:0 auto;color:#f1f3f3}
+.skp-admin-fps-header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 18px}
+.skp-admin-fps-header>svg{color:#ffe500;flex:none}
+.skp-admin-fps-kicker{font-size:10px;letter-spacing:1.6px;color:#ffe500;font-weight:750}
+.skp-admin-fps-header h1{font-size:clamp(22px,3vw,30px);margin:6px 0}
+.skp-admin-fps-header p{font-size:12px;line-height:1.5;color:#adb7b8;margin:0}
+.skp-admin-fps-notice{display:flex;align-items:flex-start;gap:12px;margin:0 0 20px;padding:14px;
+ background:#14191b;border:1px solid #434b50;border-radius:12px;color:#bfc9c7}
+.skp-admin-fps-notice svg{color:#ffe500;flex:none;margin-top:1px}
+.skp-admin-fps-notice p{margin:0;font-size:11px;line-height:1.65}
+.skp-admin-fps-games-list{display:grid;gap:11px}
+.skp-admin-fps-game{display:grid;grid-template-columns:155px minmax(0,1fr) 42px;gap:15px;align-items:center;
+ padding:14px;border:1px solid #323c42;border-radius:12px;background:#121719}
+.skp-admin-fps-game.is-hidden{opacity:.64}
+.skp-admin-fps-image{width:100%;aspect-ratio:1.6;display:grid;place-items:center;overflow:hidden;
+ background:#0b1013;border:1px solid #313b41;border-radius:9px;color:#87959c}
+.skp-admin-fps-image img{width:100%;height:100%;object-fit:contain}
+.skp-admin-fps-game-fields{display:grid;gap:8px;min-width:0}
+.skp-admin-fps-game-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.skp-admin-fps-game-id{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#ffe500;font-weight:800}
+.skp-admin-fps-game-fields>label{display:flex;flex-direction:column;gap:5px;min-width:0;color:#cad3d3;font-size:11px}
+.skp-admin-fps-game-fields input[type="text"]{min-width:0;width:100%;height:38px;box-sizing:border-box;
+ border:1px solid #414b50;border-radius:7px;padding:0 10px;background:#0a1012;color:#f5f6f7;font-size:12px;outline:none}
+.skp-admin-fps-game-fields input[type="text"]:focus{border-color:#ffe500}
+.skp-admin-fps-visible{display:flex;gap:7px;align-items:center;cursor:pointer;font-size:11px;color:#c7cfcb;white-space:nowrap}
+.skp-admin-fps-visible input{height:17px;width:17px;accent-color:#ffe500}
+.skp-admin-fps-game-order{display:flex;flex-direction:column;gap:7px;align-items:center}
+.skp-admin-fps-game-order button{width:34px;height:31px;display:grid;place-items:center;
+ border:1px solid #3d4a4e;border-radius:7px;background:#171e20;color:#dfe6e6}
+.skp-admin-fps-game-order button:disabled{opacity:.22;cursor:not-allowed}
+.skp-admin-fps-game-order span{font-size:11px;font-weight:800;color:#ffe500}
+.skp-admin-fps-error{padding:11px;background:#3c1d1a;border:1px solid #8c4941;color:#ffd2c4;border-radius:8px;font-size:12px}
+.skp-admin-fps-buttons{display:flex;flex-wrap:wrap;gap:11px;margin-top:20px}
+.skp-admin-fps-buttons button{display:flex;align-items:center;justify-content:center;gap:8px;
+ min-height:44px;padding:0 17px;border-radius:9px;font-size:12px;font-weight:800}
+.skp-admin-fps-save{background:#ffe500;color:#141619}
+.skp-admin-fps-reset{border:1px solid #465157;background:#141b1e;color:#d9e1e1}
+.skp-admin-fps-buttons button:disabled{opacity:.5}
+@media(max-width:650px){
+ .skp-admin-fps-game{grid-template-columns:93px minmax(0,1fr);gap:10px;padding:10px}
+ .skp-admin-fps-image{align-self:start;aspect-ratio:1;grid-row:1}
+ .skp-admin-fps-game-fields{grid-column:2;grid-row:1}
+ .skp-admin-fps-game-order{grid-column:1;grid-row:2;flex-direction:row;justify-content:center}
+ .skp-admin-fps-game-order button{width:32px}
+ .skp-admin-fps-game-fields input[type="text"]{height:34px;font-size:11px}
+ .skp-admin-fps-header>svg{display:none}
+}
