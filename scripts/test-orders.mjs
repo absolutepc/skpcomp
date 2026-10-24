@@ -35,7 +35,7 @@ assert.throws(()=>normalizeOrderItems([],seed.products));
 assert.throws(()=>normalizeOrderItems([{id:gpu.id,quantity:2},{id:gpu.id,quantity:1}],seed.products),'Reject duplicate cart entries');
 assert.throws(()=>normalizeOrderItems([{id:gpu.id,quantity:21}],seed.products),'Reject excessive quantities');
 assert.throws(()=>normalizeOrderItems([{id:'missing-id',quantity:1}],seed.products));
-assert.throws(()=>normalizeOrderItems([{id:'logitech-pro-x3-superstrike-black',quantity:1}],seed.products),'Unpriced products cannot be ordered');
+assert.throws(()=>normalizeOrderItems([{id:'ryzen-5-7500x3d',quantity:1}],seed.products),'Unpriced products cannot be ordered');
 const modified=seed.products.map(p=>p.id===gpu.id?{...p,price:20}:p);
 assert.equal(normalizeOrderItems([{id:gpu.id,quantity:1,unitPrice:1}],modified)[0].unitPrice,20,'Ignore client-supplied pricing');
 assert.equal(validateContact('Иван Иванов','+7 999 123-45-67','Позвоните вечером').customerName,'Иван Иванов');
