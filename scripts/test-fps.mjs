@@ -89,8 +89,10 @@ assert.deepEqual(Array.from(prioritizeFpsRows(fsrRows,{rayTracing:false,upscalin
    that the standalone FPS panel be removed from the configurator's bottom. */
 const shop=readFileSync(new URL('../app/shop.tsx',import.meta.url),'utf8');
 const builds=readFileSync(new URL('../app/build-pages.tsx',import.meta.url),'utf8');
-assert.match(shop,/product\.category==='pc'&&<GamingFps key=\{product\.id\} hardware=\{fromReadyPC\(product\)\} inlineAction\/>/,
- 'FPS modal remains on an individual PC product page');
+assert.match(shop,/product\.category==='pc'&&<GamingFps key=\{product\.id\} product=\{product\} hardware=\{fromReadyPC\(product\)\} inlineAction\/>/,
+ 'FPS calculator receives the active PC image and specifications');
+assert.match(shop,/product\.category==='laptops'&&<GamingFps key=\{product\.id\} product=\{product\} hardware=\{fromLaptop\(product\)\} inlineAction\/>/,
+ 'FPS calculator receives the active laptop image and specifications');
 assert.doesNotMatch(builds,/<GamingFps hardware=\{fromConfigurator\(selected,data\.products\)\}\/>/,
  'Standalone FPS panel stays removed from the configurator');
 assert.doesNotMatch(builds,/<GamingFps hardware=\{fromReadyPC\(p\)\} compact\/>/,
@@ -99,5 +101,11 @@ assert.match(builds,/Сравнить ПК/,'Ready PC comparison remains availab
 assert.match(builds,/Сохранить конфигурацию/,'Configurator saving remains available');
 assert.match(builds,/Добавить в корзину/,'Configurator checkout remains available');
 assert.match(shop,/GitCompareArrows/,'Product comparison remains available');
+const content=readFileSync(new URL('../app/fps-calculator-content.tsx',import.meta.url),'utf8');
+assert.match(content,/Выберите игру/,'FPS dialog has interactive game selection');
+assert.match(content,/Настройки/,'FPS dialog keeps graphics settings');
+assert.match(content,/Результаты/,'FPS dialog has results for one selected game');
+assert.match(content,/getProductImages\(product\)/,'FPS dialog shows the actual product photo');
+assert.match(content,/estimateFps\(/,'FPS estimates remain connected to the existing model');
 
 console.log('FPS model tests passed: presets, resolutions, feature support, feature priority, ready PCs and configurator.');
