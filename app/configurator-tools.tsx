@@ -1,7 +1,7 @@
 'use client';
 
-import {useEffect,useState} from 'react';
-import {AlertTriangle,CheckCircle2,ClipboardCopy,HardDriveDownload,Save,Share2,Trash2,Wallet, Zap} from 'lucide-react';
+import {useEffect,useRef,useState} from 'react';
+import {AlertTriangle,CheckCircle2,ClipboardCopy,HardDriveDownload,Save,Share2,Trash2,Wallet,Zap,X} from 'lucide-react';
 import type {Product} from '../lib/seed';
 import type {BuildAnalysis,BuildSelection} from '../lib/pc-builder';
 import {readSavedBuilds,writeSavedBuilds,saveNamedBuild,getShareUrl,type SavedBuild,MAX_SAVED_BUILDS} from '../lib/saved-builds';
@@ -79,4 +79,74 @@ export function SavedBuildLibrary({selected,products,onLoad,notify}:{selected:Bu
    </article>
   )}</div>:<p className="skp-saved-empty">Сохранённых сборок пока нет. Выберите комплектующие и нажмите «Сохранить».</p>}
  </section>;
+}
+
+
+/**
+ * Phone-only save confirmation. Uses exactly the same storage helpers as
+ * SavedBuildLibrary; the desktop inline library is deliberately untouched.
+ */
+export function MobileSaveBuildModal({selected,products,total,notify,onSaved,onClose}:{
+ selected:BuildSelection;
+ products:Product[];
+ total:number;
+ notify:(message:string)=>void;
+ onSaved:()=>void;
+ onClose:()=>void;
+}){
+ const [name,setName]=useState('Моя сборка');
+ const [error,setError]=useState('');
+ const input=useRef<HTMLInputElement>(null);
+ const count=Object.keys(selected).filter(key=>products.some(product=>product.id===selected[key])).length;
+ useEffect(()=>{
+  const previousOverflow=document.body.style.overflow;
+  const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
+  document.body.style.overflow='hidden';
+  const onKey=(event:KeyboardEvent)=>{if(event.key==='Escape')onClose()};
+  document.addEventListener('keydown',onKey);
+  input.current?.focus({preventScroll:true});
+  return ()=>{
+   document.body.style.overflow=previousOverflow;
+   document.removeEventListener('keydown',onKey);
+   previousFocus?.focus({preventScroll:true});
+  };
+ },[onClose]);
+ const submit=(event:React.FormEvent<HTMLFormElement>)=>{
+  event.preventDefault();
+  try{
+   saveNamedBuild(localStorage,products,selected,name);
+   notify('Конфигурация «'+(name.trim().slice(0,60)||'Моя сборка')+'» сохранена');
+   onSaved();
+   onClose();
+  }catch(cause){
+   setError(cause instanceof Error?cause.message:'Не удалось сохранить конфигурацию');
+  }
+ };
+ return <div className="skp-mobile-save-overlay" onPointerDown={event=>{if(event.target===event.currentTarget)onClose()}}>
+  <section role="dialog" aria-modal="true" aria-labelledby="skp-mobile-save-title"
+   aria-describedby="skp-mobile-save-explainer" className="skp-mobile-save-dialog">
+   <div className="skp-mobile-save-top">
+    <span className="skp-mobile-save-icon"><Save size={20}/></span>
+    <button type="button" onClick={onClose} aria-label="Закрыть окно сохранения" className="skp-mobile-save-close"><X size={22}/></button>
+   </div>
+   <h2 id="skp-mobile-save-title">Сохранить конфигурацию</h2>
+   <p id="skp-mobile-save-explainer">Придумайте название сборки, чтобы вернуться к ней позже.</p>
+   <div className="skp-mobile-save-summary">
+    <div><small>Выбрано компонентов</small><strong>{count}</strong></div>
+    <div><small>Общая стоимость</small><strong>{new Intl.NumberFormat('ru-RU').format(total)} ₽</strong></div>
+   </div>
+   <form onSubmit={submit}>
+    <label htmlFor="skp-mobile-save-name">Название сборки</label>
+    <input id="skp-mobile-save-name" ref={input} name="name"
+     type="text" autoComplete="off" maxLength={60}
+     placeholder="Например, мой игровой ПК" value={name} onChange={event=>{setName(event.target.value);setError('')}}/>
+    {error&&<p className="skp-mobile-save-error" role="alert">{error}</p>}
+    <button type="submit" className="skp-mobile-save-submit" disabled={!count}>
+     <Save size={18}/> Сохранить сборку
+    </button>
+    <button type="button" onClick={onClose} className="skp-mobile-save-cancel">Отмена</button>
+   </form>
+   <p className="skp-mobile-save-note">Сборка сохранится в браузере этого телефона. Открыть её можно через «Открыть сохранённую».</p>
+  </section>
+ </div>;
 }
