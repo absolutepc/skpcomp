@@ -1908,3 +1908,15 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
   outline-offset:2px;
  }
 }
+
+/* Keep full-bleed decoration inside the viewport, without disabling inner scrollers. */
+html,body{overflow-x:clip}
+html{scrollbar-color:#c9b900 #101313;scrollbar-width:thin}
+*::-webkit-scrollbar{width:9px;height:9px}
+*::-webkit-scrollbar-track{background:#101313}
+*::-webkit-scrollbar-thumb{background:#c9b900;border:2px solid #101313;border-radius:8px}
+*::-webkit-scrollbar-thumb:hover{background:#ffe500}
+*::-webkit-scrollbar-corner{background:#101313}
+.brand-section .brands{display:flex;flex-wrap:wrap;justify-content:center;gap:24px 38px}
+.product-detail>div{min-width:0}
+.product-detail h1,.specs strong{overflow-wrap:anywhere}
