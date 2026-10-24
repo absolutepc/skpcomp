@@ -1,10 +1,10 @@
 .catalog-facets .skp-facet-buttons{display:flex;flex-wrap:wrap;gap:8px}
 .catalog-facets .skp-facet-buttons button{flex:1 1 auto;min-width:65px;padding:10px 12px;border:1px solid #3a3e35;border-radius:8px;background:#1d2021;color:#c6c8c0;font:inherit;cursor:pointer}
-.catalog-facets .skp-facet-buttons button[aria-pressed="true"]{border-color:#ffe500;background:#29270e;color:#ffe500}
+.catalog-facets .skp-facet-buttons button[aria-pressed="true"]{border-color:#ffe500;background:#232527;color:#ffe500}
 .catalog-facets .skp-facet-buttons button:focus-visible{outline:2px solid #ffe500;outline-offset:3px}
 .catalog-facets .skp-range-track{position:relative;height:30px;margin-top:5px}
 .catalog-facets .skp-range-rail,.catalog-facets .skp-range-fill{position:absolute;top:12px;height:6px;border-radius:8px}
-.catalog-facets .skp-range-rail{inset-inline:0;background:#383e31}
+.catalog-facets .skp-range-rail{inset-inline:0;background:#3a3c3e}
 .catalog-facets .skp-range-fill{left:var(--range-start);right:calc(100% - var(--range-end));background:#ffe500}
 .catalog-facets .skp-range-track input[type="range"]{position:absolute;inset:0;width:100%;height:30px;margin:0;padding:0;border:0;background:transparent;appearance:none;-webkit-appearance:none;pointer-events:none;z-index:3;box-shadow:none}
 .catalog-facets .skp-range-track input::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#ffe500;border:2px solid #ffe500;pointer-events:auto;cursor:grab}
