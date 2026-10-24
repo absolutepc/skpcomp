@@ -46,7 +46,7 @@ const get=(key:string)=>picked.find(p=>p.id===selected[key]);
 const analysis=analyzeBuild(selected,data.products);
 const problems=analysis.issues.filter(issue=>issue.severity==='error');
 const total=picked.reduce((n,p)=>n+p.price,0)+(picked.length?PC_ASSEMBLY_FEE:0);
-const complete=steps.slice(0,8).every(([key])=>get(key));
+const complete=steps.slice(0,8).every(([key])=>(get(key)?.price||0)>0)&&(!selected.extras||(get('extras')?.price||0)>0);
 let options=data.products.filter(p=>step==='extras'?p.category==='peripherals':p.category===step)
  .filter(p=>(p.name+' '+p.description).toLowerCase().includes(search.toLowerCase()));
 if(sort!=='popular')options.sort((a,b)=>sort==='low'?a.price-b.price:b.price-a.price);
