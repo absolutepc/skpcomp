@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {Plus,Pencil,Eye,Trash2,ImageOff,ChevronLeft,ChevronRight,Armchair,Package,LayoutGrid,Table2} from 'lucide-react';
+import {Plus,Pencil,Eye,Trash2,ImageOff,ChevronLeft,ChevronRight,Armchair,Package,LayoutGrid,Table2,MoreHorizontal} from 'lucide-react';
 import {components,peripherals} from '../lib/catalog';
 import {categoryIcons} from './catalog-icons';
 import {getProductImages} from '../lib/product-gallery';
@@ -26,11 +26,29 @@ function Photo({product}:{product:Product}){
  return <div className="skp-admin-product-photo">{src&&!failed?<img src={src} alt={product.name} loading="lazy" onError={()=>setFailed(true)}/>:<ImageOff size={22}/>}</div>;
 }
 export function AdminProductTable({items,onEdit,onDelete}:{items:Product[];onEdit:(p:Product)=>void;onDelete:(p:Product)=>void}){
- const [page,setPage]=useState(1),[size,setSize]=useState(10);
+ const [page,setPage]=useState(1),[size,setSize]=useState(10),[actionsFor,setActionsFor]=useState<string|null>(null);
  const pages=Math.max(1,Math.ceil(items.length/size)),current=Math.min(page,pages);
  useEffect(()=>setPage(1),[items.length]);
  const visible=items.slice((current-1)*size,current*size);
  return <>
+ <div className="skp-admin-mobile-product-list" aria-label="Товары">
+ {visible.map(product=><article className="skp-admin-mobile-product" key={product.id}>
+  <Photo product={product}/>
+  <div className="skp-admin-mobile-product-body">
+   <button className="skp-admin-mobile-product-name" type="button" onClick={()=>onEdit(product)}>{product.name}</button>
+   <small>{labels[product.category]||product.category}</small>
+   <div className="skp-admin-mobile-product-bottom"><strong>{product.price>0?money(product.price):'По запросу'}</strong><span className={'skp-admin-stock '+(product.stock?'available':'unavailable')}>{product.stock?'В наличии':'Под заказ'}</span></div>
+  </div>
+  <div className="skp-admin-mobile-product-menu-wrap">
+   <button className="skp-admin-mobile-product-more" type="button" aria-label={'Действия с товаром '+product.name} aria-expanded={actionsFor===product.id} onClick={()=>setActionsFor(x=>x===product.id?null:product.id)}><MoreHorizontal size={20}/></button>
+   {actionsFor===product.id&&<div className="skp-admin-mobile-product-dropdown">
+    <button type="button" onClick={()=>{setActionsFor(null);onEdit(product)}}><Pencil size={15}/>Редактировать</button>
+    <a href={'/product/'+product.id} target="_blank" rel="noreferrer"><Eye size={15}/>Открыть товар</a>
+    <button type="button" className="danger" onClick={()=>{setActionsFor(null);onDelete(product)}}><Trash2 size={15}/>Удалить</button>
+   </div>}
+  </div>
+ </article>)}
+ </div>
  <div className="skp-admin-table-scroll"><table className="skp-admin-data-table">
   <colgroup><col style={{width:"6%"}}/><col style={{width:"33%"}}/><col style={{width:"16%"}}/><col style={{width:"12%"}}/><col style={{width:"14%"}}/><col style={{width:"19%"}}/></colgroup>
   <thead><tr><th>Фото</th><th>Название</th><th>Категория</th><th>Цена</th><th>Статус</th><th>Действия</th></tr></thead>
