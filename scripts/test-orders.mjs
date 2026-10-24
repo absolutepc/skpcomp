@@ -3,16 +3,17 @@ import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 
-function load(name){
+function load(name,deps={}){
  const source=readFileSync(new URL('../'+name,import.meta.url),'utf8');
  const output=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022},reportDiagnostics:true});
  assert.equal((output.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
  const exports={};
- runInNewContext(output.outputText,{exports,require:()=>({}),Map,Set,Array,Number,String,JSON,Error,Date,Math});
+ runInNewContext(output.outputText,{exports,require:key=>deps[key]||{},Map,Set,Array,Number,String,JSON,Error,Date,Math});
  return exports;
 }
 const {seed}=load('lib/seed.ts');
-const orders=load('lib/orders.ts');
+const customBuild=load('lib/custom-build-cart.ts');
+const orders=load('lib/orders.ts',{'./custom-build-cart':customBuild});
 const {normalizeOrderItems,validateContact,ORDER_LABELS,ORDER_TRANSITIONS,canTransition,isOrderStatus,groupCart,parseOrderKeys,rememberOrder,ORDER_HISTORY_STORAGE}=orders;
 assert.deepEqual(Object.values(ORDER_LABELS),['В процессе','Собран','Отменён','Выполнен']);
 assert.equal(canTransition('processing','assembled'),true);
@@ -36,6 +37,37 @@ assert.throws(()=>normalizeOrderItems([{id:gpu.id,quantity:2},{id:gpu.id,quantit
 assert.throws(()=>normalizeOrderItems([{id:gpu.id,quantity:21}],seed.products),'Reject excessive quantities');
 assert.throws(()=>normalizeOrderItems([{id:'missing-id',quantity:1}],seed.products));
 assert.throws(()=>normalizeOrderItems([{id:'ryzen-5-7500x3d',quantity:1}],seed.products),'Unpriced products cannot be ordered');
+// Custom PC: a complete configuration is one line, with prices resolved from catalog.
+const slots=['cpu','motherboard','ram','gpu','ssd','psu','case','cooler'];
+const selection=Object.fromEntries(slots.map(slot=>{
+ const product=seed.products.find(p=>p.category===slot&&p.price>0);
+ assert.ok(product,'Need priced '+slot);
+ return [slot,product.id];
+}));
+selection.os='windows-11';
+const build={type:'custom-build',id:'build-12345678-1234-4234-8234-123456789abc',selected:selection};
+const cartRows=customBuild.summarizeCart([build],seed.products);
+assert.equal(cartRows.length,1);
+assert.equal(cartRows[0].valid,true);
+assert.equal(cartRows[0].assemblyFee,3000);
+assert.equal(cartRows[0].details.length,8);
+assert.equal(cartRows[0].os,'Windows 11');
+const builtOrder=normalizeOrderItems([build],seed.products);
+assert.equal(builtOrder.length,1,'One configured PC becomes one order line');
+assert.equal(builtOrder[0].unitPrice,cartRows[0].price);
+assert.equal(builtOrder[0].assemblyFee,3000);
+assert.equal(builtOrder[0].components.length,8);
+assert.equal(normalizeOrderItems([{...build,price:1,subtotal:1}],seed.products)[0].subtotal,cartRows[0].price,
+ 'Client cannot override build total');
+assert.throws(()=>normalizeOrderItems([{...build,selected:{...selection,cpu:'no-such-cpu'}}],seed.products),
+ 'Reject incomplete or invalid custom PC');
+assert.throws(()=>normalizeOrderItems([{...build,selected:{...selection,os:'malicious-os'}}],seed.products),
+ 'Reject invalid OS');
+assert.throws(()=>normalizeOrderItems([build,build],seed.products),'Reject duplicate build IDs');
+const augmented=customBuild.summarizeCart([gpu.id,build,gpu.id],seed.products);
+assert.equal(augmented.length,2,'Traditional cart items and one custom PC coexist');
+assert.equal(customBuild.cartGrandTotal(augmented),cartRows[0].price+gpu.price*2);
+assert.equal(customBuild.cleanCart([gpu.id,build]).length,2,'Cart survives JSON storage');
 const modified=seed.products.map(p=>p.id===gpu.id?{...p,price:20}:p);
 assert.equal(normalizeOrderItems([{id:gpu.id,quantity:1,unitPrice:1}],modified)[0].unitPrice,20,'Ignore client-supplied pricing');
 assert.equal(validateContact('Иван Иванов','+7 999 123-45-67','Позвоните вечером').customerName,'Иван Иванов');
