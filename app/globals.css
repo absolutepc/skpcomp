@@ -1791,3 +1791,60 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
    older admin-saved layers that still contain the default captions. */
 .hero-carousel.skp-active-skp-hero-logitech .skp-slide-layer-caption,
 .hero-carousel.skp-active-skp-hero-rog .skp-slide-layer-caption{display:none}
+
+/* SKP configurator: selected-part thumbnails and individual prices. */
+.config-page .configuration-row{
+ display:flex;align-items:center;gap:10px;
+ min-width:0;margin:0;padding:11px 0;
+ border-bottom:1px solid rgba(198,221,163,.10);
+}
+.config-page .configuration-row:last-of-type{border-bottom:0}
+.config-page .configuration-item-art{
+ display:flex;align-items:center;justify-content:center;
+ flex:0 0 46px;width:46px;height:46px;
+ border:1px solid transparent;border-radius:9px;overflow:hidden;
+ color:#c2cfb5;background:transparent;
+}
+.config-page .configuration-item-art.has-image{
+ border-color:rgba(190,204,177,.19);background:#141a14;
+}
+.config-page .configuration-item-art img,
+.config-page .configuration-item-art .product-art,
+.config-page .configuration-item-art svg:not(:first-child){
+ width:100%;height:100%;max-width:100%;max-height:100%;
+ object-fit:contain;display:block;
+}
+.config-page .configuration-item-art.has-image svg{width:100%;height:100%}
+.config-page .configuration-row>button:first-of-type{
+ display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+ flex:1 1 auto;min-width:0;gap:4px;padding:0;
+ text-align:left;white-space:normal;
+}
+.config-page .configuration-row>button:first-of-type>span{
+ display:block;font-size:11px;line-height:1.35;color:#cfd8c5;
+}
+.config-page .configuration-row>button:first-of-type>small{
+ display:block;margin:0;font-size:10px;line-height:1.45;
+ color:#7c8b72;overflow-wrap:anywhere;
+}
+.config-page .configuration-row>button:first-of-type>small.filled{color:#dbe5b1}
+.config-page .configuration-item-price{
+ display:block;color:#f8f9f0;font-size:12px;font-weight:800;
+ letter-spacing:.1px;line-height:1.3;margin-top:1px;
+}
+.config-page .configuration-item-remove{
+ flex:0 0 23px;width:23px;height:28px;padding:0;
+ display:flex;align-items:center;justify-content:center;
+ color:#b3bca8;border-radius:6px;
+}
+.config-page .configuration-item-remove:hover{color:#ffe500;background:#ffffff12}
+.config-page .component-products{scroll-margin-top:14px}
+@media(max-width:700px){
+ .config-page .configuration-row{padding:12px 0;gap:11px}
+ .config-page .configuration-item-art{width:52px;height:52px;flex-basis:52px;border-radius:10px}
+ .config-page .configuration-row>button:first-of-type>span{font-size:12px}
+ .config-page .configuration-row>button:first-of-type>small{font-size:11px}
+ .config-page .configuration-item-price{font-size:13px}
+ .config-page .configuration-item-remove{width:28px;flex-basis:28px}
+ .config-page .component-products{scroll-margin-top:18px}
+}
