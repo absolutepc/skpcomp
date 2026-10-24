@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {ArrowLeft,ArrowRight,Check,ChevronDown,Cpu,Gamepad2,Gauge,HardDrive,Info,MemoryStick,Monitor,Settings2,Video,X,Zap} from 'lucide-react';
+import {ArrowLeft,ArrowRight,ChevronDown,Cpu,HardDrive,Info,MemoryStick,Monitor,Settings2,Video,X} from 'lucide-react';
 import type {RefObject} from 'react';
 import type {Product} from '../lib/seed';
 import {getProductImages} from '../lib/product-gallery';
@@ -12,7 +12,6 @@ const gameOrder=['cs2','valorant','pubg','rust','cyberpunk','bf6','warthunder','
 const orderedGames=[...gameProfiles].sort((a,b)=>gameOrder.indexOf(a.id)-gameOrder.indexOf(b.id));
 const coverText:Record<string,string>={cs2:'CS2',valorant:'VAL',pubg:'PUBG',rust:'RUST',cyberpunk:'2077',bf6:'BF',warthunder:'WT',squad:'SQUAD',dota2:'DOTA',warface:'WF'};
 const screenLabels:Record<FpsResolution,string>={FHD:'1920 × 1080 (Full HD)','2K':'2560 × 1440 (2K)','4K':'3840 × 2160 (4K)'};
-const money=(n:number)=>new Intl.NumberFormat('ru-RU').format(n);
 function AnimatedValue({value,delay=0}:{value:number;delay?:number}){
  const [current,setCurrent]=useState(value);
  const last=useRef(value);
@@ -68,9 +67,20 @@ export default function FpsCalculatorContent({hardware,product,onClose,closeButt
  const graphics=product?.buildComponents?.gpu||product?.specs?.gpu||hardware.gpu||'Не указана';
  const memory=product?.buildComponents?.ram||(product?.specs?.capacity?product.specs.capacity+' ГБ':'')||hardware.ram||'Не указана';
  const storage=product?.buildComponents?.ssd||product?.specs?.storage||product?.specs?.ssd||'Не указан';
- const scrollGames=(direction:number)=>{
-  gamesScroller.current?.scrollBy({left:direction*260,behavior:'smooth'});
+ const gameIndex=orderedGames.findIndex(game=>game.id===gameId);
+ const changeGame=(direction:-1|1)=>{
+  const nextIndex=Math.max(0,Math.min(orderedGames.length-1,gameIndex+direction));
+  if(nextIndex!==gameIndex)setGameId(orderedGames[nextIndex].id);
  };
+ useEffect(()=>{
+  const container=gamesScroller.current;
+  const current=container?.querySelector<HTMLButtonElement>('.skp-fps-v2-game-tile.selected');
+  if(!container||!current)return;
+  const wrap=container.getBoundingClientRect();
+  const target=current.getBoundingClientRect();
+  const destination=container.scrollLeft+target.left-wrap.left-(wrap.width-target.width)/2;
+  container.scrollTo({left:Math.max(0,destination),behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+ },[gameId]);
  useEffect(()=>{if(!canDlss&&upscaling==='dlss')setUpscaling('native')},[upscaling,canDlss]);
  useEffect(()=>{if(!canRt&&rayTracing)setRayTracing(false)},[rayTracing,canRt]);
  return <>
@@ -99,7 +109,7 @@ export default function FpsCalculatorContent({hardware,product,onClose,closeButt
    <section className="skp-fps-v2-stage skp-fps-v2-games">
     <StageTitle number={1}>Выберите игру</StageTitle>
     <div className="skp-fps-v2-games-navigation">
-     <button className="skp-fps-v2-carousel-arrow" type="button" onClick={()=>scrollGames(-1)} aria-label="Предыдущие игры"><ArrowLeft size={21}/></button>
+     <button className="skp-fps-v2-carousel-arrow" type="button" onClick={()=>changeGame(-1)} disabled={gameIndex<=0} aria-label="Выбрать предыдущую игру"><ArrowLeft size={21}/></button>
      <div className="skp-fps-v2-games-strip" ref={gamesScroller} role="group" aria-label="Игры для расчёта FPS">
       {orderedGames.map(game=><button type="button" className={'skp-fps-v2-game-tile game-'+game.id+(gameId===game.id?' selected':'')} key={game.id}
        aria-pressed={gameId===game.id} onClick={()=>setGameId(game.id)}>
@@ -107,24 +117,39 @@ export default function FpsCalculatorContent({hardware,product,onClose,closeButt
        <span className="skp-fps-v2-game-name">{game.name}</span>
       </button>)}
      </div>
-     <button className="skp-fps-v2-carousel-arrow" type="button" onClick={()=>scrollGames(1)} aria-label="Следующие игры"><ArrowRight size={21}/></button>
+     <button className="skp-fps-v2-carousel-arrow" type="button" onClick={()=>changeGame(1)} disabled={gameIndex>=orderedGames.length-1} aria-label="Выбрать следующую игру"><ArrowRight size={21}/></button>
     </div>
    </section>
    <section className="skp-fps-v2-stage skp-fps-v2-config">
     <StageTitle number={2}>Настройки</StageTitle>
     <div className="skp-fps-v2-settings-grid">
      <label className="skp-fps-v2-select">Разрешение
-      <span className="skp-fps-v2-select-field"><Monitor size={20}/><select value={resolution} onChange={event=>setResolution(event.target.value as FpsResolution)}>{resolutions.map(mode=><option key={mode} value={mode}>{screenLabels[mode]}</option>)}</select><ChevronDown size={17}/></span>
+      <span className="skp-fps-v2-select-field">
+       <Monitor size={20} aria-hidden="true"/>
+       <span className="skp-fps-v2-select-value" aria-hidden="true">{screenLabels[resolution]}</span>
+       <ChevronDown size={17} aria-hidden="true"/>
+       <select aria-label="Разрешение" value={resolution} onChange={event=>setResolution(event.target.value as FpsResolution)}>{resolutions.map(mode=><option key={mode} value={mode}>{screenLabels[mode]}</option>)}</select>
+      </span>
      </label>
      <label className="skp-fps-v2-select">Графика
-      <span className="skp-fps-v2-select-field"><Settings2 size={20}/><select value={preset} onChange={event=>setPreset(event.target.value as GraphicsPreset)}>{graphicsPresets.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}</select><ChevronDown size={17}/></span>
+      <span className="skp-fps-v2-select-field">
+       <Settings2 size={20} aria-hidden="true"/>
+       <span className="skp-fps-v2-select-value" aria-hidden="true">{graphicsPresets.find(option=>option.value===preset)?.label||preset}</span>
+       <ChevronDown size={17} aria-hidden="true"/>
+       <select aria-label="Графика" value={preset} onChange={event=>setPreset(event.target.value as GraphicsPreset)}>{graphicsPresets.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}</select>
+      </span>
      </label>
      <label className="skp-fps-v2-select">Технология
-      <span className="skp-fps-v2-select-field"><Cpu size={20}/><select value={safeUpscaling} onChange={event=>setUpscaling(event.target.value as UpscalingTechnology)}>
-       <option value="native">Без апскейла</option>
-       {canDlss&&<option value="dlss">DLSS</option>}
-       <option value="fsr">FSR</option>
-      </select><ChevronDown size={17}/></span>
+      <span className="skp-fps-v2-select-field">
+       <Cpu size={20} aria-hidden="true"/>
+       <span className="skp-fps-v2-select-value" aria-hidden="true">{safeUpscaling==='native'?'Без апскейла':safeUpscaling.toUpperCase()}</span>
+       <ChevronDown size={17} aria-hidden="true"/>
+       <select aria-label="Технология" value={safeUpscaling} onChange={event=>setUpscaling(event.target.value as UpscalingTechnology)}>
+        <option value="native">Без апскейла</option>
+        {canDlss&&<option value="dlss">DLSS</option>}
+        <option value="fsr">FSR</option>
+       </select>
+      </span>
      </label>
     </div>
     {(safeUpscaling!=='native'||canRt||laptop)&&<div className="skp-fps-v2-additional">
@@ -133,7 +158,11 @@ export default function FpsCalculatorContent({hardware,product,onClose,closeButt
        {upscalingQualities.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
       </select>
      </label>}
-     {canRt&&<label className="skp-fps-v2-ray"><input type="checkbox" checked={enabledRT} onChange={event=>setRayTracing(event.target.checked)}/><span>Трассировка лучей (если поддерживается игрой)</span></label>}
+     {canRt&&<label className="skp-fps-v2-ray">
+      <input type="checkbox" checked={enabledRT} onChange={event=>setRayTracing(event.target.checked)}/>
+      <span className="skp-fps-v2-ray-switch" aria-hidden="true"><span/></span>
+      <span className="skp-fps-v2-ray-label">Трассировка лучей <small>Если поддерживается игрой</small></span>
+     </label>}
      {laptop&&<label className="skp-fps-v2-tgp">Мощность GPU (TGP, Вт)
       <input type="number" min="1" max="250" step="1" placeholder="Укажите TGP" value={tgp} onChange={event=>setTgp(event.target.value)}/>
      </label>}
