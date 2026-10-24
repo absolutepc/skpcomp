@@ -1,8 +1,9 @@
 import type {Product} from './seed';
+import {isCustomBuild,summarizeCart,BUILD_CORE_SLOTS,type BuildDetail} from './custom-build-cart';
 
 export const ORDER_STATUSES=['processing','assembled','cancelled','completed'] as const;
 export type OrderStatus=typeof ORDER_STATUSES[number];
-export type OrderItem={productId:string;name:string;quantity:number;unitPrice:number;subtotal:number};
+export type OrderItem={productId:string;name:string;quantity:number;unitPrice:number;subtotal:number;components?:BuildDetail[];assemblyFee?:number;os?:string};
 export type OrderEvent={status:OrderStatus;createdAt:string};
 export type PublicOrder={
  id:string;number:string;status:OrderStatus;items:OrderItem[];total:number;
@@ -35,6 +36,22 @@ export function normalizeOrderItems(raw:unknown,products:readonly Product[]):Ord
  const result:OrderItem[]=[];
  for(const row of raw){
   if(!row||typeof row!=='object')throw new OrderValidationError('Некорректные позиции заказа.');
+  if(isCustomBuild(row)){
+   if(found.has(row.id)||(row as {quantity?:unknown}).quantity!==undefined&&(row as {quantity?:unknown}).quantity!==1)
+    throw new OrderValidationError('Сборка ПК должна быть отдельной позицией.');
+   found.add(row.id);
+   const build=summarizeCart([row],products)[0];
+   if(!build?.valid||!build.details||build.details.length<BUILD_CORE_SLOTS.length)
+    throw new OrderValidationError('Комплектация ПК неполная или содержит недоступные товары.');
+   if(!Number.isSafeInteger(build.price)||build.price<=0)
+    throw new OrderValidationError('Невозможно рассчитать стоимость сборки.');
+   total+=build.price;count+=1;
+   if(total>100000000||!Number.isSafeInteger(total)||count>60)
+    throw new OrderValidationError('Общая сумма заказа превышает допустимый предел.');
+   result.push({productId:row.id,name:build.name,quantity:1,unitPrice:build.price,
+    subtotal:build.price,components:build.details,assemblyFee:build.assemblyFee,os:build.os});
+   continue;
+  }
   const {id,quantity}=row as Record<string,unknown>;
   if(typeof id!=='string'||!id||id.length>100||found.has(id)||!Number.isInteger(quantity)||typeof quantity!=='number'||quantity<1||quantity>20)
    throw new OrderValidationError('Проверьте товары и количество (от 1 до 20 шт. на позицию).');
