@@ -97,8 +97,12 @@
  transform:rotate(-7deg);
 }
 .skp-fps-v2-cover strong{
- font-size:clamp(13px,1.4vw,18px);font-weight:950;letter-spacing:-1px;
- text-shadow:0 3px 15px #000e;text-align:center;
+ font-size:12px;font-weight:900;letter-spacing:-.2px;
+ text-shadow:0 3px 15px #000e;text-align:center;overflow-wrap:anywhere;
+}
+.skp-fps-v2-cover img{
+ display:block;width:100%;height:100%;object-fit:contain;
+ border-radius:6px;filter:drop-shadow(0 1px 3px #0008);
 }
 .skp-fps-v2-game-name{
  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
@@ -144,22 +148,38 @@
 }
 .skp-fps-v2-select-field:focus-within{border-color:#ffe500;box-shadow:0 0 0 1px #ffe50024}
 .skp-fps-v2-additional{
- display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;
+ align-items:stretch;min-height:66px;
  margin-top:12px;color:#d6dcdf;font-size:10px;
 }
+.skp-fps-v2-additional>div{min-width:0;display:flex;align-items:stretch}
+.skp-fps-v2-additional .skp-fps-v2-miniselect{
+ display:flex;flex:1;flex-direction:column;gap:7px;
+ justify-content:space-between;min-width:0;font-size:11px;color:#e7e8eb;
+}
+.skp-fps-v2-miniselect select{
+ display:block;width:100%;height:44px;padding:0 12px;
+ border:1px solid #414a52;border-radius:9px;
+ background:#151b1e;color:#f6f6f5;font-size:11px;
+}
+.skp-fps-v2-additional .skp-fps-v2-tgp{
+ display:flex;flex:1;flex-direction:column;justify-content:space-between;
+ gap:7px;min-width:0;font-size:11px;color:#e7e8eb;
+}
+.skp-fps-v2-tgp input{width:100%;height:44px}
+
 .skp-fps-v2-miniselect,.skp-fps-v2-tgp{display:flex;align-items:center;gap:8px}
 .skp-fps-v2-miniselect select,.skp-fps-v2-tgp input{
  height:36px;border:1px solid #414a52;border-radius:8px;
  background:#151b1e;color:#f6f6f5;padding:0 10px;font-size:11px;
 }
 .skp-fps-v2-tgp input{width:95px}
-.skp-fps-v2-ray{
- position:relative;display:inline-flex;align-items:center;gap:11px;
- min-height:44px;padding:8px 11px;border:1px solid #39434c;
- border-radius:10px;background:#161c20;cursor:pointer;
-}
-.skp-fps-v2-ray input{
- position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+.skp-fps-v2-additional .skp-fps-v2-ray{
+ display:flex;align-items:center;justify-content:flex-start;
+ width:100%;height:100%;min-height:53px;padding:10px 12px;
+ gap:10px;border:1px solid #39434c;border-radius:10px;
+ background:#161c20;color:#f1f3f4;text-align:left;cursor:pointer;
+ box-sizing:border-box;
 }
 .skp-fps-v2-ray-switch{
  position:relative;flex:0 0 40px;width:40px;height:23px;display:block;
@@ -171,10 +191,10 @@
  border-radius:50%;background:#e7ebee;box-shadow:0 1px 3px #0008;
  transition:transform .2s;
 }
-.skp-fps-v2-ray input:checked+.skp-fps-v2-ray-switch{
+.skp-fps-v2-ray[aria-checked="true"] .skp-fps-v2-ray-switch{
  background:#ffe500;border-color:#ffe500;
 }
-.skp-fps-v2-ray input:checked+.skp-fps-v2-ray-switch>span{
+.skp-fps-v2-ray[aria-checked="true"] .skp-fps-v2-ray-switch>span{
  background:#141719;transform:translateX(17px);
 }
 .skp-fps-v2-ray:focus-within{border-color:#ffe500;box-shadow:0 0 0 1px #ffe50030}
@@ -274,4 +294,34 @@
 }
 @media(prefers-reduced-motion:reduce){
  .skp-fps-v2-meter>i{transition:none}
+}
+
+/* Artwork and FPS controls: exact sizing prevents global form rules from
+   stretching the switch knob or moving settings when quality appears. */
+.skp-fps-modal.skp-fps-v2 .skp-fps-v2-ray-switch{
+ position:relative;display:block;flex:0 0 40px;width:40px;height:23px;
+ border-radius:999px;box-sizing:border-box;
+}
+.skp-fps-modal.skp-fps-v2 .skp-fps-v2-ray-switch>span{
+ position:absolute;display:block;left:3px;top:3px;
+ width:15px;height:15px;min-width:15px;min-height:15px;
+ margin:0;padding:0;border:0;border-radius:50%;
+}
+.skp-fps-modal.skp-fps-v2 .skp-fps-v2-additional .skp-fps-v2-ray{
+ appearance:none;-webkit-appearance:none;box-shadow:none;
+}
+.skp-fps-v2-additional .skp-fps-v2-ray:focus-visible{
+ outline:2px solid #ffe500;outline-offset:2px;
+}
+@media(max-width:760px){
+ .skp-fps-v2-additional{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;min-height:58px}
+ .skp-fps-v2-extra-tgp{grid-column:1/-1}
+ .skp-fps-v2-additional .skp-fps-v2-ray{min-height:59px;padding:8px}
+ .skp-fps-v2-ray-switch{flex-basis:37px}
+ .skp-fps-v2-ray-label{font-size:10px}
+}
+@media(max-width:355px){
+ .skp-fps-v2-additional .skp-fps-v2-ray{gap:6px;padding:7px}
+ .skp-fps-v2-ray-label{font-size:9px}
+ .skp-fps-v2-ray-label small{font-size:8px}
 }
