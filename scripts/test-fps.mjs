@@ -109,4 +109,15 @@ assert.match(content,/Результаты/,'FPS dialog has results for one sele
 assert.match(content,/getProductImages\(product\)/,'FPS dialog shows the actual product photo');
 assert.match(content,/estimateFps\(/,'FPS estimates remain connected to the existing model');
 
+// Local game artwork is used by default and upgrades only the old standard URLs.
+const fpsRoster=readFileSync(new URL('../lib/fps-game-catalog.ts',import.meta.url),'utf8');
+assert.match(fpsRoster,/id:'valorant'.*image:'\\/images\\/fps-games\\/valorant\\.png'/);
+assert.match(fpsRoster,/id:'bf6'.*image:'\\/images\\/fps-games\\/battlefield6\\.png'/);
+assert.match(fpsRoster,/game\\.image===oldValorantImage/,'Legacy Valorant default images are upgraded');
+assert.match(fpsRoster,/game\\.image===steam\\(2807960\\)/,'Legacy Battlefield 6 default images are upgraded');
+const fpsStyles=readFileSync(new URL('../app/fps-calculator-v2.css',import.meta.url),'utf8');
+assert.match(fpsStyles,/height:117px;min-height:117px;max-height:117px/,'Desktop game tiles keep a fixed height');
+assert.match(fpsStyles,/height:108px;min-height:108px;max-height:108px/,'Mobile game tiles keep a fixed height');
+assert.match(fpsStyles,/\\.skp-fps-v2-game-tile\\.selected\\{\\s*border-color:#ffe500/,'Selected game border does not change layout');
+
 console.log('FPS model tests passed: presets, resolutions, feature support, feature priority, ready PCs and configurator.');
