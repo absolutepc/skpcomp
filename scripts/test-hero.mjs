@@ -244,13 +244,13 @@ assert.ok(previousPosition<indicatorsPosition&&indicatorsPosition<nextPosition,
  'Every slide must show previous arrow to the LEFT of dots and next arrow to the RIGHT');
 assert.match(controlsMarkup,/className="carousel-dots" role="group" aria-label="Выбор слайда"/,
  'The central pagination group is accessible');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?bottom:0;[\s\S]*?background:#080b09;[\s\S]*?clip-path:polygon\(11% 0,89% 0,100% 100%,0 100%\);/,
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?bottom:0;[\s\S]*?background:#0a0c0e;[\s\S]*?clip-path:polygon\(11% 0,89% 0,100% 100%,0 100%\);/,
  'The unified tapered dock ends flush with the site background at the lower border');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)\{\s*border-bottom:0;/,
  'Remove the original straight border from the carousel, instead of drawing it through the controls');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)\{[\s\S]*?--skp-hero-seam:#454d37;/,
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)\{[\s\S]*?--skp-hero-seam:#414345;/,
  'All hero slides share the same outline colour, including the first');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?background:#080b09;/,
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?background:#0a0c0e;/,
  'Buttons rest on a solid dark integrated background');
 
 assert.match(css,/\.hero-carousel\.mouse-launch:after\{display:none\}/,
@@ -258,17 +258,17 @@ assert.match(css,/\.hero-carousel\.mouse-launch:after\{display:none\}/,
 assert.match(css,/\.hero-carousel\.mouse-launch:not\(\.skp-slide-preview\)::after\{\s*display:block;/,
  'Override legacy hiding rule only for the active Logitech storefront hero');
 
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)::after\{[\s\S]*?bottom:0;[\s\S]*?height:1px;[\s\S]*?background:var\(--skp-hero-seam,#454d37\);[\s\S]*?z-index:4;/,
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)::after\{[\s\S]*?bottom:0;[\s\S]*?height:1px;[\s\S]*?background:var\(--skp-hero-seam,#414345\);[\s\S]*?z-index:4;/,
  'Replace the border with a drawn bottom divider that runs behind the raised control');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?bottom:0;[\s\S]*?z-index:5;/,
  'The navigation overlays the divider at the slider boundary');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls::before\{[\s\S]*?content:'';[\s\S]*?background:var\(--skp-hero-seam,#454d37\);[\s\S]*?clip-path:polygon\([\s\S]*?11% 0,89% 0,100% 100%,[\s\S]*?calc\(100% - 1px\) 100%,calc\(89% - 1px\) 2px,[\s\S]*?calc\(11% \+ 1px\) 2px,1px 100%,0 100%[\s\S]*?\);/,
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls::before\{[\s\S]*?content:'';[\s\S]*?background:var\(--skp-hero-seam,#414345\);[\s\S]*?clip-path:polygon\([\s\S]*?11% 0,89% 0,100% 100%,[\s\S]*?calc\(100% - 1px\) 100%,calc\(89% - 1px\) 2px,[\s\S]*?calc\(11% \+ 1px\) 2px,1px 100%,0 100%[\s\S]*?\);/,
  'The thin boundary climbs each sloped side and crosses ABOVE the button, with no bottom border');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{[\s\S]*?border:0;[\s\S]*?box-shadow:none;/,
  'Dock has no floating panel border or drop shadow');
 assert.match(css,/@media\(max-width:700px\)\{\s*\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls\{\s*bottom:0;/,
  'Integrated controls also dock at the mobile slide boundary');
-assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 32px;[\s\S]*?background:#171d16;[\s\S]*?border:1px solid #3a4534;[\s\S]*?border-radius:7px;[\s\S]*?clip-path:none;/,
+assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow\{[\s\S]*?flex:0 0 32px;[\s\S]*?background:#1a1c1e;[\s\S]*?border:1px solid #3a4534;[\s\S]*?border-radius:7px;[\s\S]*?clip-path:none;/,
  'Arrows have matched compact, gently rounded shapes without diagonal clipping');
 assert.match(css,/\.hero-carousel:not\(\.skp-slide-preview\)>\.carousel-controls \.carousel-arrow:first-child,[\s\S]*?\.carousel-arrow:last-child\{\s*clip-path:none;/,
  'Both arrows share the same unobtrusive silhouette');
