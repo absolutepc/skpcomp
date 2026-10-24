@@ -1917,6 +1917,5 @@ html{scrollbar-color:#c9b900 #101313;scrollbar-width:thin}
 *::-webkit-scrollbar-thumb{background:#c9b900;border:2px solid #101313;border-radius:8px}
 *::-webkit-scrollbar-thumb:hover{background:#ffe500}
 *::-webkit-scrollbar-corner{background:#101313}
-.brand-section .brands{display:flex;flex-wrap:wrap;justify-content:center;gap:24px 38px}
 .product-detail>div{min-width:0}
 .product-detail h1,.specs strong{overflow-wrap:anywhere}
