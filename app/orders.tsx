@@ -30,8 +30,8 @@ function Steps({order}:{order:PublicOrder}){
 }
 function Lines({order}:{order:PublicOrder}){
  return <div className="skp-order-lines">{order.items.map(item=>
-  <div key={item.productId}><span>{item.name}<small>{item.quantity} шт. × {money(item.unitPrice)}</small>
- {item.components&&<details className="skp-order-build-details"><summary>Комплектация сборки</summary>{item.components.map(part=><div key={part.slot}>{part.label}: {part.name} — {money(part.price)}</div>)}<div>ОС: {item.os||'Без ОС'} (лицензия отдельно)</div><div>Сборка и проверка: {money(item.assemblyFee||0)}</div></details>}</span><strong>{money(item.subtotal)}</strong></div>
+  <div key={item.productId}><div className="skp-order-item-description">{item.name}<small>{item.quantity} шт. × {money(item.unitPrice)}</small>
+ {item.components&&<details className="skp-order-build-details"><summary>Комплектация сборки</summary>{item.components.map(part=><div key={part.slot}>{part.label}: {part.name} — {money(part.price)}</div>)}<div>ОС: {item.os||'Без ОС'} (лицензия отдельно)</div><div>Сборка и проверка: {money(item.assemblyFee||0)}</div></details>}</div><strong>{money(item.subtotal)}</strong></div>
  )}<div className="skp-order-sum"><strong>Итого</strong><strong>{money(order.total)}</strong></div></div>;
 }
 function OrderCard({order,extra}:{order:PublicOrder;extra?:React.ReactNode}){
@@ -98,8 +98,8 @@ export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:CartEntry[
     <button type="submit" className="button light" disabled={!canSubmit||submitting}>{submitting?'Отправляем…':'Оформить заявку'} <ArrowRight size={16}/></button>
     {!canSubmit&&<p className="skp-order-error">Проверьте состав корзины: у каждого товара должна быть указана цена, не более 20 шт. одной позиции.</p>}
    </form>
-   <aside className="skp-checkout-summary"><h2>Ваш заказ</h2>{summary.map(item=><div key={item.id}><span>{item.name}<small>{item.quantity} шт. × {money(item.price)}</small>
- {item.build&&<details className="skp-order-build-details"><summary>Комплектация ПК</summary>{item.details?.map(part=><div key={part.slot}>{part.label}: {part.name} — {money(part.price)}</div>)}<div>ОС: {item.os} (лицензия отдельно)</div><div>Сборка и проверка: {money(item.assemblyFee||0)}</div></details>}</span><strong>{money(item.price*item.quantity)}</strong></div>)}<div className="skp-order-sum"><strong>Итого</strong><strong>{money(total)}</strong></div></aside>
+   <aside className="skp-checkout-summary"><h2>Ваш заказ</h2>{summary.map(item=><div key={item.id}><div className="skp-order-item-description">{item.name}<small>{item.quantity} шт. × {money(item.price)}</small>
+ {item.build&&<details className="skp-order-build-details"><summary>Комплектация ПК</summary>{item.details?.map(part=><div key={part.slot}>{part.label}: {part.name} — {money(part.price)}</div>)}<div>ОС: {item.os} (лицензия отдельно)</div><div>Сборка и проверка: {money(item.assemblyFee||0)}</div></details>}</div><strong>{money(item.price*item.quantity)}</strong></div>)}<div className="skp-order-sum"><strong>Итого</strong><strong>{money(total)}</strong></div></aside>
   </div>}
  </section>;
 }
