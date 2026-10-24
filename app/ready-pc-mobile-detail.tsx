@@ -2,6 +2,7 @@
 import {useState} from 'react';
 import {ArrowRight,Check,ChevronRight,Cpu,Gamepad2,GitCompareArrows,Heart,Minus,Plus,Share2,ShieldCheck,ShoppingBag,Truck,PackageCheck} from 'lucide-react';
 import type {Product} from '../lib/seed';
+import type {FpsGameAppearance} from '../lib/fps-game-catalog';
 import {getBuildRows,getReadyBuildSummary} from '../lib/build-components';
 import {getProductImages} from '../lib/product-gallery';
 import {categoryIcons} from './catalog-icons';
@@ -9,13 +10,13 @@ import GamingFps from './gaming-fps';
 import {fromReadyPC} from '../lib/fps-estimate';
 
 type Props={
- product:Product;catalog:Product[];add:(ids:string[])=>void;
+ product:Product;catalog:Product[];games?:FpsGameAppearance[];add:(ids:string[])=>void;
  fav:(id:string)=>void;favorites:string[];compare:(product:Product)=>void;compared:string[];
  nav:(path:string)=>void;notify:(message:string)=>void;
 };
 const money=(value:number)=>new Intl.NumberFormat('ru-RU').format(value)+' ₽';
 const preferred=['cpu','gpu','ram','ssd','motherboard','psu','cooler','case'];
-export default function ReadyPcMobileDetail({product,catalog,add,fav,favorites,compare,compared,nav,notify}:Props){
+export default function ReadyPcMobileDetail({product,catalog,games,add,fav,favorites,compare,compared,nav,notify}:Props){
  const [quantity,setQuantity]=useState(1);
  const rows=getBuildRows(product);
  const quick=preferred.flatMap(key=>rows.filter(row=>row.key===key)).slice(0,8);
@@ -50,7 +51,7 @@ export default function ReadyPcMobileDetail({product,catalog,add,fav,favorites,c
   <div className="skp-ready-mobile-actions">
    <button type="button" onClick={()=>fav(product.id)} aria-pressed={favorites.includes(product.id)}><Heart size={19} fill={favorites.includes(product.id)?'currentColor':'none'}/><span>{favorites.includes(product.id)?'В избранном':'В избранное'}</span></button>
    <button type="button" onClick={()=>compare(product)} aria-pressed={compared.includes(product.id)}><GitCompareArrows size={19}/><span>{compared.includes(product.id)?'В сравнении':'Сравнить'}</span></button>
-   <GamingFps key={product.id} product={product} hardware={fromReadyPC(product)} inlineAction/>
+   <GamingFps key={product.id} product={product} games={games} hardware={fromReadyPC(product)} inlineAction/>
    <button type="button" onClick={()=>void share()}><Share2 size={19}/><span>Поделиться</span></button>
   </div>
   <div className="skp-ready-mobile-perks">
