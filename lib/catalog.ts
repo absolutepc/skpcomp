@@ -46,18 +46,20 @@ export const categoryFields:Record<string,Field[]>={
  furniture:[f('furnitureType','Тип мебели'),f('material','Материал'),f('color','Цвет'),f('width','Ширина','см'),f('load','Максимальная нагрузка','кг')]
 };
 export function normalizeProduct(p:Product):Product{
- const original=seed.products.find(x=>x.id===p.id&&x.name===p.name);
+ // Remove color suffix from legacy Superlight 2 titles without changing
+ // the individual white/black variants or custom merchant product names.
+ const name=(p.id==='mouse'||p.id==='logitech-pro-x-superlight-2-black')&&
+  /^Logitech G PRO X Superlight 2\s*[—-]\s*(?:белая|чёрная)$/i.test(p.name)
+  ?'Logitech G PRO X Superlight 2':p.name;
+ // Keep matching the bundled specification defaults after the public name
+ // is shortened, even when an older database still has a color suffix.
+ const original=seed.products.find(x=>x.id===p.id&&x.name===name);
  // A shop owner's custom photo must always take precedence over bundled catalog defaults.
  // Older D1 catalogs may contain blank images or the previous schematic SVG illustrations.
  const bundledPhoto=productPhotos[p.id];
  const isLegacyIllustration=/^\/products\/(?:cpu|headphones)\/[^?#]+\.svg(?:[?#].*)?$/.test(p.image||'');
  // A defined gallery (even []) means the merchant has explicitly managed the photos.
  const image=p.category!=='mouse'&&bundledPhoto&&p.gallery===undefined&&(!p.image||isLegacyIllustration)?bundledPhoto:p.image;
- // Remove color suffix from legacy Superlight 2 titles without changing
- // the individual white/black variants or custom merchant product names.
- const name=(p.id==='mouse'||p.id==='logitech-pro-x-superlight-2-black')&&
-  /^Logitech G PRO X Superlight 2\s*[—-]\s*(?:белая|чёрная)$/i.test(p.name)
-  ?'Logitech G PRO X Superlight 2':p.name;
  return {...p,name,image,specs:{...(original as Product|undefined)?.specs,...p.specs},category:p.category==='peripherals'&&['monitor','mouse','keyboard'].includes(p.art)?p.art:p.category};
 }
 export function fieldValue(p:Product,key:string):string{const explicit=p.specs?.[key];if(explicit!==undefined)return explicit;return ['socket','memory','brand'].includes(key)?String(p[key as 'socket'|'memory'|'brand']||''):key==='watts'&&p.watts?String(p.watts):''}
