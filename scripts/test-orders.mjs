@@ -94,6 +94,17 @@ assert.match(ui,/path==='\/checkout'\?<Checkout/);
 assert.match(ui,/path==='\/orders'\?<OrderHistory/);
 assert.match(ui,/<AdminOrders products=\{data\.products\}\/>/,'Admin orders receive product images for mobile lists');
 assert.match(ui,/Обсудить заказ <MessageCircle/,'Existing WhatsApp option preserved');
+// Cart displays an explicit right-aligned total for each ordinary product and
+// each single-line configured PC; duplicate quantities use the extended price.
+assert.match(ui,/<strong className="skp-cart-line-price">\{money\(row.price\*row.quantity\)\}<\/strong>/,
+ 'Ordinary product line uses quantity-adjusted total');
+assert.match(ui,/<strong className="skp-cart-line-price">\{money\(row.price\)\}<\/strong>/,
+ 'Custom PC line displays its bundled total');
+assert.match(ui,/className="sum skp-cart-order-total"/,'Cart summary uses prominent total styling');
+const cartStyles=readFileSync(new URL('../app/custom-build-cart.css',import.meta.url),'utf8');
+assert.match(cartStyles,/\.skp-cart-page \.skp-cart-line-price\{/,'Product prices are styled separately');
+assert.match(cartStyles,/color:#ffe500;text-align:right/,'Cart summary total is yellow and aligned right');
+assert.match(cartStyles,/align-items:flex-end/,'Cart amount column is aligned right');
 const buyer=readFileSync(new URL('../app/orders.tsx',import.meta.url),'utf8');
 assert.match(buyer,/ORDER_HISTORY_STORAGE/);
 assert.match(buyer,/Оформить заявку/);
