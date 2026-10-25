@@ -42,7 +42,7 @@ export const gpuFieldGroups:{title:string;fields:Field[]}[]=[
   f('usbCPorts','Видеоразъёмы USB-C','шт.'),f('outputs','Видеовыходы / их версии'),
   f('maxDisplays','Макс. число мониторов','шт.'),f('maxResolution','Максимальное разрешение'),
   f('rayTracing','Аппаратная трассировка лучей'),
-  f('dlss','DLSS','', 'NVIDIA'),f('fsr','FSR','', 'AMD'),f('xess','XeSS','', 'Intel'),
+  f('dlss','DLSS',undefined,'NVIDIA'),f('fsr','FSR'),f('xess','XeSS'),
   f('videoEncoders','Кодирование видео (AV1 / H.264 / HEVC)')
  ]}
 ];
