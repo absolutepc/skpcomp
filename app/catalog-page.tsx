@@ -13,6 +13,11 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  const subdivisions=parent==='components'?components:parent==='peripherals'?peripherals:null;
  const base=products.filter(p=>inCategory(p,category));
  const fields=[{key:'brand',label:'Бренд'},...(categoryFields[category]||[])];
+ // More GPU attributes are supported in admin than every model has values for.
+ // Avoid showing empty, unusable slider groups in the storefront.
+ const visibleFields=category==='gpu'
+  ?fields.filter(field=>field.key==='brand'||base.some(product=>fieldValue(product,field.key).trim()!==''))
+  :fields;
  const shown=base.filter(p=>(p.name+' '+p.description+' '+p.brand).toLocaleLowerCase('ru').includes(query.trim().toLocaleLowerCase('ru'))&&(!min||p.price>=Number(min))&&(!max||p.price<=Number(max))&&(!stock||p.stock)&&matchesFilters(p,facets,ranges));
  if(sort!=='popular')shown.sort((a,b)=>sort==='low'?a.price-b.price:sort==='high'?b.price-a.price:a.name.localeCompare(b.name,'ru'));
  const count=Object.values(facets).reduce((s,a)=>s+a.length,0)+Object.values(ranges).filter(r=>r.min||r.max).length+Number(!!min||!!max)+Number(stock);
@@ -21,7 +26,7 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  return <section className="catalog-page"><div className="breadcrumb">SKP / Каталог{subdivisions?' / '+groups[parent]:''}</div><h1>{components[category]||peripherals[category]||groups[category]||'Каталог'}</h1><div className="catalog-tabs">{Object.entries(groups).map(([id,label])=>link(id,label,parent===id))}</div>{subdivisions&&<nav className="catalog-subcategories" aria-label="Подразделы каталога">{[[parent,'Все категории'],...Object.entries(subdivisions)].map(([id,label])=>{const Icon=categoryIcons[id]||LayoutGrid;return <a key={id} href={'/catalog/'+id} className={category===id?'selected':''} aria-current={category===id?'page':undefined} onClick={e=>{e.preventDefault();nav('/catalog/'+id)}}><span className="subcategory-icon"><Icon size={27} strokeWidth={1.5} aria-hidden="true"/></span><span>{label}</span></a>})}</nav>}
  <div className="catalog-toolbar"><div className="search"><Search size={18}/><input id="search" aria-label="Поиск товаров" placeholder="Поиск в разделе" value={query} onChange={e=>setQuery(e.target.value)}/></div><select aria-label="Сортировка товаров" value={sort} onChange={e=>setSort(e.target.value)}><option value="popular">По умолчанию</option><option value="low">Сначала дешевле</option><option value="high">Сначала дороже</option><option value="name">По названию</option></select><button className="catalog-filter-toggle button outline" aria-expanded={open} aria-controls="category-filters" onClick={()=>setOpen(!open)}><SlidersHorizontal size={17}/> Фильтры {count>0&&`(${count})`}</button></div>
  <div className="catalog-layout"><aside id="category-filters" className={'catalog-facets'+(open?' is-open':'')}><div className="facet-title"><h2>Фильтры</h2><button onClick={reset}>Сбросить</button></div><fieldset><legend>Цена, ₽</legend><CatalogRange label="Цена" values={base.map(p=>p.price).filter(price=>price>0)} value={{min,max}} onChange={value=>{setMin(value.min||'');setMax(value.max||'')}}/></fieldset><label className="facet-checkbox"><input type="checkbox" checked={stock} onChange={e=>setStock(e.target.checked)}/> Только в наличии</label>
- {fields.map(field=>{
+ {visibleFields.map(field=>{
  const options=Array.from(new Set(base.flatMap(p=>splitValues(fieldValue(p,field.key))))).sort((a,b)=>a.localeCompare(b,'ru',{numeric:true}));
  const range=ranges[field.key]||{};
  const toggle=(option:string)=>setFacets({...facets,[field.key]:(facets[field.key]||[]).includes(option)?facets[field.key].filter(x=>x!==option):[...(facets[field.key]||[]),option]});
