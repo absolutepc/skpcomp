@@ -10,6 +10,8 @@ const {getProductImages,updateProductGallery,isProductImageUrl,MAX_GALLERY_IMAGE
 assert.equal(MAX_GALLERY_IMAGES,16);
 const url='/api/media?key=products/special-white/12345678-1234-4234-8234-123456789abc.webp';
 assert.equal(isProductImageUrl(url),true);
+assert.equal(isProductImageUrl(url.replace('.webp','.png')),true,'Safari PNG gallery URL is accepted');
+assert.equal(isProductImageUrl(url.replace('.webp','.jpg')),false,'Other formats are still rejected');
 assert.equal(isProductImageUrl('/api/media?key=products/../other.webp'),false);
 assert.equal(isProductImageUrl('javascript:alert(1)'),false);
 assert.equal(isProductImageUrl('http://example.org/opaque.png'),false);
@@ -25,4 +27,38 @@ assert.equal(first.image,'/products/photos/one.webp');
 assert.equal(getProductImages(second)[0],'/products/photos/two.webp');
 assert.equal(getProductImages(updateProductGallery(first,[])).length,0);
 assert.equal(getProductImages(updateProductGallery(first,Array.from({length:40},(_,i)=>'https://site.com/'+i+'.webp'))).length,16);
-console.log('Gallery tests passed: image ordering, duplicates, per-colour isolation and secure URLs.');
+// Exercise the browser conversion helper with mock canvas codecs. Safari can
+// silently encode PNG even when image/webp was requested.
+const uploadSource=readFileSync(new URL('../app/admin-product-media.tsx',import.meta.url),'utf8');
+const prepareStart=uploadSource.indexOf('async function transparentImage(');
+const prepareEnd=uploadSource.indexOf('export default function AdminProductMedia',prepareStart);
+assert(prepareStart>0&&prepareEnd>prepareStart,'Image preparation helper is present');
+const helperSource=uploadSource.slice(prepareStart,prepareEnd)+'\nexports.prepare = transparentImage;';
+const helperJS=ts.transpileModule(helperSource,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+function testCanvas(encode,alpha=0){
+ const ctx={
+  clearRect(){},drawImage(){},
+  getImageData(){const data=new Uint8ClampedArray(32);data.fill(255);for(let i=3;i<data.length;i+=4)data[i]=alpha;return {data}}
+ };
+ const canvas={width:0,height:0,getContext:()=>ctx,
+  toBlob(callback,type){callback(encode(type,this))}
+ };
+ const sandbox={exports:{},document:{createElement:()=>canvas},createImageBitmap:async()=>({width:1200,height:1200,close(){}})};
+ runInNewContext(helperJS,sandbox);
+ return sandbox.exports.prepare;
+}
+const pngFallback=testCanvas(()=>({type:'image/png',size:1000}));
+assert.equal((await pngFallback({type:'image/png',size:1024})).type,'image/png','Safari PNG fallback remains uploadable');
+const webpCodec=testCanvas(()=>({type:'image/webp',size:900}));
+assert.equal((await webpCodec({type:'image/png',size:1024})).type,'image/webp','WebP-capable browsers retain WebP');
+const nullWebp=testCanvas(type=>type==='image/webp'?null:{type:'image/png',size:700});
+assert.equal((await nullWebp({type:'image/png',size:1024})).type,'image/png','Null WebP conversion retries PNG');
+await assert.rejects(
+ ()=>testCanvas(()=>({type:'image/png',size:1000}),255)({type:'image/png',size:1024}),
+ /непрозрачный фон/,'Opaque product photos are still rejected'
+);
+const mediaRoute=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf8');
+assert.match(mediaRoute,/\(\?:webp\|png\)/,'Media API allows both PNG and WebP keys');
+assert.match(mediaRoute,/file\.type!==mime/,'Media API checks MIME against PNG or WebP magic bytes');
+assert.match(mediaRoute,/key\.endsWith\('\.png'\)/,'PNG response carries the right MIME');
+console.log('Gallery tests passed: image ordering, duplicates, per-colour isolation and secure URLs, Safari PNG fallback and image validation.');
