@@ -1,6 +1,6 @@
 import {localAdminAccess} from '../../../lib/local-admin-access';
 import {adminCookie} from '../../../lib/admin-cookie';
-import {storeEnv,isPostgres} from '../../../db/platform-store';
+import {storeEnv} from '../../../db/platform-store';
 import {seed} from '../../../lib/seed';
 import {upgradeLogitechGamingMice} from '../../../lib/logitech-mouse-upgrade';
 import {upgradeReadyPcDemos} from '../../../lib/ready-pc-demos';
