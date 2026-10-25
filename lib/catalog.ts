@@ -53,7 +53,12 @@ export function normalizeProduct(p:Product):Product{
  const isLegacyIllustration=/^\/products\/(?:cpu|headphones)\/[^?#]+\.svg(?:[?#].*)?$/.test(p.image||'');
  // A defined gallery (even []) means the merchant has explicitly managed the photos.
  const image=p.category!=='mouse'&&bundledPhoto&&p.gallery===undefined&&(!p.image||isLegacyIllustration)?bundledPhoto:p.image;
- return {...p,image,specs:{...(original as Product|undefined)?.specs,...p.specs},category:p.category==='peripherals'&&['monitor','mouse','keyboard'].includes(p.art)?p.art:p.category};
+ // Remove color suffix from legacy Superlight 2 titles without changing
+ // the individual white/black variants or custom merchant product names.
+ const name=(p.id==='mouse'||p.id==='logitech-pro-x-superlight-2-black')&&
+  /^Logitech G PRO X Superlight 2\s*[—-]\s*(?:белая|чёрная)$/i.test(p.name)
+  ?'Logitech G PRO X Superlight 2':p.name;
+ return {...p,name,image,specs:{...(original as Product|undefined)?.specs,...p.specs},category:p.category==='peripherals'&&['monitor','mouse','keyboard'].includes(p.art)?p.art:p.category};
 }
 export function fieldValue(p:Product,key:string):string{const explicit=p.specs?.[key];if(explicit!==undefined)return explicit;return ['socket','memory','brand'].includes(key)?String(p[key as 'socket'|'memory'|'brand']||''):key==='watts'&&p.watts?String(p.watts):''}
 export const splitValues=(v:string)=>v.split(/[|;]/).map(x=>x.trim()).filter(Boolean);
