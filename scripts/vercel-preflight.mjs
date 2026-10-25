@@ -13,7 +13,7 @@ const read = (p) => readFileSync(join(root, p), "utf8");
 const checks = [
   ["Vercel Vite config exists", () => existsSync(join(root, "vite.vercel.config.ts"))],
   ["Nitro dependency declared", () => Boolean(JSON.parse(read("package.json")).devDependencies?.nitro)],
-  ["Database adapter is not Cloudflare D1", () => !/cloudflare:workers|drizzle-orm\/d1|env\.DB/.test(read("db/index.ts"))],
+  ["PostgreSQL store route is wired", () => read("app/api/store/route.ts").includes("storeEnv()") && read("app/api/reviews/route.ts").includes("storeEnv()")],
   ["Media routes do not require Cloudflare R2", () => !/cloudflare:workers|R2Bucket|E\.MEDIA/.test(read("app/api/media/route.ts"))],
   ["Production admin requires a password", () => {
     const source = read("lib/local-admin-access.ts");
