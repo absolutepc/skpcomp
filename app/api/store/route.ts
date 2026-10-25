@@ -1,6 +1,6 @@
 import {localAdminAccess} from '../../../lib/local-admin-access';
 import {adminCookie} from '../../../lib/admin-cookie';
-import {env} from 'cloudflare:workers';
+import {storeEnv,isPostgres} from '../../../db/platform-store';
 import {seed} from '../../../lib/seed';
 import {upgradeLogitechGamingMice} from '../../../lib/logitech-mouse-upgrade';
 import {upgradeReadyPcDemos} from '../../../lib/ready-pc-demos';
@@ -11,7 +11,7 @@ import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery
 import {validateHeroSlides,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION,upgradeComputerHeroImage,COMPUTER_HERO_IMAGE_VERSION,swapSecondAndFourthHeroSlides,HERO_SLIDE_ORDER_VERSION} from '../../../lib/hero-slides';
 import {CATALOG_VERSION,FEATURED_MONITOR_ID,upgradeFeaturedMonitorProducts,linkFeaturedMonitorSlide} from '../../../lib/featured-monitor';
 import {addRogProducts,groupRogMonitors} from '../../../lib/rog-catalog';
-const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
+const E=await storeEnv();
 // A fresh local D1 database has no tables until its first request.
 async function ensureShop(){await E.DB.prepare('CREATE TABLE IF NOT EXISTS shop (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)').run()}
 async function token(){let a=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));return Array.from(new Uint8Array(a)).map(x=>x.toString(16).padStart(2,'0')).join('')}
