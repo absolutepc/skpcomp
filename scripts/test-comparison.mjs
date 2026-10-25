@@ -85,7 +85,23 @@ const amdHTML=renderToStaticMarkup(React.createElement(techSpec,{product:amd}));
 assert(nvidiaHTML.includes('CUDA-ядра')&&nvidiaHTML.includes('Тензорные ядра'),'NVIDIA technical specs show relevant cores');
 assert(!nvidiaHTML.includes('Потоковые процессоры'),'NVIDIA specs exclude Radeon-only core labels');
 assert(amdHTML.includes('Потоковые процессоры')&&!amdHTML.includes('CUDA-ядра'),'AMD technical specs never display CUDA');
-const pcie=comparisonMetrics('gpu').find(m=>m.key==='pcieVersion');
-for(const [raw,expected] of [['PCI Express 5.0',5],['PCIe 4.0 x16',4],['PCI-E x16',null],['',null],['PCIe 3,0',3]]){
- assert.equal(pcie.read({...product,category:'gpu',specs:{interface:raw}}),expected);
+// GPU radar compares six hardware specs, independently of price/form factor/PCIe.
+const gpuAxes=comparisonMetrics('gpu');
+assert.equal(gpuAxes.map(m=>m.key).join(','),'vram,bus,watts,baseClock,cudaCores,bandwidth');
+const hardware={...nvidia,watts:250,specs:{...nvidia.specs,vram:'12',bus:'192',baseClock:'2325',memorySpeed:'28',bandwidth:'672'}};
+assert.equal(gpuAxes.map(m=>m.read(hardware)).join(','),'12,192,250,2325,6144,672');
+assert.equal(gpuAxes.filter(m=>m.lowerBetter).map(m=>m.key).join(','),'watts');
+for(const base of [nvidia,amd,intel]){
+ const gpu={...base,specs:{...base.specs,baseClock:'2000',memorySpeed:'20,5',bandwidth:'500'}};
+ assert.equal(gpuAxes.find(m=>m.key==='baseClock').read(gpu),2000);
+ assert.equal(gpuAxes.find(m=>m.key==='cudaCores').read(gpu),base===nvidia?6144:null);
+ assert.equal(gpuAxes.find(m=>m.key==='bandwidth').read(gpu),500);
 }
+for(const key of ['baseClock','bandwidth'])assert.equal(gpuAxes.find(m=>m.key===key).read(nvidia),null);
+const gpuRadar=renderToStaticMarkup(React.createElement(Radar,{left:hardware,right:{...hardware,id:'other'},category:'gpu'}));
+assert(gpuRadar.includes('Базовая частота GPU')&&gpuRadar.includes('Пропускная способность'));
+assert(!gpuRadar.includes('Версия PCIe')&&!gpuRadar.includes('Длина')&&!gpuRadar.includes('Цена')&&!gpuRadar.includes('NaN'));
+console.log('GPU radar: common hardware axes, units and missing data passed.');
+
+assert.equal(gpuAxes.find(m=>m.key==='cudaCores').read({...nvidia,specs:{gpuChipBrand:'NVIDIA'}}),null);
+assert(gpuRadar.includes('CUDA-ядра')&&!gpuRadar.includes('Скорость памяти'));
