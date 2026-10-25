@@ -3,7 +3,7 @@ import {useState} from 'react';
 import {ArrowRight, ChevronRight, Cpu, Gauge, GitCompareArrows, Info, MemoryStick, Package, ShoppingCart, SlidersHorizontal, Trash2, X, Zap} from 'lucide-react';
 import type {LucideIcon} from 'lucide-react';
 import type {Product} from '../lib/seed';
-import {categoryFields,components,peripherals,fieldValue,normalizeProduct} from '../lib/catalog';
+import {categoryFields,components,peripherals,specValue,normalizeProduct} from '../lib/catalog';
 import {getBuildRows} from '../lib/build-components';
 import {getProductImages} from '../lib/product-gallery';
 import {categoryIcons} from './catalog-icons';
@@ -47,7 +47,7 @@ export default function ComparePage({
     key:field.key,label:field.label+(field.unit?', '+field.unit:''),
     numeric:Boolean(field.numeric),lowerBetter:lowerIsBetter.has(field.key),
     Icon:icons[field.key]||categoryIcons[field.key]||SlidersHorizontal,
-    read:(p:Product)=>fieldValue(p,field.key).trim()||'—'
+    read:(p:Product)=>specValue(p,field).trim()||'—'
   }));
  const allRows:CompareRow[]=[
   ...allFields,
