@@ -3,12 +3,12 @@ import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 
-function load(relative){
+function load(relative,deps={}){
  const input=readFileSync(new URL('../'+relative,import.meta.url),'utf8');
  const output=ts.transpileModule(input,{fileName:relative,reportDiagnostics:true,compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}});
  assert.equal(output.diagnostics?.filter(x=>x.category===ts.DiagnosticCategory.Error).length??0,0,relative);
  const exports={};
- runInNewContext(output.outputText,{exports,Set,Map,Array,Number,Math,JSON});
+ runInNewContext(output.outputText,{exports,require:key=>{if(!(key in deps))throw Error('Missing dependency '+key);return deps[key]},Set,Map,Array,Number,Math,JSON});
  return exports;
 }
 const {seed}=load('lib/seed.ts');
@@ -51,4 +51,28 @@ assert.equal(upgradeLogitechGamingMice(removed,seed.products,10).some(p=>p.id===
  'An intentionally deleted product stays deleted');
 const route=readFileSync(new URL('../app/api/store/route.ts',import.meta.url),'utf8');
 assert.match(route,/upgradeLogitechGamingMice\(products,seed\.products,oldVersion\)/,'D1 upgrade connected');
-console.log('Logitech mouse checks passed: five variants, correct prices and technical fields, safe saved catalog upgrade.');
+// Two Superlight 2 color variants keep their unique IDs and color metadata,
+ // while their public names omit the redundant color suffix.
+ const catalog=load('lib/catalog.ts',{'./seed':{seed},'./product-photos':{productPhotos:{}}});
+ const white=seed.products.find(p=>p.id==='mouse');
+ const black=seed.products.find(p=>p.id==='logitech-pro-x-superlight-2-black');
+ for(const product of [white,black]){
+  assert.equal(product.name,'Logitech G PRO X Superlight 2','Seed keeps a color-free visible title');
+  assert.ok(product.variantGroup,'Variant grouping is preserved');
+  assert.ok(product.colorHex,'Variant-specific color remains available');
+ }
+ for(const [product,colorSuffix] of [[white,'белая'],[black,'чёрная']]){
+  const legacy={...product,name:product.name+' — '+colorSuffix,specs:{color:product.specs.color}};
+  const normalized=catalog.normalizeProduct(legacy);
+  assert.equal(normalized.name,'Logitech G PRO X Superlight 2','Existing saved catalog title is upgraded');
+  assert.equal(normalized.specs.polling,'8000','Old color-suffixed title still receives bundled specifications');
+  assert.equal(normalized.specs.color,product.specs.color);
+  assert.equal(normalized.variantGroup,product.variantGroup);
+  assert.equal(normalized.colorHex,product.colorHex);
+  assert.equal(catalog.normalizeProduct({...product,name:'Custom special edition'}).name,'Custom special edition',
+   'Custom merchant titles are not overwritten');
+ }
+ const cardCss=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
+ assert.match(cardCss,/\.card-image \.favorite\{top:0;right:0\}/,'Favorite is top-right aligned');
+ assert.match(cardCss,/\.card-image \.skp-card-compare\{top:36px;right:0\}/,'Compare is vertically aligned with favorite');
+ console.log('Logitech mouse checks passed: five variants, correct prices and technical fields, safe saved catalog upgrade.');
