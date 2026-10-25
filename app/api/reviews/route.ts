@@ -1,10 +1,11 @@
 import {localAdminAccess} from '../../../lib/local-admin-access';
-import {env} from 'cloudflare:workers';
+import {storeEnv,isPostgres} from '../../../db/platform-store';
 
-const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
+const E=await storeEnv();
 type ReviewRow={id:string;product_id:string;author:string;rating:number;body:string;status:string;created_at:string};
 
 async function setup(){
+ if(isPostgres())return;
  await E.DB.prepare(`CREATE TABLE IF NOT EXISTS product_reviews (
   id TEXT PRIMARY KEY,
   product_id TEXT NOT NULL,
@@ -13,7 +14,7 @@ async function setup(){
   body TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending',
   ip_hash TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
  )`).run();
 }
 async function authorized(request:Request){
