@@ -30,6 +30,15 @@ assert.equal(getProductImages(updateProductGallery(first,Array.from({length:40},
 // Exercise the browser conversion helper with mock canvas codecs. Safari can
 // silently encode PNG even when image/webp was requested.
 const uploadSource=readFileSync(new URL('../app/admin-product-media.tsx',import.meta.url),'utf8');
+// Safari multipart requests must never include the original non-ASCII filename.
+assert.match(uploadSource,/data\.append\('file',image,'skp-product-image\.'\+extension\)/,
+ 'Uploads use an ASCII-only filename; original filenames can contain Cyrillic or ™');
+assert.doesNotMatch(uploadSource,/data\.append\('file',image,file\.name/,
+ 'Original non-ASCII names must not be passed into multipart FormData');
+assert.match(uploadSource,/contentType\.includes\('application\/json'\)/,
+ 'Parse an API response as JSON only when its MIME type is JSON');
+assert.match(uploadSource,/response\.status===404/,
+ 'Show real HTTP upload errors instead of the generic Safari SyntaxError');
 const prepareStart=uploadSource.indexOf('async function transparentImage(');
 const prepareEnd=uploadSource.indexOf('export default function AdminProductMedia',prepareStart);
 assert(prepareStart>0&&prepareEnd>prepareStart,'Image preparation helper is present');
