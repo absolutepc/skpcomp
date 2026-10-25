@@ -3,6 +3,7 @@ import {useEffect,useRef,useState} from 'react';
 import {ArrowDown,ArrowUp,ImagePlus,Pencil,Plus,Save,Trash2,X} from 'lucide-react';
 import {createHeroSlide,defaultHeroSlides,HERO_LAYOUTS,MAX_HERO_SLIDES,MAX_SLIDE_IMAGES,moveHeroSlide,validateHeroSlides,enableHeroCanvas,addHeroLayer,removeHeroLayer,resolveHeroPlacement,setHeroBreakpointPlacement,type HeroLayer,type HeroPlacement,type HeroBreakpoint,type HeroSlide} from '../lib/hero-slides';
 import ScaledHeroPreview from './scaled-hero-preview';
+import {uploadSkpImage} from '../lib/upload-skp-image';
 import './admin-hero-slides.css';
 
 const layoutNames:Record<HeroSlide['layout'],string>={
@@ -87,15 +88,9 @@ export default function AdminHeroSlides({slides=defaultHeroSlides,onSave}:{slide
   setUploading(target.id);setError('');setSuccess('');
   try{
    const image=await prepareSlideImage(file);
-   const body=new FormData();
-   body.append('assetType','slide');
-   body.append('slideId',target.id);
-   body.append('file',image,'slide.webp');
-   const response=await fetch('/api/media',{method:'POST',body});
-   const result=await response.json() as {url?:string;error?:string};
-   if(!response.ok||!result.url)throw Error(result.error||'Не удалось загрузить изображение.');
-   if(target.layerId)layerEdit(target.id,target.layerId,{image:result.url});
-   else edit(target.id,target.secondary?{image2:result.url}:{image:result.url});
+   const url=await uploadSkpImage(image,'slide',target.id);
+   if(target.layerId)layerEdit(target.id,target.layerId,{image:url});
+   else edit(target.id,target.secondary?{image2:url}:{image:url});
    setSuccess('Фотография загружена. Нажмите «Сохранить слайды», чтобы применить.');
   }catch(e){setError(e instanceof Error?e.message:'Ошибка загрузки.')}
   finally{setUploading('');if(picker.current)picker.current.value='';uploadTarget.current=null}
