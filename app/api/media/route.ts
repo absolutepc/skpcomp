@@ -2,7 +2,7 @@ import {localAdminAccess} from '../../../lib/local-admin-access';
 import {env} from 'cloudflare:workers';
 
 const E=env as unknown as {MEDIA?:R2Bucket;ADMIN_PASSWORD?:string};
-const MEDIA_KEY=/^(?:products|slides)\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.webp$/;
+const MEDIA_KEY=/^(?:products|slides)\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.(?:webp|png)$/;
 const MAX_FILE_BYTES=8*1024*1024;
 const json=(data:object,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 async function authorized(request:Request){
@@ -21,7 +21,7 @@ export async function GET(request:Request){
   if(!object)return json({error:'Фотография не найдена'},404);
   return new Response(object.body,{
    headers:{
-    'Content-Type':'image/webp',
+    'Content-Type':key.endsWith('.png')?'image/png':'image/webp',
     'Cache-Control':'public, max-age=31536000, immutable',
     'X-Content-Type-Options':'nosniff',
     'ETag':object.httpEtag
@@ -41,14 +41,19 @@ export async function POST(request:Request){
   const file=data.get('file'),isSlide=data.get('assetType')==='slide';
   const assetId=isSlide?data.get('slideId'):data.get('productId');
   if(typeof assetId!=='string'||!/^[a-zA-Z0-9_-]{1,90}$/.test(assetId))return json({error:'Некорректный ID изображения'},400);
-  if(!(file instanceof File)||file.size<50||file.size>MAX_FILE_BYTES||file.type!=='image/webp')
-   return json({error:'Загрузите WebP с прозрачным фоном размером до 8 МБ.'},400);
+  if(!(file instanceof File)||file.size<50||file.size>MAX_FILE_BYTES||!['image/png','image/webp'].includes(file.type))
+   return json({error:'Загрузите PNG или WebP с прозрачным фоном размером до 8 МБ.'},400);
   const bytes=new Uint8Array(await file.arrayBuffer());
-  // Validate RIFF/WEBP signature; never trust the extension or browser MIME alone.
-  if(String.fromCharCode(...bytes.slice(0,4))!=='RIFF'||String.fromCharCode(...bytes.slice(8,12))!=='WEBP')
-   return json({error:'Повреждённый или неподдерживаемый WebP-файл'},400);
-  const key=(isSlide?'slides/':'products/')+assetId+'/'+crypto.randomUUID()+'.webp';
-  await E.MEDIA.put(key,bytes,{httpMetadata:{contentType:'image/webp'},customMetadata:isSlide?{slideId:assetId}:{productId:assetId}});
+  // Validate the actual file signature, not just the browser-declared MIME.
+  const isWebp=String.fromCharCode(...bytes.slice(0,4))==='RIFF'&&
+   String.fromCharCode(...bytes.slice(8,12))==='WEBP';
+  const isPng=[137,80,78,71,13,10,26,10].every((value,index)=>bytes[index]===value);
+  const mime=isWebp?'image/webp':isPng?'image/png':'';
+  if(!mime||file.type!==mime)
+   return json({error:'Повреждённый или неподдерживаемый PNG/WebP-файл'},400);
+  const ext=isPng?'png':'webp';
+  const key=(isSlide?'slides/':'products/')+assetId+'/'+crypto.randomUUID()+'.'+ext;
+  await E.MEDIA.put(key,bytes,{httpMetadata:{contentType:mime},customMetadata:isSlide?{slideId:assetId}:{productId:assetId}});
   return json({url:'/api/media?key='+key,key,size:file.size},201);
  }catch{return json({error:'Не удалось сохранить файл в R2. Проверьте настройки хранилища.'},503)}
 }
