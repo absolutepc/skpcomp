@@ -61,10 +61,30 @@ export default function AdminProductMedia({product,change}:Props){
     if(images.length+uploaded>=MAX_GALLERY_IMAGES)throw Error('Не более '+MAX_GALLERY_IMAGES+' фотографий для одного товара');
     const image=await transparentImage(file);
     const extension=image.type==='image/png'?'png':'webp';
-    const data=new FormData();data.append('productId',product.id);data.append('file',image,file.name.replace(/\.[^.]+$/,'')+'.'+extension);
-    const response=await fetch('/api/media',{method:'POST',body:data});
-    const result=await response.json() as {url?:string;error?:string};
-    if(!response.ok||!result.url)throw Error(result.error||'Ошибка загрузки изображения');
+    // Safari can reject non-ASCII multipart filenames (e.g. Cyrillic or ™).
+    // The actual filename is not needed because the API generates a safe UUID.
+    const data=new FormData();
+    data.append('productId',product.id);
+    data.append('file',image,'skp-product-image.'+extension);
+    let response:Response;
+    try{response=await fetch('/api/media',{method:'POST',body:data})}
+    catch{throw Error('Не удалось отправить фотографию. Проверьте соединение с локальным сервером SKP.')}
+    // Safari's response.json() can hide an HTML 404/500 behind the unhelpful
+    // "The string did not match the expected pattern" SyntaxError.
+    const contentType=response.headers.get('content-type')||'';
+    let result:{url?:string;error?:string}|null=null;
+    if(contentType.includes('application/json')){
+     try{result=await response.json() as {url?:string;error?:string}}
+     catch{throw Error('Сервер вернул некорректный ответ (HTTP '+response.status+'). Проверьте терминал SKP.')}
+    }
+    if(!response.ok||!result?.url){
+     throw Error(result?.error||(
+      response.status===413?'Файл слишком большой для сервера (HTTP 413).':
+      response.status===404?'Адрес загрузки /api/media не найден (HTTP 404).':
+      response.status===401||response.status===403?'Нет доступа к загрузке (HTTP '+response.status+'). Откройте админ-панель на этом компьютере.':
+      'Не удалось загрузить фотографию (HTTP '+response.status+'). Проверьте терминал SKP.'
+     ));
+    }
     update(all=>[...all,result.url!]);
     uploaded++;
    }
