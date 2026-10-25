@@ -1930,3 +1930,19 @@ html{scrollbar-color:#c9b900 #101313;scrollbar-width:thin}
  .card-image .favorite{top:0;right:0}
  .card-image .skp-card-compare{top:36px;right:0}
 }
+
+/* Organize the expanded NVIDIA / AMD / Intel GPU specification editor. */
+.modal .admin-spec-fields .skp-gpu-spec-group{
+ margin:19px 0 0;padding:16px 0 0;border-top:1px solid #343d3b;
+}
+.modal .admin-spec-fields .skp-gpu-spec-group:first-of-type{
+ margin-top:13px;border-top:0;padding-top:0;
+}
+.modal .admin-spec-fields .skp-gpu-spec-group h4{
+ margin:0 0 14px;color:#ffe500;font-size:13px;line-height:1.5;font-weight:750;
+}
+.modal .admin-spec-fields .skp-gpu-spec-group .form-grid{
+ gap:13px 17px;
+}
+.modal .admin-spec-fields .skp-gpu-spec-group label{min-width:0}
+.modal .admin-spec-fields .skp-gpu-spec-group input{width:100%;min-width:0}
