@@ -2,7 +2,7 @@
 import {useEffect,useId,useRef,useState} from 'react';
 import {ArrowUpRight,X} from 'lucide-react';
 import type {Product} from '../lib/seed';
-import {categoryFields,fieldValue} from '../lib/catalog';
+import {fieldsForProduct,fieldValue} from '../lib/catalog';
 import {getBuildRows} from '../lib/build-components';
 import './product-specifications.css';
 
@@ -12,7 +12,7 @@ export default function ProductSpecifications({product}:{product:Product}){
  const titleId=useId();
  const rows=product.category==='pc'
   ?getBuildRows(product)
-  :(categoryFields[product.category]||[]).map(field=>({
+  :fieldsForProduct(product).map(field=>({
    key:field.key,label:field.label+(field.unit?', '+field.unit:''),
    value:fieldValue(product,field.key)
   }));
