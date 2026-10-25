@@ -18,7 +18,7 @@ function load(file){
  return module.exports;
 }
 const {comparisonMetrics,relativeValues,numericValue}=load('lib/comparison-metrics.ts');
-const {categoryFields}=load('lib/catalog.ts');
+const {categoryFields,gpuFieldGroups,fieldsForProduct,specValue,matchesFilters}=load('lib/catalog.ts');
 for(const cat of [...Object.keys(categoryFields),'pc'])assert.equal(comparisonMetrics(cat).length,6,cat);
 assert.equal(numericValue('0,2'),.2);assert.equal(numericValue(''),null);assert.equal(numericValue('12-16'),null);
 assert.equal(numericValue('Infinity'),null);
@@ -49,6 +49,42 @@ for(const products of [[],[product],[product,other],[product,other,{...other,id:
 assert(comparisonMetrics('pc').every(m=>m.read({...product,category:'pc',description:''})===null||m.key==='price'));
 console.log('Comparison: category axes, normalization, missing data and 0/1/2-product rendering passed.');
 
+// GPU specification completeness and manufacturer-aware visibility.
+assert(gpuFieldGroups.length>=5,'Grouped video card details are available in the editor');
+const gpuFields=categoryFields.gpu;
+assert(gpuFields.length>=35&&gpuFields.length<=80,'Extended GPU schema remains under server key limits');
+assert.equal(new Set(gpuFields.map(field=>field.key)).size,gpuFields.length,'GPU specification keys must be unique');
+for(const key of ['gpu','cudaCores','rtCores','tensorCores','streamProcessors','rayAccelerators',
+ 'xeCores','xmxEngines','baseClock','boostClock','vram','videoMemory','bus','bandwidth',
+ 'memorySpeed','interface','watts','recommendedPsu','powerConnectors','length','width',
+ 'height','slots','hdmiPorts','displayPortPorts','maxResolution']){
+ assert(gpuFields.some(field=>field.key===key),'Missing GPU hardware field '+key);
+}
+const gpuBase={...product,category:'gpu',name:'GPU test',brand:'ASUS'};
+const nvidia={...gpuBase,name:'Palit GeForce RTX 5070',brand:'PALIT',
+ specs:{gpuChipBrand:'NVIDIA',gpu:'GeForce RTX 5070',vram:'12',cudaCores:'6144',rtCores:'48',tensorCores:'192'}};
+const amd={...gpuBase,name:'Sapphire Radeon RX 9070',brand:'Sapphire',
+ specs:{gpuChipBrand:'AMD',gpu:'Radeon RX 9070',streamProcessors:'4096',rayAccelerators:'64',cudaCores:'6144'}};
+const intel={...gpuBase,name:'ASRock Arc B580',brand:'ASRock',
+ specs:{gpuChipBrand:'Intel',gpu:'Arc B580',xeCores:'20',xmxEngines:'160'}};
+const keys=(p)=>fieldsForProduct(p).map(field=>field.key);
+assert(keys(nvidia).includes('cudaCores')&&!keys(nvidia).includes('streamProcessors')&&!keys(nvidia).includes('xeCores'));
+assert(keys(amd).includes('streamProcessors')&&!keys(amd).includes('cudaCores')&&!keys(amd).includes('xmxEngines'));
+assert(keys(intel).includes('xeCores')&&!keys(intel).includes('tensorCores')&&!keys(intel).includes('rayAccelerators'));
+assert.equal(specValue(amd,gpuFields.find(field=>field.key==='cudaCores')),'','Do not display stale CUDA count for an AMD GPU');
+assert.equal(specValue(nvidia,gpuFields.find(field=>field.key==='cudaCores')),'6144');
+assert(matchesFilters(nvidia,{cudaCores:['6144']},{}));
+assert(!matchesFilters(amd,{cudaCores:['6144']},{}),'AMD GPU must not pass a CUDA filter because of stale data');
+assert(!matchesFilters(intel,{}, {tensorCores:{min:'1'}}),'Intel GPU must not pass a Tensor filter');
+const gpuEditor=fs.readFileSync('app/shop.tsx','utf8');
+assert(gpuEditor.includes('gpuFieldGroups.map(group=>'),'Admin fields are shown in labeled groups');
+assert(gpuEditor.includes('field.chip===gpuChipBrand(editing)'),'Only relevant GPU field inputs are shown');
+const techSpec=load('app/product-specifications.tsx').default;
+const nvidiaHTML=renderToStaticMarkup(React.createElement(techSpec,{product:nvidia}));
+const amdHTML=renderToStaticMarkup(React.createElement(techSpec,{product:amd}));
+assert(nvidiaHTML.includes('CUDA-ядра')&&nvidiaHTML.includes('Тензорные ядра'),'NVIDIA technical specs show relevant cores');
+assert(!nvidiaHTML.includes('Потоковые процессоры'),'NVIDIA specs exclude Radeon-only core labels');
+assert(amdHTML.includes('Потоковые процессоры')&&!amdHTML.includes('CUDA-ядра'),'AMD technical specs never display CUDA');
 const pcie=comparisonMetrics('gpu').find(m=>m.key==='pcieVersion');
 for(const [raw,expected] of [['PCI Express 5.0',5],['PCIe 4.0 x16',4],['PCI-E x16',null],['',null],['PCIe 3,0',3]]){
  assert.equal(pcie.read({...product,category:'gpu',specs:{interface:raw}}),expected);
