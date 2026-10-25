@@ -22,7 +22,7 @@
     "test:logitech": "node scripts/test-logitech-mice.mjs",
     "test:categories": "node scripts/test-home-category-images.mjs",
     "preflight:vercel": "node scripts/vercel-preflight.mjs",
-    "build:vercel": "node scripts/vercel-preflight.mjs && vite build --config vite.vercel.config.ts"
+    "build:vercel": "node scripts/vercel-preflight.mjs && NITRO_PRESET=vercel vite build --config vite.vercel.config.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
