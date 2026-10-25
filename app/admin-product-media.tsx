@@ -8,28 +8,41 @@ type Props={
  product:Product;
  change:(update:(previous:Product)=>Product)=>void;
 };
-async function transparentWebp(file:File):Promise<Blob>{
+async function transparentImage(file:File):Promise<Blob>{
  if(!['image/png','image/webp'].includes(file.type))throw Error('Только PNG или WebP с прозрачным фоном');
  if(file.size>20*1024*1024)throw Error('Исходный файл не должен превышать 20 МБ');
  const bitmap=await createImageBitmap(file);
  try{
-  const factor=Math.min(1,1800/Math.max(bitmap.width,bitmap.height));
   const canvas=document.createElement('canvas');
-  canvas.width=Math.max(1,Math.round(bitmap.width*factor));
-  canvas.height=Math.max(1,Math.round(bitmap.height*factor));
   const ctx=canvas.getContext('2d',{willReadFrequently:true});
   if(!ctx)throw Error('Не удалось обработать изображение');
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
-  // Require actual transparent pixels instead of merely trusting the PNG/WebP extension.
-  const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-  let hasAlpha=false;
-  for(let i=3;i<pixels.length;i+=4*8){if(pixels[i]<245){hasAlpha=true;break}}
-  if(!hasAlpha)throw Error('У изображения непрозрачный фон. Удали фон перед загрузкой.');
-  const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,'image/webp',.90));
-  if(!blob||blob.type!=='image/webp')throw Error('Браузер не смог преобразовать фото в WebP');
-  if(blob.size>8*1024*1024)throw Error('Обработанный файл больше 8 МБ');
-  return blob;
+  let factor=Math.min(1,1800/Math.max(bitmap.width,bitmap.height));
+  let checkedTransparency=false;
+  // Safari may encode PNG even when WebP is requested. Both formats retain alpha.
+  // Downsize unusually large PNG outputs to fit the media endpoint's 8 MB limit.
+  for(let attempt=0;attempt<5;attempt++){
+   canvas.width=Math.max(1,Math.round(bitmap.width*factor));
+   canvas.height=Math.max(1,Math.round(bitmap.height*factor));
+   ctx.clearRect(0,0,canvas.width,canvas.height);
+   ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+   if(!checkedTransparency){
+    const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    let hasAlpha=false;
+    for(let i=3;i<pixels.length;i+=4*8){if(pixels[i]<245){hasAlpha=true;break}}
+    if(!hasAlpha)throw Error('У изображения непрозрачный фон. Удали фон перед загрузкой.');
+    checkedTransparency=true;
+   }
+   let blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,'image/webp',.90));
+   // Some browsers return null or a PNG instead of the requested WebP.
+   if(!blob||!['image/webp','image/png'].includes(blob.type)){
+    blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,'image/png'));
+   }
+   if(!blob||!['image/webp','image/png'].includes(blob.type))
+    throw Error('Браузер не смог обработать PNG/WebP. Попробуйте другой файл.');
+   if(blob.size<=8*1024*1024)return blob;
+   factor*=.75;
+  }
+  throw Error('Изображение слишком большое. Уменьшите его разрешение перед загрузкой (максимум 8 МБ).');
  }finally{bitmap.close()}
 }
 export default function AdminProductMedia({product,change}:Props){
@@ -46,8 +59,9 @@ export default function AdminProductMedia({product,change}:Props){
   try{
    for(const file of Array.from(files)){
     if(images.length+uploaded>=MAX_GALLERY_IMAGES)throw Error('Не более '+MAX_GALLERY_IMAGES+' фотографий для одного товара');
-    const webp=await transparentWebp(file);
-    const data=new FormData();data.append('productId',product.id);data.append('file',webp,file.name.replace(/\.[^.]+$/,'')+'.webp');
+    const image=await transparentImage(file);
+    const extension=image.type==='image/png'?'png':'webp';
+    const data=new FormData();data.append('productId',product.id);data.append('file',image,file.name.replace(/\.[^.]+$/,'')+'.'+extension);
     const response=await fetch('/api/media',{method:'POST',body:data});
     const result=await response.json() as {url?:string;error?:string};
     if(!response.ok||!result.url)throw Error(result.error||'Ошибка загрузки изображения');
@@ -59,7 +73,7 @@ export default function AdminProductMedia({product,change}:Props){
   finally{setBusy(false);if(picker.current)picker.current.value=''}
  }
  return <section className="skp-admin-media">
-  <div className="skp-admin-media-heading"><div><h3>Галерея товара</h3><p>Для каждого цвета своя галерея. Первая фотография показывается в каталоге. Принимаются PNG/WebP с прозрачным фоном; файлы преобразуются в WebP.</p></div><span>{images.length} / {MAX_GALLERY_IMAGES}</span></div>
+  <div className="skp-admin-media-heading"><div><h3>Галерея товара</h3><p>Для каждого цвета своя галерея. Первая фотография показывается в каталоге. Принимаются PNG/WebP с прозрачным фоном. WebP используется, когда поддерживается браузером; в Safari допускается PNG.</p></div><span>{images.length} / {MAX_GALLERY_IMAGES}</span></div>
   <input ref={picker} className="skp-media-file-input" type="file" accept="image/png,image/webp" multiple onChange={event=>void upload(event.target.files)} disabled={busy||images.length>=MAX_GALLERY_IMAGES} aria-label="Выбрать фотографии товара"/>
   <button type="button" className="skp-media-upload" disabled={busy||images.length>=MAX_GALLERY_IMAGES} onClick={()=>picker.current?.click()}>
    {busy?<LoaderCircle className="skp-media-spinner" size={20}/>:<ImagePlus size={20}/>}
