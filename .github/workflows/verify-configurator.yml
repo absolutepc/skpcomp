@@ -37,5 +37,7 @@ jobs:
           pnpm test:monitor
           pnpm test:logitech
           pnpm test:categories
+          node scripts/test-product-brands.mjs
+          node scripts/test-comparison.mjs
       - name: Production build
         run: pnpm build
