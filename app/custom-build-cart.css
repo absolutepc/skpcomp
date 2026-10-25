@@ -50,3 +50,40 @@
  .skp-custom-build-parts>div{display:block}
  .skp-custom-build-parts>div strong{display:block;margin-top:4px}
 }
+/* Cart: large yellow totals at the far right of each item, including PC builds. */
+.skp-cart-page .cart-item{gap:18px;min-width:0}
+.skp-cart-page .cart-item>div:nth-child(2){flex:1 1 auto;min-width:0}
+.skp-cart-page .skp-cart-line-actions{
+ display:flex;flex:0 0 auto;flex-direction:column;align-items:flex-end;
+ justify-content:center;align-self:stretch;gap:12px;
+ min-width:max-content;margin-left:auto;padding:6px 0;
+ background:transparent
+}
+.skp-cart-page .skp-cart-line-price{
+ display:block;max-width:100%;color:#ffe500;
+ font-size:clamp(19px,2vw,25px);font-weight:850;letter-spacing:-.5px;
+ line-height:1.2;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right
+}
+.skp-cart-page .skp-cart-line-actions>button{
+ display:grid;place-items:center;width:35px;height:35px;
+ padding:0;color:#adb5b7;border:0;border-radius:8px;
+ background:transparent;cursor:pointer
+}
+.skp-cart-page .skp-cart-line-actions>button:hover{color:#ffe500;background:#ffe50012}
+.skp-cart-page .skp-cart-line-actions>button:focus-visible{outline:2px solid #ffe500;outline-offset:2px}
+.skp-cart-page .skp-custom-build-info>p{color:#8c9aa3;font-weight:500}
+.skp-cart-page .skp-cart-order-total{
+ color:#ffe500;text-align:right;font-size:clamp(30px,3vw,37px);
+ font-weight:850;line-height:1.2;font-variant-numeric:tabular-nums
+}
+@media(max-width:700px){
+ .skp-cart-page .cart-item{gap:10px;align-items:center}
+ .skp-cart-page .skp-cart-line-actions{gap:7px;padding:3px 0}
+ .skp-cart-page .skp-cart-line-price{font-size:clamp(16px,4.3vw,20px);letter-spacing:-.35px}
+ .skp-cart-page .skp-cart-order-total{font-size:32px}
+}
+@media(max-width:370px){
+ .skp-cart-page .cart-item>div:first-child{width:56px;flex:0 0 56px}
+ .skp-cart-page .skp-cart-line-price{font-size:16px}
+ .skp-cart-page .skp-custom-build-cart .skp-custom-build-art{width:48px;flex-basis:48px}
+}
