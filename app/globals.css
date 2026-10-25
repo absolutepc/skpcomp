@@ -1919,3 +1919,14 @@ html{scrollbar-color:#c9b900 #101313;scrollbar-width:thin}
 *::-webkit-scrollbar-corner{background:#101313}
 .product-detail>div{min-width:0}
 .product-detail h1,.specs strong{overflow-wrap:anywhere}
+
+/* Product image actions: anchor both controls to the top-right corner,
+   keeping one vertical rail across catalog, favorites and landing cards. */
+@media(min-width:701px){
+ .card-image .favorite{top:0;right:0}
+ .card-image .skp-card-compare{top:36px;right:0}
+}
+@media(max-width:700px){
+ .card-image .favorite{top:0;right:0}
+ .card-image .skp-card-compare{top:36px;right:0}
+}
