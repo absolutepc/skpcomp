@@ -15,6 +15,7 @@ const checks = [
   ["Nitro dependency declared", () => Boolean(JSON.parse(read("package.json")).devDependencies?.nitro)],
   ["Dependency lockfile synchronized", () => { const lock = read("pnpm-lock.yaml"); return ["nitro:", "pg:", "'@vercel/blob':"].every(name => lock.includes(name)); }],
   ["PostgreSQL store route is wired", () => read("app/api/store/route.ts").includes("storeEnv()") && read("app/api/reviews/route.ts").includes("storeEnv()")],
+  ["Orders route uses platform storage", () => read("app/api/orders/route.ts").includes("storeEnv()")],
   ["Media routes do not require Cloudflare R2", () => !/cloudflare:workers|R2Bucket|E\.MEDIA/.test(read("app/api/media/route.ts"))],
   ["Production admin requires a password", () => {
     const source = read("lib/local-admin-access.ts");
