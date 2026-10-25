@@ -4,12 +4,12 @@
  * This module does not access Cloudflare and does not create connections.
  *
  * Database schema: db/postgres-schema.sql
- * IMPORTANT: It is not yet wired to the live API routes.
+ * This layer is used by db/postgres-shop-storage.ts. Runtime wiring remains pending.
  */
 export type PgQueryResult<T> = { rows: T[] };
 export type PgClient = {
   query<T extends Record<string, unknown> = Record<string, unknown>>(
-    sql: string, values?: readonly unknown[]
+    sql: string, values?: unknown[]
   ): Promise<PgQueryResult<T>>;
 };
 
