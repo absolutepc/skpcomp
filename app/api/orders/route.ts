@@ -1,9 +1,9 @@
 import {localAdminAccess} from '../../../lib/local-admin-access';
-import {env} from 'cloudflare:workers';
+import {storeEnv,isPostgres} from '../../../db/platform-store';
 import {seed,type Store} from '../../../lib/seed';
 import {normalizeOrderItems,validateContact,orderTotal,isOrderStatus,canTransition,OrderValidationError,type OrderItem,type OrderStatus,type PublicOrder,type AdminOrder,type OrderEvent} from '../../../lib/orders';
 
-const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD?:string};
+const E=await storeEnv();
 type OrderRow={id:string;number:string;access_hash:string;customer_name:string;phone:string;comment:string;
  items:string;total:number;status:string;created_at:string;updated_at:string};
 type EventRow={status:string;created_at:string};
@@ -20,6 +20,7 @@ const adminAuth=async(request:Request)=>{
 };
 const originMatches=(request:Request)=>request.headers.get('origin')===new URL(request.url).origin;
 async function ensureOrders(){
+ if(isPostgres())return; // PostgreSQL tables are provisioned by db/postgres-schema.sql
  await E.DB.prepare("CREATE TABLE IF NOT EXISTS skp_orders (id TEXT PRIMARY KEY NOT NULL, number TEXT NOT NULL UNIQUE, access_hash TEXT NOT NULL, customer_name TEXT NOT NULL, phone TEXT NOT NULL, comment TEXT NOT NULL DEFAULT '', items TEXT NOT NULL, total INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'processing', ip_hash TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT NOT NULL DEFAULT (datetime('now')))").run();
  await E.DB.prepare("CREATE TABLE IF NOT EXISTS skp_order_events (id TEXT PRIMARY KEY NOT NULL, order_id TEXT NOT NULL, status TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT (datetime('now')))").run();
  await E.DB.prepare('CREATE INDEX IF NOT EXISTS idx_skp_order_events_order ON skp_order_events(order_id,created_at)').run();
@@ -38,7 +39,7 @@ const publicOrder=(order:AdminOrder):PublicOrder=>({
  total:order.total,createdAt:order.createdAt,updatedAt:order.updatedAt,events:order.events
 });
 async function eventsFor(id:string):Promise<OrderEvent[]>{
- const result=await E.DB.prepare('SELECT status,created_at FROM skp_order_events WHERE order_id=? ORDER BY created_at ASC,rowid ASC').bind(id).all<EventRow>();
+ const result=await E.DB.prepare('SELECT status,created_at FROM skp_order_events WHERE order_id=? ORDER BY created_at ASC,id ASC').bind(id).all<EventRow>();
  return (result.results||[]).filter(row=>isOrderStatus(row.status))
   .map(row=>({status:row.status as OrderStatus,createdAt:row.created_at}));
 }
@@ -65,7 +66,7 @@ export async function GET(request:Request){
    const summary=await E.DB.prepare("SELECT COUNT(*) AS orders, COALESCE(SUM(CASE WHEN status='completed' THEN total ELSE 0 END),0) AS completedAmount FROM skp_orders").first<{orders:number;completedAmount:number}>();
    return json(summary||{orders:0,completedAmount:0});
   }
-  const rows=await E.DB.prepare('SELECT * FROM skp_orders ORDER BY created_at DESC,rowid DESC LIMIT 250').all<OrderRow>();
+  const rows=await E.DB.prepare('SELECT * FROM skp_orders ORDER BY created_at DESC,id DESC LIMIT 250').all<OrderRow>();
   return json({orders:(rows.results||[]).map(row=>toOrder(row))});
  }catch{return json({error:'Не удалось загрузить заказы.'},503)}
 }
