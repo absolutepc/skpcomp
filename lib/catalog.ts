@@ -1,9 +1,57 @@
 import {seed,Product} from './seed';
 import {productPhotos} from './product-photos';
+import {gpuChipBrand,type GpuChipBrand} from './product-brands';
 export const components:Record<string,string>={cpu:'Процессоры',motherboard:'Мат.платы',gpu:'Видеокарты',ram:'ОЗУ',ssd:'Накопители',psu:'Блоки питания',cooler:'Охлаждение',case:'Корпуса'};
 export const peripherals:Record<string,string>={monitor:'Мониторы',mouse:'Мышки',keyboard:'Клавиатуры',headphones:'Наушники',mousepad:'Коврики',microphone:'Микрофоны',mount:'Кронштейны',webcam:'Веб-камеры'};
-export type Field={key:string;label:string;unit?:string;numeric?:boolean};
-const f=(key:string,label:string,unit?:string):Field=>({key,label,unit,numeric:!!unit});
+export type Field={key:string;label:string;unit?:string;numeric?:boolean;chip?:GpuChipBrand};
+const f=(key:string,label:string,unit?:string,chip?:GpuChipBrand):Field=>({key,label,unit,numeric:!!unit,...(chip?{chip}:{})});
+/** GPU details are grouped for the admin editor; no invented specifications are prefilled. */
+export const gpuFieldGroups:{title:string;fields:Field[]}[]=[
+ {title:'Графический процессор',fields:[
+  f('gpu','Графический процессор'),f('architecture','Архитектура GPU'),f('processNm','Техпроцесс','нм'),
+  f('cudaCores','CUDA-ядра','шт.','NVIDIA'),
+  f('streamProcessors','Потоковые процессоры','шт.','AMD'),
+  f('xeCores','Xe-ядра','шт.','Intel'),
+  f('rtCores','RT-ядра','шт.','NVIDIA'),
+  f('rayAccelerators','Ray Accelerators','шт.','AMD'),
+  f('rayTracingUnits','Блоки трассировки лучей','шт.','Intel'),
+  f('tensorCores','Тензорные ядра','шт.','NVIDIA'),
+  f('aiAccelerators','AI-ускорители','шт.','AMD'),
+  f('xmxEngines','XMX-движки','шт.','Intel'),
+  f('baseClock','Базовая частота GPU','МГц'),f('boostClock','Частота Boost GPU','МГц'),
+  f('textureUnits','Текстурные блоки (TMU)','шт.'),f('rops','Блоки растеризации (ROP)','шт.')
+ ]},
+ {title:'Видеопамять',fields:[
+  f('vram','Объём видеопамяти','ГБ'),f('videoMemory','Тип видеопамяти'),f('bus','Разрядность шины','бит'),
+  f('memorySpeed','Эффективная скорость памяти','Гбит/с'),f('bandwidth','Пропускная способность памяти','ГБ/с'),
+  f('l2Cache','Кэш L2','МБ')
+ ]},
+ {title:'Интерфейс и питание',fields:[
+  f('interface','Версия PCIe'),f('pcieLanes','Линии PCIe'),
+  f('watts','Энергопотребление (TBP/TGP)','Вт'),f('recommendedPsu','Рекомендуемая мощность БП','Вт'),
+  f('powerConnectors','Разъёмы дополнительного питания')
+ ]},
+ {title:'Охлаждение и габариты',fields:[
+  f('coolingType','Тип охлаждения'),f('fans','Количество вентиляторов','шт.'),
+  f('length','Длина','мм'),f('width','Ширина','мм'),f('height','Высота','мм'),
+  f('slots','Толщина, занятых слотов','слота'),f('weight','Вес','г'),
+  f('backplate','Бэкплейт'),f('rgb','Подсветка'),f('color','Цвет')
+ ]},
+ {title:'Выходы и технологии',fields:[
+  f('hdmiPorts','Разъёмы HDMI','шт.'),f('displayPortPorts','Разъёмы DisplayPort','шт.'),
+  f('usbCPorts','Видеоразъёмы USB-C','шт.'),f('outputs','Видеовыходы / их версии'),
+  f('maxDisplays','Макс. число мониторов','шт.'),f('maxResolution','Максимальное разрешение'),
+  f('rayTracing','Аппаратная трассировка лучей'),
+  f('dlss','DLSS','', 'NVIDIA'),f('fsr','FSR','', 'AMD'),f('xess','XeSS','', 'Intel'),
+  f('videoEncoders','Кодирование видео (AV1 / H.264 / HEVC)')
+ ]}
+];
+export function fieldsForProduct(product:Product):Field[]{
+ const fields=categoryFields[product.category]||[];
+ if(product.category!=='gpu')return fields;
+ const chip=gpuChipBrand(product);
+ return fields.filter(field=>!field.chip||field.chip===chip);
+}
 export const categoryFields:Record<string,Field[]>={
  cpu:[f('socket','Сокет'),f('memory','Тип памяти'),f('cores','Ядра','шт.'),f('threads','Потоки','шт.'),f('l3','Кэш L3','МБ'),f('frequency','Базовая частота','ГГц'),f('boost','Макс. частота Boost','ГГц'),f('architecture','Архитектура'),f('watts','Мощность','Вт'),f('graphics','Встроенная графика'),f('package','Комплектация')],
  motherboard:[
@@ -19,7 +67,7 @@ export const categoryFields:Record<string,Field[]>={
   f('m2SlotConfig','Конфигурация M.2 SSD (версия / линии / количество)'),
   f('wifi','Wi-Fi')
  ],
- gpu:[f('gpu','Графический процессор'),f('vram','Видеопамять','ГБ'),f('videoMemory','Тип видеопамяти'),f('bus','Шина памяти','бит'),f('interface','Интерфейс'),f('length','Длина','мм'),f('watts','Потребление','Вт')],
+ gpu:gpuFieldGroups.flatMap(group=>group.fields),
  ram:[f('memory','Тип памяти'),f('capacity','Общий объём','ГБ'),f('modules','Количество модулей','шт.'),f('speed','Частота','МГц'),f('latency','Тайминги CL'),f('form','Форм-фактор'),f('rgb','Подсветка')],
  ssd:[f('driveType','Тип накопителя'),f('capacity','Объём','ГБ'),f('interface','Интерфейс'),f('form','Форм-фактор'),f('readSpeed','Скорость чтения','МБ/с'),f('writeSpeed','Скорость записи','МБ/с'),f('endurance','Ресурс TBW','ТБ')],
  psu:[f('watts','Мощность','Вт'),f('certificate','Сертификат'),f('form','Форм-фактор'),f('modular','Модульные кабели'),f('standard','Стандарт ATX'),f('fanSize','Вентилятор','мм')],
