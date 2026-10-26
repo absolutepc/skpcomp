@@ -1,12 +1,12 @@
 import type {Product} from './seed';
 
-export const popularBrands=['ASUS','MSI','GIGABYTE','ASRock','PALIT','Intel','AMD','NVIDIA','Logitech','AULA','XPG','DeepCool','Kingston'];
+export const popularBrands=['ASUS','MSI','GIGABYTE','ASRock','PALIT','Intel','AMD','NVIDIA','Logitech','AULA','XPG','DeepCool','Kingston','Samsung'];
 const categoryBrands:Record<string,string[]>={
  cpu:['AMD','Intel'],
  gpu:['ASUS','MSI','GIGABYTE','ASRock','PALIT','ZOTAC','PNY','Gainward','INNO3D','Sapphire','PowerColor','XFX','SPARKLE','GUNNIR','NVIDIA','AMD','Intel'],
  motherboard:['ASUS','MSI','GIGABYTE','ASRock'],
  ram:['XPG','Kingston','GIGABYTE'],
- ssd:['Kingston','XPG','GIGABYTE','MSI'],
+ ssd:['Kingston','XPG','GIGABYTE','MSI','Samsung'],
  psu:['ASUS','MSI','GIGABYTE','XPG','DeepCool'],
  cooler:['ASUS','MSI','GIGABYTE','XPG','DeepCool'],
  case:['ASUS','MSI','GIGABYTE','XPG','DeepCool'],
@@ -80,7 +80,8 @@ const brandSeries:Record<string,Record<string,string[]>>={
  Logitech:{mouse:['G','PRO','MX','Signature','Pebble'],keyboard:['G','PRO','MX','Signature','Pebble'],headphones:['G','PRO','Zone'],mousepad:['G'],webcam:['BRIO','C','MX'],microphone:['Yeti']},
  XPG:{ram:['LANCER','SPECTRIX','GAMMIX'],ssd:['GAMMIX','SX'],psu:['CORE REACTOR','CYBERCORE','PYLON'],case:['INVADER','VALOR','STARKER'],cooler:['LEVANTE'],laptops:['XENIA']},
  DeepCool:{cooler:['AK','AG','AS','ASSASSIN','LE','LS','LT','LD'],case:['CH','CC','CG','CL','MORPHEUS'],psu:['PN','PX','PQ','PM','PL','PF']},
- Kingston:{ram:['FURY Beast','FURY Renegade','FURY Impact','ValueRAM','Server Premier'],ssd:['FURY Renegade','KC','NV','A','DC']}
+ Kingston:{ram:['FURY Beast','FURY Renegade','FURY Impact','ValueRAM','Server Premier'],ssd:['FURY Renegade','KC','NV','A','DC']},
+ Samsung:{ssd:['9100 PRO','990 PRO','990 EVO Plus','990 EVO','980 PRO','980','970 EVO Plus','970 EVO','870 EVO','870 QVO']}
 };
 export function seriesForBrand(brand:string,category:string):string[]{
  return brandSeries[canonicalBrand(brand)]?.[category]||[];
