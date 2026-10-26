@@ -2,6 +2,7 @@ import {localAdminAccess} from '../../../lib/local-admin-access';
 import {adminCookie} from '../../../lib/admin-cookie';
 import {env} from 'cloudflare:workers';
 import {seed} from '../../../lib/seed';
+import {categoryBrands} from '../../../lib/product-brands';
 import {upgradeLogitechGamingMice} from '../../../lib/logitech-mouse-upgrade';
 import {upgradeReadyPcDemos} from '../../../lib/ready-pc-demos';
 import {validateFpsGames} from '../../../lib/fps-game-catalog';
@@ -152,6 +153,31 @@ if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)retur
 if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,'',0)}});
 if(!await auth(r))return Response.json({error:'Войдите в административную панель'},{status:401});if(b.action==='check')return Response.json({ok:true});
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
+if(d.brands!==undefined){
+ if(!Array.isArray(d.brands)||d.brands.length>120)return Response.json({error:'Некорректный справочник брендов'},{status:400});
+ const ids=new Set<string>(),names=new Set<string>();
+ for(const brand of d.brands){
+  if(!brand||typeof brand!=='object'||typeof brand.id!=='string'||!/^brand-[a-z0-9-]{1,80}$/.test(brand.id)||
+   typeof brand.name!=='string'||!brand.name.trim()||brand.name.length>80||
+   typeof brand.logo!=='string'||brand.logo.length>2048||
+   (brand.logo&&!/^https:\/\/[^\s]+$/.test(brand.logo)&&
+    !/^\/api\/media\?key=brands\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.(?:png|webp)$/.test(brand.logo)&&
+    !/^\/images\/[a-zA-Z0-9/_-]+\.(?:png|webp|jpg|jpeg|svg)$/.test(brand.logo))||
+   !brand.categories||typeof brand.categories!=='object'||Array.isArray(brand.categories))
+   return Response.json({error:'Проверьте название, ID и логотип бренда'},{status:400});
+  const name=brand.name.trim().toLocaleLowerCase('ru');
+  if(ids.has(brand.id)||names.has(name))return Response.json({error:'Названия и ID брендов должны быть уникальными'},{status:400});
+  ids.add(brand.id);names.add(name);
+  const entries=Object.entries(brand.categories);
+  if(!entries.length||entries.length>Object.keys(categoryBrands).length)return Response.json({error:'Выберите категории бренда'},{status:400});
+  for(const [category,raw] of entries){
+   if(!Object.hasOwn(categoryBrands,category)||!Array.isArray(raw)||raw.length>50||
+    raw.some((series:unknown)=>typeof series!=='string'||!series.trim()||series.length>90)||
+    new Set(raw.map((series:string)=>series.toLocaleLowerCase('ru'))).size!==raw.length)
+    return Response.json({error:'Некорректные серии или категории бренда'},{status:400});
+  }
+ }
+}
 if(!validateHeroSlides(d.heroSlides))return Response.json({error:'Проверьте настройки слайдов, ссылки и изображения. Максимум 12 слайдов.'},{status:400});
 if(!validateFpsGames(d.fpsGames))return Response.json({error:'Проверьте список игр FPS: названия, изображения, порядок и доступность.'},{status:400});
 if(d.products.some((p:any)=>!p.id||!p.name||!Number.isFinite(p.price)||p.price<0||!isProductImageUrl(p.image)))return Response.json({error:'Проверьте названия, цены и ссылки фотографий'},{status:400});
