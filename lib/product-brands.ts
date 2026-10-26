@@ -1,7 +1,7 @@
-import type {Product} from './seed';
+import type {Product,BrandDefinition} from './seed';
 
 export const popularBrands=['ASUS','MSI','GIGABYTE','ASRock','PALIT','Intel','AMD','NVIDIA','Logitech','AULA','XPG','DeepCool','Kingston','Samsung'];
-const categoryBrands:Record<string,string[]>={
+export const categoryBrands:Record<string,string[]>={
  cpu:['AMD','Intel'],
  gpu:['ASUS','MSI','GIGABYTE','ASRock','PALIT','ZOTAC','PNY','Gainward','INNO3D','Sapphire','PowerColor','XFX','SPARKLE','GUNNIR','NVIDIA','AMD','Intel'],
  motherboard:['ASUS','MSI','GIGABYTE','ASRock'],
@@ -42,24 +42,47 @@ export function gpuChipBrand(product:Pick<Product,'name'|'brand'|'specs'>):GpuCh
  if(/\b(?:intel|arc\s*[ab]\d{3})\b/i.test(identity))return 'Intel';
  return '';
 }
-export function gpuBrandsForChip(chip:GpuChipBrand|''):string[]{
- return chip?[...gpuManufacturers[chip]]:brandsForCategory('gpu');
+/** The editable catalog can override the legacy list without changing old product records. */
+export function defaultBrandCatalog():BrandDefinition[]{
+ const names=new Set<string>();
+ Object.values(categoryBrands).flat().forEach(name=>names.add(name));
+ Object.keys(brandSeries).forEach(name=>names.add(name));
+ return [...names].map(name=>{
+  const categories:Record<string,string[]>={};
+  for(const [category,allowed] of Object.entries(categoryBrands)){
+   if(allowed.includes(name))categories[category]=[...(brandSeries[name]?.[category]||[])];
+  }
+  return {id:'brand-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),name,logo:'',categories};
+ });
 }
-export function brandsForCategory(category:string,products:readonly Product[]=[]):string[]{
+export function gpuBrandsForChip(chip:GpuChipBrand|'',catalog?:readonly BrandDefinition[]):string[]{
+ if(!catalog)return chip?[...gpuManufacturers[chip]]:brandsForCategory('gpu');
+ const allowed=brandsForCategory('gpu',[],catalog);
+ if(!chip)return allowed;
+ // Respect the chip designer/maker distinction for the built-in GPU manufacturers.
+ const known=new Set(categoryBrands.gpu);
+ return allowed.filter(name=>!known.has(name)||gpuManufacturers[chip].includes(name));
+}
+export function brandsForCategory(category:string,products:readonly Product[]=[],catalog?:readonly BrandDefinition[]):string[]{
+ if(catalog){
+  const names=catalog.filter(brand=>Object.hasOwn(brand.categories,category)).map(brand=>brand.name);
+  // Existing goods must remain editable if their manufacturer was removed from a category.
+  const existing=products.filter(p=>p.category===category).map(p=>canonicalBrand(p.brand));
+  return [...new Set([...names,...existing])];
+ }
  const allowed=categoryBrands[category]||[];
  if(category==='cpu'||category==='gpu')return [...allowed];
- // Preserve other existing manufacturers only in their own catalogue category.
  const existing=products.filter(p=>p.category===category).map(p=>canonicalBrand(p.brand))
   .filter(b=>b&&(!popularBrands.includes(b)||allowed.includes(b)));
  return [...new Set([...allowed,...existing])];
 }
-export function selectedBrand(product:Product,products:readonly Product[]):string{
+export function selectedBrand(product:Product,products:readonly Product[],catalog?:readonly BrandDefinition[]):string{
  const brand=canonicalBrand(product.brand);
- const options=product.category==='gpu'?gpuBrandsForChip(gpuChipBrand(product)):brandsForCategory(product.category,products);
+ const options=product.category==='gpu'?gpuBrandsForChip(gpuChipBrand(product),catalog):brandsForCategory(product.category,products,catalog);
  return options.includes(brand)?brand:'';
 }
 
-const brandSeries:Record<string,Record<string,string[]>>={
+export const brandSeries:Record<string,Record<string,string[]>>={
  ASUS:{gpu:['ROG Strix','ROG Astral','TUF Gaming','Dual','PRIME','ProArt'],motherboard:['ROG','TUF Gaming','PRIME','ProArt'],monitor:['ROG','TUF Gaming','ProArt','ZenScreen'],laptops:['ROG','TUF Gaming','ProArt','Zenbook','Vivobook','ExpertBook'],psu:['ROG','TUF Gaming','PRIME'],cooler:['ROG','ROG RYUJIN','ROG RYUO','ROG STRIX LC','TUF Gaming','TUF Gaming LC','PRIME','PRIME LC','ProArt'],case:['ROG','TUF Gaming','PRIME','ProArt'],mouse:['ROG','TUF Gaming'],keyboard:['ROG','TUF Gaming'],headphones:['ROG','TUF Gaming'],mousepad:['ROG','TUF Gaming'],microphone:['ROG'],webcam:['ROG'],pc:['ROG','ExpertCenter']},
  MSI:{gpu:['SUPRIM','GAMING','VENTUS','VANGUARD','SHADOW','INSPIRE'],motherboard:['MAG','MEG','MPG','PRO'],monitor:['MAG','MEG','MPG','PRO','Modern'],psu:['MAG','MEG','MPG'],cooler:['MAG','MAG CORELIQUID','MEG','MEG CORELIQUID','MPG','MPG CORELIQUID'],case:['MAG','MEG','MPG'],ssd:['SPATIUM'],laptops:['Titan','Raider','Vector','Stealth','Katana','Sword','Cyborg','Thin','Prestige','Modern','Creator','Summit'],mouse:['CLUTCH'],keyboard:['VIGOR'],headphones:['IMMERSE'],mousepad:['AGILITY'],pc:['MEG','MPG','MAG','PRO']},
  GIGABYTE:{gpu:['AORUS','AERO','GAMING','EAGLE','WINDFORCE'],motherboard:['AORUS','AERO','UD'],monitor:['AORUS'],laptops:['AORUS','AERO','GAMING'],ram:['AORUS'],ssd:['AORUS','UD'],psu:['AORUS','UD'],cooler:['AORUS','AORUS WATERFORCE'],case:['AORUS'],mouse:['AORUS'],keyboard:['AORUS'],mousepad:['AORUS'],pc:['AORUS']},
@@ -83,13 +106,16 @@ const brandSeries:Record<string,Record<string,string[]>>={
  Kingston:{ram:['FURY Beast','FURY Renegade','FURY Impact','ValueRAM','Server Premier'],ssd:['FURY Renegade','KC','NV','A','DC']},
  Samsung:{ssd:['9100 PRO','990 PRO','990 EVO Plus','990 EVO','980 PRO','980','970 EVO Plus','970 EVO','870 EVO','870 QVO']}
 };
-export function seriesForBrand(brand:string,category:string):string[]{
+export function seriesForBrand(brand:string,category:string,catalog?:readonly BrandDefinition[]):string[]{
+ if(catalog){
+  const entry=catalog.find(entry=>entry.name.toLowerCase()===canonicalBrand(brand).toLowerCase());
+  return entry?.categories[category]||[];
+ }
  return brandSeries[canonicalBrand(brand)]?.[category]||[];
 }
-export function selectedSeries(product:Product):string{
+export function selectedSeries(product:Product,catalog?:readonly BrandDefinition[]):string{
  const stored=product.specs?.brandSeries?.trim()||'';
- const options=seriesForBrand(product.brand,product.category);
+ const options=seriesForBrand(product.brand,product.category,catalog);
  if(product.specs?.brandSeries!==undefined)return options.includes(stored)?stored:'';
- // Older catalogue entries stored ASUS ROG as a single brand.
  return /^asus\s+rog$/i.test(product.brand.trim())&&options.includes('ROG')?'ROG':'';
 }
