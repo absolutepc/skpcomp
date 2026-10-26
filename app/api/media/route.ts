@@ -2,7 +2,7 @@ import {localAdminAccess} from '../../../lib/local-admin-access';
 import {env} from 'cloudflare:workers';
 
 const E=env as unknown as {MEDIA?:R2Bucket;ADMIN_PASSWORD?:string};
-const MEDIA_KEY=/^(?:products|slides)\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.(?:webp|png)$/;
+const MEDIA_KEY=/^(?:products|slides|brands)\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.(?:webp|png)$/;
 const MAX_FILE_BYTES=8*1024*1024;
 const json=(data:object,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 async function authorized(request:Request){
@@ -38,8 +38,8 @@ export async function POST(request:Request){
  if(length>MAX_FILE_BYTES+100000)return json({error:'Слишком большой файл. Максимум 8 МБ.'},413);
  try{
   const data=await request.formData();
-  const file=data.get('file'),isSlide=data.get('assetType')==='slide';
-  const assetId=isSlide?data.get('slideId'):data.get('productId');
+  const file=data.get('file'),isSlide=data.get('assetType')==='slide',isBrand=data.get('assetType')==='brand';
+  const assetId=isSlide?data.get('slideId'):isBrand?data.get('brandId'):data.get('productId');
   if(typeof assetId!=='string'||!/^[a-zA-Z0-9_-]{1,90}$/.test(assetId))return json({error:'Некорректный ID изображения'},400);
   if(!(file instanceof File)||file.size<50||file.size>MAX_FILE_BYTES||!['image/png','image/webp'].includes(file.type))
    return json({error:'Загрузите PNG или WebP с прозрачным фоном размером до 8 МБ.'},400);
@@ -52,8 +52,8 @@ export async function POST(request:Request){
   if(!mime||file.type!==mime)
    return json({error:'Повреждённый или неподдерживаемый PNG/WebP-файл'},400);
   const ext=isPng?'png':'webp';
-  const key=(isSlide?'slides/':'products/')+assetId+'/'+crypto.randomUUID()+'.'+ext;
-  await E.MEDIA.put(key,bytes,{httpMetadata:{contentType:mime},customMetadata:isSlide?{slideId:assetId}:{productId:assetId}});
+  const key=(isSlide?'slides/':isBrand?'brands/':'products/')+assetId+'/'+crypto.randomUUID()+'.'+ext;
+  await E.MEDIA.put(key,bytes,{httpMetadata:{contentType:mime},customMetadata:isSlide?{slideId:assetId}:isBrand?{brandId:assetId}:{productId:assetId}});
   return json({url:'/api/media?key='+key,key,size:file.size},201);
  }catch{return json({error:'Не удалось сохранить файл в R2. Проверьте настройки хранилища.'},503)}
 }
