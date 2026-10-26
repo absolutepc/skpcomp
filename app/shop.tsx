@@ -177,7 +177,8 @@ return <>
   }}
   onDelete={async id=>{
    const existing=(data.brands??defaultBrandCatalog(data.products)).find(entry=>entry.id===id);
-   if(!existing||data.products.some(product=>canonicalBrand(product.brand).toLowerCase()===existing.name.toLowerCase()))return false;
+   if(!existing)return false;
+   // Removing a manufacturer from the selector must never delete existing products.
    return save({...data,brands:(data.brands??defaultBrandCatalog(data.products)).filter(entry=>entry.id!==id)});
   }}
  />}
