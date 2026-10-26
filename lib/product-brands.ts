@@ -60,9 +60,9 @@ export function selectedBrand(product:Product,products:readonly Product[]):strin
 }
 
 const brandSeries:Record<string,Record<string,string[]>>={
- ASUS:{gpu:['ROG Strix','ROG Astral','TUF Gaming','Dual','PRIME','ProArt'],motherboard:['ROG','TUF Gaming','PRIME','ProArt'],monitor:['ROG','TUF Gaming','ProArt','ZenScreen'],laptops:['ROG','TUF Gaming','ProArt','Zenbook','Vivobook','ExpertBook'],psu:['ROG','TUF Gaming','PRIME'],cooler:['ROG','TUF Gaming','PRIME','ProArt'],case:['ROG','TUF Gaming','PRIME','ProArt'],mouse:['ROG','TUF Gaming'],keyboard:['ROG','TUF Gaming'],headphones:['ROG','TUF Gaming'],mousepad:['ROG','TUF Gaming'],microphone:['ROG'],webcam:['ROG'],pc:['ROG','ExpertCenter']},
- MSI:{gpu:['SUPRIM','GAMING','VENTUS','VANGUARD','SHADOW','INSPIRE'],motherboard:['MAG','MEG','MPG','PRO'],monitor:['MAG','MEG','MPG','PRO','Modern'],psu:['MAG','MEG','MPG'],cooler:['MAG','MEG','MPG'],case:['MAG','MEG','MPG'],ssd:['SPATIUM'],laptops:['Titan','Raider','Vector','Stealth','Katana','Sword','Cyborg','Thin','Prestige','Modern','Creator','Summit'],mouse:['CLUTCH'],keyboard:['VIGOR'],headphones:['IMMERSE'],mousepad:['AGILITY'],pc:['MEG','MPG','MAG','PRO']},
- GIGABYTE:{gpu:['AORUS','AERO','GAMING','EAGLE','WINDFORCE'],motherboard:['AORUS','AERO','UD'],monitor:['AORUS'],laptops:['AORUS','AERO','GAMING'],ram:['AORUS'],ssd:['AORUS','UD'],psu:['AORUS','UD'],cooler:['AORUS'],case:['AORUS'],mouse:['AORUS'],keyboard:['AORUS'],mousepad:['AORUS'],pc:['AORUS']},
+ ASUS:{gpu:['ROG Strix','ROG Astral','TUF Gaming','Dual','PRIME','ProArt'],motherboard:['ROG','TUF Gaming','PRIME','ProArt'],monitor:['ROG','TUF Gaming','ProArt','ZenScreen'],laptops:['ROG','TUF Gaming','ProArt','Zenbook','Vivobook','ExpertBook'],psu:['ROG','TUF Gaming','PRIME'],cooler:['ROG','ROG RYUJIN','ROG RYUO','ROG STRIX LC','TUF Gaming','TUF Gaming LC','PRIME','PRIME LC','ProArt'],case:['ROG','TUF Gaming','PRIME','ProArt'],mouse:['ROG','TUF Gaming'],keyboard:['ROG','TUF Gaming'],headphones:['ROG','TUF Gaming'],mousepad:['ROG','TUF Gaming'],microphone:['ROG'],webcam:['ROG'],pc:['ROG','ExpertCenter']},
+ MSI:{gpu:['SUPRIM','GAMING','VENTUS','VANGUARD','SHADOW','INSPIRE'],motherboard:['MAG','MEG','MPG','PRO'],monitor:['MAG','MEG','MPG','PRO','Modern'],psu:['MAG','MEG','MPG'],cooler:['MAG','MAG CORELIQUID','MEG','MEG CORELIQUID','MPG','MPG CORELIQUID'],case:['MAG','MEG','MPG'],ssd:['SPATIUM'],laptops:['Titan','Raider','Vector','Stealth','Katana','Sword','Cyborg','Thin','Prestige','Modern','Creator','Summit'],mouse:['CLUTCH'],keyboard:['VIGOR'],headphones:['IMMERSE'],mousepad:['AGILITY'],pc:['MEG','MPG','MAG','PRO']},
+ GIGABYTE:{gpu:['AORUS','AERO','GAMING','EAGLE','WINDFORCE'],motherboard:['AORUS','AERO','UD'],monitor:['AORUS'],laptops:['AORUS','AERO','GAMING'],ram:['AORUS'],ssd:['AORUS','UD'],psu:['AORUS','UD'],cooler:['AORUS','AORUS WATERFORCE'],case:['AORUS'],mouse:['AORUS'],keyboard:['AORUS'],mousepad:['AORUS'],pc:['AORUS']},
  ASRock:{gpu:['Taichi','Phantom Gaming','Steel Legend','Challenger','Creator'],motherboard:['Taichi','Phantom Gaming','Steel Legend','LiveMixer','Pro','Challenger'],monitor:['Phantom Gaming','Challenger']},
  PALIT:{gpu:['GameRock','GamingPro','JetStream','Infinity 3','Dual','White','StormX']},
  ZOTAC:{gpu:['AMP','Trinity','Solid','Twin Edge']},
@@ -79,7 +79,7 @@ const brandSeries:Record<string,Record<string,string[]>>={
  NVIDIA:{gpu:['GeForce','RTX PRO','Quadro']},
  Logitech:{mouse:['G','PRO','MX','Signature','Pebble'],keyboard:['G','PRO','MX','Signature','Pebble'],headphones:['G','PRO','Zone'],mousepad:['G'],webcam:['BRIO','C','MX'],microphone:['Yeti']},
  XPG:{ram:['LANCER','SPECTRIX','GAMMIX'],ssd:['GAMMIX','SX'],psu:['CORE REACTOR','CYBERCORE','PYLON'],case:['INVADER','VALOR','STARKER'],cooler:['LEVANTE'],laptops:['XENIA']},
- DeepCool:{cooler:['AK','AG','AS','ASSASSIN','LE','LS','LT','LD'],case:['CH','CC','CG','CL','MORPHEUS'],psu:['PN','PX','PQ','PM','PL','PF']},
+ DeepCool:{cooler:['AK','AG','AS','ASSASSIN','LE','LS','LT','LD','MYSTIQUE','LQ'],case:['CH','CC','CG','CL','MORPHEUS'],psu:['PN','PX','PQ','PM','PL','PF']},
  Kingston:{ram:['FURY Beast','FURY Renegade','FURY Impact','ValueRAM','Server Premier'],ssd:['FURY Renegade','KC','NV','A','DC']},
  Samsung:{ssd:['9100 PRO','990 PRO','990 EVO Plus','990 EVO','980 PRO','980','970 EVO Plus','970 EVO','870 EVO','870 QVO']}
 };
