@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {ImagePlus,Plus,Save,Search,Trash2,X,Tag,Layers} from 'lucide-react';
 import type {BrandDefinition,Product} from '../lib/seed';
+import {canonicalBrand} from '../lib/product-brands';
 import {components,peripherals} from '../lib/catalog';
 import './admin-brands.css';
 
@@ -91,7 +92,7 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
  }
  async function remove(){
   if(!current||busy)return;
-  if(products.some(p=>p.brand.trim().toLowerCase()===current.name.trim().toLowerCase())){
+  if(products.some(p=>canonicalBrand(p.brand).toLowerCase()===current.name.trim().toLowerCase())){
    setError('Нельзя удалить бренд, пока он используется в товарах.');return;
   }
   if(!window.confirm('Удалить бренд «'+current.name+'» из справочника?'))return;
@@ -123,11 +124,11 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
   finally{setUploading(false);if(picker.current)picker.current.value=''}
  }
  const visible=brands.filter(brand=>brand.name.toLowerCase().includes(search.toLowerCase()));
- const used=products.filter(p=>p.brand.trim().toLowerCase()===(current?.name||'').toLowerCase()).length;
+ const used=products.filter(p=>canonicalBrand(p.brand).toLowerCase()===(current?.name||'').toLowerCase()).length;
  return <section className="skp-brands-admin">
-  <header className="skp-brands-header"><div><h1>Бренды</h1><p>Управление производителями, логотипами и сериями для каждой категории каталога.</p></div>
+  <div className="skp-brands-header"><div><h1>Бренды</h1><p>Управление производителями, логотипами и сериями для каждой категории каталога.</p></div>
    <button type="button" className="skp-brands-add" onClick={create}><Plus size={18}/> Добавить бренд</button>
-  </header>
+  </div>
   <div className="skp-brands-layout">
    <aside className="skp-brands-list">
     <label className="skp-brands-search"><Search size={17}/><input type="search" value={search} placeholder="Поиск бренда" onChange={e=>setSearch(e.target.value)}/></label>
