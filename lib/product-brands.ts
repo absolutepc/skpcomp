@@ -87,10 +87,7 @@ export function gpuBrandsForChip(chip:GpuChipBrand|'',catalog?:readonly BrandDef
 }
 export function brandsForCategory(category:string,products:readonly Product[]=[],catalog?:readonly BrandDefinition[]):string[]{
  if(catalog){
-  const names=catalog.filter(brand=>Object.hasOwn(brand.categories,category)).map(brand=>brand.name);
-  // Existing goods must remain editable if their manufacturer was removed from a category.
-  const existing=products.filter(p=>p.category===category).map(p=>canonicalBrand(p.brand));
-  return [...new Set([...names,...existing])];
+  return catalog.filter(brand=>Object.hasOwn(brand.categories,category)).map(brand=>brand.name);
  }
  const allowed=categoryBrands[category]||[];
  if(category==='cpu'||category==='gpu')return [...allowed];
@@ -101,7 +98,10 @@ export function brandsForCategory(category:string,products:readonly Product[]=[]
 export function selectedBrand(product:Product,products:readonly Product[],catalog?:readonly BrandDefinition[]):string{
  const brand=canonicalBrand(product.brand);
  const options=product.category==='gpu'?gpuBrandsForChip(gpuChipBrand(product),catalog):brandsForCategory(product.category,products,catalog);
- return options.includes(brand)?brand:'';
+ if(options.includes(brand))return brand;
+ // Keep historical brands editable when the owner has removed their category.
+ const saved=products.find(saved=>saved.id===product.id);
+ return catalog&&brand&&saved?.category===product.category?brand:'';
 }
 
 export const brandSeries:Record<string,Record<string,string[]>>={
@@ -138,6 +138,6 @@ export function seriesForBrand(brand:string,category:string,catalog?:readonly Br
 export function selectedSeries(product:Product,catalog?:readonly BrandDefinition[]):string{
  const stored=product.specs?.brandSeries?.trim()||'';
  const options=seriesForBrand(product.brand,product.category,catalog);
- if(product.specs?.brandSeries!==undefined)return options.includes(stored)?stored:'';
+ if(product.specs?.brandSeries!==undefined)return options.includes(stored)||catalog?stored:'';
  return /^asus\s+rog$/i.test(product.brand.trim())&&options.includes('ROG')?'ROG':'';
 }
