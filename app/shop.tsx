@@ -166,8 +166,10 @@ return <>
  {adminSection==='brands'&&<AdminBrands brands={data.brands??defaultBrandCatalog(data.products)} products={data.products}
   onSave={async(brand,previousId)=>{
    const previous=(data.brands??defaultBrandCatalog(data.products)).find(entry=>entry.id===previousId);
-   const brands=(data.brands??defaultBrandCatalog(data.products)).filter(entry=>entry.id!==brand.id);
-   brands.push(brand);
+   const existingBrands=data.brands??defaultBrandCatalog(data.products);
+   const brands=existingBrands.some(entry=>entry.id===brand.id)
+    ?existingBrands.map(entry=>entry.id===brand.id?brand:entry)
+    :[...existingBrands,brand];
    const products=previous&&previous.name!==brand.name
     ?data.products.map(product=>canonicalBrand(product.brand).toLowerCase()===previous.name.toLowerCase()?{...product,brand:brand.name}:product)
     :data.products;
