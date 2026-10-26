@@ -91,11 +91,12 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
   finally{setBusy(false)}
  }
  async function remove(){
-  if(!current||busy)return;
-  if(products.some(p=>canonicalBrand(p.brand).toLowerCase()===current.name.trim().toLowerCase())){
-   setError('Нельзя удалить бренд, пока он используется в товарах.');return;
-  }
-  if(!window.confirm('Удалить бренд «'+current.name+'» из справочника?'))return;
+  if(!current||busy||uploading)return;
+  const linked=products.filter(p=>canonicalBrand(p.brand).toLowerCase()===current.name.trim().toLowerCase()).length;
+  const warning=linked
+   ?'Удалить бренд «'+current.name+'» из справочника?\n\n'+linked+' товар(ов) останутся в каталоге с прежним названием бренда. Для новых товаров этот бренд станет недоступен.'
+   :'Удалить бренд «'+current.name+'» из справочника?';
+  if(!window.confirm(warning))return;
   setBusy(true);setError('');
   try{
    if(await onDelete(current.id)){
@@ -140,7 +141,7 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
    </aside>
    {draft?<div className="skp-brands-editor">
     <div className="skp-brands-editor-top"><h2>{current?'Редактирование бренда':'Новый бренд'}</h2>
-     {current&&<button type="button" className="skp-brands-delete" title={used?'Есть товары этого бренда':'Удалить бренд'} disabled={busy||used>0} onClick={()=>void remove()}><Trash2 size={17}/> Удалить</button>}
+     {current&&<button type="button" className="skp-brands-delete" title="Удалить бренд из справочника" disabled={busy||uploading} onClick={()=>void remove()}><Trash2 size={17}/> Удалить бренд</button>}
     </div>
     <div className="skp-brands-basics">
      <label>Название бренда<input type="text" maxLength={80} placeholder="Например, Samsung" value={draft.name} onChange={e=>update({name:e.target.value})}/></label>
@@ -167,7 +168,7 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
       </div>}
      </div>;
     })}</div>
-    {used>0&&<p className="skp-brands-used">Товаров этого бренда: {used}. При переименовании бренда ссылки в товарах обновятся.</p>}
+    {used>0&&<p className="skp-brands-used">Товаров этого бренда: {used}. При переименовании название обновится в товарах. При удалении бренда товары сохранятся с прежним названием.</p>}
     {error&&<p className="skp-brands-error" role="alert">{error}</p>}
     {message&&<p className="skp-brands-success" role="status">{message}</p>}
     <div className="skp-brands-footer"><button type="button" className="skp-brands-save" disabled={busy||uploading||!unsaved} onClick={()=>void save()}><Save size={17}/>{busy?'Сохранение…':'Сохранить бренд'}</button></div>
