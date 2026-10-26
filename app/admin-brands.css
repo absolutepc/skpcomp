@@ -1,0 +1,104 @@
+/* SKP admin brand manager — desktop and phone. */
+.skp-brands-admin{margin:0;padding:26px 28px 55px;color:#191d24}
+.skp-brands-header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}
+.skp-brands-header h1{font-size:26px;font-weight:800;letter-spacing:-.7px;margin:0 0 5px}
+.skp-brands-header p{color:#777e87;font-size:12px;line-height:1.6;margin:0}
+.skp-brands-add,.skp-brands-save{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;border:0;border-radius:10px;padding:13px 18px;color:#111;background:#ffe500;font-weight:800;font-size:12px}
+.skp-brands-add:hover,.skp-brands-save:hover{background:#eed700}
+.skp-brands-layout{display:grid;grid-template-columns:265px minmax(0,1fr);align-items:start;gap:19px}
+.skp-brands-list,.skp-brands-editor{min-width:0;background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 2px 14px #17232b08}
+.skp-brands-list{padding:12px;max-height:calc(100vh - 182px);overflow:auto}
+.skp-brands-search{display:flex;flex-direction:row;align-items:center;gap:7px;padding:0 12px;border-radius:9px;background:#f2f4f5;color:#767d84;height:43px;margin-bottom:10px}
+.skp-brands-search input{width:100%;height:100%;border:0;background:transparent;color:#1a1d21;padding:0;font-size:12px;outline:none}
+.skp-brands-list-items{display:grid;gap:4px}
+.skp-brands-list-item{display:flex;text-align:left;justify-content:flex-start;gap:11px;width:100%;min-height:53px;padding:7px 10px;border:1px solid transparent;border-radius:10px;color:#24272b;background:transparent}
+.skp-brands-list-item:hover{background:#f5f6f7}
+.skp-brands-list-item.selected{background:#fffbe0;border-color:#e2d157}
+.skp-brand-thumb{display:grid;place-items:center;flex:none;width:39px;height:39px;border-radius:9px;background:#eceef1;color:#464a52;overflow:hidden}
+.skp-brand-thumb img{width:100%;height:100%;object-fit:contain}
+.skp-brands-list-item>span:last-child{display:flex;flex-direction:column;gap:3px;min-width:0}
+.skp-brands-list-item strong{font-size:12px;font-weight:800;overflow-wrap:anywhere}
+.skp-brands-list-item small{font-size:10px;color:#7f858a}
+.skp-brands-empty{padding:24px;text-align:center;color:#7e8790;font-size:12px}
+.skp-brands-editor{padding:22px 24px}
+.skp-brands-editor-top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px}
+.skp-brands-editor-top h2{font-size:20px;letter-spacing:-.4px;margin:0;font-weight:800}
+.skp-brands-delete{display:inline-flex;gap:8px;color:#c63239;font-weight:750;font-size:11px}
+.skp-brands-delete:disabled{color:#a8a9ab;opacity:.6}
+.skp-brands-editor label:not(.skp-brands-category-toggle){display:flex;flex-direction:column;gap:9px;color:#565b63;font-weight:650;font-size:11px}
+.skp-brands-editor input[type=text],.skp-brands-editor input[type=url]{width:100%;padding:12px 13px;border:1px solid #dde1e4;border-radius:9px;color:#1c2226;background:#fff;font-size:12px}
+.skp-brands-editor input:focus{border-color:#c0aa00;outline:2px solid #ffe5003b}
+.skp-brands-basics{display:grid;gap:17px;margin-bottom:27px}
+.skp-brands-logo{display:flex;align-items:center;gap:16px}
+.skp-brands-logo-preview{display:grid;place-items:center;width:100px;height:92px;flex:0 0 100px;border-radius:11px;background:#f2f3f5;border:1px dashed #c6cbd0;color:#949ba1;overflow:hidden}
+.skp-brands-logo-preview img{width:100%;height:100%;object-fit:contain}
+.skp-brands-logo-fields{flex:1;min-width:0}
+.skp-brands-logo-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
+.skp-brands-logo-buttons button{border:1px solid #d4d9dd;border-radius:8px;padding:8px 11px;color:#393f46;background:#f8f9fa;font-size:11px}
+.skp-brands-logo-buttons button:disabled{opacity:.45}
+.skp-brands-categories-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px;padding-top:19px;border-top:1px solid #e9eaed}
+.skp-brands-categories-title h3{margin:0 0 6px;font-size:15px;font-weight:800}
+.skp-brands-categories-title p{margin:0;font-size:11px;line-height:1.5;color:#81858c}
+.skp-brands-categories-title>span{display:flex;align-items:center;gap:5px;font-size:12px;color:#898c91}
+.skp-brands-category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.skp-brands-category{border:1px solid #e3e6ea;background:#fafbfc;border-radius:11px;padding:12px;min-width:0}
+.skp-brands-category.enabled{border-color:#e5cd46;background:#fffef5}
+.skp-brands-category-toggle{display:flex;flex-direction:row;align-items:center;gap:10px;cursor:pointer;color:#272a2e;font-size:12px}
+.skp-brands-category-toggle input{width:16px;height:16px;accent-color:#edcf00;flex:none;margin:0}
+.skp-brands-category-toggle strong{font-weight:750;overflow-wrap:anywhere}
+.skp-brands-series{display:grid;gap:7px;margin:12px 0 0;padding-top:10px;border-top:1px solid #e9e4c7}
+.skp-brands-series-item{display:flex;gap:5px;align-items:center}
+.skp-brands-series-item input{flex:1;min-width:0;padding:8px 10px!important;font-size:11px!important}
+.skp-brands-series-item button{width:30px;height:30px;flex:none;border-radius:7px;color:#62676c}
+.skp-brands-series-item button:hover{color:#c92c30;background:#ffefef}
+.skp-brands-series-add{justify-content:flex-start;gap:6px;font-size:11px;color:#666000;padding:6px 0}
+.skp-brands-used,.skp-brands-error,.skp-brands-success{margin:18px 0 0;font-size:11px;line-height:1.6}
+.skp-brands-used{color:#717983}
+.skp-brands-error{color:#ab2323;font-weight:750}
+.skp-brands-success{color:#276e40;font-weight:750}
+.skp-brands-footer{display:flex;justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:1px solid #e9ecef}
+.skp-brands-save:disabled{opacity:.4;cursor:not-allowed}
+.skp-brands-welcome{text-align:center;display:grid;justify-items:center;gap:12px;padding:60px 25px}
+.skp-brands-welcome h2{margin:0}
+.skp-brands-welcome p{font-size:12px;color:#81848a}
+@media(max-width:1020px){.skp-brands-layout{grid-template-columns:225px minmax(0,1fr)}.skp-brands-category-grid{grid-template-columns:1fr}}
+@media(max-width:700px){
+ .skp-admin-workspace .skp-brands-admin{padding:20px 13px 55px;color:#ebedef}
+ .skp-brands-header{align-items:flex-start;gap:12px}
+ .skp-brands-header h1{font-size:22px;color:#f7f8f8}
+ .skp-brands-header p{font-size:10px;color:#a3a9ac}
+ .skp-brands-add{padding:10px 11px;font-size:10px}
+ .skp-brands-layout{grid-template-columns:minmax(0,1fr);gap:13px}
+ .skp-brands-list,.skp-brands-editor{background:#141a1d;border-color:#2b363a;box-shadow:none}
+ .skp-brands-list{max-height:200px}
+ .skp-brands-list-items{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .skp-brands-list-item{padding:6px;gap:7px;color:#f1f3f3}
+ .skp-brands-list-item.selected{background:#403c12;border-color:#a18c2e}
+ .skp-brands-list-item:hover{background:#263034}
+ .skp-brand-thumb{width:32px;height:32px;background:#222d31;color:#b4bcbf}
+ .skp-brands-list-item strong{font-size:11px}
+ .skp-brands-list-item small{font-size:9px;color:#a4acb0}
+ .skp-brands-search{background:#232c30;color:#c1c8cd}
+ .skp-brands-search input{color:#f3f4f5}
+ .skp-brands-editor{padding:16px 13px}
+ .skp-brands-editor-top h2{font-size:16px;color:#fff}
+ .skp-brands-editor label:not(.skp-brands-category-toggle){color:#b5bdc1}
+ .skp-brands-editor input[type=text],.skp-brands-editor input[type=url]{background:#202a2f;border-color:#3b474c;color:#f6f7f7}
+ .skp-brands-logo{gap:10px}
+ .skp-brands-logo-preview{width:74px;height:76px;flex-basis:74px;background:#202a2e;border-color:#445055}
+ .skp-brands-logo-buttons button{background:#222d30;color:#f0f1f1;border-color:#3e4b50}
+ .skp-brands-categories-title{border-color:#2d393d}
+ .skp-brands-categories-title h3{color:#f3f4f4}
+ .skp-brands-categories-title p{color:#a5adb1}
+ .skp-brands-category-grid{grid-template-columns:1fr}
+ .skp-brands-category{background:#1c2529;border-color:#354247}
+ .skp-brands-category.enabled{background:#252712;border-color:#665e1f}
+ .skp-brands-category-toggle{color:#edf1f1}
+ .skp-brands-series{border-color:#4c4627}
+ .skp-brands-series-item button{color:#cbd3d7}
+ .skp-brands-series-add{color:#ffe500}
+ .skp-brands-used{color:#9fa9b0}
+ .skp-brands-success{color:#8add96}
+ .skp-brands-error{color:#ff9999}
+ .skp-brands-footer{border-color:#303d40}
+}
