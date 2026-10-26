@@ -7,7 +7,7 @@
 .skp-brands-add:hover,.skp-brands-save:hover{background:#eed700}
 .skp-brands-layout{display:grid;grid-template-columns:265px minmax(0,1fr);align-items:start;gap:19px}
 .skp-brands-list,.skp-brands-editor{min-width:0;background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 2px 14px #17232b08}
-.skp-brands-list{padding:12px;max-height:calc(100vh - 182px);overflow:auto}
+.skp-brands-list{padding:12px;max-height:none;overflow:visible}
 .skp-brands-search{display:flex;flex-direction:row;align-items:center;gap:7px;padding:0 12px;border-radius:9px;background:#f2f4f5;color:#767d84;height:43px;margin-bottom:10px}
 .skp-brands-search input{width:100%;height:100%;border:0;background:transparent;color:#1a1d21;padding:0;font-size:12px;outline:none}
 .skp-brands-list-items{display:grid;gap:4px}
@@ -70,7 +70,7 @@
  .skp-brands-add{padding:10px 11px;font-size:10px}
  .skp-brands-layout{grid-template-columns:minmax(0,1fr);gap:13px}
  .skp-brands-list,.skp-brands-editor{background:#141a1d;border-color:#2b363a;box-shadow:none}
- .skp-brands-list{max-height:200px}
+ .skp-brands-list{max-height:none;overflow:visible}
  .skp-brands-list-items{grid-template-columns:repeat(2,minmax(0,1fr))}
  .skp-brands-list-item{padding:6px;gap:7px;color:#f1f3f3}
  .skp-brands-list-item.selected{background:#403c12;border-color:#a18c2e}
