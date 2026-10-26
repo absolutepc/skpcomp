@@ -54,5 +54,5 @@ assert.equal(selectedSeries({brand:'ASUS ROG',category:'motherboard',specs:{bran
 const editor=fs.readFileSync('app/shop.tsx','utf8');
 assert(editor.includes('Производитель графического процессора'),'GPU chip selector is visible in editor');
 assert(editor.includes('Производитель видеокарты'),'GPU board-maker selector has a distinct label');
-assert(editor.includes('gpuBrandsForChip(gpuChipBrand(editing))'),'Available GPU makers depend on chip vendor');
+assert(editor.includes('gpuBrandsForChip(gpuChipBrand(editing),data.brands)'),'Available GPU makers depend on chip vendor');
 console.log('Brand series dependencies and legacy ASUS ROG compatibility passed.');

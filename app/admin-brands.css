@@ -102,3 +102,14 @@
  .skp-brands-error{color:#ff9999}
  .skp-brands-footer{border-color:#303d40}
 }
+
+/* Only assigned categories are cards; other categories live in the add selector. */
+.skp-brands-category-grid{align-items:start}
+.skp-brands-category-add{margin:0 0 16px;max-width:360px}
+.skp-brands-category-add select{width:100%;min-width:0;padding:11px 12px;border:1px solid #dde1e4;border-radius:9px;background:#fff;color:#1c2226;font-size:12px}
+.skp-brands-category-add select:focus{outline:2px solid #ffe5003b;border-color:#c0aa00}
+.skp-brands-category-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}
+.skp-brands-category-heading strong{overflow-wrap:anywhere}
+.skp-brands-category-heading button{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:7px;color:#62676c}
+.skp-brands-category-heading button:hover{color:#c92c30;background:#ffefef}
+@media(max-width:700px){.skp-brands-category-add{max-width:none}.skp-brands-category-add select{background:#202a2f;border-color:#3b474c;color:#f6f7f7}.skp-brands-category-heading{color:#edf1f1}.skp-brands-category-heading button{color:#cbd3d7}}

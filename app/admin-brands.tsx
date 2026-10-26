@@ -154,18 +154,25 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
       </div>
      </div>
     </div>
-    <div className="skp-brands-categories-title"><div><h3>Категории и серии</h3><p>Отметь категории бренда. Для каждой можно указать собственные серии или линейки.</p></div><span><Layers size={15}/>{Object.keys(draft.categories).length}</span></div>
-    <div className="skp-brands-category-grid">{Object.entries(categories).map(([id,label])=>{
-     const enabled=Object.hasOwn(draft.categories,id);
-     return <div key={id} className={'skp-brands-category'+(enabled?' enabled':'')}>
-      <label className="skp-brands-category-toggle"><input type="checkbox" checked={enabled} onChange={()=>toggleCategory(id)}/><strong>{label}</strong></label>
-      {enabled&&<div className="skp-brands-series">
+    <div className="skp-brands-categories-title"><div><h3>Категории и серии</h3><p>Здесь показаны добавленные категории бренда. Для каждой можно настроить серии или линейки.</p></div><span><Layers size={15}/>{Object.keys(draft.categories).length}</span></div>
+    <div className="skp-brands-category-add">
+     <label>Добавить категорию<select value="" disabled={busy||uploading} onChange={event=>{if(event.target.value&&!Object.hasOwn(draft.categories,event.target.value))toggleCategory(event.target.value)}}>
+      <option value="">Выберите категорию</option>
+      {Object.entries(categories).filter(([id])=>!Object.hasOwn(draft.categories,id)).map(([id,label])=><option key={id} value={id}>{label}</option>)}
+     </select></label>
+    </div>
+    {!Object.keys(draft.categories).length&&<p className="skp-brands-empty">Категории пока не добавлены. Выберите категорию в списке выше.</p>}
+    <div className="skp-brands-category-grid">{Object.keys(draft.categories).map(id=>{
+     const label=categories[id]||id;
+     return <div key={id} className="skp-brands-category enabled">
+      <div className="skp-brands-category-heading"><strong>{label}</strong><button type="button" disabled={busy||uploading} title="Убрать категорию" aria-label={'Убрать категорию '+label} onClick={()=>toggleCategory(id)}><X size={16}/></button></div>
+      <div className="skp-brands-series">
        {(draft.categories[id]||[]).map((name,index)=><div className="skp-brands-series-item" key={index}>
         <input type="text" maxLength={90} value={name} placeholder="Название серии" aria-label={'Серия '+label+' '+(index+1)} onChange={e=>changeSeries(id,index,e.target.value)}/>
         <button type="button" title="Удалить серию" aria-label={'Удалить серию '+name} onClick={()=>removeSeries(id,index)}><X size={15}/></button>
        </div>)}
        <button type="button" className="skp-brands-series-add" disabled={draft.categories[id].length>=50} onClick={()=>update({categories:{...draft.categories,[id]:[...draft.categories[id],'']}})}><Plus size={14}/> Добавить серию</button>
-      </div>}
+      </div>
      </div>;
     })}</div>
     {used>0&&<p className="skp-brands-used">Товаров этого бренда: {used}. При переименовании название обновится в товарах. При удалении бренда товары сохранятся с прежним названием.</p>}
