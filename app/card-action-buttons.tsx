@@ -1,3 +1,4 @@
+'use client';
 import {GitCompareArrows,Heart} from 'lucide-react';
 import './card-action-buttons.css';
 
