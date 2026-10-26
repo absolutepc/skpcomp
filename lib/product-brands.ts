@@ -43,17 +43,39 @@ export function gpuChipBrand(product:Pick<Product,'name'|'brand'|'specs'>):GpuCh
  return '';
 }
 /** The editable catalog can override the legacy list without changing old product records. */
-export function defaultBrandCatalog():BrandDefinition[]{
+export function defaultBrandCatalog(products:readonly Product[]=[]):BrandDefinition[]{
  const names=new Set<string>();
  Object.values(categoryBrands).flat().forEach(name=>names.add(name));
  Object.keys(brandSeries).forEach(name=>names.add(name));
- return [...names].map(name=>{
-  const categories:Record<string,string[]>={};
+ const byName=new Map<string,BrandDefinition>(),ids=new Set<string>();
+ function add(name:string){
+  const key=name.toLocaleLowerCase('ru');
+  const found=byName.get(key);
+  if(found)return found;
+  const slug=name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'custom';
+  let id='brand-'+slug,index=2;
+  while(ids.has(id)){id='brand-'+slug+'-'+index++}
+  ids.add(id);
+  const entry={id,name,logo:'',categories:{} as Record<string,string[]>};
+  byName.set(key,entry);
+  return entry;
+ }
+ for(const name of names){
+  const entry=add(name);
   for(const [category,allowed] of Object.entries(categoryBrands)){
-   if(allowed.includes(name))categories[category]=[...(brandSeries[name]?.[category]||[])];
+   if(allowed.includes(name))entry.categories[category]=[...(brandSeries[name]?.[category]||[])];
   }
-  return {id:'brand-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),name,logo:'',categories};
- });
+ }
+ // Include the owner's custom and legacy product brands when first adopting the editor.
+ for(const product of products){
+  const name=canonicalBrand(product.brand||'');
+  if(!name||!Object.hasOwn(categoryBrands,product.category))continue;
+  const entry=add(name);
+  const series=product.specs?.brandSeries?.trim();
+  entry.categories[product.category]??=[];
+  if(series&&!entry.categories[product.category].includes(series))entry.categories[product.category].push(series);
+ }
+ return [...byName.values()];
 }
 export function gpuBrandsForChip(chip:GpuChipBrand|'',catalog?:readonly BrandDefinition[]):string[]{
  if(!catalog)return chip?[...gpuManufacturers[chip]]:brandsForCategory('gpu');
