@@ -6,9 +6,9 @@ import './admin-mobile.css';
 export const ADMIN_SECTIONS=[
  {id:'dashboard',label:'Главная'},
  {id:'products',label:'Товары'},
- {id:'brands',label:'Бренды'},
  {id:'laptops',label:'Ноутбуки'},
  {id:'pcs',label:'Готовые ПК'},
+ {id:'brands',label:'Бренды'},
  {id:'orders',label:'Заказы'},
  {id:'reviews',label:'Отзывы'},
  {id:'slides',label:'Слайды'},
