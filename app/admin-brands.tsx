@@ -23,6 +23,9 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
  const [selected,setSelected]=useState<string|null>(null);
  const [draft,setDraft]=useState<BrandDefinition|null>(null);
  const [search,setSearch]=useState('');
+ const [categoryPickerOpen,setCategoryPickerOpen]=useState(false);
+ const categoryAddButton=useRef<HTMLButtonElement|null>(null);
+ useEffect(()=>setCategoryPickerOpen(false),[selected]);
  const [busy,setBusy]=useState(false);
  const [uploading,setUploading]=useState(false);
  const [message,setMessage]=useState('');
@@ -156,12 +159,14 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
     </div>
     <div className="skp-brands-categories-title"><div><h3>Категории и серии</h3><p>Здесь показаны добавленные категории бренда. Для каждой можно настроить серии или линейки.</p></div><span><Layers size={15}/>{Object.keys(draft.categories).length}</span></div>
     <div className="skp-brands-category-add">
-     <label>Добавить категорию<select value="" disabled={busy||uploading} onChange={event=>{if(event.target.value&&!Object.hasOwn(draft.categories,event.target.value))toggleCategory(event.target.value)}}>
-      <option value="">Выберите категорию</option>
-      {Object.entries(categories).filter(([id])=>!Object.hasOwn(draft.categories,id)).map(([id,label])=><option key={id} value={id}>{label}</option>)}
-     </select></label>
+     <button ref={categoryAddButton} type="button" className="skp-brands-add" disabled={busy||uploading} aria-expanded={categoryPickerOpen} aria-controls="brand-category-options" onClick={()=>setCategoryPickerOpen(open=>!open)}><Plus size={16}/> Добавить категорию</button>
+     {categoryPickerOpen&&<div id="brand-category-options" className="skp-brands-category-options" onKeyDown={event=>{if(event.key==='Escape'){setCategoryPickerOpen(false);categoryAddButton.current?.focus()}}}>
+      <div className="skp-brands-category-heading"><strong>Выберите категорию</strong><button type="button" aria-label="Закрыть выбор категории" onClick={()=>{setCategoryPickerOpen(false);categoryAddButton.current?.focus()}}><X size={16}/></button></div>
+      <div className="skp-brands-category-choices">{Object.entries(categories).filter(([id])=>!Object.hasOwn(draft.categories,id)).map(([id,label])=><button type="button" key={id} disabled={busy||uploading} onClick={()=>{toggleCategory(id);setCategoryPickerOpen(false);categoryAddButton.current?.focus()}}><Plus size={14}/>{label}</button>)}</div>
+      {Object.keys(categories).every(id=>Object.hasOwn(draft.categories,id))&&<p>Все категории уже добавлены.</p>}
+     </div>}
     </div>
-    {!Object.keys(draft.categories).length&&<p className="skp-brands-empty">Категории пока не добавлены. Выберите категорию в списке выше.</p>}
+    {!Object.keys(draft.categories).length&&<p className="skp-brands-empty">Категории пока не добавлены. Нажмите «Добавить категорию».</p>}
     <div className="skp-brands-category-grid">{Object.keys(draft.categories).map(id=>{
      const label=categories[id]||id;
      return <div key={id} className="skp-brands-category enabled">
