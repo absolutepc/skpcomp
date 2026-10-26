@@ -1,6 +1,6 @@
 'use client';
 import {useState,useEffect} from 'react';
-import {brandsForCategory,selectedBrand,seriesForBrand,selectedSeries,gpuChipBrand,gpuChipBrands,gpuBrandsForChip,defaultBrandCatalog} from '../lib/product-brands';
+import {brandsForCategory,selectedBrand,seriesForBrand,selectedSeries,gpuChipBrand,gpuChipBrands,gpuBrandsForChip,defaultBrandCatalog,canonicalBrand} from '../lib/product-brands';
 import {coolingTypes,liquidRadiatorSizes,isLiquidCooling} from '../lib/cooling-options';
 import {popularProducts} from '../lib/popular-products';
 import {createColorVariant,saveColorVariant} from '../lib/product-color-variant';
@@ -163,20 +163,20 @@ return <>
  </>}
  <div hidden={adminSection!=='slides'}><AdminHeroSlides slides={data.heroSlides} onSave={slides=>save({...data,heroSlides:slides})}/></div>
  {adminSection==='fps-games'&&<AdminFpsGames games={data.fpsGames} onSave={fpsGames=>save({...data,fpsGames})}/>}
- {adminSection==='brands'&&<AdminBrands brands={data.brands??defaultBrandCatalog()} products={data.products}
+ {adminSection==='brands'&&<AdminBrands brands={data.brands??defaultBrandCatalog(data.products)} products={data.products}
   onSave={async(brand,previousId)=>{
-   const previous=(data.brands??defaultBrandCatalog()).find(entry=>entry.id===previousId);
-   const brands=(data.brands??defaultBrandCatalog()).filter(entry=>entry.id!==brand.id);
+   const previous=(data.brands??defaultBrandCatalog(data.products)).find(entry=>entry.id===previousId);
+   const brands=(data.brands??defaultBrandCatalog(data.products)).filter(entry=>entry.id!==brand.id);
    brands.push(brand);
    const products=previous&&previous.name!==brand.name
-    ?data.products.map(product=>product.brand.toLowerCase()===previous.name.toLowerCase()?{...product,brand:brand.name}:product)
+    ?data.products.map(product=>canonicalBrand(product.brand).toLowerCase()===previous.name.toLowerCase()?{...product,brand:brand.name}:product)
     :data.products;
    return save({...data,brands,products});
   }}
   onDelete={async id=>{
-   const existing=(data.brands??defaultBrandCatalog()).find(entry=>entry.id===id);
-   if(!existing||data.products.some(product=>product.brand.toLowerCase()===existing.name.toLowerCase()))return false;
-   return save({...data,brands:(data.brands??defaultBrandCatalog()).filter(entry=>entry.id!==id)});
+   const existing=(data.brands??defaultBrandCatalog(data.products)).find(entry=>entry.id===id);
+   if(!existing||data.products.some(product=>canonicalBrand(product.brand).toLowerCase()===existing.name.toLowerCase()))return false;
+   return save({...data,brands:(data.brands??defaultBrandCatalog(data.products)).filter(entry=>entry.id!==id)});
   }}
  />}
  {(adminSection==='products'||adminSection==='pcs'||adminSection==='laptops')&&<AdminProducts
