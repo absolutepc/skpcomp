@@ -31,7 +31,7 @@ export default function ProductReviews({productId}:{productId:string}){
  return <section className="skp-reviews" aria-label="Отзывы о товаре">
  <div className="skp-reviews-layout">
   <div className="skp-reviews-feed">
-   <div className="skp-reviews-heading"><div><span className="eyebrow">SKP / ОТЗЫВЫ</span><h2>Отзывы покупателей</h2></div><div className="skp-review-rating">{mean?<><Star size={18} fill="currentColor"/> {mean} <small>({reviews.length})</small></>:<span>Пока без оценок</span>}</div></div>
+   <div className="skp-reviews-heading"><h2>Отзывы покупателей</h2>{mean&&<div className="skp-review-rating"><Star size={18} fill="currentColor"/> {mean} <small>({reviews.length})</small></div>}</div>
    {reviews.length?<div className="skp-review-list">{reviews.map(r=><article className="skp-review" key={r.id}><div><strong>{r.author}</strong><span className="skp-stars" aria-label={r.rating+' из 5'}>{stars(r.rating)}</span></div><small>{r.created_at?.slice(0,10)}</small><p>{r.body}</p></article>)}</div>:<p className="skp-reviews-empty">Пока нет опубликованных отзывов. Поделитесь впечатлениями о товаре.</p>}
   </div>
  <form className="skp-review-form" onSubmit={send}><h3>Оставить отзыв</h3>
