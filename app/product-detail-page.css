@@ -79,10 +79,14 @@
  .skp-pdp-hero .skp-gallery-zoom-trigger{height:100%;min-height:0}
  .skp-pdp-hero .skp-gallery-zoom-trigger img{height:100%;max-height:100%}
  .skp-pdp-info{display:flex;flex-direction:column;min-height:360px}
- /* Stabilize title/brand rows and use one measured slot for variants on every product. */
- .skp-pdp-info h1{min-height:33px}
- .skp-pdp-meta{min-height:28px}
- .skp-pdp-variant-slot{min-height:28px;margin-top:10px;flex:none}
+ /* Fixed sizing for the right-side rows. "min-height" alone previously left
+    color variants a few pixels taller than the empty slot on CPU pages. */
+ .skp-pdp-info h1{min-height:34px}
+ .skp-pdp-meta{height:32px;min-height:32px;flex:none;flex-wrap:nowrap}
+ .skp-pdp-code{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .skp-pdp-variant-slot{height:30px;min-height:30px;flex:0 0 30px;margin-top:10px;display:flex;align-items:center}
+ .skp-pdp-variants,.skp-pdp-variants>div{height:100%;min-height:0;align-items:center}
+ .skp-pdp-variants a{height:30px;min-height:30px;box-sizing:border-box;display:inline-flex;align-items:center}
  .skp-pdp-services{margin-top:auto;padding-top:12px}
 }
 @media(max-width:700px){
