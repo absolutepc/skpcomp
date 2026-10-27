@@ -69,3 +69,33 @@
   right:7px;
  }
 }
+
+/* Keep comparison next to the cart, including on compact mobile cards. */
+.skp-card-purchase-actions{
+ display:flex;
+ align-items:center;
+ gap:4px;
+ flex-shrink:0;
+ margin-left:auto;
+}
+.skp-card-actions.skp-card-actions-inline{
+ position:static;
+ flex-direction:row;
+}
+.price-line:has(> .skp-card-purchase-actions){
+ flex-wrap:wrap;
+ gap:6px;
+}
+.price-line .skp-card-actions-inline button.skp-card-action{
+ width:30px;
+ height:33px;
+ padding:0;
+ background:transparent;
+ color:#e6ebed;
+ border:0;
+}
+.price-line .skp-card-actions-inline button.skp-card-action:hover,
+.price-line .skp-card-actions-inline button.skp-card-action.is-active{
+ color:#ffe500;
+ background:#ffe50012;
+}
