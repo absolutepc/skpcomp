@@ -4,7 +4,7 @@ import {ChevronLeft,ChevronRight,Expand,X} from 'lucide-react';
 import type {Product} from '../lib/seed';
 import {getProductImages} from '../lib/product-gallery';
 
-export default function ProductGallery({product,fallback}:{product:Product;fallback:React.ReactNode}){
+export default function ProductGallery({product,fallback,showCounter=false}:{product:Product;fallback:React.ReactNode;showCounter?:boolean}){
  const [active,setActive]=useState(0);
  const [zoom,setZoom]=useState(false);
  const images=getProductImages(product);
@@ -24,7 +24,7 @@ export default function ProductGallery({product,fallback}:{product:Product;fallb
  return <div className="skp-product-gallery">
   <div className={'skp-gallery-stage detail-art'+(product.variantGroup?' variant-visual':'')}>
    {current?<button type="button" className="skp-gallery-zoom-trigger" onClick={()=>setZoom(true)} title="Открыть фото на весь экран"><img src={current} alt={product.name+' — фото '+(index+1)}/><span><Expand size={17}/> Увеличить</span></button>:fallback}
-   {product.category==='pc'&&images.length>0&&<span className="skp-ready-gallery-counter">{index+1} / {images.length}</span>}
+   {(product.category==='pc'||showCounter)&&images.length>0&&<span className={showCounter?'skp-pdp-gallery-counter':'skp-ready-gallery-counter'}>{index+1} / {images.length}</span>}
    {images.length>1&&<div className="skp-gallery-nav">
     <button type="button" aria-label="Предыдущее фото" onClick={()=>change(-1)}><ChevronLeft size={20}/></button>
     <button type="button" aria-label="Следующее фото" onClick={()=>change(1)}><ChevronRight size={20}/></button>
