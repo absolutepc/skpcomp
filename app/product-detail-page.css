@@ -67,3 +67,45 @@
  .skp-pdp-highlights{grid-template-columns:repeat(2,minmax(0,1fr))}
  .skp-pdp .skp-pdp-related{margin-top:22px}
 }
+
+
+/* Product hero: keep the service tiles flush with the gallery frame.
+   The taller column determines the hero height; the gallery can grow with it. */
+@media(min-width:701px){
+ .skp-pdp-hero{align-items:stretch}
+ .skp-pdp-hero>.skp-product-gallery{align-items:stretch;align-self:stretch}
+ .skp-pdp-hero .skp-gallery-stage{align-self:stretch}
+ .skp-pdp-info{display:flex;flex-direction:column;min-height:340px}
+ .skp-pdp-services{margin-top:auto;padding-top:12px}
+}
+
+/* Reviews tab: customer reviews on the left, independent review form on the right. */
+.skp-pdp .skp-reviews{width:100%;max-width:none;margin:0;padding:0;border-top:0}
+.skp-pdp .skp-reviews-layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+ align-items:start;
+ gap:18px;
+}
+.skp-pdp .skp-reviews-feed{
+ min-width:0;min-height:390px;padding:22px;
+ border:1px solid #26333a;border-radius:9px;
+ background:linear-gradient(135deg,#0e171b,#0b1115);
+}
+.skp-pdp .skp-reviews-heading{margin-bottom:20px;gap:12px}
+.skp-pdp .skp-reviews-heading .eyebrow{margin-bottom:8px}
+.skp-pdp .skp-reviews-heading h2{font-size:20px;margin:0}
+.skp-pdp .skp-review-rating{font-size:16px}
+.skp-pdp .skp-reviews-feed .skp-review-list{grid-template-columns:minmax(0,1fr);gap:12px}
+.skp-pdp .skp-reviews-feed .skp-review{background:#151c20;border-color:#303d43}
+.skp-pdp .skp-reviews-feed .skp-reviews-empty{margin:0}
+.skp-pdp .skp-review-form{
+ width:100%;max-width:none;min-width:0;margin:0;padding:22px;
+ border:1px solid #303d43;border-radius:9px;
+ background:linear-gradient(135deg,#151b1e,#111619);
+}
+@media(max-width:850px){
+ .skp-pdp .skp-reviews-layout{grid-template-columns:minmax(0,1fr);gap:14px}
+ .skp-pdp .skp-reviews-feed{min-height:0;padding:17px}
+ .skp-pdp .skp-review-form{padding:17px}
+}
