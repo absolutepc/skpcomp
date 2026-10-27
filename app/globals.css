@@ -1947,3 +1947,20 @@ html,body{overflow-x:clip}
 
 /* Availability follows the price on product cards at every viewport size. */
 .card > .card-meta.card-stock{margin:6px 0 0;min-height:0;line-height:1.4}
+
+/* Keep catalog card excerpts compact on desktop as well as mobile. */
+.card{display:flex;flex-direction:column;min-width:0}
+.card > .card-image{flex-shrink:0}
+.card > p{
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ line-clamp:2;
+ overflow:hidden;
+ overflow-wrap:anywhere;
+ line-height:1.4;
+ min-height:2.8em;
+ max-height:2.8em;
+ flex-shrink:0;
+}
+.card > .price-line{margin-top:auto}
