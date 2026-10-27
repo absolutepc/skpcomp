@@ -8,6 +8,7 @@ import {fromLaptop} from '../lib/fps-estimate';
 import {STORE_ADDRESS} from './store-location';
 import ProductGallery from './product-gallery';
 import ProductReviews from './product-reviews';
+import ProductRatingSummary from './product-rating-summary';
 import GamingFps from './gaming-fps';
 import './product-detail-page.css';
 const money=(value:number)=>new Intl.NumberFormat('ru-RU').format(value)+' ₽';
@@ -29,7 +30,8 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
   <nav className="skp-pdp-breadcrumb" aria-label="Хлебные крошки"><a href="/" onClick={go('/')}>Главная</a><ChevronRight size={13}/><a href={'/catalog/'+p.category} onClick={go('/catalog/'+p.category)}>{category}</a>{p.brand&&<><ChevronRight size={13}/><span>{p.brand}</span></>}<ChevronRight size={13}/><span className="skp-pdp-crumb-name">{p.name}</span></nav>
   <div className="skp-pdp-hero">
    <ProductGallery product={p} fallback={fallback}/>
-   <div className="skp-pdp-info"><h1>{p.name}</h1><div className="skp-pdp-meta">{brand?.logo?<img src={brand.logo} alt={p.brand}/>:<strong>{p.brand}</strong>}<button onClick={()=>{setTab('reviews');document.getElementById('skp-pdp-panel')?.scrollIntoView({behavior:'smooth'})}}>Отзывы покупателей</button><span className="skp-pdp-code">Код товара: {p.id}</span></div>
+   <div className="skp-pdp-info"><h1>{p.name}</h1><div className="skp-pdp-meta">{brand?.logo?<img src={brand.logo} alt={p.brand}/>:<strong>{p.brand}</strong>}<ProductRatingSummary productId={p.id} onOpen={()=>{setTab('reviews');document.getElementById('skp-pdp-panel')?.scrollIntoView({behavior:'smooth'})}}/><span className="skp-pdp-code">Код товара: {p.id}</span></div>
+    <div className="skp-pdp-badges" aria-hidden="true"/>
     {variants.length>1&&<div className="skp-pdp-variants"><span>Цвет: {fieldValue(p,'color')||'выберите вариант'}</span><div>{variants.map(v=><a key={v.id} href={'/product/'+v.id} onClick={go('/product/'+v.id)} aria-current={v.id===p.id?'page':undefined} title={fieldValue(v,'color')||v.name}><i style={{backgroundColor:v.colorHex||'#aaa'}}/>{fieldValue(v,'color')||v.name}</a>)}</div></div>}
     <div className="skp-pdp-price">{p.price>0?money(p.price):'Цена по запросу'}</div>
     <div className="skp-pdp-availability"><span className={p.stock&&p.price>0?'available':''}>● {p.price===0?'Уточните цену и наличие':p.stock?'В наличии':'Под заказ'}</span><a href="/contacts" onClick={go('/contacts')}><MapPin size={13}/>{STORE_ADDRESS}</a></div>

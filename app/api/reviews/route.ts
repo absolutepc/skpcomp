@@ -35,6 +35,10 @@ export async function GET(request:Request){
   }
   const id=url.searchParams.get('productId')||'';
   if(!/^[a-zA-Z0-9_-]{1,90}$/.test(id))return json({reviews:[]});
+  if(url.searchParams.get('summary')==='1'){
+   const summary=await E.DB.prepare("SELECT COUNT(*) AS count, AVG(rating) AS average FROM product_reviews WHERE product_id=? AND status='approved'").bind(id).first<{count:number;average:number|null}>();
+   return json({count:summary?.count||0,average:summary?.average??null});
+  }
   const result=await E.DB.prepare("SELECT id,product_id,author,rating,body,created_at FROM product_reviews WHERE product_id=? AND status='approved' ORDER BY created_at DESC LIMIT 100").bind(id).all<ReviewRow>();
   return json({reviews:result.results||[]});
  }catch{return json({error:'Не удалось загрузить отзывы'},503)}
