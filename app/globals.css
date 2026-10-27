@@ -1964,3 +1964,7 @@ html,body{overflow-x:clip}
  flex-shrink:0;
 }
 .card > .price-line{margin-top:auto}
+
+/* Let descriptions follow the actual title height without an empty line. */
+.card > a > h3{min-height:0;margin:0 0 4px}
+.card > p{margin-top:0}
