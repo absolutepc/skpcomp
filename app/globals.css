@@ -58,9 +58,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
 /* Individual catalog records share a model via variantGroup, without merging their URLs. */
 .card-image.variant-visual,.detail-art.variant-visual{background:transparent}
 .card-image.variant-visual img,.detail-art.variant-visual img{object-fit:contain;display:block}
-.variant-picker{margin:24px 0 4px}
-.variant-label{font-size:13px;color:#aeb7b6;margin-bottom:13px}
-.variant-label strong{color:#f3f4ef;font-weight:700}
+.variant-picker{margin:12px 0 4px}
 .variant-options{display:flex;flex-wrap:wrap;gap:10px}
 .variant-option{display:inline-flex;align-items:center;gap:9px;padding:10px 15px;border:1px solid #4c514c;border-radius:8px;background:#222426;color:#c7cec5;font-size:13px;transition:border-color .18s,background .18s}
 .variant-option:hover{border-color:#9fad8a;background:#2b2d2f}
