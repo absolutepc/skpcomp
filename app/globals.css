@@ -1969,12 +1969,12 @@ html,body{overflow-x:clip}
 .card > a > h3{min-height:0;margin:0 0 4px}
 .card > p{margin-top:0}
 
-/* Keep description, purchase row and availability together. */
+/* Reserve a compact two-line excerpt and anchor purchase rows consistently. */
 .card > p,
 .popular-section .home-products .card > p,
-.catalog-results .card > p{min-height:0;margin:0 0 5px}
-.card > p:empty{display:none}
+.catalog-results .card > p{min-height:2.8em;margin:0 0 5px}
+.card > p:empty{display:block}
 .card > .price-line,
 .popular-section .home-products .card > .price-line,
-.catalog-results .card > .price-line{margin-top:0;padding-top:0}
+.catalog-results .card > .price-line{margin-top:auto;padding-top:0}
 .card > .card-meta.card-stock{margin-top:3px;line-height:1.25}
