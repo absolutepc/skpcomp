@@ -33,7 +33,7 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
    <ProductGallery product={p} fallback={fallback} showCounter/>
    <div className="skp-pdp-info"><h1>{p.name}</h1><div className="skp-pdp-meta">{brand?.logo?<img src={brand.logo} alt={p.brand}/>:<strong>{p.brand}</strong>}<ProductRatingSummary productId={p.id} onOpen={()=>{setTab('reviews');document.getElementById('skp-pdp-panel')?.scrollIntoView({behavior:'smooth'})}}/><span className="skp-pdp-code">Код товара: {p.id}</span></div>
     <div className="skp-pdp-badges" aria-hidden="true"/>
-    <div className="skp-pdp-variant-slot">
+    <div className={"skp-pdp-variant-slot"+(variants.length>1?" has-variants":"")}>
      {variants.length>1&&<div className="skp-pdp-variants" role="group" aria-label="Выбор цвета товара"><div>{variants.map(v=><a key={v.id} href={'/product/'+v.id} onClick={go('/product/'+v.id)} aria-current={v.id===p.id?'page':undefined} title={fieldValue(v,'color')||v.name}><i style={{backgroundColor:v.colorHex||'#aaa'}}/>{fieldValue(v,'color')||v.name}</a>)}</div></div>}
     </div>
     <div className="skp-pdp-price">{p.price>0?money(p.price):'Цена по запросу'}</div>
