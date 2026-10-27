@@ -82,7 +82,7 @@
  /* Stabilize title/brand rows and use one measured slot for variants on every product. */
  .skp-pdp-info h1{min-height:33px}
  .skp-pdp-meta{min-height:28px}
- .skp-pdp-variant-slot{min-height:32px;margin-top:10px;flex:none}
+ .skp-pdp-variant-slot{min-height:28px;margin-top:10px;flex:none}
  .skp-pdp-services{margin-top:auto;padding-top:12px}
 }
 @media(max-width:700px){
