@@ -19,7 +19,7 @@ export default function CatalogProductCard({product:p,brands,visual,nav,favorite
   {p.brand&&<div className="skp-neon-brand"><div>{brand?.logo?<img src={brand.logo} alt={p.brand}/>:<span>{p.brand}</span>}</div></div>}
   <CardActionButtons action="favorite" name={p.name} favorite={favorite} compared={compared} onFavorite={onFavorite} onCompare={onCompare}/>
   <a className="skp-neon-image" href={href} onClick={follow}>{visual}</a>
-  <a className="skp-neon-name" href={href} onClick={follow}><h3>{p.name}</h3></a>
+  <a className="skp-neon-name" title={p.name} href={href} onClick={follow}><h3>{p.name}</h3></a>
   <div className="skp-neon-specs">{selected.length?selected.map(f=>{const value=specValue(p,f);const unit=f.key==='cores'?'ядер':f.key==='threads'?'потоков':f.unit;const text=value+(unit&&!value.toLowerCase().includes(unit.toLowerCase())?' '+unit:'');return <span key={f.key} title={f.label+': '+text}>{text}</span>}):<span className="skp-neon-excerpt">{p.description||'Характеристики уточняются'}</span>}</div>
   <div className="skp-neon-meta"><span className={'skp-neon-stock'+(p.stock&&p.price>0?' in-stock':'')}>{p.price===0?'Уточните наличие':p.stock?'В наличии':'Под заказ'}</span><ProductRatingSummary productId={p.id} compact onOpen={()=>nav(href)}/></div>
   <div className="skp-neon-purchase"><strong>{p.price>0?new Intl.NumberFormat('ru-RU').format(p.price)+' ₽':'Цена по запросу'}</strong><div className="skp-neon-purchase-buttons"><CardActionButtons action="compare" name={p.name} favorite={favorite} compared={compared} onFavorite={onFavorite} onCompare={onCompare}/><button className="skp-neon-cart" aria-label={'Добавить в корзину: '+p.name} disabled={p.price===0} onClick={onAdd}><ShoppingBag size={19}/></button></div></div>
