@@ -69,15 +69,20 @@
 }
 
 
-/* Product hero: keep the service tiles flush with the gallery frame.
-   The taller column determines the hero height; the gallery can grow with it. */
+/* Desktop product cards: a consistent 360px gallery as in the Logitech layout.
+   The right column uses the same minimum height, keeping delivery tiles flush.
+   Products without color variants reserve the same blank space as color buttons. */
 @media(min-width:701px){
- .skp-pdp-hero{align-items:stretch}
- .skp-pdp-hero>.skp-product-gallery{align-items:stretch;align-self:stretch}
- .skp-pdp-hero .skp-gallery-stage{align-self:stretch}
- .skp-pdp-info{display:flex;flex-direction:column;min-height:340px}
+ .skp-pdp-hero{align-items:start}
+ .skp-pdp-hero>.skp-product-gallery{align-items:start;align-self:start}
+ .skp-pdp-hero .skp-gallery-stage{height:360px;min-height:360px;align-self:start}
+ .skp-pdp-hero .skp-gallery-zoom-trigger{height:100%;min-height:0}
+ .skp-pdp-hero .skp-gallery-zoom-trigger img{height:100%;max-height:100%}
+ .skp-pdp-info{display:flex;flex-direction:column;min-height:360px}
  .skp-pdp-services{margin-top:auto;padding-top:12px}
+ .skp-pdp-variants-placeholder{height:31px;margin-top:10px;flex:none}
 }
+@media(max-width:700px){.skp-pdp-variants-placeholder{display:none}}
 
 /* Reviews tab: customer reviews on the left, independent review form on the right. */
 .skp-pdp .skp-reviews{width:100%;max-width:none;margin:0;padding:0;border-top:0}
@@ -93,7 +98,6 @@
  background:linear-gradient(135deg,#0e171b,#0b1115);
 }
 .skp-pdp .skp-reviews-heading{margin-bottom:20px;gap:12px}
-.skp-pdp .skp-reviews-heading .eyebrow{margin-bottom:8px}
 .skp-pdp .skp-reviews-heading h2{font-size:20px;margin:0}
 .skp-pdp .skp-review-rating{font-size:16px}
 .skp-pdp .skp-reviews-feed .skp-review-list{grid-template-columns:minmax(0,1fr);gap:12px}
