@@ -29,8 +29,11 @@ export default function ProductReviews({productId}:{productId:string}){
   }catch(error){setMessage(error instanceof Error?error.message:'Ошибка отправки')}finally{setLoading(false)}
  }
  return <section className="skp-reviews" aria-label="Отзывы о товаре">
- <div className="skp-reviews-heading"><div><span className="eyebrow">SKP / ОТЗЫВЫ</span><h2>Отзывы покупателей</h2></div><div className="skp-review-rating">{mean?<><Star size={18} fill="currentColor"/> {mean} <small>({reviews.length})</small></>:<span>Пока без оценок</span>}</div></div>
- {reviews.length?<div className="skp-review-list">{reviews.map(r=><article className="skp-review" key={r.id}><div><strong>{r.author}</strong><span className="skp-stars" aria-label={r.rating+' из 5'}>{stars(r.rating)}</span></div><small>{r.created_at?.slice(0,10)}</small><p>{r.body}</p></article>)}</div>:<p className="skp-reviews-empty">Пока нет опубликованных отзывов. Поделитесь впечатлениями о товаре.</p>}
+ <div className="skp-reviews-layout">
+  <div className="skp-reviews-feed">
+   <div className="skp-reviews-heading"><div><span className="eyebrow">SKP / ОТЗЫВЫ</span><h2>Отзывы покупателей</h2></div><div className="skp-review-rating">{mean?<><Star size={18} fill="currentColor"/> {mean} <small>({reviews.length})</small></>:<span>Пока без оценок</span>}</div></div>
+   {reviews.length?<div className="skp-review-list">{reviews.map(r=><article className="skp-review" key={r.id}><div><strong>{r.author}</strong><span className="skp-stars" aria-label={r.rating+' из 5'}>{stars(r.rating)}</span></div><small>{r.created_at?.slice(0,10)}</small><p>{r.body}</p></article>)}</div>:<p className="skp-reviews-empty">Пока нет опубликованных отзывов. Поделитесь впечатлениями о товаре.</p>}
+  </div>
  <form className="skp-review-form" onSubmit={send}><h3>Оставить отзыв</h3>
   <label>Ваше имя<input required minLength={2} maxLength={60} value={name} onChange={e=>setName(e.target.value)} placeholder="Как к вам обращаться"/></label>
   <fieldset><legend>Оценка</legend><div className="skp-rating-picker">{[1,2,3,4,5].map(n=><button type="button" key={n} onClick={()=>setRating(n)} aria-label={n+' из 5'} aria-pressed={n===rating}><Star size={26} fill={n<=rating?'currentColor':'none'}/></button>)}</div></fieldset>
@@ -39,7 +42,9 @@ export default function ProductReviews({productId}:{productId:string}){
   <button className="button light" disabled={loading}>{loading?'Отправляем…':<>Отправить отзыв <Send size={16}/></>}</button>
   <p className="skp-review-note">Отзывы публикуются после модерации. Не указывайте персональные данные и ссылки.</p>
   {message&&<p className="skp-review-message" role="status">{message}</p>}
- </form></section>
+ </form>
+ </div>
+ </section>
 }
 export function AdminReviews(){
  const [reviews,setReviews]=useState<Review[]>([]);
