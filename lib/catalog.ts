@@ -85,6 +85,73 @@ export const ssdFieldGroups:{title:string;fields:Field[]}[]=[
   f('recordingTechnology','Технология магнитной записи (CMR / SMR)')
  ]}
 ];
+/** PSU specs: use real manufacturer data, never assume certifications or protections. */
+export const psuFieldGroups:{title:string;fields:Field[]}[]=[
+ {title:'Основные параметры и стандарты',fields:[
+  f('watts','Номинальная мощность','Вт'),
+  f('peakWatts','Пиковая мощность','Вт'),
+  f('form','Форм-фактор'),
+  f('standard','Стандарт ATX (версия)'),
+  f('pcieStandard','Стандарт PCIe (версия)'),
+  f('modular','Модульность кабелей'),
+  f('recommendedBuild','Рекомендуемая конфигурация / назначение')
+ ]},
+ {title:'Эффективность и схемотехника',fields:[
+  f('certificate','Сертификат 80 PLUS'),
+  f('cybeneticsEta','Сертификат Cybenetics ETA'),
+  f('cybeneticsLambda','Сертификат Cybenetics LAMBDA'),
+  f('efficiency','КПД','%'),
+  f('pfc','Коррекция коэффициента мощности (PFC)'),
+  f('topology','Топология преобразователя'),
+  f('dcDc','DC-DC преобразователи'),
+  f('capacitors','Тип / производитель конденсаторов')
+ ]},
+ {title:'Электрические характеристики',fields:[
+  f('inputVoltage','Входное напряжение сети'),
+  f('inputFrequency','Частота сети','Гц'),
+  f('inputCurrent','Входной ток','А'),
+  f('rail12vCurrent','Ток по линии +12 В','А'),
+  f('rail12vPower','Мощность по линии +12 В','Вт'),
+  f('rail5vCurrent','Ток по линии +5 В','А'),
+  f('rail33vCurrent','Ток по линии +3,3 В','А'),
+  f('rail5vsbCurrent','Ток по линии +5VSB','А'),
+  f('holdUpTime','Время удержания питания (Hold-up time)','мс'),
+  f('ripple12v','Пульсации по линии +12 В','мВ')
+ ]},
+ {title:'Разъёмы и кабели',fields:[
+  f('atx24pin','Разъёмы питания материнской платы 20+4 pin','шт.'),
+  f('eps8pin','Разъёмы CPU EPS 4+4 / 8 pin','шт.'),
+  f('eps4pin','Разъёмы CPU 4 pin','шт.'),
+  f('pcie62pin','Разъёмы видеокарт PCIe 6+2 pin','шт.'),
+  f('pcie6pin','Разъёмы видеокарт PCIe 6 pin','шт.'),
+  f('gpu16pin','Разъёмы питания видеокарт 12V-2x6 / 12VHPWR','шт.'),
+  f('gpu16pinType','Тип 16-контактного разъёма (12V-2x6 / 12VHPWR)'),
+  f('gpu16pinPower','Максимальная мощность 16-контактного разъёма','Вт'),
+  f('sataPower','Разъёмы питания SATA','шт.'),
+  f('molexPower','Разъёмы Molex 4 pin','шт.'),
+  f('floppyPower','Разъёмы Floppy 4 pin','шт.'),
+  f('cableType','Тип кабелей / оплётка'),
+  f('atxCableLength','Длина кабеля 24 pin','мм'),
+  f('epsCableLength','Длина кабеля CPU EPS','мм'),
+  f('gpuCableLength','Длина кабеля питания видеокарты','мм')
+ ]},
+ {title:'Охлаждение и акустика',fields:[
+  f('fanSize','Диаметр вентилятора','мм'),
+  f('fanBearing','Тип подшипника вентилятора'),
+  f('fanSpeed','Максимальная скорость вентилятора','об/мин'),
+  f('semiPassive','Полупассивный режим (Zero RPM)'),
+  f('fanControl','Управление скоростью вентилятора'),
+  f('noise','Уровень шума','дБ'),
+  f('rgb','Подсветка')
+ ]},
+ {title:'Защиты, надёжность и габариты',fields:[
+  f('protections','Защиты (OVP / UVP / OCP / OPP / SCP / OTP / SIP)'),
+  f('mtbf','Наработка на отказ (MTBF)','ч'),
+  f('operatingTemp','Диапазон рабочих температур'),
+  f('width','Ширина','мм'),f('height','Высота','мм'),f('length','Глубина','мм'),
+  f('weight','Вес','г'),f('warranty','Гарантия','мес.')
+ ]}
+];
 export function fieldsForProduct(product:Product):Field[]{
  const fields=categoryFields[product.category]||[];
  if(product.category!=='gpu')return fields;
@@ -110,7 +177,7 @@ export const categoryFields:Record<string,Field[]>={
  gpu:gpuFieldGroups.flatMap(group=>group.fields),
  ram:[f('memory','Тип памяти'),f('capacity','Общий объём','ГБ'),f('modules','Количество модулей','шт.'),f('speed','Частота','МГц'),f('bandwidth','Пропускная способность','ГБ/с'),f('voltage','Напряжение','В'),f('latency','Тайминги CL'),f('form','Форм-фактор'),f('rgb','Подсветка')],
  ssd:ssdFieldGroups.flatMap(group=>group.fields),
- psu:[f('watts','Мощность','Вт'),f('certificate','Сертификат'),f('form','Форм-фактор'),f('modular','Модульные кабели'),f('standard','Стандарт ATX'),f('fanSize','Вентилятор','мм')],
+ psu:psuFieldGroups.flatMap(group=>group.fields),
  cooler:[f('coolingType','Тип охлаждения'),f('socket','Поддерживаемые сокеты'),f('tdp','Рассеиваемая мощность','Вт'),f('height','Высота','мм'),f('radiator','Размер радиатора','мм'),f('fanSize','Размер вентилятора','мм'),f('rgb','Подсветка')],
  case:[f('form','Тип корпуса'),f('boardForm','Форм-фактор платы'),f('gpuLength','Максимальная длина GPU','мм'),f('coolerHeight','Высота кулера','мм'),f('fans','Вентиляторы в комплекте','шт.'),f('color','Цвет'),f('side','Боковая панель')],
  monitor:[f('diagonal','Диагональ','дюйм'),f('resolution','Разрешение'),f('panel','Матрица'),f('refresh','Частота обновления','Гц'),f('response','Время отклика','мс'),f('ports','Разъёмы'),f('curved','Изогнутый экран'),f('vesa','VESA'),f('dualMode','Режимы экрана'),f('hdr','HDR'),f('gSync','Адаптивная синхронизация'),f('color','Цвет')],
