@@ -252,6 +252,15 @@ return <>
   <input type="number" min={1} step={1} placeholder="Например, 16" value={value} onChange={e=>setEditing({...editing,specs:{...editing.specs,powerPhases:e.target.value}})}/>
   <small>Укажите количество фаз CPU: для схемы 16+2+1 — 16. Большее число даст больший показатель на диаграмме.</small>
  </label>;
+ if(editing.category==='ram'&&field.key==='bandwidth'){
+  const storedMBps=editing.specs?.bandwidthMBps;
+  const legacyGBps=editing.specs?.bandwidth?.trim().replace(',','.')||'';
+  const legacyMBps=/^\d+(?:\.\d+)?$/.test(legacyGBps)?String(Number(legacyGBps)*1000):'';
+  return <label key={field.key}>Пропускная способность, МБ/с
+   <input type="number" min={0} step="any" placeholder="Например, 76800" value={storedMBps!==undefined?storedMBps:legacyMBps} onChange={e=>setEditing({...editing,specs:{...editing.specs,bandwidthMBps:e.target.value,bandwidth:''}})}/>
+   <small>Введите значение в МБ/с. На сайте и диаграмме оно появится в ГБ/с (1000 МБ/с = 1 ГБ/с).</small>
+  </label>;
+ }
  return <label key={field.key}>{field.label}{field.unit?`, ${field.unit}`:''}
   <input type={field.numeric?'number':'text'} min={field.numeric?0:undefined} step={field.numeric?'any':undefined} value={value} onChange={e=>setEditing({...editing,...(['socket','memory'].includes(field.key)?{[field.key]:e.target.value}:field.key==='watts'?{watts:Number(e.target.value)}:{}),specs:{...editing.specs,[field.key]:e.target.value}})}/>
  </label>;
