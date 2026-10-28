@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" role="img" aria-label="Warface">
+ <rect width="300" height="300" rx="25" fill="#f5f5f5"/>
+ <rect x="32" y="32" width="236" height="236" fill="#242424"/>
+ <g fill="#f43b32">
+  <path d="M56 66 101 92 101 207 139 191 111 232 56 202Z"/>
+  <path d="M244 66 199 92 199 207 161 191 189 232 244 202Z"/>
+  <path d="M133 146H167V183L150 241 133 183Z"/>
+ </g>
+</svg>
