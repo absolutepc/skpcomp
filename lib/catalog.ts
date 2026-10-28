@@ -46,6 +46,45 @@ export const gpuFieldGroups:{title:string;fields:Field[]}[]=[
   f('videoEncoders','Кодирование видео (AV1 / H.264 / HEVC)')
  ]}
 ];
+/** SSD and HDD details share the storage category. Leave unpublished specs empty. */
+export const ssdFieldGroups:{title:string;fields:Field[]}[]=[
+ {title:'Тип, форм-фактор и подключение',fields:[
+  f('driveType','Тип накопителя'),f('capacity','Объём','ГБ'),
+  f('form','Форм-фактор'),f('interface','Интерфейс'),f('protocol','Протокол передачи данных'),
+  f('pcieVersion','Версия PCIe'),f('pcieLanes','Количество линий PCIe','шт.')
+ ]},
+ {title:'Контроллер и память',fields:[
+  f('controller','Контроллер'),f('nandType','Тип NAND-памяти (TLC / QLC / MLC / SLC)'),
+  f('nandLayers','Количество слоёв NAND','шт.'),f('nandManufacturer','Производитель NAND-памяти')
+ ]},
+ {title:'Кэширование',fields:[
+  f('dramCache','Объём оперативного DRAM-кэша','МБ'),
+  f('dramType','Тип DRAM-кэша'),f('hmb','Поддержка Host Memory Buffer (HMB)'),
+  f('pslcCache','pSLC-кэш (наличие / тип)'),
+  f('pslcCacheSize','Максимальный объём pSLC-кэша','ГБ')
+ ]},
+ {title:'Скорость работы',fields:[
+  f('readSpeed','Скорость последовательного чтения','МБ/с'),
+  f('writeSpeed','Скорость последовательной записи','МБ/с'),
+  f('iops','Случайное чтение 4K','IOPS'),
+  f('writeIops','Случайная запись 4K','IOPS'),
+  f('postCacheWriteSpeed','Скорость записи после исчерпания кэша','МБ/с')
+ ]},
+ {title:'Ресурс, возможности и характеристики',fields:[
+  f('endurance','Ресурс TBW','ТБ'),f('dwpd','Ресурс DWPD','раз/день'),
+  f('mtbf','Среднее время наработки на отказ (MTBF)','ч'),
+  f('warranty','Гарантия','мес.'),
+  f('trim','Поддержка TRIM'),f('smart','Поддержка S.M.A.R.T.'),
+  f('encryption','Аппаратное шифрование'),f('heatsink','Радиатор охлаждения'),
+  f('power','Энергопотребление','Вт'),f('workingTemp','Рабочая температура'),
+  f('weight','Вес','г')
+ ]},
+ {title:'Дополнительно для HDD',fields:[
+  f('rpm','Скорость вращения шпинделя','об/мин'),
+  f('bufferCache','Буфер HDD','МБ'),
+  f('recordingTechnology','Технология магнитной записи (CMR / SMR)')
+ ]}
+];
 export function fieldsForProduct(product:Product):Field[]{
  const fields=categoryFields[product.category]||[];
  if(product.category!=='gpu')return fields;
@@ -70,7 +109,7 @@ export const categoryFields:Record<string,Field[]>={
  ],
  gpu:gpuFieldGroups.flatMap(group=>group.fields),
  ram:[f('memory','Тип памяти'),f('capacity','Общий объём','ГБ'),f('modules','Количество модулей','шт.'),f('speed','Частота','МГц'),f('bandwidth','Пропускная способность','ГБ/с'),f('voltage','Напряжение','В'),f('latency','Тайминги CL'),f('form','Форм-фактор'),f('rgb','Подсветка')],
- ssd:[f('driveType','Тип накопителя'),f('capacity','Объём','ГБ'),f('interface','Интерфейс'),f('form','Форм-фактор'),f('readSpeed','Скорость чтения','МБ/с'),f('writeSpeed','Скорость записи','МБ/с'),f('endurance','Ресурс TBW','ТБ')],
+ ssd:ssdFieldGroups.flatMap(group=>group.fields),
  psu:[f('watts','Мощность','Вт'),f('certificate','Сертификат'),f('form','Форм-фактор'),f('modular','Модульные кабели'),f('standard','Стандарт ATX'),f('fanSize','Вентилятор','мм')],
  cooler:[f('coolingType','Тип охлаждения'),f('socket','Поддерживаемые сокеты'),f('tdp','Рассеиваемая мощность','Вт'),f('height','Высота','мм'),f('radiator','Размер радиатора','мм'),f('fanSize','Размер вентилятора','мм'),f('rgb','Подсветка')],
  case:[f('form','Тип корпуса'),f('boardForm','Форм-фактор платы'),f('gpuLength','Максимальная длина GPU','мм'),f('coolerHeight','Высота кулера','мм'),f('fans','Вентиляторы в комплекте','шт.'),f('color','Цвет'),f('side','Боковая панель')],
