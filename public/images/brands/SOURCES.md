@@ -4,7 +4,7 @@ Marks identify the respective product manufacturers and series. Trademarks remai
 
 - ASUS, AMD, Intel, NVIDIA, Samsung, Kingston: https://github.com/simple-icons/simple-icons/tree/develop/icons (CC0 icon collection).
 - ASRock: https://github.com/selfhst/icons/blob/main/svg/asrock-light.svg (brand artwork).
-- MSI: https://storage-asset.msi.com/frontend/imgs/logo-footer.png
+- MSI: official vector wordmark from `MSI-logo-horiz-cmyk-wht-for-screen.ai` in https://download.msi.com/archive/mnu_exe/corp/msi-logos.zip?v=1.0 (https://www.msi.com/page/msi-logos). Converted vector paths to SVG; transparent padding removed.
 - MAG / MPG / MEG: https://www.msi.com/Landing/gaming-redefined-style-perfected — `https://storage-asset.msi.com/event/2024/CND/gaming-rederined/images/logo-{mag,mpg,meg}.webp`.
 - GIGABYTE: inline GIGABYTECiLogo SVG from https://www.aorus.com/.
 - AORUS: https://logo-teka.com/wp-content/uploads/2026/03/aorus-horizontal-logo.svg
