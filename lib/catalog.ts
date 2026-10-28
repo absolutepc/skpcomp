@@ -69,7 +69,7 @@ export const categoryFields:Record<string,Field[]>={
   f('wifi','Wi-Fi')
  ],
  gpu:gpuFieldGroups.flatMap(group=>group.fields),
- ram:[f('memory','Тип памяти'),f('capacity','Общий объём','ГБ'),f('modules','Количество модулей','шт.'),f('speed','Частота','МГц'),f('latency','Тайминги CL'),f('form','Форм-фактор'),f('rgb','Подсветка')],
+ ram:[f('memory','Тип памяти'),f('capacity','Общий объём','ГБ'),f('modules','Количество модулей','шт.'),f('speed','Частота','МГц'),f('bandwidth','Пропускная способность','ГБ/с'),f('latency','Тайминги CL'),f('form','Форм-фактор'),f('rgb','Подсветка')],
  ssd:[f('driveType','Тип накопителя'),f('capacity','Объём','ГБ'),f('interface','Интерфейс'),f('form','Форм-фактор'),f('readSpeed','Скорость чтения','МБ/с'),f('writeSpeed','Скорость записи','МБ/с'),f('endurance','Ресурс TBW','ТБ')],
  psu:[f('watts','Мощность','Вт'),f('certificate','Сертификат'),f('form','Форм-фактор'),f('modular','Модульные кабели'),f('standard','Стандарт ATX'),f('fanSize','Вентилятор','мм')],
  cooler:[f('coolingType','Тип охлаждения'),f('socket','Поддерживаемые сокеты'),f('tdp','Рассеиваемая мощность','Вт'),f('height','Высота','мм'),f('radiator','Размер радиатора','мм'),f('fanSize','Размер вентилятора','мм'),f('rgb','Подсветка')],
