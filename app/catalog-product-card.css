@@ -26,4 +26,20 @@
 /* Use the available plaque width without stretching any brand mark. */
 .skp-neon-brand img{display:block;width:auto;max-width:100%;height:22px;object-fit:contain}
 .skp-builtin-brand-logo{filter:brightness(0) invert(1)}
-@media(max-width:700px){.skp-neon-brand img{height:19px}}
+/* MSI ships as an original white vector wordmark. Recoloring the SVG with a
+   CSS filter causes Safari to rasterize small logo text and look soft. */
+.skp-neon-brand img.skp-msi-brand-logo{
+ filter:none;
+ width:auto;
+ max-width:100%;
+ height:24px;
+ max-height:100%;
+ object-fit:contain;
+ image-rendering:auto;
+}
+/* Only the outer plaque needs a trapezoid clip; avoid a second clip over MSI. */
+.skp-neon-brand>div:has(>img.skp-msi-brand-logo){clip-path:none}
+@media(max-width:700px){
+ .skp-neon-brand img{height:19px}
+ .skp-neon-brand img.skp-msi-brand-logo{height:20px}
+}
