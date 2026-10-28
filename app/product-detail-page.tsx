@@ -3,6 +3,7 @@ import {useState,type ReactNode} from 'react';
 import {ChevronRight,Heart,GitCompareArrows,ShoppingBag,Minus,Plus,MapPin,Truck,PackageCheck,CreditCard,Cpu,MemoryStick,Zap,Layers,Monitor} from 'lucide-react';
 import type {Product,Store} from '../lib/seed';
 import {components,peripherals,fieldsForProduct,specValue,fieldValue} from '../lib/catalog';
+import {sameCoolingGroup} from '../lib/cooling-options';
 import {fromLaptop} from '../lib/fps-estimate';
 import {STORE_ADDRESS} from './store-location';
 import ProductGallery from './product-gallery';
@@ -21,7 +22,7 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
  const category=components[p.category]||peripherals[p.category]||({laptops:'Ноутбуки',furniture:'Компьютерная мебель',peripherals:'Периферия'} as Record<string,string>)[p.category]||'Каталог';
  const brand=data.brands?.find(b=>b.name.toLowerCase()===p.brand.toLowerCase());
  const variants=p.variantGroup?data.products.filter(v=>v.variantGroup===p.variantGroup):[];
- const related=data.products.filter(v=>v.category===p.category&&v.id!==p.id&&(!p.variantGroup||v.variantGroup!==p.variantGroup)).slice(0,4);
+ const related=data.products.filter(v=>v.category===p.category&&(p.category!=='cooler'||sameCoolingGroup(fieldValue(p,'coolingType'),fieldValue(v,'coolingType')))&&v.id!==p.id&&(!p.variantGroup||v.variantGroup!==p.variantGroup)).slice(0,4);
  const go=(path:string)=>(event:React.MouseEvent<HTMLAnchorElement>)=>{event.preventDefault();nav(path)};
  const preferred=p.category==='gpu'?['architecture','vram','videoMemory','interface','watts']:p.category==='cpu'?['cores','threads','socket','frequency','watts']:['capacity','memory','speed','interface','watts'];
  const highlights=[...rows.filter(row=>preferred.includes(row.key)),...rows.filter(row=>!preferred.includes(row.key))].slice(0,5);
