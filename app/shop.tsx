@@ -10,7 +10,7 @@ import CatalogPage from './catalog-page';
 import CardActionButtons from './card-action-buttons';
 import CatalogProductCard from './catalog-product-card';
 import StoreSearch from './store-search';
-import {components,peripherals,categoryFields,gpuFieldGroups,fieldsForProduct,normalizeProduct,fieldValue} from '../lib/catalog';
+import {components,peripherals,categoryFields,gpuFieldGroups,ssdFieldGroups,fieldsForProduct,normalizeProduct,fieldValue} from '../lib/catalog';
 import {buildComponentFields} from '../lib/build-components';
 import Installments from './installments';
 import {Checkout,OrderHistory,AdminOrders} from './orders';
@@ -227,9 +227,10 @@ return <>
     <label>Модель / характеристики<AdminBuildPicker field="extra" products={data.products} value={part.value} onSelect={selected=>setEditing({...editing,buildExtras:(editing.buildExtras||[]).map((item,i)=>i===index?{...item,name:item.name||components[selected.category]||'Компонент',value:selected.name.slice(0,300)}:item)})}/><input type="text" maxLength={300} placeholder="Точная модель" value={part.value} onChange={e=>setEditing({...editing,buildExtras:(editing.buildExtras||[]).map((item,i)=>i===index?{...item,value:e.target.value}:item)})}/></label>
     <button type="button" className="admin-build-remove" aria-label="Удалить компонент" title="Удалить компонент" onClick={()=>setEditing({...editing,buildExtras:(editing.buildExtras||[]).filter((_,i)=>i!==index)})}><Trash2 size={18}/></button>
   </div>)}
-</div>}{editing.category!=='pc'&&<div className="admin-spec-fields"><h3>Характеристики для фильтров</h3><p>Заполняйте только известные значения. Несколько вариантов разделяйте символом |, например DDR4 | DDR5. Числа указывайте без единиц измерения.</p>{editing.category==='gpu'
- ?gpuFieldGroups.map(group=><section className="skp-gpu-spec-group" key={group.title}>
+</div>}{editing.category!=='pc'&&<div className="admin-spec-fields"><h3>Характеристики для фильтров</h3><p>Заполняйте только известные значения. Несколько вариантов разделяйте символом |, например DDR4 | DDR5. Числа указывайте без единиц измерения.</p>{(editing.category==='gpu'||editing.category==='ssd')
+ ?(editing.category==='gpu'?gpuFieldGroups:ssdFieldGroups).map(group=><section className="skp-technical-spec-group" key={group.title}>
   <h4>{group.title}</h4>
+  {editing.category==='ssd'&&group.title==='Кэширование'&&<p className="skp-storage-spec-note">DRAM-кэш указывайте в МБ (0, если его нет). pSLC-кэш бывает статическим или динамическим: максимальный объём указывайте только если он известен. HMB заполняется отдельно.</p>}
   <div className="form-grid">{group.fields.filter(field=>field.key!=='color'&&(!field.chip||field.chip===gpuChipBrand(editing))).map(field=><label key={field.key}>{field.label}{field.unit?`, ${field.unit}`:''}<input type={field.numeric?'number':'text'} min={field.numeric?0:undefined} step={field.numeric?'any':undefined} value={fieldValue(editing,field.key)} onChange={e=>setEditing({...editing,...(['socket','memory'].includes(field.key)?{[field.key]:e.target.value}:field.key==='watts'?{watts:Number(e.target.value)}:{}),specs:{...editing.specs,[field.key]:e.target.value}})}/></label>)}</div>
  </section>)
  :<div className="form-grid">{fieldsForProduct(editing).filter(field=>field.key!=='color').map(field=>{
