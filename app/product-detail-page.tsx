@@ -19,12 +19,18 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
  const [quantity,setQuantity]=useState(1);
  const [tab,setTab]=useState<string>('specs');
  const [allSpecs,setAllSpecs]=useState(false);
- const rows=fieldsForProduct(p).map(field=>({key:field.key,label:field.label+(field.unit?', '+field.unit:''),value:specValue(p,field)})).filter(row=>String(row.value??'').trim());
+ const allRows=fieldsForProduct(p).map(field=>({key:field.key,label:field.label+(field.unit?', '+field.unit:''),value:specValue(p,field)})).filter(row=>String(row.value??'').trim());
+ // The monitor editor has detailed groups; keep the six most helpful basic specs
+ // visible before the collapsed full list, without omitting any other attributes.
+ const monitorMainSpecs=['diagonal','resolution','panel','refresh','response','hdr'];
+ const rows=p.category==='monitor'
+  ?[...allRows.filter(row=>monitorMainSpecs.includes(row.key)).sort((a,b)=>monitorMainSpecs.indexOf(a.key)-monitorMainSpecs.indexOf(b.key)),...allRows.filter(row=>!monitorMainSpecs.includes(row.key))]
+  :allRows;
  const category=components[p.category]||peripherals[p.category]||({laptops:'Ноутбуки',furniture:'Компьютерная мебель',peripherals:'Периферия'} as Record<string,string>)[p.category]||'Каталог';
  const variants=p.variantGroup?data.products.filter(v=>v.variantGroup===p.variantGroup):[];
  const related=data.products.filter(v=>v.category===p.category&&(p.category!=='cooler'||sameCoolingGroup(fieldValue(p,'coolingType'),fieldValue(v,'coolingType')))&&v.id!==p.id&&(!p.variantGroup||v.variantGroup!==p.variantGroup)).slice(0,4);
  const go=(path:string)=>(event:React.MouseEvent<HTMLAnchorElement>)=>{event.preventDefault();nav(path)};
- const preferred=p.category==='gpu'?['architecture','vram','videoMemory','interface','watts']:p.category==='cpu'?['cores','threads','socket','frequency','watts']:['capacity','memory','speed','interface','watts'];
+ const preferred=p.category==='monitor'?['diagonal','resolution','panel','refresh','response']:p.category==='gpu'?['architecture','vram','videoMemory','interface','watts']:p.category==='cpu'?['cores','threads','socket','frequency','watts']:['capacity','memory','speed','interface','watts'];
  const highlights=[...rows.filter(row=>preferred.includes(row.key)),...rows.filter(row=>!preferred.includes(row.key))].slice(0,5);
  const icons=[Cpu,MemoryStick,Layers,Zap,Monitor];
  const description=()=> <section className="skp-pdp-description-card"><h2>Описание</h2><p>{p.description||'Описание скоро появится.'}</p>{highlights.length>0&&<div className="skp-pdp-highlights">{highlights.map((row,index)=>{const Icon=icons[index];return <div key={row.key}><Icon size={19}/><span><strong>{row.value}</strong><small>{row.label}</small></span></div>})}</div>}</section>;
