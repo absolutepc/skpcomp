@@ -19,7 +19,7 @@ const fps=(game:string,label:string):RadarMetric=>({key:'fps-'+game,label,unit:'
 const profiles:Record<string,RadarMetric[]>={
  mouse:[metric('dpi','Разрешение','DPI'),metric('ips','Скорость','IPS'),metric('acceleration','Ускорение','G'),metric('polling','Частота опроса','Гц'),metric('battery','Автономность','ч'),metric('weight','Вес','г',true)],
  cpu:[metric('cores','Ядра'),metric('threads','Потоки'),metric('frequency','Базовая частота','ГГц'),metric('l3','Кэш L3','МБ'),metric('watts','Мощность','Вт',true),price],
- motherboard:[metric('ramSlots','Слоты ОЗУ'),metric('maxRam','Макс. ОЗУ','ГБ'),metric('pcieSlots','Слоты PCIe'),metric('gpuSlots','Слоты GPU'),metric('m2Slots','Слоты M.2'),price],
+ motherboard:[metric('ramSlots','Слоты ОЗУ'),metric('maxRam','Макс. ОЗУ','ГБ'),metric('powerPhases','Фазы питания'),metric('gpuSlots','Слоты GPU'),metric('m2Slots','Слоты M.2'),price],
  gpu:[metric('vram','Видеопамять','ГБ'),metric('bus','Шина памяти','бит'),metric('watts','Потребление','Вт',true),metric('baseClock','Базовая частота GPU','МГц'),cudaCores,metric('bandwidth','Пропускная способность','ГБ/с')],
  ram:[metric('capacity','Объём','ГБ'),metric('speed','Частота','МГц'),metric('latency','Задержка CL','',true),metric('modules','Модули'),metric('voltage','Напряжение','В'),price],
  ssd:[metric('capacity','Объём','ГБ'),metric('readSpeed','Чтение','МБ/с'),metric('writeSpeed','Запись','МБ/с'),metric('endurance','Ресурс','ТБ'),metric('iops','Операции','IOPS'),price],
