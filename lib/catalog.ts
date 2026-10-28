@@ -234,6 +234,110 @@ export const caseFieldGroups:{title:string;fields:Field[]}[]=[
   f('warranty','Гарантия','мес.')
  ]}
 ];
+/** Detailed monitor specifications. Existing keys stay stable for saved products. */
+export const monitorFieldGroups:{title:string;fields:Field[]}[]=[
+ {title:'Экран и матрица',fields:[
+  f('diagonal','Диагональ экрана','дюйм'),
+  f('resolution','Разрешение'),
+  f('aspectRatio','Соотношение сторон'),
+  f('panel','Тип матрицы (IPS / VA / TN / OLED / WOLED / QD-OLED)'),
+  f('panelGeneration','Поколение / технология матрицы'),
+  f('panelManufacturer','Производитель матрицы'),
+  f('pixelPitch','Шаг пикселя','мм'),
+  f('ppi','Плотность пикселей','PPI'),
+  f('curved','Изогнутый экран'),
+  f('curvature','Радиус кривизны','R'),
+  f('surface','Поверхность экрана (матовая / глянцевая)'),
+  f('antiGlare','Антибликовое покрытие'),
+  f('viewingAngle','Углы обзора'),
+  f('frameless','Безрамочная конструкция')
+ ]},
+ {title:'Частота обновления и игровые возможности',fields:[
+  f('refresh','Максимальная частота обновления','Гц'),
+  f('response','Время отклика (заявленное)','мс'),
+  f('responseGtG','Время отклика GtG','мс'),
+  f('responseMprt','Время отклика MPRT','мс'),
+  f('inputLag','Задержка ввода','мс'),
+  f('dualMode','Режимы экрана (Dual-Mode)'),
+  f('dualModeRefresh','Частоты и разрешения в Dual-Mode'),
+  f('gSync','Адаптивная синхронизация (G-SYNC / FreeSync)'),
+  f('freeSyncTier','Уровень AMD FreeSync'),
+  f('vrrRange','Диапазон VRR'),
+  f('motionBlurReduction','Снижение размытия движения / стробирование'),
+  f('overdrive','Настройка Overdrive'),
+  f('gamingFeatures','Игровые функции (прицел / счётчик FPS / Shadow Boost)')
+ ]},
+ {title:'Яркость, контрастность и HDR',fields:[
+  f('brightness','Типичная яркость SDR','нит'),
+  f('peakBrightness','Пиковая яркость SDR','нит'),
+  f('contrast','Статическая контрастность (:1)'),
+  f('dynamicContrast','Динамическая контрастность'),
+  f('hdr','Поддержка HDR / сертификат DisplayHDR'),
+  f('hdrBrightness','Пиковая яркость HDR','нит'),
+  f('hdrFullScreenBrightness','Яркость HDR на всём экране','нит'),
+  f('localDimming','Технология локального затемнения'),
+  f('dimmingZones','Количество зон локального затемнения','шт.'),
+  f('blackLevel','Уровень чёрного'),
+  f('hdrFormats','Форматы HDR (HDR10 / HLG / Dolby Vision)')
+ ]},
+ {title:'Цветопередача и качество изображения',fields:[
+  f('colorDepth','Глубина цвета'),
+  f('colorCount','Количество отображаемых цветов'),
+  f('srgbCoverage','Охват sRGB','%'),
+  f('dciP3Coverage','Охват DCI-P3','%'),
+  f('adobeRgbCoverage','Охват Adobe RGB','%'),
+  f('rec2020Coverage','Охват Rec.2020','%'),
+  f('colorAccuracy','Точность цветопередачи (Delta E)'),
+  f('factoryCalibration','Заводская калибровка'),
+  f('gamma','Гамма'),
+  f('colorTemperature','Цветовая температура'),
+  f('uniformityCompensation','Компенсация неравномерности подсветки'),
+  f('oledCare','Защита OLED / OLED Care')
+ ]},
+ {title:'Разъёмы и дополнительные функции',fields:[
+  f('ports','Разъёмы (общее описание)'),
+  f('hdmiPorts','Количество HDMI','шт.'),
+  f('hdmiVersion','Версия HDMI'),
+  f('displayPortPorts','Количество DisplayPort','шт.'),
+  f('displayPortVersion','Версия DisplayPort'),
+  f('usbCPorts','Количество USB-C','шт.'),
+  f('usbCAltMode','Видео через USB-C (DisplayPort Alt Mode)'),
+  f('usbCPowerDelivery','Питание USB-C Power Delivery','Вт'),
+  f('usbAPorts','Количество USB-A','шт.'),
+  f('usbHub','USB-хаб'),
+  f('kvm','Встроенный KVM-переключатель'),
+  f('pipPbp','Режимы PiP / PbP'),
+  f('audioOut','Выход 3,5 мм / аудиовыход'),
+  f('speakers','Встроенные динамики'),
+  f('speakerPower','Мощность динамиков','Вт'),
+  f('webcam','Встроенная веб-камера')
+ ]},
+ {title:'Эргономика и защита зрения',fields:[
+  f('vesa','Крепление VESA'),
+  f('heightAdjustment','Регулировка по высоте','мм'),
+  f('tilt','Наклон экрана'),
+  f('swivel','Поворот влево / вправо'),
+  f('pivot','Поворот в портретный режим (Pivot)'),
+  f('flickerFree','Отсутствие мерцания (Flicker-Free)'),
+  f('lowBlueLight','Снижение синего света'),
+  f('ambientLightSensor','Датчик освещённости'),
+  f('rgb','Подсветка корпуса')
+ ]},
+ {title:'Питание, размеры и комплектация',fields:[
+  f('powerConsumption','Типичное энергопотребление','Вт'),
+  f('maxPowerConsumption','Максимальное энергопотребление','Вт'),
+  f('standbyPower','Энергопотребление в ожидании','Вт'),
+  f('powerSupply','Блок питания (встроенный / внешний)'),
+  f('width','Ширина с подставкой','мм'),
+  f('height','Высота с подставкой','мм'),
+  f('depth','Глубина с подставкой','мм'),
+  f('weight','Вес с подставкой','кг'),
+  f('weightWithoutStand','Вес без подставки','кг'),
+  f('color','Цвет корпуса'),
+  f('warranty','Гарантия','мес.'),
+  f('includedCables','Кабели и комплект поставки')
+ ]}
+];
 export function fieldsForProduct(product:Product):Field[]{
  const fields=categoryFields[product.category]||[];
  if(product.category!=='gpu')return fields;
@@ -262,7 +366,7 @@ export const categoryFields:Record<string,Field[]>={
  psu:psuFieldGroups.flatMap(group=>group.fields),
  cooler:[f('coolingType','Тип охлаждения'),f('socket','Поддерживаемые сокеты'),f('tdp','Рассеиваемая мощность','Вт'),f('height','Высота','мм'),f('radiator','Размер радиатора','мм'),f('fanSize','Размер вентилятора','мм'),f('rgb','Подсветка')],
  case:caseFieldGroups.flatMap(group=>group.fields),
- monitor:[f('diagonal','Диагональ','дюйм'),f('resolution','Разрешение'),f('panel','Матрица'),f('refresh','Частота обновления','Гц'),f('response','Время отклика','мс'),f('ports','Разъёмы'),f('curved','Изогнутый экран'),f('vesa','VESA'),f('dualMode','Режимы экрана'),f('hdr','HDR'),f('gSync','Адаптивная синхронизация'),f('color','Цвет')],
+ monitor:monitorFieldGroups.flatMap(group=>group.fields),
  mouse:[
   f('connection','Подключение'),f('sensor','Сенсор'),
   f('dpi','Разрешение сенсора','DPI'),f('ips','Максимальная скорость отслеживания','IPS'),
