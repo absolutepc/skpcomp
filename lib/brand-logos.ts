@@ -19,5 +19,8 @@ export function productBrandLogo(product:Pick<Product,'brand'|'name'|'specs'>,br
  const identity=series?.trim()||product.brand+' '+product.name;
  const rule=seriesRules[name.toLowerCase()]?.find(rule=>rule.pattern.test(identity));
  if(rule)return {src:'/images/brands/'+rule.file+'.svg',label:name+' '+rule.name,builtin:true};
+ // The official MSI wordmark is already available as a sharp local vector.
+ // Use it for the generic MSI plaque instead of an uploaded raster logo.
+ if(name.toLowerCase()==='msi')return {src:'/images/brands/msi.svg',label:product.brand,builtin:true};
  return {src:brand?.logo||defaultBrandLogo(name),label:product.brand,builtin:!brand?.logo};
 }
