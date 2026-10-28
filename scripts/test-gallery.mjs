@@ -67,9 +67,7 @@ await assert.rejects(
  /непрозрачный фон/,'Opaque product photos are still rejected'
 );
 const mediaRoute=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf8');
-assert.match(mediaRoute,/\(\?:webp\|png\|jpg\)/,'Media API allows PNG, WebP and game JPG keys');
-assert.match(mediaRoute,/isFpsGame\?\['image\/jpeg'\]:\[\]/,'Only game uploads allow JPEG, preserving product gallery validation');
-assert.match(mediaRoute,/isFpsGame\?'fps-games\/'/,'Game uploads use an isolated R2 namespace');
+assert.match(mediaRoute,/\(\?:webp\|png\)/,'Media API allows both PNG and WebP keys');
 assert.match(mediaRoute,/file\.type!==mime/,'Media API checks MIME against PNG or WebP magic bytes');
 assert.match(mediaRoute,/key\.endsWith\('\.png'\)/,'PNG response carries the right MIME');
 console.log('Gallery tests passed: image ordering, duplicates, per-colour isolation and secure URLs, Safari PNG fallback and image validation.');

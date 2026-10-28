@@ -22,18 +22,6 @@
 .skp-admin-fps-game-fields input[type="text"]{min-width:0;width:100%;height:38px;box-sizing:border-box;
  border:1px solid #414b50;border-radius:7px;padding:0 10px;background:#0a1012;color:#f5f6f7;font-size:12px;outline:none}
 .skp-admin-fps-game-fields input[type="text"]:focus{border-color:#ffe500}
-.skp-admin-fps-upload-row{display:flex;flex-wrap:wrap;align-items:center;gap:9px 12px;min-width:0}
-.skp-admin-fps-upload{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;
- padding:9px 12px;border:1px solid #687274;border-radius:8px;background:#20282b;
- color:#f1f5f5;font-size:11px;font-weight:750;cursor:pointer;transition:border-color .15s,background .15s}
-.skp-admin-fps-upload:hover{border-color:#ffe500;background:#30363a}
-.skp-admin-fps-upload:focus-within{outline:2px solid #ffe500;outline-offset:2px}
-.skp-admin-fps-upload.is-disabled{opacity:.5;cursor:not-allowed}
-.skp-admin-fps-upload input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
-.skp-admin-fps-upload-row small{font-size:10px;color:#9fabaf;line-height:1.45}
-.skp-admin-fps-upload-success{padding:11px;background:#0d2d23;border:1px solid #287d58;color:#d7f6e3;border-radius:8px;font-size:12px}
-.skp-fps-upload-spin{animation:skp-fps-upload-spin .9s linear infinite}
-@keyframes skp-fps-upload-spin{to{transform:rotate(360deg)}}
 .skp-admin-fps-visible{display:flex;gap:7px;align-items:center;cursor:pointer;font-size:11px;color:#c7cfcb;white-space:nowrap}
 .skp-admin-fps-visible input{height:17px;width:17px;accent-color:#ffe500}
 .skp-admin-fps-game-order{display:flex;flex-direction:column;gap:7px;align-items:center}

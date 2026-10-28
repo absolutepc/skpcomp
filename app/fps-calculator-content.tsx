@@ -31,18 +31,11 @@ function AnimatedValue({value,delay=0}:{value:number;delay?:number}){
  },[value,delay]);
  return <span className="skp-fps-count">{current}</span>;
 }
-function GameArtwork({id,name,image}:{id:string;name:string;image:string}){
+function GameArtwork({name,image}:{name:string;image:string}){
  const [failed,setFailed]=useState(false);
- const [fallback,setFallback]=useState(false);
- useEffect(()=>{setFailed(false);setFallback(false)},[image,id]);
- // The alternate Battlefield artwork is served by an artwork CDN.
- // Keep a known-good local cover as an offline fallback.
- const source=fallback?'/images/fps-games/battlefield6.png':image;
- return <span className="skp-fps-v2-cover">{!failed&&source?
-  <img src={source} alt={name} loading="lazy" onError={()=>{
-   if(id==='bf6'&&!fallback){setFallback(true);return}
-   setFailed(true);
-  }}/>:
+ useEffect(()=>setFailed(false),[image]);
+ return <span className="skp-fps-v2-cover">{!failed&&image?
+  <img src={image} alt={name} loading="lazy" onError={()=>setFailed(true)}/>:
   <strong>{name}</strong>}</span>;
 }
 function StageTitle({number,children,extra}:{number:number;children:React.ReactNode;extra?:React.ReactNode}){
@@ -130,7 +123,7 @@ export default function FpsCalculatorContent({hardware,product,games,onClose,clo
      <div className="skp-fps-v2-games-strip" ref={gamesScroller} role="group" aria-label="Игры для расчёта FPS">
       {orderedGames.map(game=><button type="button" className={'skp-fps-v2-game-tile game-'+game.id+(currentGameId===game.id?' selected':'')} key={game.id}
        aria-pressed={currentGameId===game.id} onClick={()=>setGameId(game.id)}>
-       <GameArtwork id={game.id} name={game.name} image={game.image}/>
+       <GameArtwork name={game.name} image={game.image}/>
        <span className="skp-fps-v2-game-name">{game.name}</span>
       </button>)}
      </div>

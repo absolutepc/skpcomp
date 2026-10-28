@@ -123,37 +123,13 @@ assert.match(content,/estimateFps\(/,'FPS estimates remain connected to the exis
 
 // Local game artwork is used by default and upgrades only old standard URLs.
 const fpsRoster=readFileSync(new URL('../lib/fps-game-catalog.ts',import.meta.url),'utf8');
-assert.ok(fpsRoster.includes("id:'valorant',name:'Valorant',image:valorantArtwork"),'Valorant uses the crisp local vector logo');
-assert.ok(fpsRoster.includes("id:'bf6',name:'Battlefield 6',image:battlefield6Artwork"),'Battlefield 6 uses the chosen soldier artwork');
-assert.ok(fpsRoster.includes("id:'warface',name:'Warface',image:warfaceArtwork"),'Warface uses the local vector mark');
-assert.ok(fpsRoster.includes("'/images/fps-games/valorant.png'"),'Old Valorant default images are upgraded');
-assert.ok(fpsRoster.includes("'/images/fps-games/battlefield6.png'"),'Old Battlefield 6 default images are upgraded');
-assert.ok(fpsRoster.includes("steam(3889960)"),'Old Warface default images are upgraded');
-assert.ok(fpsRoster.includes('return game;'),'Custom FPS artwork is preserved');
+assert.ok(fpsRoster.includes("id:'valorant',name:'Valorant',image:'/images/fps-games/valorant.png'"),'Valorant uses the local image');
+assert.ok(fpsRoster.includes("id:'bf6',name:'Battlefield 6',image:'/images/fps-games/battlefield6.png'"),'Battlefield 6 uses the local image');
+assert.ok(fpsRoster.includes("game.image===oldValorantImage"),'Legacy Valorant default images are upgraded');
+assert.ok(fpsRoster.includes("game.image===steam(2807960)"),'Legacy Battlefield 6 default images are upgraded');
 const fpsStyles=readFileSync(new URL('../app/fps-calculator-v2.css',import.meta.url),'utf8');
 assert.ok(fpsStyles.includes('height:117px;min-height:117px;max-height:117px'),'Desktop game tiles keep a fixed height');
 assert.ok(fpsStyles.includes('height:108px;min-height:108px;max-height:108px'),'Mobile game tiles keep a fixed height');
 assert.ok(fpsStyles.includes('.skp-fps-v2-game-tile.selected{\n border-color:#ffe500'),'Selected game border does not change layout');
-assert.ok(fpsStyles.includes('.game-valorant .skp-fps-v2-cover img,'),'Logo cover selectors present');
-assert.ok(fpsStyles.includes('object-fit:contain;'),'Square game logo images are never cropped');
-const artworkComponent=readFileSync(new URL('../app/fps-calculator-content.tsx',import.meta.url),'utf8');
-assert.ok(artworkComponent.includes("id==='bf6'&&!fallback"),'External Battlefield artwork has a local fallback');
-
-
-// Manual artwork uploads are stored in R2 and applied to individual FPS profiles.
-const fpsAdmin=readFileSync(new URL('../app/admin-fps-games.tsx',import.meta.url),'utf8');
-const mediaSource=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf8');
-assert.match(fpsAdmin,/accept="image\/png,image\/jpeg,image\/webp"/,'FPS image picker accepts PNG, JPEG and WebP');
-assert.match(fpsAdmin,/form\.append\('assetType','fps-game'\)/,'FPS image uploads use a dedicated media asset type');
-assert.match(fpsAdmin,/form\.append\('gameId',gameId\)/,'Each upload is linked to the correct game');
-assert.match(fpsAdmin,/change\(gameId,\{image:result\.url\}\)/,'Uploaded artwork immediately updates the preview');
-assert.match(fpsAdmin,/uploadingId!==null/,'Submitting or uploading twice is blocked');
-assert.match(fpsAdmin,/onSave\(normalized\)/,'Artwork is persisted with the saved FPS games');
-assert.match(mediaSource,/fps-games\//,'FPS game media is stored separately from product photos');
-assert.match(mediaSource,/isFpsGame&&isJpeg/,'JPEG signatures are accepted for game artwork');
-assert.match(mediaSource,/file\.type!==mime/,'Media uploads check file contents against declared MIME');
-assert.match(mediaSource,/if\(!await authorized\(request\)\)/,'Game media uploads require admin access');
-assert.match(fpsRoster,/api\\\/media/,'FPS game validation accepts uploaded same-origin image links');
-assert.ok(fpsRoster.includes('return game;'),'Saved custom artwork must survive default image updates');
 
 console.log('FPS model tests passed: presets, resolutions, feature support, feature priority, ready PCs and configurator.');
