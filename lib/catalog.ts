@@ -111,7 +111,25 @@ export function normalizeProduct(p:Product):Product{
  const image=p.category!=='mouse'&&bundledPhoto&&p.gallery===undefined&&(!p.image||isLegacyIllustration)?bundledPhoto:p.image;
  return {...p,name,image,specs:{...(original as Product|undefined)?.specs,...p.specs},category:p.category==='peripherals'&&['monitor','mouse','keyboard'].includes(p.art)?p.art:p.category};
 }
-export function fieldValue(p:Product,key:string):string{const explicit=p.specs?.[key];if(explicit!==undefined)return explicit;return ['socket','memory','brand'].includes(key)?String(p[key as 'socket'|'memory'|'brand']||''):key==='watts'&&p.watts?String(p.watts):''}
+/** RAM bandwidth can be entered in MB/s; all product and comparison views show GB/s.
+ * Existing bandwidth values are already in GB/s, so only the new MB/s key is converted.
+ * 1 GB/s = 1000 MB/s (decimal units used for memory transfer rates).
+ */
+export function ramBandwidthGBps(product:Product):string{
+ const raw=product.specs?.bandwidthMBps;
+ if(raw===undefined)return product.specs?.bandwidth||'';
+ if(!raw.trim())return '';
+ const numeric=raw.trim().replace(',','.');
+ if(!/^\d+(?:\.\d+)?$/.test(numeric))return '';
+ const mbps=Number(numeric);
+ return Number.isFinite(mbps)&&mbps>=0?String(Number((mbps/1000).toFixed(6))):'';
+}
+export function fieldValue(p:Product,key:string):string{
+ if(p.category==='ram'&&key==='bandwidth')return ramBandwidthGBps(p);
+ const explicit=p.specs?.[key];
+ if(explicit!==undefined)return explicit;
+ return ['socket','memory','brand'].includes(key)?String(p[key as 'socket'|'memory'|'brand']||''):key==='watts'&&p.watts?String(p.watts):'';
+}
 /** Ignore specs kept from a previous GPU platform rather than exposing CUDA on an AMD card. */
 export function specValue(product:Product,field:Field):string{
  return field.chip&&gpuChipBrand(product)!==field.chip?'':fieldValue(product,field.key);
