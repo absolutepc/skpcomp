@@ -123,13 +123,21 @@ assert.match(content,/estimateFps\(/,'FPS estimates remain connected to the exis
 
 // Local game artwork is used by default and upgrades only old standard URLs.
 const fpsRoster=readFileSync(new URL('../lib/fps-game-catalog.ts',import.meta.url),'utf8');
-assert.ok(fpsRoster.includes("id:'valorant',name:'Valorant',image:'/images/fps-games/valorant.png'"),'Valorant uses the local image');
-assert.ok(fpsRoster.includes("id:'bf6',name:'Battlefield 6',image:'/images/fps-games/battlefield6.png'"),'Battlefield 6 uses the local image');
-assert.ok(fpsRoster.includes("game.image===oldValorantImage"),'Legacy Valorant default images are upgraded');
-assert.ok(fpsRoster.includes("game.image===steam(2807960)"),'Legacy Battlefield 6 default images are upgraded');
+assert.ok(fpsRoster.includes("id:'valorant',name:'Valorant',image:valorantArtwork"),'Valorant uses the crisp local vector logo');
+assert.ok(fpsRoster.includes("id:'bf6',name:'Battlefield 6',image:battlefield6Artwork"),'Battlefield 6 uses the chosen soldier artwork');
+assert.ok(fpsRoster.includes("id:'warface',name:'Warface',image:warfaceArtwork"),'Warface uses the local vector mark');
+assert.ok(fpsRoster.includes("'/images/fps-games/valorant.png'"),'Old Valorant default images are upgraded');
+assert.ok(fpsRoster.includes("'/images/fps-games/battlefield6.png'"),'Old Battlefield 6 default images are upgraded');
+assert.ok(fpsRoster.includes("steam(3889960)"),'Old Warface default images are upgraded');
+assert.ok(fpsRoster.includes('return game;'),'Custom FPS artwork is preserved');
 const fpsStyles=readFileSync(new URL('../app/fps-calculator-v2.css',import.meta.url),'utf8');
 assert.ok(fpsStyles.includes('height:117px;min-height:117px;max-height:117px'),'Desktop game tiles keep a fixed height');
 assert.ok(fpsStyles.includes('height:108px;min-height:108px;max-height:108px'),'Mobile game tiles keep a fixed height');
 assert.ok(fpsStyles.includes('.skp-fps-v2-game-tile.selected{\n border-color:#ffe500'),'Selected game border does not change layout');
+assert.ok(fpsStyles.includes('.game-valorant .skp-fps-v2-cover img,'),'Logo cover selectors present');
+assert.ok(fpsStyles.includes('object-fit:contain;'),'Square game logo images are never cropped');
+const artworkComponent=readFileSync(new URL('../app/fps-calculator-content.tsx',import.meta.url),'utf8');
+assert.ok(artworkComponent.includes("id==='bf6'&&!fallback"),'External Battlefield artwork has a local fallback');
+
 
 console.log('FPS model tests passed: presets, resolutions, feature support, feature priority, ready PCs and configurator.');
