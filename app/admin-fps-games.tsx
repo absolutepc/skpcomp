@@ -73,10 +73,10 @@ export default function AdminFpsGames({games,onSave}:{games?:FpsGameAppearance[]
   event.preventDefault();
   if(uploadingId!==null||busy)return;
   const normalized=entries.map(item=>({...item,name:item.name.trim(),image:item.image.trim()}));
-  if(!validateFpsGames(normalized)){setError('Проверьте названия игр и адреса изображений. Ссылки должны начинаться с https:// или /images/.');return}
+  if(!validateFpsGames(normalized)){setError('Проверьте названия игр и адреса изображений: укажите HTTPS-ссылку, путь /images/ или загрузите файл.');return}
   if(!normalized.some(item=>item.enabled)){setError('Оставьте хотя бы одну игру активной.');return}
   setBusy(true);setError('');
-  try{const saved=await onSave(normalized);if(!saved)setError('Не удалось сохранить список игр.')}finally{setBusy(false)}
+  try{const saved=await onSave(normalized);if(!saved)setError('Не удалось сохранить список игр.');else setUploadMessage('')}finally{setBusy(false)}
  };
  return <section className="skp-admin-fps-games">
   <div className="skp-admin-fps-header"><div><span className="skp-admin-fps-kicker">SKP / FPS</span><h1>Игры FPS-калькулятора</h1>
