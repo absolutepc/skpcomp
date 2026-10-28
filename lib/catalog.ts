@@ -152,6 +152,88 @@ export const psuFieldGroups:{title:string;fields:Field[]}[]=[
   f('weight','Вес','г'),f('warranty','Гарантия','мес.')
  ]}
 ];
+/** Full PC-case specifications. Existing seven case keys stay unchanged. */
+export const caseFieldGroups:{title:string;fields:Field[]}[]=[
+ {title:'Конструкция и внешний вид',fields:[
+  f('form','Тип корпуса'),
+  f('boardForm','Форм-фактор платы'),
+  f('color','Цвет'),
+  f('side','Боковая панель'),
+  f('frontPanel','Передняя панель'),
+  f('topPanel','Верхняя панель'),
+  f('chassisMaterial','Материал шасси'),
+  f('panelMaterial','Материал панелей'),
+  f('glassThickness','Толщина стекла','мм'),
+  f('sideOpening','Способ открытия боковой панели')
+ ]},
+ {title:'Габариты и совместимость',fields:[
+  f('width','Ширина корпуса','мм'),
+  f('height','Высота корпуса','мм'),
+  f('depth','Глубина корпуса','мм'),
+  f('weight','Вес корпуса','кг'),
+  f('gpuLength','Максимальная длина GPU','мм'),
+  f('gpuThicknessSlots','Максимальная толщина GPU','слотов'),
+  f('coolerHeight','Максимальная высота кулера CPU','мм'),
+  f('psuLength','Максимальная длина блока питания','мм'),
+  f('psuForm','Поддерживаемые форм-факторы БП'),
+  f('psuPosition','Расположение блока питания'),
+  f('expansionSlots','Горизонтальные слоты расширения','шт.'),
+  f('verticalGpuSlots','Вертикальные слоты для GPU','шт.'),
+  f('verticalGpuMount','Вертикальная установка видеокарты'),
+  f('riserIncluded','Райзер PCIe в комплекте'),
+  f('backConnect','Поддержка плат с обратными разъёмами (BTF / Project Zero)'),
+  f('cableClearance','Место для кабелей за платой','мм'),
+  f('drive35','Места для накопителей 3,5″','шт.'),
+  f('drive25','Места для накопителей 2,5″','шт.'),
+  f('drive525','Отсеки 5,25″','шт.')
+ ]},
+ {title:'Вентиляторы и воздушный поток',fields:[
+  f('fans','Вентиляторы в комплекте','шт.'),
+  f('includedFanSizes','Размеры и расположение комплектных вентиляторов'),
+  f('fanSlots','Всего мест под вентиляторы','шт.'),
+  f('frontFans','Передние вентиляторы (например, 3×120 / 2×140)'),
+  f('topFans','Верхние вентиляторы'),
+  f('rearFans','Задние вентиляторы'),
+  f('bottomFans','Нижние вентиляторы'),
+  f('sideFans','Боковые вентиляторы'),
+  f('fanController','Встроенный контроллер вентиляторов'),
+  f('fanHub','Хаб для вентиляторов'),
+  f('airflow','Особенности воздушного потока'),
+  f('dustFilters','Пылевые фильтры и их расположение')
+ ]},
+ {title:'Совместимость с жидкостным охлаждением',fields:[
+  f('frontRadiator','Поддержка радиаторов спереди'),
+  f('topRadiator','Поддержка радиаторов сверху'),
+  f('rearRadiator','Поддержка радиаторов сзади'),
+  f('bottomRadiator','Поддержка радиаторов снизу'),
+  f('sideRadiator','Поддержка радиаторов сбоку'),
+  f('radiatorThickness','Допустимая толщина радиатора','мм'),
+  f('pumpMount','Крепление помпы СЖО'),
+  f('reservoirMount','Крепление резервуара СЖО')
+ ]},
+ {title:'Передняя панель и интерфейсы',fields:[
+  f('frontUsbA','Порты USB-A','шт.'),
+  f('frontUsbAVersion','Версии портов USB-A'),
+  f('frontUsbC','Порты USB-C','шт.'),
+  f('frontUsbCVersion','Версии портов USB-C'),
+  f('headphoneJack','Аудиоразъём для наушников'),
+  f('microphoneJack','Разъём микрофона'),
+  f('frontPanelPosition','Расположение панели I/O'),
+  f('resetButton','Кнопка Reset'),
+  f('ledButton','Кнопка управления подсветкой')
+ ]},
+ {title:'Подсветка, удобство сборки и комплектация',fields:[
+  f('rgb','Подсветка'),
+  f('rgbController','Контроллер RGB / ARGB'),
+  f('rgbSync','Синхронизация ARGB с материнской платой'),
+  f('gpuSupport','Подпорка видеокарты в комплекте'),
+  f('toolFree','Безинструментальная сборка'),
+  f('cableManagement','Система кабель-менеджмента'),
+  f('soundInsulation','Шумоизоляция'),
+  f('includedAccessories','Аксессуары в комплекте'),
+  f('warranty','Гарантия','мес.')
+ ]}
+];
 export function fieldsForProduct(product:Product):Field[]{
  const fields=categoryFields[product.category]||[];
  if(product.category!=='gpu')return fields;
@@ -179,7 +261,7 @@ export const categoryFields:Record<string,Field[]>={
  ssd:ssdFieldGroups.flatMap(group=>group.fields),
  psu:psuFieldGroups.flatMap(group=>group.fields),
  cooler:[f('coolingType','Тип охлаждения'),f('socket','Поддерживаемые сокеты'),f('tdp','Рассеиваемая мощность','Вт'),f('height','Высота','мм'),f('radiator','Размер радиатора','мм'),f('fanSize','Размер вентилятора','мм'),f('rgb','Подсветка')],
- case:[f('form','Тип корпуса'),f('boardForm','Форм-фактор платы'),f('gpuLength','Максимальная длина GPU','мм'),f('coolerHeight','Высота кулера','мм'),f('fans','Вентиляторы в комплекте','шт.'),f('color','Цвет'),f('side','Боковая панель')],
+ case:caseFieldGroups.flatMap(group=>group.fields),
  monitor:[f('diagonal','Диагональ','дюйм'),f('resolution','Разрешение'),f('panel','Матрица'),f('refresh','Частота обновления','Гц'),f('response','Время отклика','мс'),f('ports','Разъёмы'),f('curved','Изогнутый экран'),f('vesa','VESA'),f('dualMode','Режимы экрана'),f('hdr','HDR'),f('gSync','Адаптивная синхронизация'),f('color','Цвет')],
  mouse:[
   f('connection','Подключение'),f('sensor','Сенсор'),
