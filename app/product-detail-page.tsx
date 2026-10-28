@@ -8,6 +8,7 @@ import {fromLaptop} from '../lib/fps-estimate';
 import {STORE_ADDRESS} from './store-location';
 import ProductGallery from './product-gallery';
 import ProductReviews from './product-reviews';
+import ProductBrandLogo from './product-brand-logo';
 import ProductRatingSummary from './product-rating-summary';
 import GamingFps from './gaming-fps';
 import './product-detail-page.css';
@@ -20,7 +21,6 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
  const [allSpecs,setAllSpecs]=useState(false);
  const rows=fieldsForProduct(p).map(field=>({key:field.key,label:field.label+(field.unit?', '+field.unit:''),value:specValue(p,field)})).filter(row=>String(row.value??'').trim());
  const category=components[p.category]||peripherals[p.category]||({laptops:'Ноутбуки',furniture:'Компьютерная мебель',peripherals:'Периферия'} as Record<string,string>)[p.category]||'Каталог';
- const brand=data.brands?.find(b=>b.name.toLowerCase()===p.brand.toLowerCase());
  const variants=p.variantGroup?data.products.filter(v=>v.variantGroup===p.variantGroup):[];
  const related=data.products.filter(v=>v.category===p.category&&(p.category!=='cooler'||sameCoolingGroup(fieldValue(p,'coolingType'),fieldValue(v,'coolingType')))&&v.id!==p.id&&(!p.variantGroup||v.variantGroup!==p.variantGroup)).slice(0,4);
  const go=(path:string)=>(event:React.MouseEvent<HTMLAnchorElement>)=>{event.preventDefault();nav(path)};
@@ -32,7 +32,7 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
   <nav className="skp-pdp-breadcrumb" aria-label="Хлебные крошки"><a href="/" onClick={go('/')}>Главная</a><ChevronRight size={13}/><a href={'/catalog/'+p.category} onClick={go('/catalog/'+p.category)}>{category}</a>{p.brand&&<><ChevronRight size={13}/><span>{p.brand}</span></>}<ChevronRight size={13}/><span className="skp-pdp-crumb-name">{p.name}</span></nav>
   <div className="skp-pdp-hero">
    <ProductGallery product={p} fallback={fallback} showCounter/>
-   <div className="skp-pdp-info"><h1>{p.name}</h1><div className="skp-pdp-meta">{brand?.logo?<img src={brand.logo} alt={p.brand}/>:<strong>{p.brand}</strong>}<ProductRatingSummary productId={p.id} onOpen={()=>{setTab('reviews');document.getElementById('skp-pdp-panel')?.scrollIntoView({behavior:'smooth'})}}/><span className="skp-pdp-code" title={"Код товара: "+p.id}>Код товара: {p.id}</span></div>
+   <div className="skp-pdp-info"><h1>{p.name}</h1><div className="skp-pdp-meta"><ProductBrandLogo product={p} brands={data.brands}/><ProductRatingSummary productId={p.id} onOpen={()=>{setTab('reviews');document.getElementById('skp-pdp-panel')?.scrollIntoView({behavior:'smooth'})}}/><span className="skp-pdp-code" title={"Код товара: "+p.id}>Код товара: {p.id}</span></div>
     <div className="skp-pdp-badges" aria-hidden="true"/>
     <div className={"skp-pdp-variant-slot"+(variants.length>1?" has-variants":"")}>
      {variants.length>1&&<div className="skp-pdp-variants" role="group" aria-label="Выбор цвета товара"><div>{variants.map(v=><a key={v.id} href={'/product/'+v.id} onClick={go('/product/'+v.id)} aria-current={v.id===p.id?'page':undefined} title={fieldValue(v,'color')||v.name}><i style={{backgroundColor:v.colorHex||'#aaa'}}/>{fieldValue(v,'color')||v.name}</a>)}</div></div>}

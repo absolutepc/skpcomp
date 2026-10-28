@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {ImagePlus,Plus,Save,Search,Trash2,X,Tag,Layers} from 'lucide-react';
 import type {BrandDefinition,Product} from '../lib/seed';
+import {defaultBrandLogo} from '../lib/brand-logos';
 import {canonicalBrand} from '../lib/product-brands';
 import {components,peripherals} from '../lib/catalog';
 import './admin-brands.css';
@@ -137,7 +138,7 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
    <aside className="skp-brands-list">
     <label className="skp-brands-search"><Search size={17}/><input type="search" value={search} placeholder="Поиск бренда" onChange={e=>setSearch(e.target.value)}/></label>
     <div className="skp-brands-list-items">{visible.map(brand=><button key={brand.id} type="button" className={'skp-brands-list-item'+(selected===brand.id?' selected':'')} onClick={()=>select(brand)}>
-      <span className="skp-brand-thumb">{brand.logo&&preview(brand.logo)?<img src={brand.logo} alt=""/>:<Tag size={19}/>}</span>
+      <span className="skp-brand-thumb">{(brand.logo||defaultBrandLogo(brand.name))&&preview(brand.logo||defaultBrandLogo(brand.name))?<img src={brand.logo||defaultBrandLogo(brand.name)} className={!brand.logo?"skp-brand-default-logo":undefined} alt=""/>:<Tag size={19}/>}</span>
       <span><strong>{brand.name}</strong><small>{Object.keys(brand.categories).length} категорий</small></span>
     </button>)}
     {!visible.length&&<p className="skp-brands-empty">Бренды не найдены.</p>}</div>
@@ -148,7 +149,7 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
     </div>
     <div className="skp-brands-basics">
      <label>Название бренда<input type="text" maxLength={80} placeholder="Например, Samsung" value={draft.name} onChange={e=>update({name:e.target.value})}/></label>
-     <div className="skp-brands-logo"><div className="skp-brands-logo-preview">{draft.logo&&preview(draft.logo)?<img src={draft.logo} alt={'Логотип '+(draft.name||'бренда')}/>:<ImagePlus size={30}/>}</div>
+     <div className="skp-brands-logo"><div className="skp-brands-logo-preview">{(draft.logo||defaultBrandLogo(draft.name))&&preview(draft.logo||defaultBrandLogo(draft.name))?<img src={draft.logo||defaultBrandLogo(draft.name)} className={!draft.logo?"skp-brand-default-logo":undefined} alt={'Логотип '+(draft.name||'бренда')}/>:<ImagePlus size={30}/>}</div>
       <div className="skp-brands-logo-fields"><label>Логотип (HTTPS-ссылка)<input type="url" placeholder="https://..." value={draft.logo} onChange={e=>update({logo:e.target.value})}/></label>
        <div className="skp-brands-logo-buttons"><input ref={picker} type="file" accept="image/png,image/webp" hidden onChange={e=>void upload(e.target.files?.[0])}/>
         <button type="button" disabled={uploading||busy} onClick={()=>picker.current?.click()}><ImagePlus size={16}/>{uploading?'Загрузка…':'Загрузить PNG/WebP'}</button>
