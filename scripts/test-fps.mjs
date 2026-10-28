@@ -140,4 +140,20 @@ const artworkComponent=readFileSync(new URL('../app/fps-calculator-content.tsx',
 assert.ok(artworkComponent.includes("id==='bf6'&&!fallback"),'External Battlefield artwork has a local fallback');
 
 
+// Manual artwork uploads are stored in R2 and applied to individual FPS profiles.
+const fpsAdmin=readFileSync(new URL('../app/admin-fps-games.tsx',import.meta.url),'utf8');
+const mediaSource=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf8');
+assert.match(fpsAdmin,/accept="image\/png,image\/jpeg,image\/webp"/,'FPS image picker accepts PNG, JPEG and WebP');
+assert.match(fpsAdmin,/form\.append\('assetType','fps-game'\)/,'FPS image uploads use a dedicated media asset type');
+assert.match(fpsAdmin,/form\.append\('gameId',gameId\)/,'Each upload is linked to the correct game');
+assert.match(fpsAdmin,/change\(gameId,\{image:result\.url\}\)/,'Uploaded artwork immediately updates the preview');
+assert.match(fpsAdmin,/uploadingId!==null/,'Submitting or uploading twice is blocked');
+assert.match(fpsAdmin,/onSave\(normalized\)/,'Artwork is persisted with the saved FPS games');
+assert.match(mediaSource,/fps-games\//,'FPS game media is stored separately from product photos');
+assert.match(mediaSource,/isFpsGame&&isJpeg/,'JPEG signatures are accepted for game artwork');
+assert.match(mediaSource,/file\.type!==mime/,'Media uploads check file contents against declared MIME');
+assert.match(mediaSource,/if\(!await authorized\(request\)\)/,'Game media uploads require admin access');
+assert.match(fpsRoster,/api\\\/media/,'FPS game validation accepts uploaded same-origin image links');
+assert.ok(fpsRoster.includes('return game;'),'Saved custom artwork must survive default image updates');
+
 console.log('FPS model tests passed: presets, resolutions, feature support, feature priority, ready PCs and configurator.');
