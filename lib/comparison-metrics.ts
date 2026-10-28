@@ -3,7 +3,7 @@ import {fieldValue} from './catalog';
 import {gpuChipBrand} from './product-brands';
 import {estimateFps,fromLaptop,fromReadyPC} from './fps-estimate';
 
-export type RadarMetric={key:string;label:string;unit:string;lowerBetter?:boolean;read:(p:Product)=>number|null};
+export type RadarMetric={key:string;label:string;unit:string;lowerBetter?:boolean;read:(p:Product)=>number|null;display?:(p:Product)=>string};
 export function numericValue(raw:string):number|null{
  if(!/^\s*\d+(?:[.,]\d+)?\s*$/.test(raw))return null;
  const value=Number(raw.trim().replace(',','.'));
@@ -11,6 +11,29 @@ export function numericValue(raw:string):number|null{
 }
 const metric=(key:string,label:string,unit='',lowerBetter=false):RadarMetric=>({key,label,unit,lowerBetter,read:p=>key==='price'?(p.price>0?p.price:null):numericValue(fieldValue(p,key))});
 const cudaCores:RadarMetric={key:'cudaCores',label:'CUDA-ядра',unit:'',read:p=>gpuChipBrand(p)==='NVIDIA'?numericValue(fieldValue(p,'cudaCores')):null};
+/** 80 PLUS is an ordered efficiency certification, not a numerical power spec.
+ * Unknown and other certification systems are intentionally not compared.
+ */
+export function psuCertificateTier(raw:string):number|null{
+ const value=raw.trim().toLowerCase();
+ if(!value||/cybenetics|eta|lambda/i.test(value))return null;
+ if(/titanium|титаниум|титановой/i.test(value))return 6;
+ if(/platinum|платин/i.test(value))return 5;
+ if(/gold|золот/i.test(value))return 4;
+ if(/silver|серебр/i.test(value))return 3;
+ if(/bronze|бронз/i.test(value))return 2;
+ if(/standard|white|стандарт|белый/i.test(value)||/^80\s*(?:plus|\+)$/i.test(value))return 1;
+ return null;
+}
+const certificate:RadarMetric={
+ key:'certificate',label:'Сертификат',unit:'',
+ read:p=>psuCertificateTier(fieldValue(p,'certificate')),
+ display:p=>{
+  const raw=fieldValue(p,'certificate').trim();
+  if(psuCertificateTier(raw)===null)return '—';
+  return raw;
+ }
+};
 const price=metric('price','Цена','₽',true);
 const fps=(game:string,label:string):RadarMetric=>({key:'fps-'+game,label,unit:'FPS ≈',read:p=>{
  const rows=estimateFps(p.category==='laptops'?fromLaptop(p):fromReadyPC(p),'FHD');
@@ -23,7 +46,7 @@ const profiles:Record<string,RadarMetric[]>={
  gpu:[metric('vram','Видеопамять','ГБ'),metric('bus','Шина памяти','бит'),metric('watts','Потребление','Вт',true),metric('baseClock','Базовая частота GPU','МГц'),cudaCores,metric('bandwidth','Пропускная способность','ГБ/с')],
  ram:[metric('capacity','Объём','ГБ'),metric('speed','Частота','МГц'),metric('latency','Задержка CL','',true),metric('bandwidth','Пропускная способность','ГБ/с'),metric('voltage','Напряжение','В'),price],
  ssd:[metric('capacity','Объём','ГБ'),metric('readSpeed','Чтение','МБ/с'),metric('writeSpeed','Запись','МБ/с'),metric('endurance','Ресурс','ТБ'),metric('iops','Операции','IOPS'),price],
- psu:[metric('watts','Мощность','Вт'),metric('fanSize','Вентилятор','мм'),metric('efficiency','КПД','%'),metric('noise','Шум','дБ',true),metric('warranty','Гарантия','мес.'),price],
+ psu:[metric('watts','Мощность','Вт'),metric('fanSize','Вентилятор','мм'),metric('efficiency','КПД','%'),metric('noise','Шум','дБ',true),certificate,price],
  cooler:[metric('tdp','Рассеивание','Вт'),metric('radiator','Радиатор','мм'),metric('fanSize','Вентилятор','мм'),metric('height','Высота','мм',true),metric('noise','Шум','дБ',true),price],
  case:[metric('gpuLength','Длина GPU','мм'),metric('coolerHeight','Высота кулера','мм'),metric('fans','Вентиляторы'),metric('width','Ширина','мм'),metric('height','Высота','мм'),price],
  monitor:[metric('refresh','Обновление','Гц'),metric('response','Отклик','мс',true),metric('diagonal','Диагональ','″'),metric('brightness','Яркость','нит'),metric('contrast','Контраст'),price],
