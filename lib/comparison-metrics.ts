@@ -9,6 +9,26 @@ export function numericValue(raw:string):number|null{
  const value=Number(raw.trim().replace(',','.'));
  return Number.isFinite(value)?value:null;
 }
+/** Contrast is commonly entered as a ratio, with grouped thousands. */
+export function contrastValue(raw:string):number|null{
+ const parts=raw.trim().split(/[:∶：]/);
+ if(parts.length>2)return null;
+ const read=(part:string):number|null=>{
+  let value=part.trim();
+  if(/^\d{1,3}(?:[ \u00a0\u202f]\d{3})+$/.test(value))value=value.replace(/[ \u00a0\u202f]/g,'');
+  else if(/^\d{1,3}(?:,\d{3})+$/.test(value))value=value.replace(/,/g,'');
+  else if(/^\d{1,3}(?:\.\d{3})+$/.test(value))value=value.replace(/\./g,'');
+  return numericValue(value);
+ };
+ const numerator=read(parts[0]),denominator=parts.length===2?read(parts[1]):1;
+ if(numerator===null||denominator===null||numerator<=0||denominator<=0)return null;
+ const ratio=numerator/denominator;
+ return Number.isFinite(ratio)&&ratio>=1?ratio:null;
+}
+const contrast:RadarMetric={key:'contrast',label:'Контраст',unit:'',
+ read:p=>contrastValue(fieldValue(p,'contrast')),
+ display:p=>{const value=contrastValue(fieldValue(p,'contrast'));return value===null?'—':value.toLocaleString('ru-RU',{maximumFractionDigits:2})+':1'}
+};
 const metric=(key:string,label:string,unit='',lowerBetter=false):RadarMetric=>({key,label,unit,lowerBetter,read:p=>key==='price'?(p.price>0?p.price:null):numericValue(fieldValue(p,key))});
 const cudaCores:RadarMetric={key:'cudaCores',label:'CUDA-ядра',unit:'',read:p=>gpuChipBrand(p)==='NVIDIA'?numericValue(fieldValue(p,'cudaCores')):null};
 /** 80 PLUS is an ordered efficiency certification, not a numerical power spec.
@@ -49,7 +69,7 @@ const profiles:Record<string,RadarMetric[]>={
  psu:[metric('watts','Мощность','Вт'),metric('fanSize','Вентилятор','мм'),metric('efficiency','КПД','%'),metric('noise','Шум','дБ',true),certificate,price],
  cooler:[metric('tdp','Рассеивание','Вт'),metric('radiator','Радиатор','мм'),metric('fanSize','Вентилятор','мм'),metric('height','Высота','мм',true),metric('noise','Шум','дБ',true),price],
  case:[metric('gpuLength','Длина GPU','мм'),metric('coolerHeight','Высота кулера','мм'),metric('fans','Вентиляторы'),metric('width','Ширина','мм'),metric('height','Высота','мм'),price],
- monitor:[metric('refresh','Обновление','Гц'),metric('response','Отклик','мс',true),metric('diagonal','Диагональ','″'),metric('brightness','Яркость','нит'),metric('contrast','Контраст'),price],
+ monitor:[metric('refresh','Обновление','Гц'),metric('response','Отклик','мс',true),metric('diagonal','Диагональ','″'),metric('brightness','Яркость','нит'),contrast,price],
  keyboard:[metric('polling','Частота опроса','Гц'),metric('battery','Автономность','ч'),metric('batteryCapacity','Батарея','мА·ч'),metric('weight','Вес','г',true),metric('switchLife','Ресурс','млн'),price],
  headphones:[metric('battery','Автономность','ч'),metric('driver','Драйвер','мм'),metric('impedance','Сопротивление','Ом'),metric('weight','Вес','г',true),metric('sensitivity','Чувствительность','дБ'),price],
  mousepad:[metric('width','Ширина','мм'),metric('depth','Глубина','мм'),metric('thickness','Толщина','мм'),metric('weight','Вес','г'),metric('warranty','Гарантия','мес.'),price],
