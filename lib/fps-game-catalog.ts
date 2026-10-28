@@ -27,7 +27,11 @@ export const defaultFpsGames:FpsGameAppearance[]=[
 ];
 const knownIds=new Set<string>(gameProfiles.map(x=>x.id));
 export function validFpsGameImage(value:string):boolean{
- if(value===''||value.startsWith('/images/'))return value.length<=500;
+ if(value==='')return true;
+ if(value.startsWith('/images/'))return value.length<=500;
+ // Uploaded artwork is served from the authenticated media store as a
+ // same-origin URL. Accept only the FPS games namespace and UUID image keys.
+ if(/^\/api\/media\?key=fps-games\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.(?:png|webp|jpg)$/.test(value))return true;
  try{const u=new URL(value);return u.protocol==='https:'&&u.username===''&&u.password===''&&value.length<=1000}catch{return false}
 }
 export function validateFpsGames(value:unknown):value is FpsGameAppearance[]{
