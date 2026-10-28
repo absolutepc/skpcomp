@@ -56,6 +56,7 @@ export const categoryFields:Record<string,Field[]>={
  cpu:[f('socket','Сокет'),f('memory','Тип памяти'),f('cores','Ядра','шт.'),f('threads','Потоки','шт.'),f('l3','Кэш L3','МБ'),f('frequency','Базовая частота','ГГц'),f('boost','Макс. частота Boost','ГГц'),f('architecture','Архитектура'),f('watts','Мощность','Вт'),f('graphics','Встроенная графика'),f('package','Комплектация')],
  motherboard:[
   f('socket','Сокет'),f('chipset','Чипсет'),f('memory','Тип памяти'),f('form','Форм-фактор'),
+  f('powerPhases','Фазы питания процессора (VRM)','шт.'),
   f('ramSlots','Слоты ОЗУ','шт.'),f('maxRam','Максимум ОЗУ','ГБ'),
   f('pcieVersion','Поддерживаемые версии PCIe'),
   f('pcieSlots','Всего слотов расширения PCIe','шт.'),
