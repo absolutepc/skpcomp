@@ -3,15 +3,27 @@ import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 
-const source=readFileSync(new URL('../lib/product-gallery.ts',import.meta.url),'utf8');
-const {outputText}=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}});
-const exports={};runInNewContext(outputText,{exports});
-const {getProductImages,updateProductGallery,isProductImageUrl,MAX_GALLERY_IMAGES}=exports;
+// Load the real gallery and its storage-path dependency with TS transpilation.
+const loaded=new Map();
+function load(name){
+ if(loaded.has(name))return loaded.get(name);
+ const source=readFileSync(new URL('../lib/'+name+'.ts',import.meta.url),'utf8');
+ const {outputText}=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}});
+ const exports={};loaded.set(name,exports);
+ runInNewContext(outputText,{exports,require:dependency=>load(dependency.replace('./',''))});
+ return exports;
+}
+const {getProductImages,updateProductGallery,isProductImageUrl,MAX_GALLERY_IMAGES}=load('product-gallery');
 assert.equal(MAX_GALLERY_IMAGES,16);
 const url='/api/media?key=products/special-white/12345678-1234-4234-8234-123456789abc.webp';
 assert.equal(isProductImageUrl(url),true);
 assert.equal(isProductImageUrl(url.replace('.webp','.png')),true,'Safari PNG gallery URL is accepted');
 assert.equal(isProductImageUrl(url.replace('.webp','.jpg')),false,'Other formats are still rejected');
+const folderImage='/api/media?key=components/motherboard/intel/LGA1700/DDR5/asus-z790/12345678-1234-4234-8234-123456789abc.webp';
+assert.equal(isProductImageUrl(folderImage),true,'New category and socket folder is accepted');
+assert.equal(isProductImageUrl('/api/media?key=components/cpu/amd/AM5/ryzen-7700/12345678-1234-4234-8234-123456789abc.png'),true);
+assert.equal(isProductImageUrl(folderImage.replace('DDR5','DDR3')),false,'Unknown category folders are rejected');
+assert.equal(isProductImageUrl(folderImage.replace('/DDR5/','/../')),false,'Traversal is rejected');
 assert.equal(isProductImageUrl('/api/media?key=products/../other.webp'),false);
 assert.equal(isProductImageUrl('javascript:alert(1)'),false);
 assert.equal(isProductImageUrl('http://example.org/opaque.png'),false);
