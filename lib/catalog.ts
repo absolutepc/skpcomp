@@ -1,5 +1,6 @@
 import {seed,Product} from './seed';
 import {productPhotos} from './product-photos';
+import {laptopFieldGroups} from './laptop-specs';
 import {gpuChipBrand,type GpuChipBrand} from './product-brands';
 export const components:Record<string,string>={cpu:'Процессоры',motherboard:'Мат.платы',gpu:'Видеокарты',ram:'ОЗУ',ssd:'Накопители',psu:'Блоки питания',cooler:'Охлаждение',case:'Корпуса'};
 export const peripherals:Record<string,string>={monitor:'Мониторы',mouse:'Мышки',keyboard:'Клавиатуры',headphones:'Наушники',mousepad:'Коврики',microphone:'Микрофоны',mount:'Кронштейны',webcam:'Веб-камеры'};
@@ -393,7 +394,7 @@ export const categoryFields:Record<string,Field[]>={
  microphone:[f('micType','Тип микрофона'),f('connection','Подключение'),f('pattern','Направленность'),f('sampleRate','Частота дискретизации','кГц'),f('bitDepth','Разрядность','бит'),f('mounting','Крепление')],
  mount:[f('mounting','Способ крепления'),f('screens','Количество экранов','шт.'),f('vesa','VESA'),f('load','Максимальная нагрузка','кг'),f('maxDiagonal','Максимальная диагональ','дюйм'),f('gasLift','Газлифт')],
  webcam:[f('resolution','Разрешение'),f('fps','Частота кадров','кадр/с'),f('focus','Фокусировка'),f('microphone','Микрофон'),f('connection','Подключение'),f('angle','Угол обзора','°'),f('privacy','Защитная шторка')],
- laptops:[f('cpu','Процессор'),f('gpu','Видеокарта'),f('capacity','ОЗУ','ГБ'),f('driveCapacity','Накопитель','ГБ'),f('diagonal','Диагональ','дюйм'),f('resolution','Разрешение'),f('refresh','Частота экрана','Гц'),f('gpuPowerWatts','Мощность GPU (TGP, включая Dynamic Boost)','Вт')],
+ laptops:laptopFieldGroups.flatMap(group=>group.fields),
  furniture:[f('furnitureType','Тип мебели'),f('material','Материал'),f('color','Цвет'),f('width','Ширина','см'),f('load','Максимальная нагрузка','кг')]
 };
 export function normalizeProduct(p:Product):Product{
