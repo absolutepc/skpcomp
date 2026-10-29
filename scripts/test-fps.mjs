@@ -97,7 +97,7 @@ assert.doesNotMatch(builds,/<GamingFps hardware=\{fromConfigurator\(selected,dat
  'Standalone FPS panel stays removed from the configurator');
 assert.doesNotMatch(builds,/<GamingFps hardware=\{fromReadyPC\(p\)\} compact\/>/,
  'Only ready-PC catalog tile FPS launchers are removed');
-assert.match(builds,/skp-ready-card-compare/,'Ready PC comparison remains available as an image overlay button');
+assert.match(builds,/<CardActionButtons action="compare"/,'Ready PC comparison remains available through its shared action button');
 assert.match(builds,/Сохранить конфигурацию/,'Configurator saving remains available');
 assert.match(builds,/Добавить в корзину/,'Configurator checkout remains available');
 assert.match(shop,/GitCompareArrows/,'Product comparison remains available');
