@@ -27,7 +27,7 @@ const components={
  'Избранное':shop.includes("path==='/favorites'")&&shop.includes("localStorage.setItem('skp-favorites'"),
  'Сравнение':shop.includes('<ComparePage')&&shop.includes('comparisonCategory(all[0])!==comparisonCategory(p)'),
  'Корзина':shop.includes("path==='/cart'")&&shop.includes('summarizeCart(cart,data.products)'),
- 'Заказы':shop.includes('<OrdersPage')&&orders.includes("action:'create'")&&ordersAPI.includes('normalizeOrderItems(input.items,catalog.products)'),
+ 'Заказы':shop.includes('<Checkout')&&shop.includes('<OrderHistory')&&orders.includes("action:'create'")&&ordersAPI.includes('normalizeOrderItems(input.items,catalog.products)'),
  'Готовые ПК':shop.includes('<ReadyPC')&&ready.includes('export function ReadyPC'),
  'Конфигуратор':shop.includes('<Configurator')&&ready.includes('BuildDiagnostics'),
  'Контакты':shop.includes('<StoreLocation')||shop.includes("path==='/contacts'"),
