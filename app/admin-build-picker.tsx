@@ -1,6 +1,8 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {Check,ChevronRight,Package,Search,X} from 'lucide-react';
+import {Check,ChevronRight,Package,Search,X,Wifi,Layers,Fan} from 'lucide-react';
+import {categoryIcons} from './catalog-icons';
+import {readyCandidateErrors} from '../lib/ready-pc-compatibility';
 import type {Product} from '../lib/seed';
 import {components} from '../lib/catalog';
 import {getProductImages} from '../lib/product-gallery';
@@ -14,9 +16,9 @@ const categories:Record<string,string[]>={
 const money=(price:number)=>new Intl.NumberFormat('ru-RU').format(price)+' ₽';
 const categoryName=(category:string)=>components[category]||({fans:'Вентиляторы',network:'Сетевое оборудование',os:'Операционные системы'} as Record<string,string>)[category]||'Комплектующие';
 
-export default function AdminBuildPicker({field,products,value,onSelect,onClear,title}:{
+export default function AdminBuildPicker({field,products,value,onSelect,onClear,title,buildComponents}:{
  field:string;products:Product[];value:string;onSelect:(product:Product)=>void;
- onClear?:()=>void;title?:string;
+ onClear?:()=>void;title?:string;buildComponents?:Record<string,string>;
 }){
  const [open,setOpen]=useState(false);
  const [query,setQuery]=useState('');
@@ -31,7 +33,8 @@ export default function AdminBuildPicker({field,products,value,onSelect,onClear,
  const categoryOptions=field==='extra'?[...new Set(options.map(product=>product.category))]:[];
  const normalizedQuery=query.trim().toLocaleLowerCase('ru');
  const filtered=options.filter(product=>(category==='all'||product.category===category)&&(!normalizedQuery||
-  (product.name+' '+product.brand+' '+categoryName(product.category)).toLocaleLowerCase('ru').includes(normalizedQuery)));
+  (product.name+' '+product.brand+' '+categoryName(product.category)).toLocaleLowerCase('ru').includes(normalizedQuery)))
+  .map(product=>({product,issues:readyCandidateErrors(field,product,buildComponents,products)}));
  useEffect(()=>{
   if(!open)return;
   searchRef.current?.focus();
@@ -41,7 +44,9 @@ export default function AdminBuildPicker({field,products,value,onSelect,onClear,
  },[open]);
  const thumbnail=(item?:Product)=>{
   const image=item?getProductImages(item)[0]:undefined;
-  return image?<img src={image} alt="" loading="lazy"/>:<Package size={25} aria-hidden="true"/>;
+  const fallback=field==='storage'?'ssd':field==='fans'?'cooler':field;
+  const Icon=categoryIcons[item?.category||fallback]||(fallback==='network'?Wifi:fallback==='fans'?Fan:fallback==='extra'?Layers:Package);
+  return image?<img src={image} alt="" loading="lazy"/>:<Icon size={25} strokeWidth={1.7} aria-hidden="true"/>;
  };
  return <>
   <div className="skp-build-part-picker">
@@ -53,7 +58,7 @@ export default function AdminBuildPicker({field,products,value,onSelect,onClear,
     </span>
     <ChevronRight size={17} aria-hidden="true"/>
    </button>
-   {!!value&&onClear&&<button type="button" className="skp-build-part-clear" onClick={onClear} aria-label={'Убрать '+(title||'комплектующую')} title="Убрать из комплектации"><X size={17}/></button>}
+   {!!value&&onClear&&<button type="button" className="skp-build-part-clear" onClick={event=>{event.currentTarget.blur();onClear()}} aria-label={'Убрать '+(title||'комплектующую')} title="Убрать из комплектации"><X size={17}/></button>}
   </div>
   {open&&<div className="skp-build-picker-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setOpen(false)}}>
    <div className="skp-build-picker-dialog" role="dialog" aria-modal="true" aria-label={'Выбор комплектующей: '+(title||'из каталога')}>
@@ -66,20 +71,22 @@ export default function AdminBuildPicker({field,products,value,onSelect,onClear,
      <button type="button" className={category==='all'?'active':''} onClick={()=>setCategory('all')}>Все</button>
      {categoryOptions.map(name=><button key={name} type="button" className={category===name?'active':''} onClick={()=>setCategory(name)}>{categoryName(name)}</button>)}
     </div>}
-    <div className="skp-build-picker-count">{filtered.length?('Найдено товаров: '+filtered.length):'Нет подходящих товаров'} · Включая товары под заказ</div>
+    <div className="skp-build-picker-count">{filtered.length?('Доступно: '+filtered.filter(item=>!item.issues.length).length+' из '+filtered.length):'Нет подходящих товаров'} · Включая товары под заказ</div>
     <div className="skp-build-picker-options">
-     {filtered.slice(0,80).map(part=><button key={part.id} type="button" className={'skp-build-picker-option'+(part.name===value?' active':'')}
-       onClick={()=>{onSelect(part);setOpen(false)}}>
+     {filtered.slice(0,80).map(({product:part,issues})=><button key={part.id} type="button" disabled={issues.length>0} title={issues.map(issue=>issue.message).join(' ')}
+       className={'skp-build-picker-option'+(part.name===value?' active':'')+(issues.length?' incompatible':'')}
+       onClick={()=>{if(!issues.length){onSelect(part);setOpen(false)}}}>
       <span className="skp-build-picker-option-art">{thumbnail(part)}</span>
       <span className="skp-build-picker-option-copy">
        <strong>{part.name}</strong>
        <small>{categoryName(part.category)}{part.brand?' · '+part.brand:''}</small>
-       <span className={part.stock?'stock':'nostock'}>{part.stock?'● В наличии':'○ Под заказ'}</span>
+       {issues.length?<span className="skp-build-picker-conflict">{issues.map(issue=>issue.message).join(' ')}</span>:<span className={part.stock?'stock':'nostock'}>{part.stock?'● В наличии':'○ Под заказ'}</span>}
       </span>
       <span className="skp-build-picker-option-price">{part.price>0?money(part.price):'По запросу'}</span>
       {part.name===value&&<Check size={19} className="skp-build-picker-check" aria-label="Уже выбрано"/>}
      </button>)}
      {filtered.length===0&&<div className="skp-build-picker-empty">В этой категории пока нет подходящих товаров. Добавьте товар в каталог SKP, затем выберите его здесь.</div>}
+     {filtered.length>0&&filtered.every(item=>item.issues.length>0)&&<div className="skp-build-picker-empty">Все найденные детали несовместимы с выбранными компонентами. Измените сборку или запрос поиска.</div>}
      {filtered.length>80&&<div className="skp-build-picker-empty">Показаны первые 80 товаров. Уточните запрос для поиска остальных.</div>}
     </div>
    </div>
