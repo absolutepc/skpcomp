@@ -82,3 +82,12 @@ html:has(.skp-admin-workspace){overflow-y:scroll;scrollbar-gutter:stable}
 .skp-admin-category-always-visible .skp-admin-category-group>div{width:100%;min-width:0}
 .skp-admin-category-always-visible .skp-admin-category-group button{width:100%;max-width:100%;box-sizing:border-box;flex-shrink:0}
 .skp-admin-category-always-visible .skp-admin-category-all button{box-sizing:border-box;width:132px;min-width:132px;max-width:132px}
+
+/* Product creation belongs to the category panel; keep it outside the mobile scroller. */
+.skp-admin-category-section{position:relative;min-width:0}
+.skp-admin-category-actions{position:absolute;top:0;right:0;display:flex;justify-content:flex-end}
+.skp-admin-category-section .skp-admin-category-all{padding-right:220px}
+@media(max-width:700px){
+ .skp-admin-category-actions{position:static;margin-bottom:12px}
+ .skp-admin-category-section .skp-admin-category-all{padding-right:0}
+}
