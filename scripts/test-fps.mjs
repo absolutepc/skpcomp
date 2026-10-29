@@ -147,4 +147,14 @@ assert.ok(fpsStyles.includes('height:117px;min-height:117px;max-height:117px'),'
 assert.ok(fpsStyles.includes('height:108px;min-height:108px;max-height:108px'),'Mobile game tiles keep a fixed height');
 assert.ok(fpsStyles.includes('.skp-fps-v2-game-tile.selected{\n border-color:#ffe500'),'Selected game border does not change layout');
 
+// Fixed FPS settings layout: switching native/FSR/DLSS cannot resize the
+// ray tracing button or change the vertical position of results.
+assert.ok(content.includes("skp-fps-v2-additional'+(canRt?' has-ray':'')"),'FPS additional settings grid stays mounted');
+assert.ok(content.includes("safeUpscaling==='native'?' is-inactive':'')"),'Native upscaling mode leaves a reserved quality field');
+assert.ok(content.includes("disabled={safeUpscaling==='native'}"),'Quality field is disabled when native rendering is selected');
+assert.ok(!content.includes("{safeUpscaling!=='native'&&<div className=\"skp-fps-v2-extra-quality\""),'Quality selector must not be conditionally removed');
+assert.ok(fpsStyles.includes('align-items:start;grid-auto-rows:74px;min-height:74px'),'Desktop additional settings reserve identical row heights');
+assert.ok(fpsStyles.includes('width:100%;height:74px;min-height:74px;max-height:74px'),'Desktop ray-tracing button never stretches with technology selection');
+assert.ok(fpsStyles.includes('grid-auto-rows:67px;gap:9px;min-height:67px'),'Mobile additional settings reserve identical row heights');
+assert.ok(fpsStyles.includes('height:67px;min-height:67px;max-height:67px'),'Mobile ray-tracing button never stretches with technology selection');
 console.log('FPS model tests passed: presets, resolutions, feature support, feature priority, ready PCs and configurator.');
