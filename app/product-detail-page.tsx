@@ -15,11 +15,13 @@ import ProductRatingSummary from './product-rating-summary';
 import GamingFps from './gaming-fps';
 import './product-detail-page.css';
 const money=(value:number)=>new Intl.NumberFormat('ru-RU').format(value)+' ₽';
-const tabs=[['specs','Характеристики'],['description','Описание'],['reviews','Отзывы']] as const;
+const standardTabs=[['specs','Характеристики'],['description','Описание'],['reviews','Отзывы']] as const;
+const readyPcTabs=[['specs','Характеристики'],['build','Комплектация'],['description','Описание'],['reviews','Отзывы']] as const;
 type Props={product:Product;data:Store;nav:(path:string)=>void;add:(ids:string[])=>void;fav:(id:string)=>void;compare:(p:Product)=>void;favorites:string[];compared:string[];fallback:ReactNode;card:(p:Product)=>ReactNode};
 export default function ProductDetailPage({product:p,data,nav,add,fav,compare,favorites,compared,fallback,card}:Props){
  const [quantity,setQuantity]=useState(1);
  const [tab,setTab]=useState<string>('specs');
+ const tabs=p.category==='pc'?readyPcTabs:standardTabs;
  const [allSpecs,setAllSpecs]=useState(false);
  const specRows=fieldsForProduct(p).map(field=>({key:field.key,label:field.label+(field.unit?', '+field.unit:''),value:specValue(p,field)})).filter(row=>String(row.value??'').trim());
  const buildRows=p.category==='pc'?getBuildRows(p):[];
@@ -67,7 +69,7 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
   <div className="skp-pdp-tabs" role="tablist" aria-label="Информация о товаре">{tabs.map(([id,label])=><button key={id} id={'skp-pdp-tab-'+id} role="tab" tabIndex={tab===id?0:-1} onKeyDown={event=>{const index=tabs.findIndex(item=>item[0]===id);const next=event.key==='ArrowRight'?(index+1)%tabs.length:event.key==='ArrowLeft'?(index+tabs.length-1)%tabs.length:event.key==='Home'?0:event.key==='End'?tabs.length-1:-1;if(next>=0){event.preventDefault();setTab(tabs[next][0]);document.getElementById('skp-pdp-tab-'+tabs[next][0])?.focus()}}} aria-selected={tab===id} aria-controls="skp-pdp-panel" onClick={()=>setTab(id)}>{label}</button>)}</div>
   <div id="skp-pdp-panel" role="tabpanel" aria-labelledby={'skp-pdp-tab-'+tab}>
    {tab==='specs'&&<div className="skp-pdp-content"><div className="skp-pdp-specs"><h2>Основные характеристики</h2>{rows.length?<><dl className={allSpecs?'expanded':''}>{rows.map(row=><div key={row.key}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>{rows.length>6&&<button className={"skp-pdp-all-specs"+(rows.length<=16?' skp-pdp-mobile-specs':'')} onClick={()=>setAllSpecs(v=>!v)}>{allSpecs?'Свернуть':'Все характеристики'}<ChevronRight size={15}/></button>}</>:<p className="skp-pdp-muted">Характеристики уточняются.</p>}</div><div className="skp-pdp-side"><div className="skp-pdp-desktop-description">{description()}</div>{related.length>0&&<section className="skp-pdp-related"><h2>Похожие товары</h2><div>{related.map(card)}</div></section>}</div></div>}
-   {tab==='specs'&&p.category==='pc'&&<ReadyPcComponents product={p} catalog={data.products}/>}
+   {tab==='build'&&p.category==='pc'&&<ReadyPcComponents product={p} catalog={data.products}/>}
    {tab==='description'&&description()}
    {tab==='reviews'&&<ProductReviews productId={p.id}/>}
   </div>
