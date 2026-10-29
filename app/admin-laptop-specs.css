@@ -32,3 +32,10 @@
  .skp-laptop-model-picker{padding:12px}
  .skp-laptop-current-model strong{flex-basis:60%}
 }
+
+.skp-laptop-cpu-preset-actions{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-top:12px}
+.skp-admin-edit-backdrop .skp-laptop-preset-apply{padding:8px 11px;border:1px solid #615d36;border-radius:6px;background:#20231a;color:#ffe500;font-size:11px}
+.skp-admin-edit-backdrop .skp-laptop-preset-apply:hover{border-color:#ffe500}
+.skp-laptop-cpu-preset-actions a{font-size:11px;color:#c8d5df;text-decoration:underline;text-underline-offset:3px}
+.skp-laptop-cpu-preset-actions a:hover{color:#ffe500}
+.skp-admin-edit-backdrop .skp-laptop-cpu-no-data{margin:9px 0 0;color:#d7b98a;font-size:11px;line-height:1.55}
