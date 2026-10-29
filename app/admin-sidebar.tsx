@@ -28,16 +28,16 @@ export default function AdminSidebar({active,onChange,productsCount,laptopsCount
  const [open,setOpen]=useState(false);
  const [mobileSearch,setMobileSearch]=useState(false);
  return <div className={'skp-admin-layout'+(open?' menu-open':'')}>
-  {open&&<button className="skp-admin-scrim" type="button" aria-label="Закрыть меню" onClick={()=>setOpen(false)}/>}
+  {open&&<button className="skp-admin-scrim" type="button" aria-label="Закрыть меню" onClick={()=>{setOpen(false);setMobileSearch(false)}}/>}
   <aside className="skp-admin-sidebar">
    <a href="/" className="skp-admin-brand" aria-label="SKP — на сайт"><svg viewBox="145 430 825 335" role="img" aria-label="SKP"><image href="/images/skp-logo.jpg" width="1080" height="1080"/></svg></a>
-   <button className="skp-admin-menu-close" type="button" aria-label="Закрыть меню" onClick={()=>setOpen(false)}><X size={20}/></button>
+   <button className="skp-admin-menu-close" type="button" aria-label="Закрыть меню" onClick={()=>{setOpen(false);setMobileSearch(false)}}><X size={20}/></button>
    <div className="skp-admin-mobile-identity"><span>A</span><div>Администратор<small>Управление SKP</small></div></div>
    <nav aria-label="Разделы админ-панели" className="skp-admin-menu">
     {ADMIN_SECTIONS.map(({id,label})=>{
      const Icon=icons[id],count=id==='products'?productsCount:id==='laptops'?laptopsCount:id==='pcs'?pcsCount:null;
      return <button type="button" key={id} className={'skp-admin-tab'+(active===id?' active':'')}
-      onClick={()=>{onChange(id);setOpen(false)}} aria-current={active===id?'page':undefined}>
+      onClick={()=>{onChange(id);setOpen(false);setMobileSearch(false)}} aria-current={active===id?'page':undefined}>
       <Icon size={20}/><span>{id==='slides'?'Баннеры':label}</span>{count!==null&&<small>{count}</small>}
      </button>;
     })}
@@ -46,11 +46,11 @@ export default function AdminSidebar({active,onChange,productsCount,laptopsCount
   </aside>
   <div className="skp-admin-work">
    <div className="skp-admin-topbar">
-    <button type="button" className="skp-admin-menu-toggle" aria-label={open?'Закрыть меню':'Открыть меню'} aria-expanded={open} onClick={()=>setOpen(!open)}><Menu size={22}/></button>
+    <button type="button" className="skp-admin-menu-toggle" aria-label={open?'Закрыть меню':'Открыть меню'} aria-expanded={open} onClick={()=>{setOpen(!open);setMobileSearch(false)}}><Menu size={22}/></button>
     <a href="/" className="skp-admin-mobile-logo" aria-label="SKP — открыть магазин"><img src="/images/skp-logo.jpg" alt="SKP"/></a>
-    <button type="button" className="skp-admin-mobile-search-toggle" aria-label={mobileSearch?'Закрыть поиск':'Поиск по товарам'} aria-expanded={mobileSearch} onClick={()=>setMobileSearch(!mobileSearch)}>{mobileSearch?<X size={21}/>:<Search size={21}/>}</button>
+    <button type="button" className="skp-admin-mobile-search-toggle" aria-label={mobileSearch?'Закрыть поиск':'Поиск по товарам'} aria-expanded={mobileSearch} onClick={()=>{setMobileSearch(!mobileSearch);setOpen(false)}}>{mobileSearch?<X size={21}/>:<Search size={21}/>}</button>
     <label className={'skp-admin-global-search'+(mobileSearch?' mobile-expanded':'')}><Search size={20}/><input aria-label="Поиск по всем товарам" placeholder="Поиск по товарам, моделям, брендам…" value={search} onChange={e=>onSearch(e.target.value)}/>{search&&<button type="button" aria-label="Очистить поиск" onClick={()=>onSearch('')}><X size={16}/></button>}</label>
-    <button type="button" className="skp-admin-account" aria-label="Открыть меню администратора" onClick={()=>setOpen(true)}><span className="skp-admin-account-letter">A</span><UserRound className="skp-admin-account-mobile-icon" size={21}/><div>Администратор<small>Управление SKP</small></div></button>
+    <button type="button" className="skp-admin-account" aria-label="Открыть меню администратора" onClick={()=>{setOpen(true);setMobileSearch(false)}}><span className="skp-admin-account-letter">A</span><UserRound className="skp-admin-account-mobile-icon" size={21}/><div>Администратор<small>Управление SKP</small></div></button>
    </div>
    <div id={'skp-admin-panel-'+active} className="skp-admin-main" role="region" aria-label={ADMIN_SECTIONS.find(item=>item.id===active)?.label}>{children}</div>
   </div>
