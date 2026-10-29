@@ -46,8 +46,7 @@ assert.ok(cpuPresets.length>=70,'Extended official processor roster must include
 const families=new Set(cpuPresets.map(p=>p.family));
 for(const family of ['Core 12-го поколения','Core 13-го поколения','Core 14-го поколения','Core Ultra 5 (200S)','Core Ultra 7 (200S)','Core Ultra 9 (200S)','Ryzen 5000','Ryzen 7000','Ryzen 8000','Ryzen 9000'])assert.ok(families.has(family),family);
 for(const tier of ['i3','i5','i7','i9'])assert.ok(cpuPresets.some(p=>p.label.startsWith('Core '+tier+'-')),'Missing Core '+tier);
-for(const suffix of ['','F','K','KF','T'])assert.ok(cpuPresets.some(p=>new RegExp('^Core i\\\\d-\\\\d{5}'+suffix+'
-).test(p.label)),'Missing suffix '+(suffix||'plain'));
+for(const suffix of ['','F','K','KF','T'])assert.ok(cpuPresets.some(p=>p.label.startsWith('Core i')&&(suffix?p.label.endsWith(suffix):/[0-9]$/.test(p.label))),'Missing suffix '+(suffix||'plain'));
 const i3=lookup('Core i3-14100');
 assert.equal(i3.specs.pCores,'4');assert.equal(i3.specs.eCores,'0');assert.equal(i3.specs.frequency,'3.5');assert.equal(i3.specs.l2,'5');
 assert.equal(lookup('Core i3-14100F').specs.graphics,'Нет');
