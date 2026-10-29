@@ -47,5 +47,7 @@ jobs:
           node scripts/test-admin-cookie.mjs
           node scripts/test-popular-products.mjs
           node scripts/test-site-audit.mjs
+      - name: Media upload integration
+        run: node scripts/test-media-upload.mjs
       - name: Production build
         run: pnpm build
