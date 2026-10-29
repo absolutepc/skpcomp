@@ -132,6 +132,16 @@ assert.ok(fpsRoster.includes("id:'valorant',name:'Valorant',image:'/images/fps-g
 assert.ok(fpsRoster.includes("id:'bf6',name:'Battlefield 6',image:'/images/fps-games/battlefield6.png'"),'Battlefield 6 uses the local image');
 assert.ok(fpsRoster.includes("game.image===oldValorantImage"),'Legacy Valorant default images are upgraded');
 assert.ok(fpsRoster.includes("game.image===steam(2807960)"),'Legacy Battlefield 6 default images are upgraded');
+// FPS artwork upload must be available in the admin interface and backed by R2.
+const fpsEditor=readFileSync(new URL('../app/admin-fps-games.tsx',import.meta.url),'utf8');
+const mediaBackend=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf8');
+assert(fpsEditor.includes('accept="image/png,image/jpeg,image/webp"'),'FPS editor must have a local upload picker');
+assert(fpsEditor.includes("form.append('assetType','fps-game')")&&fpsEditor.includes("form.append('gameId',id)"),'Images must be associated with the selected game');
+assert(fpsEditor.includes("change(id,{image:result.url})"),'Uploaded cover must immediately appear in preview');
+assert(fpsEditor.includes('onSave(normalized)'),'Game cover is persisted along with game settings');
+assert(mediaBackend.includes('FPS_MEDIA_KEY')&&mediaBackend.includes("isFpsGame?'fps-games'"),'Server stores and serves FPS game covers');
+assert(mediaBackend.includes('gameProfiles.some(game=>game.id===assetId)'),'Game uploads validate game ID');
+assert(fpsRoster.includes("value.startsWith('/api/media?key=fps-games/')"),'Game image validator accepts uploaded cover URLs');
 const fpsStyles=readFileSync(new URL('../app/fps-calculator-v2.css',import.meta.url),'utf8');
 assert.ok(fpsStyles.includes('height:117px;min-height:117px;max-height:117px'),'Desktop game tiles keep a fixed height');
 assert.ok(fpsStyles.includes('height:108px;min-height:108px;max-height:108px'),'Mobile game tiles keep a fixed height');
