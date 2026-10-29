@@ -1,4 +1,5 @@
 import {localAdminAccess} from '../../../lib/local-admin-access';
+import {productMediaFolder,isProductMediaKey} from '../../../lib/product-media-path';
 import {env} from 'cloudflare:workers';
 
 const E=env as unknown as {MEDIA?:R2Bucket;ADMIN_PASSWORD?:string};
@@ -15,7 +16,7 @@ async function authorized(request:Request){
 export async function GET(request:Request){
  if(!E.MEDIA)return json({error:'Хранилище R2 не настроено'},503);
  const key=new URL(request.url).searchParams.get('key')||'';
- if(!MEDIA_KEY.test(key))return json({error:'Некорректный путь фотографии'},400);
+ if(!MEDIA_KEY.test(key)&&!isProductMediaKey(key))return json({error:'Некорректный путь фотографии'},400);
  try{
   const object=await E.MEDIA.get(key);
   if(!object)return json({error:'Фотография не найдена'},404);
@@ -52,7 +53,27 @@ export async function POST(request:Request){
   if(!mime||file.type!==mime)
    return json({error:'Повреждённый или неподдерживаемый PNG/WebP-файл'},400);
   const ext=isPng?'png':'webp';
-  const key=(isSlide?'slides/':isBrand?'brands/':'products/')+assetId+'/'+crypto.randomUUID()+'.'+ext;
+  // Product directory is derived server-side from validated product metadata.
+  // No client-controlled folder/path is accepted. Legacy uploads without
+  // category information continue to use products/{productId}/.
+  const asText=(value:FormDataEntryValue|null)=>typeof value==='string'?value.slice(0,200):'';
+  const folder=isSlide?'slides':isBrand?'brands':productMediaFolder({
+   category:asText(data.get('productCategory')),
+   name:asText(data.get('productName')),
+   brand:asText(data.get('productBrand')),
+   socket:asText(data.get('productSocket')),
+   memory:asText(data.get('productMemory')),
+   art:asText(data.get('productArt')),
+   specs:{
+    socket:asText(data.get('specSocket')),
+    memory:asText(data.get('specMemory')),
+    gpuChipBrand:asText(data.get('gpuChipBrand')),
+    gpu:asText(data.get('gpuModel')),
+    coolingType:asText(data.get('coolingType'))
+   }
+  });
+  const key=folder+'/'+assetId+'/'+crypto.randomUUID()+'.'+ext;
+  if(!MEDIA_KEY.test(key)&&!isProductMediaKey(key))return json({error:'Недопустимая папка изображения'},400);
   await E.MEDIA.put(key,bytes,{httpMetadata:{contentType:mime},customMetadata:isSlide?{slideId:assetId}:isBrand?{brandId:assetId}:{productId:assetId}});
   return json({url:'/api/media?key='+key,key,size:file.size},201);
  }catch{return json({error:'Не удалось сохранить файл в R2. Проверьте настройки хранилища.'},503)}
