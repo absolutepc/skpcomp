@@ -4,6 +4,7 @@ import {brandsForCategory,selectedBrand,seriesForBrand,selectedSeries,gpuChipBra
 import AdminCpuPreset from './admin-cpu-preset';
 import {clearCpuPreset} from '../lib/cpu-presets';
 import AdminGpuPreset from './admin-gpu-preset';
+import AdminLaptopSpecs from './admin-laptop-specs';
 import {clearGpuPreset} from '../lib/gpu-presets';
 import {coolingTypes,liquidRadiatorSizes,isLiquidCooling} from '../lib/cooling-options';
 import {popularProducts} from '../lib/popular-products';
@@ -233,7 +234,7 @@ return <>
   {(editing.buildExtras||[]).length<20&&<div className="admin-build-add-picker">
    <AdminBuildPicker field="extra" title="Добавить компонент" products={data.products} value="" onSelect={part=>setEditing({...editing,buildExtras:[...(editing.buildExtras||[]),{name:components[part.category]||({fans:'Вентиляторы',network:'Сетевое оборудование',os:'Операционная система'} as Record<string,string>)[part.category]||'Комплектующая',value:part.name.slice(0,300)}]})}/>
   </div>}
- </div>}{editing.category!=='pc'&&<div className="admin-spec-fields"><h3>Характеристики для фильтров</h3><p>Заполняйте только известные значения. Несколько вариантов разделяйте символом |, например DDR4 | DDR5. Числа указывайте без единиц измерения.</p>{(editing.category==='gpu'||editing.category==='ssd'||editing.category==='psu'||editing.category==='case'||editing.category==='monitor')
+ </div>}{editing.category==='laptops'&&<AdminLaptopSpecs product={editing} onChange={setEditing}/>}{editing.category!=='pc'&&editing.category!=='laptops'&&<div className="admin-spec-fields"><h3>Характеристики для фильтров</h3><p>Заполняйте только известные значения. Несколько вариантов разделяйте символом |, например DDR4 | DDR5. Числа указывайте без единиц измерения.</p>{(editing.category==='gpu'||editing.category==='ssd'||editing.category==='psu'||editing.category==='case'||editing.category==='monitor')
  ?(editing.category==='gpu'?gpuFieldGroups:editing.category==='ssd'?ssdFieldGroups:editing.category==='psu'?psuFieldGroups:editing.category==='case'?caseFieldGroups:monitorFieldGroups).map(group=><section className="skp-technical-spec-group" key={group.title}>
   <h4>{group.title}</h4>
   {editing.category==='ssd'&&group.title==='Кэширование'&&<p className="skp-storage-spec-note">DRAM-кэш указывайте в МБ (0, если его нет). pSLC-кэш бывает статическим или динамическим: максимальный объём указывайте только если он известен. HMB заполняется отдельно.</p>}
