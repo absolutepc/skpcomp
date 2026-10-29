@@ -1,8 +1,8 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {ArrowDown,ArrowUp,Check,Gamepad2,Image as ImageIcon,RotateCcw,Save,ShieldAlert} from 'lucide-react';
+import {ArrowDown,ArrowUp,Gamepad2,Image as ImageIcon,LoaderCircle,RotateCcw,Save,ShieldAlert,Upload} from 'lucide-react';
 import type {FpsGameAppearance} from '../lib/fps-game-catalog';
-import {defaultFpsGames,getConfiguredFpsGames,validateFpsGames} from '../lib/fps-game-catalog';
+import {defaultFpsGames,getConfiguredFpsGames,validFpsGameImage,validateFpsGames} from '../lib/fps-game-catalog';
 import {gameProfiles} from '../lib/fps-estimate';
 import './admin-fps-games.css';
 
@@ -17,6 +17,8 @@ function GamePreview({image,name}:{image:string;name:string}){
 export default function AdminFpsGames({games,onSave}:{games?:FpsGameAppearance[];onSave:(next:FpsGameAppearance[])=>Promise<boolean>}){
  const [entries,setEntries]=useState(()=>getConfiguredFpsGames(games));
  const [busy,setBusy]=useState(false);
+ const [uploadingId,setUploadingId]=useState<string|null>(null);
+ const [uploadNotice,setUploadNotice]=useState('');
  const [error,setError]=useState('');
  useEffect(()=>{setEntries(getConfiguredFpsGames(games))},[games]);
  const change=(id:string,patch:Partial<FpsGameAppearance>)=>{
@@ -29,10 +31,31 @@ export default function AdminFpsGames({games,onSave}:{games?:FpsGameAppearance[]
   [next[index],next[nextIndex]]=[next[nextIndex],next[index]];
   setEntries(next);
  };
+ const upload=async(id:string,file:File)=>{
+  if(busy||uploadingId)return;
+  setError('');setUploadNotice('');
+  if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size<50||file.size>8*1024*1024){
+   setError('Выберите PNG, JPEG или WebP размером до 8 МБ.');return;
+  }
+  setUploadingId(id);
+  try{
+   const form=new FormData();
+   form.append('assetType','fps-game');form.append('gameId',id);
+   form.append('file',file,'fps-game.'+(file.type==='image/jpeg'?'jpg':file.type==='image/png'?'png':'webp'));
+   const response=await fetch('/api/media',{method:'POST',body:form});
+   const result=await response.json() as {url?:string;error?:string};
+   if(!response.ok||!result.url||!validFpsGameImage(result.url))
+    throw Error(result.error||'Сервер не сохранил изображение.');
+   change(id,{image:result.url});
+   setUploadNotice('Изображение загружено. Нажмите «Сохранить список игр», чтобы применить его.');
+  }catch(e){setError(e instanceof Error?e.message:'Ошибка загрузки изображения.');}
+  finally{setUploadingId(null)}
+ };
  const submit=async(event:React.FormEvent)=>{
+  if(uploadingId!==null||busy){event.preventDefault();return;}
   event.preventDefault();
   const normalized=entries.map(item=>({...item,name:item.name.trim(),image:item.image.trim()}));
-  if(!validateFpsGames(normalized)){setError('Проверьте названия игр и адреса изображений. Ссылки должны начинаться с https:// или /images/.');return}
+  if(!validateFpsGames(normalized)){setError('Проверьте названия игр и адреса изображений. Можно использовать HTTPS-ссылку или загруженный файл.');return}
   if(!normalized.some(item=>item.enabled)){setError('Оставьте хотя бы одну игру активной.');return}
   setBusy(true);setError('');
   try{const saved=await onSave(normalized);if(!saved)setError('Не удалось сохранить список игр.')}finally{setBusy(false)}
@@ -55,6 +78,13 @@ export default function AdminFpsGames({games,onSave}:{games?:FpsGameAppearance[]
        </div>
        <label>Название игры<input type="text" maxLength={80} required value={game.name} onChange={e=>change(game.id,{name:e.target.value})}/></label>
        <label>Фото или логотип (URL)<input type="text" placeholder="https://... или /images/..." value={game.image} onChange={e=>change(game.id,{image:e.target.value})}/></label>
+       <label className="skp-admin-fps-upload">
+        {uploadingId===game.id?<LoaderCircle size={17} className="skp-admin-fps-spin"/>:<Upload size={17}/>}
+        {uploadingId===game.id?'Загрузка…':'Загрузить изображение'}
+        <input type="file" accept="image/png,image/jpeg,image/webp" disabled={busy||uploadingId!==null}
+         aria-label={'Загрузить изображение для '+game.name}
+         onChange={e=>{const file=e.currentTarget.files?.[0];e.currentTarget.value='';if(file)void upload(game.id,file)}}/>
+       </label>
       </div>
       <div className="skp-admin-fps-game-order">
        <button type="button" disabled={index===0} onClick={()=>move(index,-1)} title="Переместить выше" aria-label={'Переместить '+game.name+' выше'}><ArrowUp size={19}/></button>
@@ -65,9 +95,10 @@ export default function AdminFpsGames({games,onSave}:{games?:FpsGameAppearance[]
     })}
    </div>
    {error&&<p role="alert" className="skp-admin-fps-error">{error}</p>}
+   {uploadNotice&&<p role="status" className="skp-admin-fps-success">{uploadNotice}</p>}
    <div className="skp-admin-fps-buttons">
-    <button className="skp-admin-fps-save" type="submit" disabled={busy}><Save size={18}/>{busy?'Сохранение...':'Сохранить список игр'}</button>
-    <button className="skp-admin-fps-reset" type="button" disabled={busy} onClick={()=>{setEntries(defaultFpsGames.map(x=>({...x})));setError('')}}><RotateCcw size={17}/>Вернуть стандартный список</button>
+    <button className="skp-admin-fps-save" type="submit" disabled={busy||uploadingId!==null}><Save size={18}/>{busy?'Сохранение...':'Сохранить список игр'}</button>
+    <button className="skp-admin-fps-reset" type="button" disabled={busy||uploadingId!==null} onClick={()=>{setEntries(defaultFpsGames.map(x=>({...x})));setError('')}}><RotateCcw size={17}/>Вернуть стандартный список</button>
    </div>
   </form>
  </section>;
