@@ -5,6 +5,7 @@ import type {Product} from '../lib/seed';
 import {fieldValue} from '../lib/catalog';
 import {laptopFieldChoices,laptopFieldGroups} from '../lib/laptop-specs';
 import {laptopGraphics,laptopProcessors} from '../lib/laptop-models';
+import {applyLaptopCpuPreset,findLaptopCpuPreset} from '../lib/laptop-cpu-presets';
 import './admin-laptop-specs.css';
 
 function QuickChoice({label,value,choices,numeric,onChange}:{
@@ -30,6 +31,7 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
  const currentCpu=fieldValue(product,'cpu');
  const currentGpu=fieldValue(product,'gpu');
  const cpuPreset=laptopProcessors.find(p=>p.name===currentCpu);
+ const cpuSpecsPreset=findLaptopCpuPreset(currentCpu);
  const gpuPreset=laptopGraphics.find(p=>p.name===currentGpu);
  const [cpuBrand,setCpuBrand]=useState(cpuPreset?.brand||'');
  const [cpuLine,setCpuLine]=useState(cpuPreset?.line||'');
@@ -50,6 +52,7 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
  },[product.id]);
 
  const change=(key:string,value:string)=>onChange({...product,specs:{...product.specs,[key]:value}});
+ const selectCpu=(name:string)=>onChange(applyLaptopCpuPreset(product,name));
  const cpuLines=[...new Set(laptopProcessors.filter(p=>p.brand===cpuBrand).map(p=>p.line))];
  const cpuGenerations=[...new Set(laptopProcessors.filter(p=>p.brand===cpuBrand&&p.line===cpuLine).map(p=>p.generation))];
  const cpus=laptopProcessors.filter(p=>p.brand===cpuBrand&&p.line===cpuLine&&p.generation===cpuGeneration);
@@ -57,7 +60,7 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
  const gpus=laptopGraphics.filter(p=>p.brand===gpuBrand&&p.generation===gpuGeneration);
  const toggle=(title:string)=>setExpanded(values=>values.includes(title)?values.filter(v=>v!==title):[...values,title]);
  return <div className="skp-laptop-editor">
-  <div className="skp-laptop-guide"><Info size={17}/><p>Для ноутбуков процессор и видеокарта выбираются отдельно от настольных компонентов. Списки подставляют только название модели: мощность GPU (TGP), экран, память и остальные параметры зависят от конкретной комплектации ноутбука.</p></div>
+  <div className="skp-laptop-guide"><Info size={17}/><p>При выборе процессора с проверенными характеристиками автоматически заполняются ядра, потоки, Boost, TDP и встроенная графика. Экран, оперативная память, накопители и мощность дискретной видеокарты (TGP) зависят от конкретного ноутбука и не изменяются.</p></div>
   <section className="skp-laptop-model-picker">
    <h4>Процессор — выбор в 4 шага</h4>
    <div className="skp-laptop-picker-steps">
@@ -70,14 +73,19 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
     <label>3. Поколение<select value={cpuGeneration} disabled={!cpuLine} onChange={e=>{setCpuGeneration(e.target.value);setCustomCpu(false)}}>
      <option value="">Выбрать</option>{cpuGenerations.map(v=><option key={v} value={v}>{v}</option>)}
     </select></label>
-    <label>4. Точная модель<select value={!customCpu&&cpus.some(v=>v.name===currentCpu)?currentCpu:''} disabled={!cpuGeneration} onChange={e=>{if(e.target.value){change('cpu',e.target.value);setCustomCpu(false)}}}>
+    <label>4. Точная модель<select value={!customCpu&&cpus.some(v=>v.name===currentCpu)?currentCpu:''} disabled={!cpuGeneration} onChange={e=>{if(e.target.value){selectCpu(e.target.value);setCustomCpu(false)}}}>
      <option value="">Выбрать модель</option>{cpus.map(v=><option key={v.name} value={v.name}>{v.name}</option>)}
     </select></label>
    </div>
    <div className="skp-laptop-current-model"><span>Процессор:</span><strong>{currentCpu||'Не выбран'}</strong>
     <button type="button" onClick={()=>setCustomCpu(v=>!v)}>{customCpu?'Скрыть ввод':'Другая модель'}</button>
    </div>
-   {customCpu&&<label className="skp-laptop-manual-model">Модель процессора, если её нет в списке<input type="text" maxLength={200} value={currentCpu} placeholder="Например, точное название OEM-процессора" onChange={e=>change('cpu',e.target.value)}/></label>}
+   {cpuSpecsPreset&&!customCpu&&<div className="skp-laptop-cpu-preset-actions">
+    <button className="skp-laptop-preset-apply" type="button" onClick={()=>selectCpu(currentCpu)}>Заполнить характеристики CPU повторно</button>
+    <a href={cpuSpecsPreset.source} target="_blank" rel="noopener noreferrer">Характеристики производителя ↗</a>
+   </div>}
+   {currentCpu&&!cpuSpecsPreset&&!customCpu&&<p className="skp-laptop-cpu-no-data">Для выбранной модели пока нет проверенных параметров. Заполните CPU вручную — значения другого процессора не подставляются.</p>}
+   {customCpu&&<label className="skp-laptop-manual-model">Модель процессора, если её нет в списке<input type="text" maxLength={200} value={currentCpu} placeholder="Например, точное название OEM-процессора" onChange={e=>selectCpu(e.target.value)}/></label>}
   </section>
   <section className="skp-laptop-model-picker">
    <h4>Видеокарта — выбор в 3 шага</h4>
@@ -97,7 +105,7 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
    </div>
    {customGpu&&<label className="skp-laptop-manual-model">Точная модель встроенной или дискретной графики<input type="text" maxLength={200} value={currentGpu} onChange={e=>change('gpu',e.target.value)}/></label>}
   </section>
-  <p className="skp-laptop-verification">Частота процессора, видеопамять, TGP с Dynamic Boost, тип панели, яркость, порты и батарея не определяются автоматически по названию CPU или GPU. Указывайте подтверждённые значения конкретной модели ноутбука.</p>
+  <p className="skp-laptop-verification">Boost CPU и TDP берутся из спецификаций производителя, если модель есть в справочнике. TDP с диапазоном остаётся диапазоном; реальные лимиты питания и частоты могут зависеть от ноутбука. Видеопамять, TGP с Dynamic Boost, тип экрана, яркость, порты и батарею указывайте по точной модели ноутбука.</p>
   {laptopFieldGroups.map(group=>{
    const fields=group.fields.filter(field=>field.key!=='cpu'&&field.key!=='gpu');
    const filled=fields.filter(field=>fieldValue(product,field.key).trim()).length;
