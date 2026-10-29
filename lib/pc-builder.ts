@@ -75,6 +75,26 @@ export function analyzeBuild(selected:BuildSelection,products:Product[]):BuildAn
  const coolerHeight=toNum(field(cooler,'height')),maxCooler=toNum(field(chassis,'coolerHeight'));
  if(cooler&&chassis&&coolerHeight&&maxCooler&&coolerHeight>maxCooler)
   push('case-cooler','error','Кулер высотой '+coolerHeight+' мм не помещается: максимум '+maxCooler+' мм.','cooler','case');
+ // Case clearances apply in either choice order (case first or component first).
+ const gpuSlots=toNum(field(gpu,'slots')),caseGpuSlots=toNum(field(chassis,'gpuThicknessSlots'));
+ if(gpu&&chassis&&gpuSlots&&caseGpuSlots&&gpuSlots>caseGpuSlots)
+  push('case-gpu-slots','error','Видеокарта занимает '+gpuSlots+' слота, корпус допускает '+caseGpuSlots+'.','gpu','case');
+ const psuLength=toNum(field(psu,'length')),casePsuLength=toNum(field(chassis,'psuLength'));
+ if(psu&&chassis&&psuLength&&casePsuLength&&psuLength>casePsuLength)
+  push('case-psu-length','error','БП длиной '+psuLength+' мм не помещается в корпус (максимум '+casePsuLength+' мм).','psu','case');
+ const psuForm=field(psu,'form'),casePsuForm=field(chassis,'psuForm');
+ if(psu&&chassis&&psuForm&&casePsuForm&&!matching(psuForm,casePsuForm))
+  push('case-psu-form','error','Форм-фактор БП '+psuForm+' не поддерживается корпусом ('+casePsuForm+').','psu','case');
+ const coolerRadiator=toNum(field(cooler,'radiator'));
+ const radiatorSlots=['frontRadiator','topRadiator','rearRadiator','bottomRadiator','sideRadiator'];
+ const knownRadiatorMounts=radiatorSlots.map(slot=>field(chassis,slot)).filter(Boolean);
+ // Only restrict radiator selection if the case has published radiator support data.
+ if(cooler&&chassis&&coolerRadiator&&knownRadiatorMounts.length){
+  const supportedRads=knownRadiatorMounts.flatMap(value=>
+   [...value.matchAll(/\b(?:120|140|240|280|360|420|480)\b/g)].map(match=>Number(match[0])));
+  if(!supportedRads.includes(coolerRadiator))
+   push('case-radiator','error','Радиатор '+coolerRadiator+' мм не указан среди поддерживаемых корпусом размеров.','cooler','case');
+ }
  const modules=toNum(field(ram,'modules')),slots=toNum(field(board,'ramSlots'));
  if(ram&&board&&modules&&slots&&modules>slots)
   push('ram-slots','error','Модулей памяти ('+modules+') больше, чем слотов на плате ('+slots+').','ram','motherboard');
