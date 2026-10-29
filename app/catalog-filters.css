@@ -17,3 +17,8 @@
 .catalog-facets .skp-range-inputs label{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;justify-content:flex-start;text-align:left;gap:7px;min-width:0;margin:0;padding:8px;border:1px solid #3a3e35;border-radius:7px;background:#1d2021}
 .catalog-facets .skp-range-inputs label>span{flex:0 0 auto;white-space:nowrap;color:#8e9589;font-size:12px}
 .catalog-facets .skp-range-inputs input{flex:1 1 0;width:0;min-width:0;padding:0;border:0;border-radius:0;background:transparent;color:#eee;font-size:13px}
+
+.catalog-facets .skp-all-brands{display:block;min-height:44px;margin-top:6px;padding:8px 0;border:0;background:transparent;color:#ffe500;font:inherit;font-size:13px;text-align:left;cursor:pointer}
+.catalog-facets .skp-all-brands:focus-visible{outline:2px solid #ffe500;outline-offset:2px;border-radius:4px}
+.catalog-facets #catalog-brand-options{max-height:320px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#555 #111;padding:3px}
+.catalog-facets #catalog-brand-options~.facet-checkbox{margin-top:12px;min-height:44px}

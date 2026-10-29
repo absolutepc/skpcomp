@@ -2,7 +2,7 @@
 import type {CSSProperties} from 'react';
 
 type RangeValue={min?:string;max?:string};
-export default function CatalogRange({label,values,value,onChange}:{label:string;values:number[];value:RangeValue;onChange:(value:RangeValue)=>void}){
+export default function CatalogRange({label,values,value,onChange,showLimits=true}:{showLimits?:boolean;label:string;values:number[];value:RangeValue;onChange:(value:RangeValue)=>void}){
  const valid=values.filter(Number.isFinite);
  const min=valid.length?Math.min(...valid):0;
  const max=valid.length?Math.max(...valid):0;
@@ -19,7 +19,7 @@ export default function CatalogRange({label,values,value,onChange}:{label:string
     style={{zIndex:low>=max?4:2}} onChange={e=>{const n=Math.min(Number(e.target.value),high);onChange({...value,min:n===min?'':String(n)})}}/>
    <input type="range" min={min} max={max} step={step} value={high} disabled={disabled} aria-label={label+' — максимум'}
     onChange={e=>{const n=Math.max(Number(e.target.value),low);onChange({...value,max:n===max?'':String(n)})}}/>
-  </div><div className="skp-range-limits"><span>{min.toLocaleString('ru')}</span><span>{max.toLocaleString('ru')}</span></div></>:<small className="facet-no-data">Нет заполненных значений</small>}
+  </div>{showLimits&&<div className="skp-range-limits"><span>{min.toLocaleString('ru')}</span><span>{max.toLocaleString('ru')}</span></div>}</>:<small className="facet-no-data">Нет заполненных значений</small>}
   <div className="facet-range skp-range-inputs">
    <label><span>От</span><input type="number" step="any" min="0" aria-label={label+' от'} placeholder={valid.length?String(min):'От'} value={value.min||''} onChange={e=>onChange({...value,min:e.target.value})}/></label>
    <label><span>До</span><input type="number" step="any" min="0" aria-label={label+' до'} placeholder={valid.length?String(max):'До'} value={value.max||''} onChange={e=>onChange({...value,max:e.target.value})}/></label>
