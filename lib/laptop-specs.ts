@@ -62,6 +62,12 @@ export const laptopFieldGroups:{title:string;fields:Field[]}[]=[
  * remain editable and are preserved when editing existing products.
  */
 export const laptopFieldChoices:Record<string,readonly string[]>={
+ diagonal:['13.3','13.4','14','14.5','15','15.6','16','16.1','17','17.3','18'],
+ refresh:['60','90','120','144','165','180','240','300','360'],
+ capacity:['8','16','24','32','48','64','96','128'],
+ driveCapacity:['256','512','1000','1024','2000','2048','4000','4096'],
+ gpuPowerWatts:['35','45','50','60','65','75','80','90','95','100','105','115','120','125','140','150','175'],
+ brightness:['250','300','350','400','500','600','1000'],
  aspectRatio:['16:9','16:10','3:2','3:4'],
  resolution:['1920 × 1080','1920 × 1200','2560 × 1440','2560 × 1600','2880 × 1800','3200 × 2000','3840 × 2160'],
  panel:['IPS','IPS-level','VA','TN','OLED','Mini-LED','QD-OLED'],
