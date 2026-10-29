@@ -345,7 +345,7 @@ export function fieldsForProduct(product:Product):Field[]{
  return fields.filter(field=>!field.chip||field.chip===chip);
 }
 export const categoryFields:Record<string,Field[]>={
- cpu:[f('socket','Сокет'),f('memory','Тип памяти'),f('cores','Ядра','шт.'),f('threads','Потоки','шт.'),f('l3','Кэш L3','МБ'),f('frequency','Базовая частота','ГГц'),f('boost','Макс. частота Boost','ГГц'),f('architecture','Архитектура'),f('watts','Мощность','Вт'),f('graphics','Встроенная графика'),f('package','Комплектация')],
+ cpu:[f('cpuModel','Модель процессора'),f('process','Техпроцесс ядер'),f('l2','Кэш L2','МБ'),f('pcieVersion','Версия PCIe'),f('pCores','P-ядра','шт.'),f('eCores','E-ядра','шт.'),f('eFrequency','Базовая частота E-ядер','ГГц'),f('eBoost','Макс. частота E-ядер','ГГц'),f('maxTurboPower','Макс. мощность Turbo','Вт'),f('socket','Сокет'),f('memory','Тип памяти'),f('cores','Ядра','шт.'),f('threads','Потоки','шт.'),f('l3','Кэш L3','МБ'),f('frequency','Базовая частота','ГГц'),f('boost','Макс. частота Boost','ГГц'),f('architecture','Архитектура'),f('watts','Мощность','Вт'),f('graphics','Встроенная графика'),f('package','Комплектация')],
  motherboard:[
   f('socket','Сокет'),f('chipset','Чипсет'),f('memory','Тип памяти'),f('form','Форм-фактор'),
   f('powerPhases','Фазы питания процессора (VRM)','шт.'),
