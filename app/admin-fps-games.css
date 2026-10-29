@@ -45,3 +45,15 @@
  .skp-admin-fps-game-fields input[type="text"]{height:34px;font-size:11px}
  .skp-admin-fps-header>svg{display:none}
 }
+
+.skp-admin-fps-upload{position:relative;display:inline-flex;align-items:center;justify-content:center;
+ gap:8px;width:max-content;max-width:100%;min-height:38px;padding:9px 14px;border:1px solid #434b4d;
+ border-radius:8px;background:#181e20;color:#f0f3f3;font-size:12px;font-weight:750;cursor:pointer}
+.skp-admin-fps-upload:hover{border-color:#ffe500;color:#ffe500}
+.skp-admin-fps-upload:focus-within{outline:2px solid #ffe500;outline-offset:2px}
+.skp-admin-fps-upload:has(input:disabled){opacity:.55;cursor:not-allowed}
+.skp-admin-fps-upload input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.skp-admin-fps-success{border:1px solid #347757;border-radius:8px;background:#10271d;
+ color:#b1e6c4;padding:12px;font-size:12px}
+.skp-admin-fps-spin{animation:skp-admin-fps-spin .9s linear infinite}
+@keyframes skp-admin-fps-spin{to{transform:rotate(360deg)}}
