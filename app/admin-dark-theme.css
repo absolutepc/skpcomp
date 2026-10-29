@@ -366,3 +366,90 @@ main.skp-admin-workspace{
   height:70px;
  }
 }
+
+
+/* Mobile admin: restore SKP's true black surfaces and the original
+ * header behavior. The graphite theme added an always-visible search
+ * wrapper after the mobile display:none rule, which put the centered
+ * logo directly on top of the search field in Safari. */
+@media(max-width:700px){
+ html:has(.skp-admin-workspace),
+ body:has(.skp-admin-workspace){
+  background:#000;
+ }
+ main.skp-admin-workspace{
+  --skp-admin-bg:#000;
+  --skp-admin-panel:#0e0e0e;
+  --skp-admin-card:#101010;
+  --skp-admin-field:#0b0b0b;
+  --skp-admin-border:#292929;
+  background:#000;
+ }
+ .skp-admin-workspace .skp-admin-layout,
+ .skp-admin-workspace .skp-admin-work,
+ .skp-admin-workspace .skp-admin-main{
+  background:#000;
+ }
+ .skp-admin-workspace .skp-admin-topbar{
+  background:#000;
+  border-bottom:1px solid #242424;
+ }
+ .skp-admin-workspace .skp-admin-sidebar{
+  background:#000;
+  border-right:1px solid #292929;
+ }
+ .skp-admin-workspace .skp-admin-brand,
+ .skp-admin-workspace .skp-admin-mobile-logo{
+  background:#000;
+ }
+ .skp-admin-workspace .skp-admin-mobile-logo img{
+  mix-blend-mode:screen;
+ }
+ /* This stronger selector overrides the general dark-theme display:flex.
+    Search is a separate popover below the header, not a second header row. */
+ .skp-admin-workspace .skp-admin-topbar > .skp-admin-global-search:not(.mobile-expanded){
+  display:none;
+ }
+ .skp-admin-workspace .skp-admin-topbar > .skp-admin-global-search.mobile-expanded{
+  display:flex;
+  top:67px;
+  left:12px;
+  right:12px;
+  z-index:35;
+  background:#0b0b0b;
+  border:1px solid #303030;
+  color:#eeeeee;
+ }
+ /* The overlay menu should not reveal another copy of the logo beneath
+    its dark scrim. The sidebar's own logo stays visible in the menu. */
+ .skp-admin-workspace .menu-open .skp-admin-mobile-logo{
+  visibility:hidden;
+ }
+ .skp-admin-workspace .skp-admin-card,
+ .skp-admin-workspace .skp-admin-stat,
+ .skp-admin-workspace .skp-admin-information,
+ .skp-admin-workspace .skp-admin-hero,
+ .skp-admin-workspace .skp-admin-orders,
+ .skp-admin-workspace .skp-admin-reviews,
+ .skp-admin-workspace .skp-brands-list,
+ .skp-admin-workspace .skp-brands-editor,
+ .skp-admin-workspace .skp-admin-mobile-product{
+  background:#101010;
+  border-color:#292929;
+ }
+ .skp-admin-workspace .skp-brands-search,
+ .skp-admin-workspace .skp-admin-local-search,
+ .skp-admin-workspace .skp-admin-category-picker{
+  background:#101010;
+ }
+ .skp-admin-workspace .skp-admin-menu-close{
+  background:#0d0d0d;
+  border-color:#303030;
+ }
+ .skp-admin-workspace input:not([type=checkbox]):not([type=radio]):not([type=range]),
+ .skp-admin-workspace select,
+ .skp-admin-workspace textarea{
+  background:#0e0e0e;
+  border-color:#303030;
+ }
+}
