@@ -25,6 +25,7 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
 
  const selection={facets,ranges,min,max,stock,query};
  const candidates=(key:string)=>filterCandidates(base,selection,key);
+ const priceValues=candidates('price').map(p=>p.price).filter(price=>price>0);
  const shown=filterCandidates(base,selection);
  if(sort!=='popular')shown.sort((a,b)=>sort==='low'?a.price-b.price:sort==='high'?b.price-a.price:a.name.localeCompare(b.name,'ru'));
  const count=Object.values(facets).reduce((s,a)=>s+a.length,0)+Object.values(ranges).filter(r=>r.min||r.max).length+Number(!!min||!!max)+Number(stock);
@@ -32,13 +33,14 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  const link=(id:string,label:string,active:boolean)=><a key={id} href={'/catalog/'+id} className={active?'selected':''} aria-current={active?'page':undefined} onClick={e=>{e.preventDefault();nav('/catalog/'+id)}}>{label}</a>;
  return <section className="catalog-page"><div className="breadcrumb">SKP / Каталог{subdivisions?' / '+groups[parent]:''}</div><h1>{components[category]||peripherals[category]||groups[category]||'Каталог'}</h1><div className="catalog-tabs">{Object.entries(groups).map(([id,label])=>link(id,label,parent===id))}</div>{subdivisions&&<nav className="catalog-subcategories" aria-label="Подразделы каталога">{[[parent,'Все категории'],...Object.entries(subdivisions)].map(([id,label])=>{const Icon=categoryIcons[id]||LayoutGrid;return <a key={id} href={'/catalog/'+id} className={category===id?'selected':''} aria-current={category===id?'page':undefined} onClick={e=>{e.preventDefault();nav('/catalog/'+id)}}><span className="subcategory-icon"><Icon size={27} strokeWidth={1.5} aria-hidden="true"/></span><span>{label}</span></a>})}</nav>}
  <div className="catalog-toolbar"><div className="search"><Search size={18}/><input id="search" aria-label="Поиск товаров" placeholder="Поиск в разделе" value={query} onChange={e=>setQuery(e.target.value)}/></div><select aria-label="Сортировка товаров" value={sort} onChange={e=>setSort(e.target.value)}><option value="popular">По умолчанию</option><option value="low">Сначала дешевле</option><option value="high">Сначала дороже</option><option value="name">По названию</option></select><button className="catalog-filter-toggle button outline" aria-expanded={open} aria-controls="category-filters" onClick={()=>setOpen(!open)}><SlidersHorizontal size={17}/> Фильтры {count>0&&`(${count})`}</button></div>
- <div className="catalog-layout"><aside id="category-filters" className={'catalog-facets'+(open?' is-open':'')}><div className="facet-title"><h2>Фильтры</h2><button onClick={reset}>Сбросить</button></div><fieldset><legend>Цена, ₽</legend><CatalogRange showLimits={false} label="Цена" values={candidates('price').map(p=>p.price).filter(price=>price>0)} value={{min,max}} onChange={value=>{setMin(value.min||'');setMax(value.max||'')}}/></fieldset>
+ <div className="catalog-layout"><aside id="category-filters" className={'catalog-facets'+(open?' is-open':'')}><div className="facet-title"><h2>Фильтры</h2><button onClick={reset}>Сбросить</button></div>{(new Set(priceValues).size>1||min||max)&&<fieldset><legend>Цена, ₽</legend><CatalogRange showLimits={false} label="Цена" values={priceValues} value={{min,max}} onChange={value=>{setMin(value.min||'');setMax(value.max||'')}}/></fieldset>}
  {visibleFields.map(field=>{
  const availableProducts=candidates(field.key);
  const availableOptions=Array.from(new Set(availableProducts.flatMap(p=>splitValues(specValue(p,field)))));
  const selected=facets[field.key]||[];
  const activeRange=ranges[field.key];
- if(field.key!=='brand'&&!availableOptions.length&&!selected.length&&!activeRange?.min&&!activeRange?.max)return null;
+ const distinctCount=field.numeric?new Set(availableOptions.map(v=>Number(v.replace(',','.'))).filter(Number.isFinite)).size:availableOptions.length;
+ if(distinctCount<=1&&!selected.length&&!activeRange?.min&&!activeRange?.max)return field.key==='brand'?<label key="stock" className="facet-checkbox"><input type="checkbox" checked={stock} onChange={e=>setStock(e.target.checked)}/> Только в наличии</label>:null;
  const options=Array.from(new Set([...(field.key==='brand'?base.flatMap(p=>splitValues(specValue(p,field))):availableOptions),...selected])).sort((a,b)=>a.localeCompare(b,'ru',{numeric:true}));
  const displayedOptions=field.key==='brand'&&!allBrands?options.filter((option,index)=>index<6||(facets.brand||[]).includes(option)):options;
  const range=ranges[field.key]||{};
