@@ -1,4 +1,5 @@
 import type {Product} from './seed';
+import {isProductMediaKey} from './product-media-path';
 
 // Image ordering is per product ID. Each colour variant is a separate product.
 export const MAX_GALLERY_IMAGES=16;
@@ -10,7 +11,8 @@ export function updateProductGallery<T extends Product>(product:T,images:string[
  const unique=[...new Set(images.filter(Boolean))].slice(0,MAX_GALLERY_IMAGES);
  return {...product,image:unique[0]||'',gallery:unique.slice(1)};
 }
-export const MEDIA_PATH=/^\/api\/media\?key=products\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.(?:webp|png)$/;
+export const MEDIA_PATH=/^\/api\/media\?key=[a-zA-Z0-9_/-]+\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.(?:webp|png)$/;
 export function isProductImageUrl(url:string):boolean{
- return url===''||/^https:\/\//.test(url)||/^\/products\/(?:cpu|headphones)\/[a-z0-9-]+\.svg$/.test(url)||/^\/products\/photos\/[a-z0-9-]+\.webp$/.test(url)||MEDIA_PATH.test(url);
+ if(url.startsWith('/api/media?key='))return MEDIA_PATH.test(url)&&isProductMediaKey(url.slice('/api/media?key='.length));
+ return url===''||/^https:\/\//.test(url)||/^\/products\/(?:cpu|headphones)\/[a-z0-9-]+\.svg$/.test(url)||/^\/products\/photos\/[a-z0-9-]+\.webp$/.test(url);
 }
