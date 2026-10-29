@@ -3,6 +3,7 @@ import {useState,type ReactNode} from 'react';
 import {LayoutDashboard,ClipboardList,ContactRound,Images,MessageSquareQuote,Monitor,Package,Laptop,LogOut,ArrowUpRight,Menu,Search,X,Gamepad2,UserRound,Tags} from 'lucide-react';
 import './admin-sidebar.css';
 import './admin-mobile.css';
+import './admin-dark-theme.css';
 export const ADMIN_SECTIONS=[
  {id:'dashboard',label:'Главная'},
  {id:'products',label:'Товары'},
