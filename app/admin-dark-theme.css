@@ -246,6 +246,12 @@ main.skp-admin-workspace{
  font-size:13px;
  line-height:normal;
 }
+.skp-admin-workspace .skp-brands-search button{
+ display:grid;place-items:center;flex:0 0 auto;
+ width:27px;height:27px;padding:0;border:0;border-radius:6px;
+ background:transparent;color:#aeb8b9;
+}
+.skp-admin-workspace .skp-brands-search button:hover{background:#2a3132;color:#ffe500}
 .skp-admin-workspace .skp-brands-search input[type="search"]::-webkit-search-decoration,
 .skp-admin-workspace .skp-brands-search input[type="search"]::-webkit-search-results-button,
 .skp-admin-workspace .skp-brands-search input[type="search"]::-webkit-search-results-decoration{
