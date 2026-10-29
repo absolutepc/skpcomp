@@ -17,7 +17,7 @@ const intelSource='https://www.intel.com/content/www/us/en/support/articles/0000
 const nv=(model:string,source:string,vrams:string[],cuda:number,bus:number,gen:string):LaptopGpuPreset=>({
  name:'GeForce RTX '+model+' Laptop GPU',source,
  specs:{gpuVram:vrams.length===1?vrams[0]:'',gpuMemoryType:gen==='Blackwell'?'GDDR7':'GDDR6',
-  gpuMemoryBus:String(bus),gpuCudaCores:String(cuda),gpuArchitecture:gen},
+  gpuMemoryBus:bus?String(bus):'',gpuCudaCores:cuda?String(cuda):'',gpuArchitecture:gen},
  ...(vrams.length>1?{vramOptions:vrams}:{})
 });
 const rx=(name:string,vram:number,units:number):LaptopGpuPreset=>({
@@ -44,7 +44,7 @@ export const laptopGpuPresets:readonly LaptopGpuPreset[]=[
  nv('4070',nvidia40,['8'],4608,128,'Ada Lovelace'),
  nv('4080',nvidia40,['12'],7424,192,'Ada Lovelace'),
  nv('4090',nvidia40,['16'],9728,256,'Ada Lovelace'),
- nv('3050',nvidia30,['4','6'],2048,128,'Ampere'),
+ nv('3050',nvidia30,['4','6'],0,0,'Ampere'),
  nv('3060',nvidia30,['6'],3840,192,'Ampere'),
  nv('3070',nvidia30,['8'],5120,256,'Ampere'),
  nv('3070 Ti',nvidia30,['8'],5888,256,'Ampere'),
