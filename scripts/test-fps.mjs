@@ -89,10 +89,14 @@ assert.deepEqual(Array.from(prioritizeFpsRows(fsrRows,{rayTracing:false,upscalin
    that the standalone FPS panel be removed from the configurator's bottom. */
 const shop=readFileSync(new URL('../app/shop.tsx',import.meta.url),'utf8');
 const builds=readFileSync(new URL('../app/build-pages.tsx',import.meta.url),'utf8');
-assert.match(shop,/product\.category==='pc'&&<GamingFps key=\{product\.id\} product=\{product\} games=\{data\.fpsGames\} hardware=\{fromReadyPC\(product\)\} inlineAction\/>/,
- 'FPS calculator receives the active PC image and specifications');
-assert.match(shop,/product\.category==='laptops'&&<GamingFps key=\{product\.id\} product=\{product\} games=\{data\.fpsGames\} hardware=\{fromLaptop\(product\)\} inlineAction\/>/,
- 'FPS calculator receives the active laptop image and specifications');
+const detailPage=readFileSync(new URL('../app/product-detail-page.tsx',import.meta.url),'utf8');
+const readyMobile=readFileSync(new URL('../app/ready-pc-mobile-detail.tsx',import.meta.url),'utf8');
+assert.match(detailPage,/p\.category==='pc'&&<>\s*<GamingFps product=\{p\} games=\{data\.fpsGames\} hardware=\{fromReadyPC\(p\)\} inlineAction\/>/,
+ 'Ready PC detail page passes active product and hardware to FPS calculator');
+assert.match(detailPage,/p\.category==='laptops'&&<GamingFps product=\{p\} games=\{data\.fpsGames\} hardware=\{fromLaptop\(p\)\} inlineAction\/>/,
+ 'Laptop detail page passes active product and hardware to FPS calculator');
+assert.match(readyMobile,/<GamingFps key=\{product\.id\} product=\{product\} games=\{games\} hardware=\{fromReadyPC\(product\)\} inlineAction\/>/,
+ 'Mobile ready-PC page retains the FPS calculator');
 assert.doesNotMatch(builds,/<GamingFps hardware=\{fromConfigurator\(selected,data\.products\)\}\/>/,
  'Standalone FPS panel stays removed from the configurator');
 assert.doesNotMatch(builds,/<GamingFps hardware=\{fromReadyPC\(p\)\} compact\/>/,
