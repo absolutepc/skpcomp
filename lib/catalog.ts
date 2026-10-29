@@ -338,6 +338,16 @@ export const monitorFieldGroups:{title:string;fields:Field[]}[]=[
   f('includedCables','Кабели и комплект поставки')
  ]}
 ];
+/**
+ * Editing can legitimately store more values than the visible filter fields:
+ * presets, colors, memory bandwidth, brand series and future extensions.
+ * A fixed 80-key cap blocked fully populated monitors (87 public fields).
+ */
+export function maxProductSpecFields(category:string):number{
+ const count=categoryFields[category]?.length??0;
+ return Math.min(160,Math.max(80,count+20));
+}
+
 export function fieldsForProduct(product:Product):Field[]{
  const fields=categoryFields[product.category]||[];
  if(product.category!=='gpu')return fields;
