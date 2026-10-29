@@ -42,5 +42,10 @@ jobs:
           pnpm test:categories
           node scripts/test-product-brands.mjs
           node scripts/test-comparison.mjs
+          node scripts/test-color-variant.mjs
+          node scripts/test-gpu-presets.mjs
+          node scripts/test-admin-cookie.mjs
+          node scripts/test-popular-products.mjs
+          node scripts/test-site-audit.mjs
       - name: Production build
         run: pnpm build
