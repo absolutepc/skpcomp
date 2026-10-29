@@ -76,6 +76,10 @@
  .skp-pdp-hero{align-items:start}
  .skp-pdp-hero>.skp-product-gallery{align-items:start;align-self:start}
  .skp-pdp-hero .skp-gallery-stage{height:360px;min-height:360px;align-self:start}
+ /* Match the gallery height and fit five complete thumbnails without clipping the last one. */
+ .skp-pdp-hero .skp-gallery-thumbnails{height:360px;max-height:360px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+ .skp-pdp-hero .skp-gallery-thumbnails::-webkit-scrollbar{display:none}
+ .skp-pdp-hero .skp-gallery-thumbnails button{box-sizing:border-box;height:64px;aspect-ratio:auto}
  .skp-pdp-hero .skp-gallery-zoom-trigger{height:100%;min-height:0}
  .skp-pdp-hero .skp-gallery-zoom-trigger img{height:100%;max-height:100%}
  .skp-pdp-info{display:flex;flex-direction:column;min-height:360px}
@@ -88,6 +92,10 @@
  .skp-pdp-variants,.skp-pdp-variants>div{height:100%;min-height:0;align-items:center}
  .skp-pdp-variants a{height:30px;min-height:30px;box-sizing:border-box;display:inline-flex;align-items:center}
  .skp-pdp-services{margin-top:auto;padding-top:12px}
+}
+/* The narrower 50px film on tablets fits seven complete thumbnails. */
+@media(min-width:701px) and (max-width:1000px){
+ .skp-pdp-hero .skp-gallery-thumbnails button{height:44px}
 }
 @media(max-width:700px){
  .skp-pdp-variant-slot{margin-top:10px}
