@@ -1,5 +1,6 @@
 'use client';
 import {useState} from 'react';
+import {filterCandidates} from '../lib/catalog-filter-options';
 import CatalogRange from './catalog-range';
 import {catalogFilterOrder} from '../lib/catalog-filter-order';
 import './catalog-filters.css';
@@ -22,24 +23,31 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
   (field.key==='brand'||base.some(product=>specValue(product,field).trim()!=='')))
   .sort((a,b)=>rank(a.key)-rank(b.key));
 
- const shown=base.filter(p=>(p.name+' '+p.description+' '+p.brand).toLocaleLowerCase('ru').includes(query.trim().toLocaleLowerCase('ru'))&&(!min||p.price>=Number(min))&&(!max||p.price<=Number(max))&&(!stock||p.stock)&&matchesFilters(p,facets,ranges));
+ const selection={facets,ranges,min,max,stock,query};
+ const candidates=(key:string)=>filterCandidates(base,selection,key);
+ const shown=filterCandidates(base,selection);
  if(sort!=='popular')shown.sort((a,b)=>sort==='low'?a.price-b.price:sort==='high'?b.price-a.price:a.name.localeCompare(b.name,'ru'));
  const count=Object.values(facets).reduce((s,a)=>s+a.length,0)+Object.values(ranges).filter(r=>r.min||r.max).length+Number(!!min||!!max)+Number(stock);
  function reset(){setFacets({});setRanges({});setMin('');setMax('');setStock(false);setQuery('');setAllBrands(false)}
  const link=(id:string,label:string,active:boolean)=><a key={id} href={'/catalog/'+id} className={active?'selected':''} aria-current={active?'page':undefined} onClick={e=>{e.preventDefault();nav('/catalog/'+id)}}>{label}</a>;
  return <section className="catalog-page"><div className="breadcrumb">SKP / Каталог{subdivisions?' / '+groups[parent]:''}</div><h1>{components[category]||peripherals[category]||groups[category]||'Каталог'}</h1><div className="catalog-tabs">{Object.entries(groups).map(([id,label])=>link(id,label,parent===id))}</div>{subdivisions&&<nav className="catalog-subcategories" aria-label="Подразделы каталога">{[[parent,'Все категории'],...Object.entries(subdivisions)].map(([id,label])=>{const Icon=categoryIcons[id]||LayoutGrid;return <a key={id} href={'/catalog/'+id} className={category===id?'selected':''} aria-current={category===id?'page':undefined} onClick={e=>{e.preventDefault();nav('/catalog/'+id)}}><span className="subcategory-icon"><Icon size={27} strokeWidth={1.5} aria-hidden="true"/></span><span>{label}</span></a>})}</nav>}
  <div className="catalog-toolbar"><div className="search"><Search size={18}/><input id="search" aria-label="Поиск товаров" placeholder="Поиск в разделе" value={query} onChange={e=>setQuery(e.target.value)}/></div><select aria-label="Сортировка товаров" value={sort} onChange={e=>setSort(e.target.value)}><option value="popular">По умолчанию</option><option value="low">Сначала дешевле</option><option value="high">Сначала дороже</option><option value="name">По названию</option></select><button className="catalog-filter-toggle button outline" aria-expanded={open} aria-controls="category-filters" onClick={()=>setOpen(!open)}><SlidersHorizontal size={17}/> Фильтры {count>0&&`(${count})`}</button></div>
- <div className="catalog-layout"><aside id="category-filters" className={'catalog-facets'+(open?' is-open':'')}><div className="facet-title"><h2>Фильтры</h2><button onClick={reset}>Сбросить</button></div><fieldset><legend>Цена, ₽</legend><CatalogRange showLimits={false} label="Цена" values={base.map(p=>p.price).filter(price=>price>0)} value={{min,max}} onChange={value=>{setMin(value.min||'');setMax(value.max||'')}}/></fieldset>
+ <div className="catalog-layout"><aside id="category-filters" className={'catalog-facets'+(open?' is-open':'')}><div className="facet-title"><h2>Фильтры</h2><button onClick={reset}>Сбросить</button></div><fieldset><legend>Цена, ₽</legend><CatalogRange showLimits={false} label="Цена" values={candidates('price').map(p=>p.price).filter(price=>price>0)} value={{min,max}} onChange={value=>{setMin(value.min||'');setMax(value.max||'')}}/></fieldset>
  {visibleFields.map(field=>{
- const options=Array.from(new Set(base.flatMap(p=>splitValues(specValue(p,field))))).sort((a,b)=>a.localeCompare(b,'ru',{numeric:true}));
+ const availableProducts=candidates(field.key);
+ const availableOptions=Array.from(new Set(availableProducts.flatMap(p=>splitValues(specValue(p,field)))));
+ const selected=facets[field.key]||[];
+ const activeRange=ranges[field.key];
+ if(field.key!=='brand'&&!availableOptions.length&&!selected.length&&!activeRange?.min&&!activeRange?.max)return null;
+ const options=Array.from(new Set([...(field.key==='brand'?base.flatMap(p=>splitValues(specValue(p,field))):availableOptions),...selected])).sort((a,b)=>a.localeCompare(b,'ru',{numeric:true}));
  const displayedOptions=field.key==='brand'&&!allBrands?options.filter((option,index)=>index<6||(facets.brand||[]).includes(option)):options;
  const range=ranges[field.key]||{};
  const toggle=(option:string)=>setFacets({...facets,[field.key]:(facets[field.key]||[]).includes(option)?facets[field.key].filter(x=>x!==option):[...(facets[field.key]||[]),option]});
  const inline=!field.numeric;
  return <fieldset key={field.key}><legend>{field.label}{field.unit?`, ${field.unit}`:''}</legend>
- {field.numeric?<CatalogRange label={field.label} values={base.map(p=>specValue(p,field)).filter(v=>v.trim()!=='').map(v=>Number(v.replace(',','.')))} value={range} onChange={value=>setRanges({...ranges,[field.key]:value})}/>
+ {field.numeric?<CatalogRange label={field.label} values={availableProducts.map(p=>specValue(p,field)).filter(v=>v.trim()!=='').map(v=>Number(v.replace(',','.')))} value={range} onChange={value=>setRanges({...ranges,[field.key]:value})}/>
  :options.length?<div id={field.key==='brand'?'catalog-brand-options':undefined} className={inline?'skp-facet-buttons':'facet-values'}>{displayedOptions.map(option=>inline?
- <button type="button" key={option} aria-pressed={(facets[field.key]||[]).includes(option)} onClick={()=>toggle(option)}>{option}</button>:
+ <button type="button" key={option} disabled={!selected.includes(option)&&(!availableOptions.includes(option)||(field.key!=='brand'&&availableOptions.length===1))} aria-pressed={(facets[field.key]||[]).includes(option)} onClick={()=>toggle(option)}>{option}</button>:
  <label className="facet-checkbox" key={option}><input type="checkbox" checked={(facets[field.key]||[]).includes(option)} onChange={()=>toggle(option)}/><span>{option}</span><small>{base.filter(p=>splitValues(specValue(p,field)).includes(option)).length}</small></label>)}</div>
  :<small className="facet-no-data">Нет заполненных значений</small>}
  {field.key==='brand'&&<>{options.length>0&&<button type="button" className="skp-all-brands" aria-expanded={allBrands} aria-controls="catalog-brand-options" onClick={()=>setAllBrands(!allBrands)}>{allBrands?'Свернуть бренды':`Все бренды (${options.length})`}</button>}<label className="facet-checkbox"><input type="checkbox" checked={stock} onChange={e=>setStock(e.target.checked)}/> Только в наличии</label></>}

@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {resolve,dirname} from 'node:path';
+import {runInNewContext} from 'node:vm';
+import ts from 'typescript';
+const cache=new Map();
+function load(path){
+ path=resolve(path);if(cache.has(path))return cache.get(path);
+ const exports={};cache.set(path,exports);
+ const {outputText}=ts.transpileModule(readFileSync(path,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}});
+ runInNewContext(outputText,{exports,require:id=>load(resolve(dirname(path),id+'.ts')),URL,console});return exports;
+}
+const {filterCandidates}=load('lib/catalog-filter-options.ts');
+const cpu=(id,brand,socket,cores,l3,frequency,boost,memory,architecture,extra={})=>({id,name:id,description:'',category:'cpu',brand,stock:true,price:20000,specs:{socket,cores,l3,frequency,boost,memory,architecture,...extra}});
+const products=[cpu('amd6','AMD','AM5','6','32','3.7','5.0','DDR5','Zen 4'),cpu('amd8','AMD','AM5','8','96','4.2','5.2','DDR5','Zen 5'),cpu('intel','Intel','LGA1700','10','20','2.5','4.7','DDR4 / DDR5','Raptor Lake',{pCores:'6',eCores:'4'})];
+const selected={facets:{brand:['AMD'],socket:['AM5']},ranges:{},min:'',max:'',stock:false,query:''};
+const values=(key,state=selected)=>Array.from(new Set(filterCandidates(products,state,key).map(p=>p.specs[key]).filter(Boolean)));
+assert.deepEqual(values('socket'),['AM5']);assert.deepEqual(values('memory'),['DDR5']);
+assert.deepEqual(values('cores'),['6','8']);assert.deepEqual(values('l3'),['32','96']);
+assert.deepEqual(values('frequency'),['3.7','4.2']);assert.deepEqual(values('boost'),['5.0','5.2']);
+assert.deepEqual(values('architecture'),['Zen 4','Zen 5']);assert.deepEqual(values('eCores'),[]);
+const eight={...selected,ranges:{cores:{min:'8'}}};
+assert.deepEqual(Array.from(filterCandidates(products,eight),p=>p.id),['amd8']);
+assert.deepEqual(values('cores',eight),['6','8'],'Current slider keeps its full available extent');
+assert.deepEqual(values('l3',eight),['96'],'Other sliders reflect core selection');
+assert.equal(filterCandidates(products,{...selected,min:'30000'}).length,0);
+assert.equal(filterCandidates(products,{...selected,min:'30000'},'price').length,2);
+assert.equal(filterCandidates(products,{...selected,facets:{brand:['AMD','Intel']}}).length,3,'OR within a field');
+assert.equal(filterCandidates(products,{...selected,query:'amd6'}).length,1);
+assert.equal(filterCandidates(products.map(p=>({...p,stock:false})),{...selected,stock:true}).length,0);
+console.log('Dependent catalog filters: passed');

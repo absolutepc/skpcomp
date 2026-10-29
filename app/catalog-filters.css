@@ -22,3 +22,5 @@
 .catalog-facets .skp-all-brands:focus-visible{outline:2px solid #ffe500;outline-offset:2px;border-radius:4px}
 .catalog-facets #catalog-brand-options{max-height:320px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#555 #111;padding:3px}
 .catalog-facets #catalog-brand-options~.facet-checkbox{margin-top:12px;min-height:44px}
+
+.catalog-facets .skp-facet-buttons button:disabled{opacity:.5;cursor:default}
