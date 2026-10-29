@@ -77,7 +77,7 @@ assert(matchesFilters(nvidia,{cudaCores:['6144']},{}));
 assert(!matchesFilters(amd,{cudaCores:['6144']},{}),'AMD GPU must not pass a CUDA filter because of stale data');
 assert(!matchesFilters(intel,{}, {tensorCores:{min:'1'}}),'Intel GPU must not pass a Tensor filter');
 const gpuEditor=fs.readFileSync('app/shop.tsx','utf8');
-assert(gpuEditor.includes('gpuFieldGroups.map(group=>'),'Admin fields are shown in labeled groups');
+assert(gpuEditor.includes("editing.category==='gpu'?gpuFieldGroups:")&&gpuEditor.includes('.map(group=><section className="skp-technical-spec-group"'),'Admin fields are shown in labeled category groups');
 assert(gpuEditor.includes('field.chip===gpuChipBrand(editing)'),'Only relevant GPU field inputs are shown');
 const techSpec=load('app/product-specifications.tsx').default;
 const nvidiaHTML=renderToStaticMarkup(React.createElement(techSpec,{product:nvidia}));
