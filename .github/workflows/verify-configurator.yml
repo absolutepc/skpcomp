@@ -36,6 +36,7 @@ jobs:
           pnpm test:hero
           pnpm test:orders
           pnpm test:admin
+          node scripts/test-local-admin.mjs
           pnpm test:monitor
           pnpm test:logitech
           pnpm test:categories
