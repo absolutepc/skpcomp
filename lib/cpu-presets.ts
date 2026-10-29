@@ -11,7 +11,7 @@ import {canonicalBrand} from './product-brands';
  */
 export type CpuPreset={id:string;brand:'AMD'|'Intel';family:string;label:string;source:string;specs:Record<string,string>};
 const amdProduct=(series:string,model:string)=>'https://www.amd.com/en/products/processors/desktops/ryzen/'+series+'-series/amd-'+model.toLowerCase().replaceAll(' ','-')+'.html';
-const intelCoreComparison='https://www.intel.com/content/dam/support/us/en/documents/processors/Intel-Core-Desktop-Boxed-Processors-Comparison-Chart.pdf';
+const intelCoreComparison='https://www.intel.com/content/www/us/en/support/articles/000005505/processors.html';
 const intelUltraBrief='https://www.intel.com/content/www/us/en/products/docs/processors/core-ultra/core-ultra-desktop-processors-series-2-brief.html';
 
 type AmdCpu={model:string;series:'5000'|'7000'|'8000'|'9000';arch:string;cores:number;base:number;boost:number;l3:number;tdp:number;graphics?:string;source?:string};
