@@ -59,3 +59,18 @@
  .skp-admin-edit-backdrop .admin-build-extra-row .admin-build-extra-value{grid-column:1;grid-row:1}
  .skp-admin-edit-backdrop .admin-build-extra-row .admin-build-remove{grid-column:2;grid-row:1}
 }
+
+/* Component artwork should blend into the card, whether selected or empty. */
+.skp-admin-edit-backdrop .skp-build-part-art{border:0;border-radius:0;background:transparent}
+.skp-admin-edit-backdrop .skp-build-part-art img{border:0;border-radius:0}
+.skp-admin-edit-backdrop .skp-build-part-trigger:not(.is-selected):focus-visible{border-color:#354247;outline:2px solid #ffe500;outline-offset:2px}
+.skp-admin-edit-backdrop .skp-build-picker-option.incompatible,
+.skp-admin-edit-backdrop .skp-build-picker-option:disabled{opacity:.58;cursor:not-allowed;border-color:#374044;background:#101417}
+.skp-admin-edit-backdrop .skp-build-picker-option:disabled:hover{border-color:#374044;background:#101417}
+.skp-build-picker-conflict{display:block;color:#f9b4ad;font-size:10px;line-height:1.45;white-space:normal}
+@media(min-width:701px){
+ .skp-admin-edit-backdrop .skp-admin-edit-save{display:flex;align-items:center;gap:9px;margin:20px 0 10px}
+}
+@media(max-width:700px){
+ .skp-admin-edit-backdrop .skp-admin-edit-save{margin-top:18px}
+}
