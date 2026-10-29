@@ -19,7 +19,9 @@ export const buildComponentFields=[
 export type BuildExtraPart={name:string;value:string};
 
 export function getBuildRows(product:Pick<Product,'buildComponents'|'buildExtras'>):{key:string;label:string;value:string}[]{
- const standard=buildComponentFields.flatMap(field=>{
+ // OS is an admin-only build option, not a physical component in the
+ // public "Комплектация" gallery, mobile summary or ready-PC spec rows.
+ const standard=buildComponentFields.filter(field=>field.key!=='os').flatMap(field=>{
   const value=product.buildComponents?.[field.key]?.trim();
   return value?[{key:field.key,label:field.label,value}]:[];
  });
