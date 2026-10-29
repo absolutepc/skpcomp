@@ -141,7 +141,7 @@ export const cpuPresets:readonly CpuPreset[]=[
  core({sku:'i5-12500T',gen:'12',p:6,e:0,base:2,boost:4.4,l2:7.5,l3:18,power:35,turbo:74,graphics:'Intel UHD Graphics 770',skuId:96140}),
  core({sku:'i5-12600',gen:'12',p:6,e:0,base:3.3,boost:4.8,l2:7.5,l3:18,power:65,turbo:117,graphics:'Intel UHD Graphics 770',skuId:96149}),
  core({sku:'i5-12600T',gen:'12',p:6,e:0,base:2.1,boost:4.6,l2:7.5,l3:18,power:35,turbo:74,graphics:'Intel UHD Graphics 770',skuId:96150}),
- core({sku:'i5-12600K',gen:'12',p:6,e:4,base:3.7,boost:4.9,l2:9.5,l3:20,power:125,turbo:150,eBase:2.8,eTurbo:3.6,skuId:134589}),
+ core({sku:'i5-12600K',gen:'12',p:6,e:4,base:3.7,boost:4.9,l2:9.5,l3:20,power:125,turbo:150,eBase:2.8,eTurbo:3.6,graphics:'Intel UHD Graphics 770',skuId:134589}),
  core({sku:'i5-12600KF',gen:'12',p:6,e:4,base:3.7,boost:4.9,l2:9.5,l3:20,power:125,turbo:150,eBase:2.8,eTurbo:3.6,skuId:134590}),
  core({sku:'i7-12700',gen:'12',p:8,e:4,base:2.1,boost:4.9,pTurbo:4.8,l2:12,l3:25,power:65,turbo:180,eBase:1.6,eTurbo:3.6,skuId:134591}),
  core({sku:'i7-12700F',gen:'12',p:8,e:4,base:2.1,boost:4.9,pTurbo:4.8,l2:12,l3:25,power:65,turbo:180,eBase:1.6,eTurbo:3.6,skuId:134592}),
