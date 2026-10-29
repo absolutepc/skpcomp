@@ -39,3 +39,28 @@
 .skp-laptop-cpu-preset-actions a{font-size:11px;color:#c8d5df;text-decoration:underline;text-underline-offset:3px}
 .skp-laptop-cpu-preset-actions a:hover{color:#ffe500}
 .skp-admin-edit-backdrop .skp-laptop-cpu-no-data{margin:9px 0 0;color:#d7b98a;font-size:11px;line-height:1.55}
+
+/* Laptop editor layout: the site-wide `section { margin: 0 3.5%-5% }`
+   was shrinking CPU/GPU and grouped specs relative to the photo gallery. */
+.skp-admin-edit-backdrop .skp-laptop-editor{
+ width:100%;
+ max-width:100%;
+ min-width:0;
+ box-sizing:border-box;
+}
+.skp-admin-edit-backdrop .skp-laptop-editor > .skp-laptop-model-picker,
+.skp-admin-edit-backdrop .skp-laptop-editor > .skp-laptop-spec-section{
+ box-sizing:border-box;
+ width:100%;
+ max-width:100%;
+ min-width:0;
+ margin:0;
+}
+/* 4px bottom margin on the gallery is insufficient before the CPU notice.
+   Apply the extra space only when gallery and specs are stacked on desktop;
+   on mobile they are separate editor tabs. */
+@media(min-width:701px){
+ .skp-admin-edit-backdrop .skp-admin-laptop-gallery{
+  padding-bottom:20px;
+ }
+}
