@@ -1,10 +1,12 @@
 'use client';
 import {useState,type ReactNode} from 'react';
-import {ChevronRight,Heart,GitCompareArrows,ShoppingBag,Minus,Plus,MapPin,Truck,PackageCheck,CreditCard,Cpu,MemoryStick,Zap,Layers,Monitor} from 'lucide-react';
+import {ChevronRight,Share2,Heart,GitCompareArrows,ShoppingBag,Minus,Plus,MapPin,Truck,PackageCheck,CreditCard,Cpu,MemoryStick,Zap,Layers,Monitor} from 'lucide-react';
 import type {Product,Store} from '../lib/seed';
 import {components,peripherals,fieldsForProduct,specValue,fieldValue} from '../lib/catalog';
 import {sameCoolingGroup} from '../lib/cooling-options';
-import {fromLaptop} from '../lib/fps-estimate';
+import {getBuildRows,getReadyBuildSummary} from '../lib/build-components';
+import ReadyPcComponents from './ready-pc-components';
+import {fromReadyPC,fromLaptop} from '../lib/fps-estimate';
 import {STORE_ADDRESS} from './store-location';
 import ProductGallery from './product-gallery';
 import ProductReviews from './product-reviews';
@@ -19,23 +21,28 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
  const [quantity,setQuantity]=useState(1);
  const [tab,setTab]=useState<string>('specs');
  const [allSpecs,setAllSpecs]=useState(false);
- const allRows=fieldsForProduct(p).map(field=>({key:field.key,label:field.label+(field.unit?', '+field.unit:''),value:specValue(p,field)})).filter(row=>String(row.value??'').trim());
+ const specRows=fieldsForProduct(p).map(field=>({key:field.key,label:field.label+(field.unit?', '+field.unit:''),value:specValue(p,field)})).filter(row=>String(row.value??'').trim());
+ const buildRows=p.category==='pc'?getBuildRows(p):[];
+ const allRows=p.category==='pc'?(buildRows.length?buildRows:getReadyBuildSummary(p)):specRows;
+ const [shareNotice,setShareNotice]=useState('');
+ const share=async()=>{try{if(navigator.share)await navigator.share({title:p.name,url:location.href});else{await navigator.clipboard.writeText(location.href);setShareNotice('Ссылка скопирована')}}catch{setShareNotice('Не удалось поделиться ссылкой')}};
  // The monitor editor has detailed groups; keep the six most helpful basic specs
  // visible before the collapsed full list, without omitting any other attributes.
  const monitorMainSpecs=['diagonal','resolution','panel','refresh','response','hdr'];
  const rows=p.category==='monitor'
   ?[...allRows.filter(row=>monitorMainSpecs.includes(row.key)).sort((a,b)=>monitorMainSpecs.indexOf(a.key)-monitorMainSpecs.indexOf(b.key)),...allRows.filter(row=>!monitorMainSpecs.includes(row.key))]
   :allRows;
- const category=components[p.category]||peripherals[p.category]||({laptops:'Ноутбуки',furniture:'Компьютерная мебель',peripherals:'Периферия'} as Record<string,string>)[p.category]||'Каталог';
+ const category=components[p.category]||peripherals[p.category]||({pc:'Готовые ПК',laptops:'Ноутбуки',furniture:'Компьютерная мебель',peripherals:'Периферия'} as Record<string,string>)[p.category]||'Каталог';
+ const categoryHref=p.category==='pc'?'/pc':'/catalog/'+p.category;
  const variants=p.variantGroup?data.products.filter(v=>v.variantGroup===p.variantGroup):[];
  const related=data.products.filter(v=>v.category===p.category&&(p.category!=='cooler'||sameCoolingGroup(fieldValue(p,'coolingType'),fieldValue(v,'coolingType')))&&v.id!==p.id&&(!p.variantGroup||v.variantGroup!==p.variantGroup)).slice(0,4);
  const go=(path:string)=>(event:React.MouseEvent<HTMLAnchorElement>)=>{event.preventDefault();nav(path)};
- const preferred=p.category==='monitor'?['diagonal','resolution','panel','refresh','response']:p.category==='gpu'?['architecture','vram','videoMemory','interface','watts']:p.category==='cpu'?['cores','threads','socket','frequency','watts']:['capacity','memory','speed','interface','watts'];
+ const preferred=p.category==='pc'?['cpu','gpu','ram','ssd','motherboard']:p.category==='monitor'?['diagonal','resolution','panel','refresh','response']:p.category==='gpu'?['architecture','vram','videoMemory','interface','watts']:p.category==='cpu'?['cores','threads','socket','frequency','watts']:['capacity','memory','speed','interface','watts'];
  const highlights=[...rows.filter(row=>preferred.includes(row.key)),...rows.filter(row=>!preferred.includes(row.key))].slice(0,5);
  const icons=[Cpu,MemoryStick,Layers,Zap,Monitor];
  const description=()=> <section className="skp-pdp-description-card"><h2>Описание</h2><p>{p.description||'Описание скоро появится.'}</p>{highlights.length>0&&<div className="skp-pdp-highlights">{highlights.map((row,index)=>{const Icon=icons[index];return <div key={row.key}><Icon size={19}/><span><strong>{row.value}</strong><small>{row.label}</small></span></div>})}</div>}</section>;
  return <section className="skp-pdp">
-  <nav className="skp-pdp-breadcrumb" aria-label="Хлебные крошки"><a href="/" onClick={go('/')}>Главная</a><ChevronRight size={13}/><a href={'/catalog/'+p.category} onClick={go('/catalog/'+p.category)}>{category}</a>{p.brand&&<><ChevronRight size={13}/><span>{p.brand}</span></>}<ChevronRight size={13}/><span className="skp-pdp-crumb-name">{p.name}</span></nav>
+  <nav className="skp-pdp-breadcrumb" aria-label="Хлебные крошки"><a href="/" onClick={go('/')}>Главная</a><ChevronRight size={13}/><a href={categoryHref} onClick={go(categoryHref)}>{category}</a>{p.brand&&<><ChevronRight size={13}/><span>{p.brand}</span></>}<ChevronRight size={13}/><span className="skp-pdp-crumb-name">{p.name}</span></nav>
   <div className="skp-pdp-hero">
    <ProductGallery product={p} fallback={fallback} showCounter/>
    <div className="skp-pdp-info"><h1>{p.name}</h1><div className="skp-pdp-meta"><ProductBrandLogo product={p} brands={data.brands}/><ProductRatingSummary productId={p.id} onOpen={()=>{setTab('reviews');document.getElementById('skp-pdp-panel')?.scrollIntoView({behavior:'smooth'})}}/><span className="skp-pdp-code" title={"Код товара: "+p.id}>Код товара: {p.id}</span></div>
@@ -51,6 +58,7 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
      <button className="skp-pdp-icon" aria-label={favorites.includes(p.id)?'Убрать из избранного':'В избранное'} aria-pressed={favorites.includes(p.id)} onClick={()=>fav(p.id)}><Heart size={20} fill={favorites.includes(p.id)?'currentColor':'none'}/></button>
      <button className="skp-pdp-icon" aria-label={compared.includes(p.id)?'Убрать из сравнения':'Сравнить'} aria-pressed={compared.includes(p.id)} onClick={()=>compare(p)}><GitCompareArrows size={20}/></button>
     </div>
+    {p.category==='pc'&&<div className="skp-pdp-pc-actions"><GamingFps product={p} games={data.fpsGames} hardware={fromReadyPC(p)} inlineAction/><button type="button" className="button outline" onClick={()=>void share()}><Share2 size={18}/>Поделиться</button>{shareNotice&&<span role="status">{shareNotice}</span>}</div>}
     {p.category==='laptops'&&<GamingFps product={p} games={data.fpsGames} hardware={fromLaptop(p)} inlineAction/>}
     <div className="skp-pdp-services"><a href="/contacts" onClick={go('/contacts')}><Truck/><span>Доставка<small>Условия у менеджера</small></span></a><a href="/contacts" onClick={go('/contacts')}><PackageCheck/><span>Самовывоз<small>В магазине SKP</small></span></a><a href="/installments" onClick={go('/installments')}><CreditCard/><span>Рассрочка<small>До 12 месяцев, 4%/мес.</small></span></a></div>
    </div>
@@ -58,6 +66,7 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
   <div className="skp-pdp-tabs" role="tablist" aria-label="Информация о товаре">{tabs.map(([id,label])=><button key={id} id={'skp-pdp-tab-'+id} role="tab" tabIndex={tab===id?0:-1} onKeyDown={event=>{const index=tabs.findIndex(item=>item[0]===id);const next=event.key==='ArrowRight'?(index+1)%tabs.length:event.key==='ArrowLeft'?(index+tabs.length-1)%tabs.length:event.key==='Home'?0:event.key==='End'?tabs.length-1:-1;if(next>=0){event.preventDefault();setTab(tabs[next][0]);document.getElementById('skp-pdp-tab-'+tabs[next][0])?.focus()}}} aria-selected={tab===id} aria-controls="skp-pdp-panel" onClick={()=>setTab(id)}>{label}</button>)}</div>
   <div id="skp-pdp-panel" role="tabpanel" aria-labelledby={'skp-pdp-tab-'+tab}>
    {tab==='specs'&&<div className="skp-pdp-content"><div className="skp-pdp-specs"><h2>Основные характеристики</h2>{rows.length?<><dl className={allSpecs?'expanded':''}>{rows.map(row=><div key={row.key}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>{rows.length>6&&<button className={"skp-pdp-all-specs"+(rows.length<=16?' skp-pdp-mobile-specs':'')} onClick={()=>setAllSpecs(v=>!v)}>{allSpecs?'Свернуть':'Все характеристики'}<ChevronRight size={15}/></button>}</>:<p className="skp-pdp-muted">Характеристики уточняются.</p>}</div><div className="skp-pdp-side"><div className="skp-pdp-desktop-description">{description()}</div>{related.length>0&&<section className="skp-pdp-related"><h2>Похожие товары</h2><div>{related.map(card)}</div></section>}</div></div>}
+   {tab==='specs'&&p.category==='pc'&&<ReadyPcComponents product={p} catalog={data.products}/>}
    {tab==='description'&&description()}
    {tab==='reviews'&&<ProductReviews productId={p.id}/>}
   </div>
