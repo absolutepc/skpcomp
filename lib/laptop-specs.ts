@@ -11,7 +11,9 @@ export const laptopFieldGroups:{title:string;fields:Field[]}[]=[
   f('cpuThreads','Количество потоков CPU','шт.'),f('cpuBoost','Макс. частота CPU','ГГц'),
   {...f('cpuPowerWatts','TDP / базовая мощность CPU','Вт'),numeric:false},f('integratedGpu','Встроенная графика'),
   f('gpu','Дискретная видеокарта'),f('gpuVram','Видеопамять','ГБ'),
-  f('gpuMemoryType','Тип видеопамяти'),f('gpuPowerWatts','Мощность видеокарты (TGP с Dynamic Boost)','Вт'),
+  f('gpuMemoryType','Тип видеопамяти'),f('gpuMemoryBus','Шина видеопамяти','бит'),
+  f('gpuCudaCores','CUDA-ядра NVIDIA','шт.'),f('gpuComputeUnits','Вычислительные блоки GPU','шт.'),
+  f('gpuArchitecture','Архитектура GPU'),f('gpuPowerWatts','Мощность видеокарты (TGP с Dynamic Boost)','Вт'),
   f('muxSwitch','MUX Switch'),f('advancedOptimus','Advanced Optimus')
  ]},
  {title:'Экран и изображение',fields:[
