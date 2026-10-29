@@ -15,8 +15,10 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  const fields=[{key:'brand',label:'Бренд'},...(categoryFields[category]||[])];
  // More GPU attributes are supported in admin than every model has values for.
  // Avoid showing empty, unusable slider groups in the storefront.
- const visibleFields=category==='gpu'
-  ?fields.filter(field=>field.key==='brand'||base.some(product=>specValue(product,field).trim()!==''))
+ const laptopFilterKeys=['brand','cpu','gpu','capacity','memoryType','driveCapacity','diagonal','resolution','panel','refresh','gpuPowerWatts'];
+ const visibleFields=category==='gpu'||category==='laptops'
+  ?fields.filter(field=>(category!=='laptops'||laptopFilterKeys.includes(field.key))&&
+    (field.key==='brand'||base.some(product=>specValue(product,field).trim()!=='')))
   :fields;
  const shown=base.filter(p=>(p.name+' '+p.description+' '+p.brand).toLocaleLowerCase('ru').includes(query.trim().toLocaleLowerCase('ru'))&&(!min||p.price>=Number(min))&&(!max||p.price<=Number(max))&&(!stock||p.stock)&&matchesFilters(p,facets,ranges));
  if(sort!=='popular')shown.sort((a,b)=>sort==='low'?a.price-b.price:sort==='high'?b.price-a.price:a.name.localeCompare(b.name,'ru'));
