@@ -22,7 +22,7 @@ function amd(v:AmdCpu):CpuPreset{
   socket:legacy?'AM4':'AM5',memory:legacy?'DDR4':'DDR5',
   cores:String(v.cores),threads:String(v.cores*2),
   frequency:String(v.base),boost:String(v.boost),
-  l2:String(v.cores),l3:String(v.l3),watts:String(v.tdp),
+  l2:String(legacy?v.cores/2:v.cores),l3:String(v.l3),watts:String(v.tdp),
   graphics:v.graphics??(legacy||v.model.endsWith('F')?'Нет':'AMD Radeon Graphics'),
   pcieVersion:legacy||mobileDie?'4.0':'5.0',
   pCores:'',eCores:'',eFrequency:'',eBoost:'',maxTurboPower:''
