@@ -20,9 +20,13 @@ export default function AdminCpuPreset({product,onChange}:{product:Product;onCha
  <label>Семейство / поколение<select value={family} onChange={e=>{setFamily(e.target.value);setNotice('');if(!e.target.value)onChange(clearCpuPreset(product))}}><option value="">Заполнить вручную</option>{families.map(f=><option key={f}>{f}</option>)}</select></label>
  <label>Модель процессора<select disabled={!family} value={selectedId} onChange={e=>{if(e.target.value)apply(e.target.value);else{onChange(clearCpuPreset(product));setNotice('Ручное заполнение: текущие характеристики сохранены.')}}}><option value="">Выберите модель</option>{available.filter(p=>p.family===family).map(p=><option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
  </div>
- {selectedId&&<button className="skp-gpu-preset-apply" type="button" onClick={()=>apply(selectedId)}>Заполнить характеристики повторно</button>}
- <p>При выборе модели или повторном заполнении заменятся: модель CPU, архитектура, техпроцесс ядер, сокет, память, ядра и потоки, частоты, кэш L2/L3, PCIe, номинальная мощность и встроенная графика. Для Intel также подставятся P-/E-ядра и максимальная мощность Turbo.</p>
- <p>Название товара, цена, фотографии, описание и комплектация сохраняются. Базовая частота Intel указана для P-ядер. Тип памяти зависит также от материнской платы. Если модели нет в списке, заполните её вручную.</p>
+ {selectedId&&<div className="skp-cpu-preset-actions">
+  <button className="skp-gpu-preset-apply" type="button" onClick={()=>apply(selectedId)}>Заполнить характеристики повторно</button>
+  <a href={selected?.source} target="_blank" rel="noopener noreferrer">Официальные характеристики производителя ↗</a>
+ </div>}
+ <p>В справочнике {available.length} моделей {brand}: Intel Core i3/i5/i7/i9, Core Ultra 200S и AMD Ryzen 5000/7000/8000/9000. В списке только реальные настольные модели.</p>
+ <p>Автозаполнение задаёт сокет, архитектуру, техпроцесс, память, ядра, потоки, базовые и максимальные частоты, кэш L2/L3, PCIe, TDP и графику. У Intel дополнительно задаются P-/E-ядра, их частоты и максимальная мощность Turbo.</p>
+ <p>Название, цена, фото, описание и комплектация не меняются. Базовая частота Intel — для P-ядер; общая частота Turbo может отличаться от частоты P-ядер. Точный тип памяти зависит от материнской платы. Вы можете отредактировать значения вручную.</p>
  {family&&!selectedId&&<p>Выберите модель для автозаполнения. Текущие характеристики пока не изменены.</p>}
  </>}
  {notice&&<p className="skp-gpu-preset-notice" role="status">{notice}</p>}
