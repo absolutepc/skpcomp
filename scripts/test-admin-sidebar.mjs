@@ -58,4 +58,13 @@ assert(shop.includes("hidden={adminSection!=='slides'}"),'Slide drafts retained'
 const api=readFileSync(path.join(root,'app/api/orders/route.ts'),'utf8');
 assert(api.indexOf('if(!await adminAuth(request))')<api.indexOf("searchParams.get('summary')"),'Summary requires admin authentication');
 assert(api.includes("status='completed' THEN total ELSE 0"),'Only completed orders counted in amount');
-console.log('Admin checks passed: navigation, product categories, table pagination, empty state, editor integrations and authenticated summary.');
+const theme=readFileSync(path.join(root,'app/admin-dark-theme.css'),'utf8');
+const brandsView=readFileSync(path.join(root,'app/admin-brands.tsx'),'utf8');
+assert(theme.includes('.skp-admin-workspace .skp-admin-global-search input,'),'Global admin search has its own seamless input rule');
+assert(theme.includes('.skp-admin-workspace .skp-brands-search input[type="search"],'),'Brand search has its own seamless input rule');
+assert(theme.includes('padding:0!important;')&&theme.includes('border:0!important;')&&theme.includes('background:transparent!important;'),'Search must not have a second framed input');
+assert(theme.includes('.skp-admin-workspace .skp-admin-category-picker.skp-admin-category-always-visible{'),'Category picker has a non-framed container');
+assert(theme.includes('.skp-admin-workspace .skp-admin-data-table tbody td{'),'Product table cells have consistent vertical alignment');
+assert(theme.includes('object-position:center;')&&theme.includes('background:transparent;'),'Product thumbnails stay centered without background');
+assert(brandsView.includes('brand.name.toLowerCase().includes(search.toLowerCase())'),'Brand search still filters by typed name');
+console.log('Admin checks passed: navigation, product categories, table pagination, empty state, editor integrations and authenticated summary, seamless searches and transparent thumbnails.');
