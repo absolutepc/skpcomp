@@ -12,3 +12,12 @@
 .skp-cpu-preset-actions a{font-size:12px;color:#2261a7;text-decoration:underline;text-underline-offset:2px}
 .skp-cpu-preset-actions a:hover{color:#b18900}
 @media(max-width:700px){.skp-cpu-preset-actions a{color:#8cc9ff}}
+
+/* Three-level CPU picker: line → generation → exact SKU. */
+.skp-cpu-preset-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.skp-cpu-preset-steps label{display:flex;flex-direction:column;gap:7px;min-width:0;font-size:12px;color:#4a555d;font-weight:600}
+.skp-cpu-preset-steps select{width:100%;min-width:0;max-width:100%;height:40px;border-radius:8px;font-size:12px}
+@media(max-width:760px){
+ .skp-cpu-preset-steps{grid-template-columns:1fr;gap:10px}
+ .skp-cpu-preset-steps label{color:#cbd6dd}
+}
