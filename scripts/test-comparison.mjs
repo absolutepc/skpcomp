@@ -105,3 +105,20 @@ console.log('GPU radar: common hardware axes, units and missing data passed.');
 
 assert.equal(gpuAxes.find(m=>m.key==='cudaCores').read({...nvidia,specs:{gpuChipBrand:'NVIDIA'}}),null);
 assert(gpuRadar.includes('CUDA-ядра')&&!gpuRadar.includes('Скорость памяти'));
+
+/* Presentation regressions: a bare Compare icon, compact mobile catalog cards,
+   no part descriptions in configurator, and full product details intact. */
+const cardCss=fs.readFileSync('app/catalog-product-card.css','utf8');
+const actionsCss=fs.readFileSync('app/card-action-buttons.css','utf8');
+const builderSource=fs.readFileSync('app/build-pages.tsx','utf8');
+const catalogCard=fs.readFileSync('app/catalog-product-card.tsx','utf8');
+const productDetail=fs.readFileSync('app/product-detail-page.tsx','utf8');
+assert(cardCss.includes('.skp-neon-purchase .skp-card-actions-inline .skp-card-action'),'Catalog and home compare buttons have an unframed override');
+assert(/\.skp-neon-purchase \.skp-card-actions-inline \.skp-card-action\.is-active\{[\s\S]*?border:0;[\s\S]*?background:transparent;/.test(cardCss),'Active compare icons stay without background and border');
+assert(actionsCss.includes('background:transparent;\n border:0;\n}'),'Other comparison buttons keep a transparent hover');
+assert(/@media\(max-width:700px\)\{[\s\S]*?\.popular-section \.skp-neon-description,[\s\S]*?\.catalog-results \.skp-neon-description,[\s\S]*?display:none/.test(cardCss),'Home and catalog descriptions are hidden only on narrow screens');
+assert(catalogCard.includes('className="skp-neon-description"'),'Product descriptions remain in catalog data for desktop');
+assert(!builderSource.includes('<p className="component-desc">{p.description}</p>'),'Configurator option descriptions are not rendered on any viewport');
+assert(builderSource.includes("(p.name+' '+p.description)"),'Configurator still searches by product description');
+assert(productDetail.includes('p.description'),'Full description remains available in the product detail view');
+console.log('Card UI checks passed: bare compare icons, mobile compact cards and configurator descriptions hidden.');
