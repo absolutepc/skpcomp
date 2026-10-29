@@ -1,0 +1,61 @@
+/* SKP ready-PC editor: catalog-only visual part selection. */
+.skp-admin-edit-backdrop .skp-build-part-picker{display:flex;gap:7px;align-items:stretch;min-width:0}
+.skp-admin-edit-backdrop .skp-build-part-trigger{display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:64px;padding:8px 11px;border:1px solid #354247;border-radius:8px;background:#101416;color:#f3f4f4;text-align:left;transition:border-color .15s,background .15s}
+.skp-admin-edit-backdrop .skp-build-part-trigger:hover,.skp-admin-edit-backdrop .skp-build-part-trigger:focus-visible{border-color:#ffe500;background:#161a1b}
+.skp-admin-edit-backdrop .skp-build-part-trigger.is-selected{border-color:#555c4b}
+.skp-build-part-art,.skp-build-picker-option-art{display:grid;place-items:center;flex-shrink:0;overflow:hidden;background:#0a0d0e;border:1px solid #30383b;border-radius:6px;color:#697a80}
+.skp-build-part-art{width:47px;height:47px}
+.skp-build-part-art img,.skp-build-picker-option-art img{width:100%;height:100%;object-fit:contain}
+.skp-build-part-text{flex:1;min-width:0}
+.skp-build-part-text strong{display:block;font-size:12px;line-height:1.4;overflow-wrap:anywhere;color:#f2f5f5}
+.skp-build-part-text small{display:block;font-size:10px;line-height:1.4;margin-top:3px;color:#94a4aa}
+.skp-build-part-trigger>svg{flex-shrink:0;color:#ffe500}
+.skp-admin-edit-backdrop .skp-build-part-clear{flex:0 0 35px;display:grid;place-items:center;min-width:35px;border:1px solid #3f474a;border-radius:7px;color:#c5cdd1;background:#151b1d}
+.skp-admin-edit-backdrop .skp-build-part-clear:hover{border-color:#ffe500;color:#ffe500}
+.skp-build-picker-backdrop{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:#000e;padding:14px;backdrop-filter:blur(8px)}
+.skp-build-picker-dialog{display:flex;flex-direction:column;width:min(760px,100%);max-height:min(85vh,880px);min-height:0;padding:20px;background:#0c1011;border:1px solid #364044;border-radius:12px;color:#f7f7f7;box-shadow:0 24px 80px #000e}
+.skp-build-picker-heading{display:flex;justify-content:space-between;gap:18px;align-items:start}
+.skp-build-picker-heading small{color:#ffe500;font-size:10px;letter-spacing:.18em;font-weight:750}
+.skp-build-picker-heading h3{margin:5px 0!important;font-size:21px!important;color:#fff!important}
+.skp-build-picker-heading p{font-size:12px;line-height:1.45;color:#a5b2b5;margin:0 0 14px}
+.skp-build-picker-close{flex-shrink:0;display:grid;place-items:center;width:35px;height:35px;border:1px solid #364144;border-radius:7px;background:#15191b;color:#eef0f0}
+.skp-build-picker-search{display:flex;align-items:center;gap:9px;border:1px solid #3c484b;border-radius:8px;padding:0 12px;background:#13191b;color:#ffe500}
+.skp-admin-edit-backdrop .skp-build-picker-search input{width:100%;min-height:43px;padding:9px 0;border:0!important;box-shadow:none!important;outline:none;background:transparent!important;color:#fff!important;font-size:13px}
+.skp-build-picker-categories{display:flex;gap:6px;overflow-x:auto;padding:13px 0 5px;scrollbar-width:thin}
+.skp-admin-edit-backdrop .skp-build-picker-categories button{white-space:nowrap;flex:0 0 auto;min-height:31px;padding:6px 11px;border:1px solid #354044;border-radius:6px;color:#dce3e5;font-size:11px;background:#151b1d}
+.skp-admin-edit-backdrop .skp-build-picker-categories button.active{border-color:#ffe500;background:#ffe500;color:#101010}
+.skp-build-picker-count{padding:11px 2px 8px;color:#91a2a7;font-size:11px}
+.skp-build-picker-options{overflow-y:auto;min-height:0;overscroll-behavior:contain;display:flex;flex-direction:column;gap:6px;padding:2px 3px 5px 0}
+.skp-admin-edit-backdrop .skp-build-picker-option{position:relative;display:flex;align-items:center;gap:13px;width:100%;text-align:left;min-height:80px;padding:9px 12px;background:#141a1c;color:#f5f6f6;border:1px solid #2d383c;border-radius:9px}
+.skp-admin-edit-backdrop .skp-build-picker-option:hover,.skp-admin-edit-backdrop .skp-build-picker-option:focus-visible,.skp-admin-edit-backdrop .skp-build-picker-option.active{border-color:#ffe500;background:#1c2020}
+.skp-build-picker-option-art{width:64px;height:60px}
+.skp-build-picker-option-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.skp-build-picker-option-copy strong{font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+.skp-build-picker-option-copy small{font-size:10px;color:#a7b3b5}
+.skp-build-picker-option-copy .stock{color:#48c58b;font-size:10px}
+.skp-build-picker-option-copy .nostock{color:#adb5bb;font-size:10px}
+.skp-build-picker-option-price{flex:0 0 auto;color:#ffe500;font-size:12px;font-weight:750}
+.skp-build-picker-check{color:#ffe500;flex:0 0 auto}
+.skp-build-picker-empty{text-align:center;color:#b4c1c3;padding:25px 13px;font-size:12px;line-height:1.6}
+.skp-admin-edit-backdrop .admin-build-slot{display:flex;flex-direction:column;gap:7px;min-width:0}
+.skp-admin-edit-backdrop .admin-build-slot-label{font-size:12px;color:#e5e8e8}
+.skp-admin-edit-backdrop .admin-build-os-options{display:flex;flex-wrap:wrap;gap:7px}
+.skp-admin-edit-backdrop .admin-build-os-options button{flex:1 1 80px;min-height:39px;padding:7px;border:1px solid #374245;border-radius:6px;background:#111719;color:#e2e7e7;font-size:11px}
+.skp-admin-edit-backdrop .admin-build-os-options button.active{color:#101010;background:#ffe500;border-color:#ffe500}
+.skp-admin-edit-backdrop .admin-build-extra-row{align-items:center}
+.skp-admin-edit-backdrop .admin-build-extra-value{grid-column:1/-2;min-width:0}
+.skp-admin-edit-backdrop .admin-build-extra-value strong{font-size:12px;display:block}
+.skp-admin-edit-backdrop .admin-build-extra-row .admin-build-remove{height:38px;align-self:center}
+.skp-admin-edit-backdrop .admin-build-add-picker{margin:12px 0 0}
+.skp-admin-edit-backdrop .admin-build-add-picker .skp-build-part-trigger{border-style:dashed}
+@media(max-width:700px){
+ .skp-build-picker-backdrop{padding:0;align-items:stretch}
+ .skp-build-picker-dialog{width:100%;max-height:100dvh;height:100dvh;border:0;border-radius:0;padding:17px 13px 24px}
+ .skp-build-picker-heading h3{font-size:19px!important}
+ .skp-build-picker-option-art{width:53px;height:52px}
+ .skp-admin-edit-backdrop .skp-build-picker-option{gap:8px;padding:8px}
+ .skp-build-picker-option-price{font-size:11px}
+ .skp-admin-edit-backdrop .admin-build-extra-row{grid-template-columns:minmax(0,1fr) 36px}
+ .skp-admin-edit-backdrop .admin-build-extra-row .admin-build-extra-value{grid-column:1;grid-row:1}
+ .skp-admin-edit-backdrop .admin-build-extra-row .admin-build-remove{grid-column:2;grid-row:1}
+}
