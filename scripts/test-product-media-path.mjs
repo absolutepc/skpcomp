@@ -79,7 +79,7 @@ const api=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf
 assert(upload.includes("data.append('productCategory',product.category)"));
 assert(upload.includes("data.append('gpuChipBrand',product.specs?.gpuChipBrand||'')"));
 assert(api.includes("productMediaFolder({"),'Destination must be recomputed on the server');
-assert(api.includes("!MEDIA_KEY.test(key)&&!isProductMediaKey(key)"),'Legacy and new GET keys must work');
+assert(api.includes("!MEDIA_KEY.test(key)&&!FPS_MEDIA_KEY.test(key)&&!isProductMediaKey(key)"),'Legacy, game, and new category GET keys must work');
 assert(api.includes("key=folder+'/'+assetId+'/'+crypto.randomUUID()"),'Product images remain segregated by item ID');
 assert(api.includes("if(!await authorized(request))"),'Upload requires admin authentication');
 assert(api.includes("file.type!==mime"),'Uploaded content signatures remain validated');
