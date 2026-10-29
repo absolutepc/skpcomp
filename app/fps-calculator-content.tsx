@@ -162,7 +162,9 @@ export default function FpsCalculatorContent({hardware,product,games,onClose,clo
       </span>
      </label>
     </div>
-    {(canRt||safeUpscaling!=='native'||laptop)&&<div className="skp-fps-v2-additional">
+    {/* Keep the second settings row mounted so switching FSR / DLSS never
+         stretches buttons or pushes the FPS results lower. */}
+    <div className={'skp-fps-v2-additional'+(canRt?' has-ray':'')}>
      {canRt&&<div className="skp-fps-v2-extra-ray">
       <button type="button" className="skp-fps-v2-ray" role="switch" aria-checked={enabledRT}
        onClick={()=>setRayTracing(!enabledRT)}>
@@ -170,24 +172,24 @@ export default function FpsCalculatorContent({hardware,product,games,onClose,clo
        <span className="skp-fps-v2-ray-label">Трассировка лучей <small>Если поддерживается игрой</small></span>
       </button>
      </div>}
-     {safeUpscaling!=='native'&&<div className="skp-fps-v2-extra-quality">
-      <label className="skp-fps-v2-select">Режим {safeUpscaling.toUpperCase()}
+     <div className={'skp-fps-v2-extra-quality'+(safeUpscaling==='native'?' is-inactive':'')}>
+      <label className="skp-fps-v2-select">Режим апскейлинга
        <span className="skp-fps-v2-select-field">
         <Settings2 size={20} aria-hidden="true"/>
-        <span className="skp-fps-v2-select-value" aria-hidden="true">{upscalingQualities.find(option=>option.value===quality)?.label||quality}</span>
+        <span className="skp-fps-v2-select-value" aria-hidden="true">{safeUpscaling==='native'?'Не используется':upscalingQualities.find(option=>option.value===quality)?.label||quality}</span>
         <ChevronDown size={17} aria-hidden="true"/>
-        <select aria-label={`Режим ${safeUpscaling.toUpperCase()}`} value={quality} onChange={event=>setQuality(event.target.value as UpscalingQuality)}>
+        <select aria-label="Режим апскейлинга" disabled={safeUpscaling==='native'} value={quality} onChange={event=>setQuality(event.target.value as UpscalingQuality)}>
          {upscalingQualities.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
         </select>
        </span>
       </label>
-     </div>}
-     <div className="skp-fps-v2-extra-tgp">
-      {laptop&&<label className="skp-fps-v2-tgp">Мощность GPU (TGP, Вт)
-       <input type="number" min="1" max="250" step="1" placeholder="Укажите TGP" value={tgp} onChange={event=>setTgp(event.target.value)}/>
-      </label>}
      </div>
-    </div>}
+     {laptop&&<div className="skp-fps-v2-extra-tgp">
+      <label className="skp-fps-v2-tgp">Мощность GPU (TGP, Вт)
+       <input type="number" min="1" max="250" step="1" placeholder="Укажите TGP" value={tgp} onChange={event=>setTgp(event.target.value)}/>
+      </label>
+     </div>}
+    </div>
    </section>
    <section className="skp-fps-v2-stage skp-fps-v2-results">
     <StageTitle number={3}>Результаты <span className="skp-fps-v2-estimated">(приблизительные)</span></StageTitle>
