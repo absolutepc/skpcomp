@@ -23,7 +23,7 @@ assert.equal(applied.specs.architecture,'Blackwell');assert.equal(applied.specs.
 assert.equal(applied.specs.videoMemory,'GDDR7');assert.equal(applied.specs.bus,'192');
 assert.equal(selectedGpuPreset(applied).id,rtx5070.id);
 for(const key of ['name','brand','price','image','gallery','variantGroup','watts','stock'])assert.equal(applied[key],source[key],key);
-for(const key of Object.keys(source.specs))assert.equal(applied.specs[key],source.specs[key],key);
+for(const key of Object.keys(source.specs).filter(key=>key!=='powerConnectors'))assert.equal(applied.specs[key],source.specs[key],key);
 const smaller=applyGpuPreset(applied,find('RTX 4060 Ti',8).id);
 assert.equal(smaller.specs.architecture,'Ada Lovelace');assert.equal(smaller.specs.vram,'8');assert.equal(smaller.specs.videoMemory,'GDDR6');assert.equal(smaller.specs.interface,'PCI Express 4.0');
 assert.notEqual(find('RTX 5060 Ti',8).id,find('RTX 5060 Ti',16).id);
@@ -36,3 +36,27 @@ const cpu={...source,category:'cpu'};assert.equal(applyGpuPreset(cpu,rtx5070.id)
 assert.equal(new Set(gpuPresets.map(p=>p.id)).size,gpuPresets.length);
 for(const preset of gpuPresets){const saved=JSON.parse(JSON.stringify(applyGpuPreset(source,preset.id)));assert.equal(selectedGpuPreset(saved).id,preset.id);assert.ok(Object.keys(saved.specs).length<=80);}
 console.log('GPU preset checks passed: variants, vendor isolation, persistence, manual editing and preserved product data.');
+
+const extendedKeys=['baseClock','maxResolution','bandwidth','memorySpeed','dlss','pcieLanes','recommendedPsu','processNm','l2Cache','rtCores','tensorCores','textureUnits','rops','powerConnectors'];
+for(const preset of gpuPresets){
+ for(const key of extendedKeys)assert.ok(preset.specs[key],preset.label+': '+key);
+ assert.equal(Number(preset.specs.bandwidth),Number((Number(preset.specs.memorySpeed)*Number(preset.specs.bus)/8).toFixed(2)));
+}
+assert.equal(applied.specs.bandwidth,'672');assert.equal(applied.specs.memorySpeed,'28');
+assert.equal(applied.specs.rtCores,'48');assert.equal(applied.specs.tensorCores,'192');
+assert.equal(applied.specs.textureUnits,'192');assert.equal(applied.specs.rops,'80');
+assert.equal(applied.specs.l2Cache,'48');assert.equal(applied.specs.recommendedPsu,'650');
+assert.equal(smaller.specs.pcieLanes,'8');assert.equal(smaller.specs.powerConnectors,'1 × 8-pin');
+assert.equal(smaller.specs.bandwidth,'288');assert.equal(smaller.specs.rops,'48');
+assert.equal(find('RTX 4070',12,'GDDR6').specs.bandwidth,'480');
+assert.equal(find('RTX 4070',12,'GDDR6X').specs.bandwidth,'504');
+assert.equal(find('RTX 4080',16).specs.bandwidth,'716.8');
+assert.equal(find('RTX 5090',32).specs.l2Cache,'96');
+assert.equal(find('RTX 5060 Ti',8).specs.rops,'48');
+const edited={...applied,specs:{...applied.specs,bandwidth:'700',recommendedPsu:'750'}};
+assert.equal(selectedGpuPreset(edited).id,rtx5070.id,'Manual specs must not remove the model selection');
+assert.equal(applyGpuPreset(edited,rtx5070.id).specs.bandwidth,'672','Reapply updates old or manually edited fields');
+console.log('Extended GPU specs passed: completeness, bandwidth units, lanes, core counts and reapply.');
+
+assert.equal(applied.specs.baseClock,'2325');assert.equal(smaller.specs.baseClock,'2310');assert.equal(applied.specs.boostClock,'2600');
+assert.equal(find('RTX 5060 Ti',16).specs.baseClock,'2407');

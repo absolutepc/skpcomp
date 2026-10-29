@@ -4,3 +4,5 @@
 .skp-gpu-preset .form-grid{margin:0}.skp-gpu-preset select{width:100%;min-width:0}.skp-gpu-preset select:disabled{opacity:.5}
 .skp-gpu-preset .skp-gpu-preset-notice{color:#257247}
 @media(max-width:700px){.skp-gpu-preset{padding:12px;background:#172126;border-color:#36454d}.skp-gpu-preset h4{color:#f1f4f5}.skp-gpu-preset p{color:#aebcc4}.skp-gpu-preset .form-grid{grid-template-columns:1fr}.skp-gpu-preset .skp-gpu-preset-notice{color:#8adca1}}
+
+.skp-gpu-preset .skp-gpu-preset-apply{margin-top:10px;padding:8px 12px;border:1px solid #7b8790;border-radius:6px;background:transparent;color:inherit;font:inherit;font-size:12px;cursor:pointer}.skp-gpu-preset .skp-gpu-preset-apply:hover{border-color:#c99900}.skp-gpu-preset .skp-gpu-preset-apply:focus-visible{outline:2px solid #c99900;outline-offset:2px}
