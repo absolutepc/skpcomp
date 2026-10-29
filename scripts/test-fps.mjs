@@ -101,7 +101,8 @@ assert.match(builds,/<CardActionButtons action="compare"/,'Ready PC comparison r
 assert.match(builds,/Сохранить конфигурацию/,'Configurator saving remains available');
 assert.match(builds,/Добавить в корзину/,'Configurator checkout remains available');
 assert.match(shop,/GitCompareArrows/,'Product comparison remains available');
-assert.match(shop,/skp-card-compare/,'Desktop catalog comparison icon remains in the product image');
+const catalogCard=readFileSync(new URL('../app/catalog-product-card.tsx',import.meta.url),'utf8');
+assert.match(catalogCard,/<CardActionButtons action="compare"/,'Catalog product comparison remains available through the shared action button');
 // Opening or closing the FPS dialog must never shift the background page.
 const modalSource=readFileSync(new URL('../app/gaming-fps.tsx',import.meta.url),'utf8');
 assert.match(modalSource,/window\.innerWidth-document\.documentElement\.clientWidth/,
