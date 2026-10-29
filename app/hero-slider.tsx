@@ -1,6 +1,6 @@
 'use client';
 import {Fragment,useEffect,useRef,useState} from 'react';
-import {ArrowLeft,ArrowRight,Cpu,ShieldCheck,MessageCircle} from 'lucide-react';
+import {ArrowLeft,ArrowRight,Pause,Play,Cpu,ShieldCheck,MessageCircle} from 'lucide-react';
 import {defaultHeroSlides,type HeroSlide,type HeroBreakpoint,type HeroPlacement} from '../lib/hero-slides';
 import HeroCanvasLayers from './hero-canvas-layers';
 
@@ -98,7 +98,14 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
  const slides=items;
  const [index,setIndex]=useState(0);
  const [interactionPaused,setInteractionPaused]=useState(false);
+ const [userPaused,setUserPaused]=useState(false);
  const [pageHidden,setPageHidden]=useState(false);
+ useEffect(()=>{
+  const media=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const sync=()=>{if(media.matches)setUserPaused(true)};
+  sync();media.addEventListener('change',sync);
+  return()=>media.removeEventListener('change',sync);
+ },[]);
  const touch=useRef<number|null>(null);
  const activeIndex=Math.min(index,Math.max(0,slides.length-1));
  const slide=slides[activeIndex];
@@ -111,10 +118,10 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
   return()=>document.removeEventListener('visibilitychange',sync);
  },[]);
  useEffect(()=>{
-  if(slides.length<2||interactionPaused||pageHidden)return;
+  if(slides.length<2||userPaused||interactionPaused||pageHidden)return;
   const timeout=window.setTimeout(()=>setIndex(current=>(current+1)%slides.length),HERO_AUTOPLAY_MS);
   return()=>window.clearTimeout(timeout);
- },[index,interactionPaused,pageHidden,slides.length]);
+ },[index,userPaused,interactionPaused,pageHidden,slides.length]);
  if(!slide)return null;
  return <section className={"hero hero-carousel"+(slide.layout==='logitech'?" mouse-launch":slide.layout==='rog'?" rog-anniversary":"")+(isRogOledFeature(slide)?" rog-oled-feature":"")+" skp-active-"+slide.id}
   aria-label="Предложения SKP" aria-roledescription="карусель" tabIndex={0}
@@ -125,6 +132,7 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
   onTouchStart={e=>{touch.current=e.touches[0].clientX}}
   onTouchEnd={e=>{if(touch.current!==null){const distance=e.changedTouches[0].clientX-touch.current;if(Math.abs(distance)>55)move(distance<0?1:-1);touch.current=null}}}>
   <HeroSlideContent slide={slide} nav={nav}/>
+  {slides.length>1&&<button type="button" className="skp-carousel-pause" aria-label={userPaused?'Продолжить автопрокрутку баннеров':'Приостановить автопрокрутку баннеров'} onClick={()=>setUserPaused(value=>!value)}>{userPaused?<Play size={16}/>:<Pause size={16}/>}<span>{userPaused?'Продолжить':'Пауза'}</span></button>}
   {slides.length>1&&<div className="carousel-controls">
    <button className="carousel-arrow" aria-label="Предыдущий слайд" onClick={()=>move(-1)}><ArrowLeft size={19}/></button>
    <div className="carousel-dots" role="group" aria-label="Выбор слайда">{slides.map((s,i)=><button key={s.id} className={i===activeIndex?'current':''} aria-label={`Показать слайд ${i+1}: ${s.label}`} aria-current={i===activeIndex?'true':undefined} onClick={()=>setIndex(i)}><span/></button>)}</div>
