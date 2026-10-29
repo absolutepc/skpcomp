@@ -17,6 +17,41 @@ const intel=(model:string,source:string,cores:number,threads:number,boost:string
 });
 const intelHxBrief='https://download.intel.com/newsroom/2024/client-computing/Product-Brief-Intel-Core-Processors-HX-Series.pdf';
 export const laptopCpuPresets:readonly LaptopCpuPreset[]=[
+ // Additional AMD models verified against published AMD product pages and Ryzen AI 300 series guide.
+ amd('Ryzen 7 7840U','7000-series',8,16,'5.1','28','AMD Radeon 780M'),
+ amd('Ryzen 9 7945HX3D','7000-series',16,32,'5.4','55','AMD Radeon 610M'),
+ amd('Ryzen AI 5 340','ai-300-series',6,12,'4.8','15–54','AMD Radeon 840M'),
+ amd('Ryzen AI 7 350','ai-300-series',8,16,'5','15–54','AMD Radeon 860M'),
+ amd('Ryzen AI 9 HX 375','ai-300-series',12,24,'5.1','15–54','AMD Radeon 890M'),
+ amd('Ryzen 9 9955HX3D','9000-series',16,32,'5.4','55','AMD Radeon 610M'),
+ // Intel 12th/13th generation mobile SKUs: base power (not max turbo power).
+ intel('Core i5-12500H','https://www.intel.com/content/www/us/en/products/sku/96141/intel-core-i512500h-processor-18m-cache-up-to-4-50-ghz/specifications.html',12,16,'4.5','45','Intel Iris Xe Graphics (при поддержке конфигурацией)'),
+ intel('Core i7-12650H','https://www.intel.com/content/www/us/en/products/sku/226066/intel-core-i712650h-processor-24m-cache-up-to-4-70-ghz/specifications.html',10,16,'4.7','45','Intel UHD Graphics'),
+ intel('Core i7-12700H','https://www.intel.com/content/www/us/en/products/sku/132228/intel-core-i712700h-processor-24m-cache-up-to-4-70-ghz/specifications.html',14,20,'4.7','45','Intel Iris Xe Graphics (при поддержке конфигурацией)'),
+ intel('Core i7-12800HX','https://www.intel.com/content/www/us/en/products/sku/226058/intel-core-i712800hx-processor-25m-cache-up-to-4-80-ghz/specifications.html',16,24,'4.8','55','Intel UHD Graphics'),
+ intel('Core i9-12900H','https://cdrdv2-public.intel.com/755824/Why-Processor-Performance-is-More-Than-Frequency-and-Core-Counts-Final-V5.2.2022.pdf',14,20,'5','45','Intel Iris Xe Graphics (при поддержке конфигурацией)'),
+ intel('Core i9-12900HX','https://www.intel.com/content/www/us/en/products/sku/228441/intel-core-i912900hx-processor-30m-cache-up-to-5-00-ghz/specifications.html',16,24,'5','55','Intel UHD Graphics'),
+ intel('Core i5-13500H','https://www.intel.com/content/www/us/en/products/sku/232147/intel-core-i513500h-processor-18m-cache-up-to-4-70-ghz/specifications.html',12,16,'4.7','45','Intel Iris Xe Graphics (при поддержке конфигурацией)'),
+ intel('Core i5-13500HX','https://www.intel.com/content/www/us/en/products/sku/232156/intel-core-i513500hx-processor-24m-cache-up-to-4-70-ghz/specifications.html',14,20,'4.7','55','Intel UHD Graphics'),
+ intel('Core i7-13700H','https://www.intel.com/content/www/us/en/products/sku/232128/intel-core-i713700h-processor-24m-cache-up-to-5-00-ghz/specifications.html',14,20,'5','45','Intel Iris Xe Graphics (при поддержке конфигурацией)'),
+ intel('Core i7-13700HX','https://www.intel.com/content/www/us/en/products/sku/232166/intel-core-i713700hx-processor-30m-cache-up-to-5-00-ghz/specifications.html',16,24,'5','55','Intel UHD Graphics'),
+ intel('Core i9-13900H','https://www.intel.com/content/www/us/en/products/sku/232135/intel-core-i913900h-processor-24m-cache-up-to-5-40-ghz/specifications.html',14,20,'5.4','45','Intel Iris Xe Graphics (при поддержке конфигурацией)'),
+ intel('Core i9-13900HX','https://www.intel.com/content/www/us/en/products/sku/232171/intel-core-i913900hx-processor-36m-cache-up-to-5-40-ghz/specifications.html',24,32,'5.4','55','Intel UHD Graphics'),
+ // Meteor Lake (Series 1): Intel Arc is configuration-dependent.
+ intel('Core Ultra 5 125H','https://cdrdv2-public.intel.com/791670/core-ultra-series-1-product-brief.pdf',14,18,'4.5','28','Intel Arc Graphics (при поддержке конфигурацией)'),
+ intel('Core Ultra 5 135H','https://cdrdv2-public.intel.com/791670/core-ultra-series-1-product-brief.pdf',14,18,'4.6','28','Intel Arc Graphics (при поддержке конфигурацией)'),
+ intel('Core Ultra 7 155H','https://www.intel.com/content/www/us/en/products/sku/236847/intel-core-ultra-7-processor-155h-24m-cache-up-to-4-80-ghz/specifications.html',16,22,'4.8','28','Intel Arc Graphics (при поддержке конфигурацией)'),
+ intel('Core Ultra 7 165H','https://www.intel.com/content/www/us/en/products/sku/236851/intel-core-ultra-7-processor-165h-24m-cache-up-to-5-00-ghz/specifications.html',16,22,'5','28','Intel Arc Graphics (при поддержке конфигурацией)'),
+ intel('Core Ultra 9 185H','https://www.intel.com/content/www/us/en/products/sku/236849/intel-core-ultra-9-processor-185h-24m-cache-up-to-5-10-ghz/specifications.html',16,22,'5.1','45','Intel Arc Graphics (при поддержке конфигурацией)'),
+ // Arrow Lake-H/HX (Series 2): no Hyper-Threading, threads == cores.
+ intel('Core Ultra 5 225H','https://www.intel.com/content/www/us/en/products/sku/241749/intel-core-ultra-5-processor-225h-18m-cache-up-to-4-90-ghz/specifications.html',14,14,'4.9','28','Intel Arc 130T'),
+ intel('Core Ultra 5 235H','https://www.intel.com/content/www/us/en/products/sku/241748/intel-core-ultra-5-processor-235h-18m-cache-up-to-5-00-ghz/specifications.html',14,14,'5','28','Intel Arc 140T'),
+ intel('Core Ultra 7 265H','https://download.intel.com/newsroom/2025/client-computing/Intel-CES2025-Performance-Preview-Keynote.pdf',16,16,'5.3','45','Intel Arc 140T'),
+ intel('Core Ultra 7 255HX','https://www.intel.com/content/www/us/en/products/details/processors/core-ultra/series-2/products.html',20,20,'5.2','55','Intel Graphics'),
+ intel('Core Ultra 7 265HX','https://www.intel.com/content/www/us/en/products/details/processors/core-ultra/series-2/products.html',20,20,'5.3','55','Intel Graphics'),
+ intel('Core Ultra 9 285H','https://www.intel.com/content/www/us/en/products/details/processors/core-ultra/series-2/products.html',16,16,'5.4','45','Intel Arc 140T'),
+ intel('Core Ultra 9 275HX','https://www.intel.com/content/www/us/en/products/sku/242293/intel-core-ultra-9-processor-275hx-36m-cache-up-to-5-40-ghz/specifications.html',24,24,'5.4','55','Intel Graphics'),
+ intel('Core Ultra 9 285HX','https://www.intel.com/content/www/us/en/products/sku/242297/intel-core-ultra-9-processor-285hx-36m-cache-up-to-5-50-ghz/specifications.html',24,24,'5.5','55','Intel Graphics'),
  amd('Ryzen 5 7535HS','7000-series',6,12,'4.55','35–54','AMD Radeon 660M'),
  amd('Ryzen 5 7640HS','7000-series',6,12,'5','35–54','AMD Radeon 760M'),
  amd('Ryzen 7 7735HS','7000-series',8,16,'4.75','35–54','AMD Radeon 680M'),
