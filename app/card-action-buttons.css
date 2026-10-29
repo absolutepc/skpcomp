@@ -100,3 +100,15 @@
  background:transparent;
  border:0;
 }
+
+/* Mobile configurator: favorite is a bare heart without the overlay frame.
+   Keep the button's tap area and focus outline, and do not affect other cards. */
+@media(max-width:700px){
+ .config-page .component-card > .skp-card-actions:not(.skp-card-actions-inline) .skp-card-action,
+ .config-page .component-card > .skp-card-actions:not(.skp-card-actions-inline) .skp-card-action:hover,
+ .config-page .component-card > .skp-card-actions:not(.skp-card-actions-inline) .skp-card-action.is-active{
+  border:0;
+  background:transparent;
+  box-shadow:none;
+ }
+}
