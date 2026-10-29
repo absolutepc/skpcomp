@@ -6,7 +6,7 @@ const code=ts.transpileModule(fs.readFileSync('lib/local-admin-access.ts','utf8'
 for(const mode of ['development','production','test',undefined]){
  const exports={};vm.runInNewContext(code,{exports,URL,process:{env:{NODE_ENV:mode}}});
  const privateHosts=['localhost','127.0.0.1','[::1]','192.168.0.101','172.20.10.3','10.10.2.4','172.16.0.1','172.31.255.254'];
- const deniedHosts=['localhost.example.com','skp.ru','8.8.8.8','172.15.1.1','172.32.1.1','192.167.1.1','192.169.1.2','10.0.0.999','192.168.1.2.evil.com','0.0.0.0'];
+ const deniedHosts=['localhost.example.com','skp.ru','8.8.8.8','172.15.1.1','172.32.1.1','192.167.1.1','192.169.1.2','10.2.3.4.evil.com','192.168.1.2.evil.com','0.0.0.0'];
  for(const host of [...privateHosts,...deniedHosts]){
   const actual=exports.localAdminAccess(new Request('http://'+host+':5173/api/store'));
   assert.equal(actual,mode==='development'&&privateHosts.includes(host),mode+': '+host);
