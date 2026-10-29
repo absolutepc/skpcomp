@@ -14,6 +14,14 @@
 .skp-neon-card .skp-pdp-stars{display:flex;gap:1px}.skp-neon-card .skp-pdp-star{width:10px;height:10px}.skp-neon-card .skp-pdp-star>svg,.skp-neon-card .skp-pdp-star>span>svg{width:10px;height:10px}
 .skp-neon-purchase{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:36px}.skp-neon-purchase>strong{font-size:clamp(14px,1.4vw,22px);font-weight:800;color:#ffe500;letter-spacing:-.5px;line-height:1.2}
 .skp-neon-purchase-buttons{display:flex;gap:5px;flex-shrink:0;align-items:center}.skp-neon-card .skp-neon-purchase .skp-card-action,.skp-neon-card .skp-neon-cart{height:34px;width:30px;display:grid;place-items:center;padding:0;border-radius:7px;border:1px solid #243943;background:#0b171e;color:#e9f1f5}
+/* Compare stays a bare icon; cart alone keeps its filled yellow button. */
+.skp-neon-card .skp-neon-purchase .skp-card-actions-inline .skp-card-action,
+.skp-neon-card .skp-neon-purchase .skp-card-actions-inline .skp-card-action:hover,
+.skp-neon-card .skp-neon-purchase .skp-card-actions-inline .skp-card-action.is-active{
+ border:0;
+ background:transparent;
+ box-shadow:none;
+}
 .skp-neon-card .skp-neon-cart{background:#ffe500;color:#080b0d;border-color:#ffe500}.skp-neon-card .skp-neon-cart:disabled{opacity:.4;cursor:not-allowed}.skp-neon-card .skp-neon-cart:hover:not(:disabled){background:#fff36a}.skp-neon-card .skp-card-action.is-active{color:#ffe500}
 .skp-neon-card a:focus-visible,.skp-neon-card button:focus-visible{outline:2px solid #ffe500;outline-offset:2px}
 @media(min-width:1100px){.catalog-results .skp-neon-meta{min-height:22px}}
@@ -21,7 +29,13 @@
 @media(prefers-reduced-motion:reduce){.skp-neon-image>img{transition:none}}
 
 .skp-neon-description{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;font-size:12px;line-height:1.4;height:2.8em;min-height:2.8em;flex-shrink:0;margin:0 0 10px;color:#9ba9b0}
-@media(max-width:700px){.skp-neon-description{font-size:11px;margin-bottom:7px}}
+/* Compact cards on phone: keep name, availability, rating and price.
+ * The complete description remains accessible on the product detail page. */
+@media(max-width:700px){
+ .popular-section .skp-neon-description,
+ .catalog-results .skp-neon-description,
+ .skp-neon-card .skp-neon-description{display:none}
+}
 
 /* Use the available plaque width without stretching any brand mark. */
 .skp-neon-brand img{display:block;width:auto;max-width:100%;height:22px;object-fit:contain}
