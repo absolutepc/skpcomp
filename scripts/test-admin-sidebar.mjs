@@ -66,5 +66,6 @@ assert(theme.includes('padding:0!important;')&&theme.includes('border:0!importan
 assert(theme.includes('.skp-admin-workspace .skp-admin-category-picker.skp-admin-category-always-visible{'),'Category picker has a non-framed container');
 assert(theme.includes('.skp-admin-workspace .skp-admin-data-table tbody td{'),'Product table cells have consistent vertical alignment');
 assert(theme.includes('object-position:center;')&&theme.includes('background:transparent;'),'Product thumbnails stay centered without background');
-assert(brandsView.includes('brand.name.toLowerCase().includes(search.toLowerCase())'),'Brand search still filters by typed name');
+assert(brandsView.includes('brand.name.toLowerCase().includes(search.trim().toLowerCase())'),'Brand search filters case-insensitively and trims surrounding spaces');
+assert(brandsView.includes('aria-label="Очистить поиск бренда"')&&brandsView.includes("onClick={()=>setSearch('')}"),'Brand search has a manual reset control');
 console.log('Admin checks passed: navigation, product categories, table pagination, empty state, editor integrations and authenticated summary, seamless searches and transparent thumbnails.');
