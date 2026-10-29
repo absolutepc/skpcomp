@@ -32,6 +32,7 @@ jobs:
           node scripts/test-cpu-presets.mjs
           pnpm test:fps
           pnpm test:gallery
+          node scripts/test-product-media-path.mjs
           pnpm test:hero
           pnpm test:orders
           pnpm test:admin
