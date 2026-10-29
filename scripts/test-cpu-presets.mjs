@@ -11,7 +11,7 @@ function load(name){
   {exports,require:path=>load(path.replace('./',''))});
  return exports;
 }
-const {cpuPresets,applyCpuPreset,selectedCpuPreset,clearCpuPreset}=load('cpu-presets');
+const {cpuPresets,cpuPresetLine,cpuPresetGeneration,applyCpuPreset,selectedCpuPreset,clearCpuPreset}=load('cpu-presets');
 const source={id:'cpu',category:'cpu',brand:'AMD',name:'Процессор OEM',price:10000,description:'Описание',image:'/cpu.webp',stock:true,socket:'AM4',memory:'DDR4',watts:65,specs:{package:'OEM',color:'Серый',socket:'AM4',memory:'DDR4',watts:'65'}};
 const original=JSON.stringify(source);
 const preset=cpuPresets.find(p=>p.label==='Ryzen 7 9800X3D');
@@ -91,4 +91,49 @@ for(const p of cpuPresets){
  }
  if(p.brand==='AMD'&&p.family==='Ryzen 5000')assert.equal(Number(p.specs.l2),Number(p.specs.cores)/2);
 }
-console.log('CPU presets passed: '+cpuPresets.length+' verified entries, Intel Core variants and Ultra 200S, AMD Ryzen 9, clock/core/cache/platform checks, isolation and persistence.');
+// Hierarchical picker: vendor → line → generation → exact model.
+const by=(brand,line,generation)=>cpuPresets.filter(p=>p.brand===brand&&cpuPresetLine(p)===line&&cpuPresetGeneration(p)===generation);
+const intel12=cpuPresets.filter(p=>p.brand==='Intel'&&cpuPresetGeneration(p)==='12');
+assert.equal(intel12.length,21,'12th-gen Core has 21 confirmed desktop models, not 2');
+for(const line of ['Core i3','Core i5','Core i7','Core i9']){
+ assert(by('Intel',line,'12').length>=3,'Missing 12th-gen '+line);
+}
+assert(by('Intel','Core i3','12').some(p=>p.label==='Core i3-12100T'));
+assert(by('Intel','Core i7','12').some(p=>p.label==='Core i7-12700KF'));
+assert(by('Intel','Core i9','12').some(p=>p.label==='Core i9-12900K'));
+assert(!by('Intel','Core i3','12').some(p=>/K(F)?$/.test(p.label)),'Do not invent nonexistent 12th-gen i3 K/KF');
+assert(!by('Intel','Core i3','12').some(p=>p.label.includes('Core Ultra')));
+assert(by('Intel','Core Ultra 5','Core Ultra 200').some(p=>p.label==='Core Ultra 5 245KF'));
+assert(by('Intel','Core Ultra 7','Core Ultra 200').some(p=>p.label==='Core Ultra 7 265K'));
+assert(by('Intel','Core Ultra 9','Core Ultra 200').some(p=>p.label==='Core Ultra 9 285K'));
+const intelT=lookup('Core i7-12700T');
+assert.equal(intelT.specs.frequency,'1.4');assert.equal(intelT.specs.boost,'4.7');
+assert.equal(intelT.specs.maxTurboPower,'99');assert.equal(intelT.specs.eFrequency,'1');
+assert.equal(lookup('Core i3-12100').specs.frequency,'3.3');
+assert.equal(lookup('Core i3-12100F').specs.graphics,'Нет');
+assert.equal(lookup('Core i5-12600K').specs.graphics,'Intel UHD Graphics 770');
+assert.equal(lookup('Core i5-12600KF').specs.graphics,'Нет');
+assert.equal(lookup('Core i9-12900K').specs.l2,'14');
+assert.equal(lookup('Core i9-12900K').specs.maxTurboPower,'241');
+assert.equal(lookup('Core i5-12600T').specs.watts,'35');
+assert.equal(lookup('Core i5-12600T').specs.maxTurboPower,'74');
+for(const line of ['Ryzen 3','Ryzen 5','Ryzen 7','Ryzen 9'])assert(by('AMD',line,'3000').length>0,'Missing '+line+' 3000');
+for(const gen of ['3000','4000','5000','7000','8000','9000'])assert(cpuPresets.some(p=>p.brand==='AMD'&&cpuPresetGeneration(p)===gen),'Ryzen '+gen);
+assert.equal(lookup('Ryzen 3 3200G').specs.threads,'4','3200G Zen+ has no SMT');
+assert.equal(lookup('Ryzen 3 3200G').specs.process,'12 нм FinFET');
+assert.equal(lookup('Ryzen 3 3200G').specs.pcieVersion,'3.0');
+assert.equal(lookup('Ryzen 3 3300X').specs.pcieVersion,'4.0');
+assert.equal(lookup('Ryzen 3 4300G').specs.graphics,'Radeon Graphics');
+assert.equal(lookup('Ryzen 3 4300G').specs.pcieVersion,'3.0');
+assert.equal(lookup('Ryzen 3 4300GE').specs.watts,'35');
+assert.equal(lookup('Ryzen 3 5300G').specs.l3,'8');
+assert.equal(lookup('Ryzen 3 5300G').specs.pcieVersion,'3.0');
+assert.equal(lookup('Ryzen 5 4600G').specs.l2,'3');
+assert.equal(lookup('Ryzen 7 4700G').specs.l3,'8');
+assert.equal(lookup('Ryzen 9 3950X').specs.threads,'32');
+for(const p of cpuPresets)assert.ok(cpuPresetLine(p)&&cpuPresetGeneration(p),p.id+': no picker classification');
+const file=readFileSync(new URL('../app/admin-cpu-preset.tsx',import.meta.url),'utf8');
+assert(file.includes('1. Линейка')&&file.includes('2. Поколение')&&file.includes('3. Модель'),'Three-step picker labels are present');
+assert(file.includes('onChange(clearCpuPreset(product))'),'Changing steps only clears preset metadata');
+assert(file.includes('cpuPresetLine(selected)')&&file.includes('cpuPresetGeneration(selected)'),'Saved preset initializes the three-step picker');
+console.log('CPU presets passed: '+cpuPresets.length+' models, hierarchical selection, 21 Core 12th-gen models, Ryzen 3000/4000/3, isolation and persistence.');
