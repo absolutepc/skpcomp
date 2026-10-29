@@ -7,8 +7,8 @@ import {laptopFieldChoices,laptopFieldGroups} from '../lib/laptop-specs';
 import {laptopGraphics,laptopProcessors} from '../lib/laptop-models';
 import './admin-laptop-specs.css';
 
-function QuickChoice({label,value,choices,onChange}:{
- label:string;value:string;choices:readonly string[];onChange:(value:string)=>void;
+function QuickChoice({label,value,choices,numeric,onChange}:{
+ label:string;value:string;choices:readonly string[];numeric?:boolean;onChange:(value:string)=>void;
 }){
  const [manual,setManual]=useState(()=>!!value&&!choices.includes(value));
  useEffect(()=>setManual(!!value&&!choices.includes(value)),[label]); // switching product/editor
@@ -22,7 +22,7 @@ function QuickChoice({label,value,choices,onChange}:{
    {choices.map(option=><option key={option} value={option}>{option}</option>)}
    <option value="custom">Другое значение…</option>
   </select>
-  {(manual||!!value&&!choices.includes(value))&&<input type="text" maxLength={200} value={value} placeholder="Точное значение по спецификации" onChange={e=>onChange(e.target.value)}/>}
+  {(manual||!!value&&!choices.includes(value))&&<input type={numeric?'number':'text'} min={numeric?0:undefined} step={numeric?'any':undefined} maxLength={numeric?undefined:200} value={value} placeholder="Точное значение по спецификации" onChange={e=>onChange(e.target.value)}/>}
  </label>;
 }
 
@@ -111,7 +111,7 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
       const value=fieldValue(product,field.key);
       const label=field.label+(field.unit?', '+field.unit:'');
       const choices=laptopFieldChoices[field.key];
-      if(choices)return <QuickChoice key={product.id+':'+field.key} label={label} value={value} choices={choices} onChange={v=>change(field.key,v)}/>;
+      if(choices)return <QuickChoice key={product.id+':'+field.key} label={label} value={value} choices={choices} numeric={field.numeric} onChange={v=>change(field.key,v)}/>;
       return <label className="skp-laptop-spec-field" key={field.key}>{label}
        <input type={field.numeric?'number':'text'} min={field.numeric?0:undefined} step={field.numeric?'any':undefined} maxLength={!field.numeric?200:undefined}
         placeholder={field.numeric?'Число без единиц измерения':'Укажите точное значение'} value={value} onChange={e=>change(field.key,e.target.value)}/>
