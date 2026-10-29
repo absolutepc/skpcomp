@@ -132,7 +132,17 @@
  .skp-pdp .skp-review-form{padding:17px}
 }
 
-.skp-pdp .skp-ready-pc-parts{margin-top:24px;width:100%}
+/* Full-width ready PC composition: override the generic .skp-pdp section margin
+   reset, which previously removed the negative viewport offset and shifted
+   the entire layout to the right after moving it into a dedicated tab. */
+.skp-pdp .skp-ready-pc-parts{
+ position:relative;
+ left:50%;
+ width:100vw;
+ max-width:none;
+ margin:24px 0 46px -50vw;
+ padding:0;
+}
 
 /* Fit the complete PC action row by sharing the available width. */
 .skp-pdp-buy.skp-pdp-buy-pc{display:grid;grid-template-columns:90px minmax(110px,1fr) 44px 44px 68px 110px;gap:7px}
