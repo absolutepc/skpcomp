@@ -128,7 +128,7 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
   }catch(cause){setError(cause instanceof Error?cause.message:'Ошибка загрузки логотипа')}
   finally{setUploading(false);if(picker.current)picker.current.value=''}
  }
- const visible=brands.filter(brand=>brand.name.toLowerCase().includes(search.toLowerCase()));
+ const visible=brands.filter(brand=>brand.name.toLowerCase().includes(search.trim().toLowerCase()));
  const used=products.filter(p=>canonicalBrand(p.brand).toLowerCase()===(current?.name||'').toLowerCase()).length;
  return <section className="skp-brands-admin">
   <div className="skp-brands-header"><div><h1>Бренды</h1><p>Управление производителями, логотипами и сериями для каждой категории каталога.</p></div>
@@ -136,7 +136,7 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
   </div>
   <div className="skp-brands-layout">
    <aside className="skp-brands-list">
-    <label className="skp-brands-search"><Search size={17}/><input type="search" value={search} placeholder="Поиск бренда" onChange={e=>setSearch(e.target.value)}/></label>
+    <label className="skp-brands-search"><Search size={17}/><input type="search" value={search} aria-label="Поиск бренда" placeholder="Поиск бренда" onChange={e=>setSearch(e.target.value)}/>{search&&<button type="button" aria-label="Очистить поиск бренда" onClick={()=>setSearch('')}><X size={15}/></button>}</label>
     <div className="skp-brands-list-items">{visible.map(brand=><button key={brand.id} type="button" className={'skp-brands-list-item'+(selected===brand.id?' selected':'')} onClick={()=>select(brand)}>
       <span className="skp-brand-thumb">{(brand.logo||defaultBrandLogo(brand.name))&&preview(brand.logo||defaultBrandLogo(brand.name))?<img src={brand.logo||defaultBrandLogo(brand.name)} className={!brand.logo?"skp-brand-default-logo":undefined} alt=""/>:<Tag size={19}/>}</span>
       <span><strong>{brand.name}</strong><small>{Object.keys(brand.categories).length} категорий</small></span>
