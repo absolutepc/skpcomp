@@ -97,5 +97,6 @@
 .price-line .skp-card-actions-inline button.skp-card-action:hover,
 .price-line .skp-card-actions-inline button.skp-card-action.is-active{
  color:#ffe500;
- background:#ffe50012;
+ background:transparent;
+ border:0;
 }
