@@ -151,3 +151,9 @@
  .skp-pdp-buy-pc .skp-fps-inline-action{grid-column:1}
  .skp-pdp-buy-pc .skp-pdp-share{grid-column:2 / -1;justify-self:start}
 }
+
+/* Ready PC detail has four tabs, while other products retain the original three. */
+@media(max-width:700px){
+ .skp-pdp .skp-pdp-tabs.skp-pdp-tabs-ready{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .skp-pdp .skp-pdp-tabs.skp-pdp-tabs-ready button{font-size:9px;white-space:nowrap}
+}
