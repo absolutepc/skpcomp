@@ -66,5 +66,5 @@ for(const [label,file] of [
  ['Battlefield cover','public/images/fps-games/battlefield6.png']
 ])assert(existsSync(path.join(root,file)),'Missing important image: '+label+' ('+file+')');
 const responsiveFiles=['app/globals.css','app/catalog-product-card.css','app/product-detail-page.css','app/admin-mobile.css','app/ready-pc-mobile.css','app/compare-page.css','app/fps-calculator-v2.css'];
-for(const file of responsiveFiles)assert(/@media\s*\(max-width:\s*(?:700|760|768|850)px\)/.test(source(file)),'No mobile breakpoint found: '+file);
+for(const file of responsiveFiles)assert(/@media\s*\(max-width:\s*(?:700|750|760|768|850)px\)/.test(source(file)),'No mobile breakpoint found: '+file);
 console.log('Source audit passed: '+Object.keys(components).length+' site areas, assets, access control, UX and mobile CSS contracts.');
