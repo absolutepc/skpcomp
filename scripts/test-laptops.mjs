@@ -93,7 +93,7 @@ assert.equal(integrated.specs.gpuMemoryType,'Общая память');
 assert.equal(integrated.specs.gpuPowerWatts,'');
 const unknownGpu=gpuPresets.applyLaptopGpuPreset(switched,'Unlisted OEM Graphics');
 for(const key of gpuPresets.laptopGpuSpecFields)assert.equal(unknownGpu.specs[key],'','Unknown GPU must not retain stale '+key);
-assert.match(readFileSync(new URL('../app/admin-laptop-specs.tsx',import.meta.url),'utf8'),/selectGpu\\(e\\.target\\.value\\)/,
+assert.match(readFileSync(new URL('../app/admin-laptop-specs.tsx',import.meta.url),'utf8'),/selectGpu\(e\.target\.value\)/,
  'Notebook GPU model dropdown applies the graphics preset');
 assert.equal(new Set(cpuPresets.laptopCpuPresets.map(x=>x.name)).size,cpuPresets.laptopCpuPresets.length);
 assert.match(readFileSync(new URL('../app/admin-laptop-specs.tsx',import.meta.url),'utf8'),/selectCpu\(e\.target\.value\)/,
