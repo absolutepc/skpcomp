@@ -68,4 +68,12 @@ assert(theme.includes('.skp-admin-workspace .skp-admin-data-table tbody td{'),'P
 assert(theme.includes('object-position:center;')&&theme.includes('background:transparent;'),'Product thumbnails stay centered without background');
 assert(brandsView.includes('brand.name.toLowerCase().includes(search.trim().toLowerCase())'),'Brand search filters case-insensitively and trims surrounding spaces');
 assert(brandsView.includes('aria-label="Очистить поиск бренда"')&&brandsView.includes("onClick={()=>setSearch('')}"),'Brand search has a manual reset control');
-console.log('Admin checks passed: navigation, product categories, table pagination, empty state, editor integrations and authenticated summary, seamless searches and transparent thumbnails.');
+const sidebarUI=readFileSync(path.join(root,'app/admin-sidebar.tsx'),'utf8');
+assert(theme.includes('.skp-admin-topbar > .skp-admin-global-search:not(.mobile-expanded)'),'Collapsed mobile admin search is hidden with higher specificity');
+assert(theme.includes('.skp-admin-topbar > .skp-admin-global-search.mobile-expanded'),'Mobile search only opens below the header after tapping search');
+assert(theme.includes('.skp-admin-workspace .menu-open .skp-admin-mobile-logo'),'Centered mobile SKP logo does not show beneath menu scrim');
+assert(theme.includes('.skp-admin-workspace .skp-admin-sidebar{\n  background:#000;'),'Mobile sidebar uses a genuinely black background');
+assert(theme.includes('.skp-admin-workspace .skp-admin-topbar{\n  background:#000;'),'Mobile header uses a genuinely black background');
+assert(sidebarUI.includes("onClick={()=>{setOpen(!open);setMobileSearch(false)}}"),'Opening menu closes mobile search');
+assert(sidebarUI.includes("onClick={()=>{setMobileSearch(!mobileSearch);setOpen(false)}}"),'Opening mobile search closes menu');
+console.log('Admin checks passed: navigation, product categories, table pagination, empty state, editor integrations and authenticated summary, seamless searches, black mobile header and menu, and transparent thumbnails.');
