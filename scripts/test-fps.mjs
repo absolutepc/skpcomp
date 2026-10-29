@@ -91,10 +91,12 @@ const shop=readFileSync(new URL('../app/shop.tsx',import.meta.url),'utf8');
 const builds=readFileSync(new URL('../app/build-pages.tsx',import.meta.url),'utf8');
 const detailPage=readFileSync(new URL('../app/product-detail-page.tsx',import.meta.url),'utf8');
 const readyMobile=readFileSync(new URL('../app/ready-pc-mobile-detail.tsx',import.meta.url),'utf8');
-assert.match(detailPage,/p\.category==='pc'&&<>\s*<GamingFps product=\{p\} games=\{data\.fpsGames\} hardware=\{fromReadyPC\(p\)\} inlineAction\/>/,
- 'Ready PC detail page passes active product and hardware to FPS calculator');
-assert.match(detailPage,/p\.category==='laptops'&&<GamingFps product=\{p\} games=\{data\.fpsGames\} hardware=\{fromLaptop\(p\)\} inlineAction\/>/,
- 'Laptop detail page passes active product and hardware to FPS calculator');
+assert.match(detailPage,/hasGamingActions=p\.category==='pc'\|\|p\.category==='laptops'/,
+ 'Gaming actions are enabled for ready PCs and laptops');
+assert.match(detailPage,/<GamingFps product=\{p\} games=\{data\.fpsGames\} hardware=\{p\.category==='pc'\?fromReadyPC\(p\):fromLaptop\(p\)\} inlineAction\/>/,
+ 'Ready PC and laptop detail pages pass their matching hardware to the FPS calculator');
+assert.match(detailPage,/hasGamingActions&&<>.*skp-pdp-share/,
+ 'Ready PC and laptop action rows include the share button');
 assert.match(readyMobile,/<GamingFps key=\{product\.id\} product=\{product\} games=\{games\} hardware=\{fromReadyPC\(product\)\} inlineAction\/>/,
  'Mobile ready-PC page retains the FPS calculator');
 assert.doesNotMatch(builds,/<GamingFps hardware=\{fromConfigurator\(selected,data\.products\)\}\/>/,
