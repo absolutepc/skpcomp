@@ -2,7 +2,8 @@
 export const coolingTypes=[
  {value:'Воздушное охлаждение',label:'Воздушное охлаждение'},
  {value:'Водяная система охлаждения',label:'Водяная система охлаждения (СЖО)'},
- {value:'Пассивное охлаждение',label:'Пассивное охлаждение'}
+ {value:'Пассивное охлаждение',label:'Пассивное охлаждение'},
+ {value:'Корпусный вентилятор',label:'Корпусный вентилятор'}
 ] as const;
 
 export const liquidRadiatorSizes=['240','360'] as const;
@@ -13,7 +14,8 @@ export function isLiquidCooling(value:string):boolean{
 }
 
 /** Unknown types must not be treated as air cooling in recommendations. */
-export function coolingGroup(value:string):'liquid'|'air'|'passive'|null{
+export function coolingGroup(value:string):'liquid'|'air'|'passive'|'case'|null{
+ if(/корпусн|case[ -]?(?:fan|cool)|вентилятор\s+(?:для\s+)?корпус/i.test(value))return 'case';
  if(isLiquidCooling(value))return 'liquid';
  if(/пассив|passive/i.test(value))return 'passive';
  if(/воздуш|башенн|air|tower/i.test(value))return 'air';
