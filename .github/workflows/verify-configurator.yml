@@ -29,6 +29,7 @@ jobs:
       - name: Model tests
         run: |
           pnpm test:configurator
+          node scripts/test-cpu-presets.mjs
           pnpm test:fps
           pnpm test:gallery
           pnpm test:hero
