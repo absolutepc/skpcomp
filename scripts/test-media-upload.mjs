@@ -31,6 +31,30 @@ try{
   assert.equal(saved.headers.get('content-type'),'image/png');
   assert.deepEqual(new Uint8Array(await saved.arrayBuffer()),bytes);
  }
- console.log('Media integration: 512 KiB, 2 MiB and 8 MiB uploads/readback passed; oversized file rejected.');
+
+ // Game cover upload must accept real JPG MIME, validate a known game ID,
+ // and return a publicly readable game-specific R2 object.
+ const jpg=new Uint8Array(640);
+ jpg.set([255,216,255,224,0,16,74,70,73,70]);
+ const cover=new FormData();
+ cover.append('assetType','fps-game');
+ cover.append('gameId','bf6');
+ cover.append('file',new Blob([jpg],{type:'image/jpeg'}),'cover.jpg');
+ const gameResponse=await fetch(origin+'/api/media',{method:'POST',headers:{Origin:origin},body:cover});
+ const gameResult=await gameResponse.json();
+ assert.equal(gameResponse.status,201,JSON.stringify(gameResult));
+ assert.match(gameResult.key,/^fps-games\/bf6\/[0-9a-f-]{36}\.jpg$/);
+ const gameGet=await fetch(origin+gameResult.url);
+ assert.equal(gameGet.status,200);
+ assert.equal(gameGet.headers.get('content-type'),'image/jpeg');
+ assert.deepEqual(new Uint8Array(await gameGet.arrayBuffer()),jpg);
+ const invalidGame=new FormData();
+ invalidGame.append('assetType','fps-game');
+ invalidGame.append('gameId','nonexistent-game');
+ invalidGame.append('file',new Blob([jpg],{type:'image/jpeg'}),'cover.jpg');
+ const badGameResponse=await fetch(origin+'/api/media',{method:'POST',headers:{Origin:origin},body:invalidGame});
+ assert.equal(badGameResponse.status,400);
+ console.log('Media integration passed: product PNG uploads/readback at 512 KiB, 2 MiB and 8 MiB, game JPEG cover/readback, invalid game and oversized upload.');
+
 }catch(error){console.error(logs);throw error}
 finally{child.kill('SIGTERM')}
