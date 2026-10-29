@@ -31,6 +31,7 @@ jobs:
           pnpm test:configurator
           node scripts/test-cpu-presets.mjs
           pnpm test:fps
+          node scripts/test-laptops.mjs
           pnpm test:gallery
           node scripts/test-product-media-path.mjs
           pnpm test:hero
