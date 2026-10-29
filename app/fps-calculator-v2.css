@@ -154,23 +154,15 @@
  margin-top:12px;color:#d6dcdf;font-size:10px;
 }
 .skp-fps-v2-additional>div{min-width:0;display:flex;align-items:stretch}
-.skp-fps-v2-additional .skp-fps-v2-miniselect{
- display:flex;flex:1;flex-direction:column;gap:7px;
- justify-content:space-between;min-width:0;font-size:11px;color:#e7e8eb;
-}
-.skp-fps-v2-miniselect select{
- display:block;width:100%;height:44px;padding:0 12px;
- border:1px solid #414a52;border-radius:9px;
- background:#151b1e;color:#f6f6f5;font-size:11px;
-}
+.skp-fps-v2-additional .skp-fps-v2-select{flex:1}
 .skp-fps-v2-additional .skp-fps-v2-tgp{
  display:flex;flex:1;flex-direction:column;justify-content:space-between;
  gap:7px;min-width:0;font-size:11px;color:#e7e8eb;
 }
 .skp-fps-v2-tgp input{width:100%;height:44px}
 
-.skp-fps-v2-miniselect,.skp-fps-v2-tgp{display:flex;align-items:center;gap:8px}
-.skp-fps-v2-miniselect select,.skp-fps-v2-tgp input{
+.skp-fps-v2-tgp{display:flex;align-items:center;gap:8px}
+.skp-fps-v2-tgp input{
  height:36px;border:1px solid #414a52;border-radius:8px;
  background:#151b1e;color:#f6f6f5;padding:0 10px;font-size:11px;
 }

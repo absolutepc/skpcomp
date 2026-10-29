@@ -171,10 +171,15 @@ export default function FpsCalculatorContent({hardware,product,games,onClose,clo
       </button>
      </div>}
      {safeUpscaling!=='native'&&<div className="skp-fps-v2-extra-quality">
-      <label className="skp-fps-v2-miniselect">Режим {safeUpscaling.toUpperCase()}
-       <select value={quality} onChange={event=>setQuality(event.target.value as UpscalingQuality)}>
-        {upscalingQualities.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
-       </select>
+      <label className="skp-fps-v2-select">Режим {safeUpscaling.toUpperCase()}
+       <span className="skp-fps-v2-select-field">
+        <Settings2 size={20} aria-hidden="true"/>
+        <span className="skp-fps-v2-select-value" aria-hidden="true">{upscalingQualities.find(option=>option.value===quality)?.label||quality}</span>
+        <ChevronDown size={17} aria-hidden="true"/>
+        <select aria-label={`Режим ${safeUpscaling.toUpperCase()}`} value={quality} onChange={event=>setQuality(event.target.value as UpscalingQuality)}>
+         {upscalingQualities.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
+        </select>
+       </span>
       </label>
      </div>}
      <div className="skp-fps-v2-extra-tgp">

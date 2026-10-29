@@ -52,13 +52,14 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
     </div>
     <div className="skp-pdp-price">{p.price>0?money(p.price):'Цена по запросу'}</div>
     <div className="skp-pdp-availability"><span className={p.stock&&p.price>0?'available':''}>● {p.price===0?'Уточните цену и наличие':p.stock?'В наличии':'Под заказ'}</span><a href="/contacts" onClick={go('/contacts')}><MapPin size={13}/>{STORE_ADDRESS}</a></div>
-    <div className="skp-pdp-buy">
+    <div className={"skp-pdp-buy"+(p.category==='pc'?' skp-pdp-buy-pc':'')}>
      {p.price>0&&<div className="skp-pdp-quantity"><button aria-label="Уменьшить количество" disabled={quantity===1} onClick={()=>setQuantity(v=>Math.max(1,v-1))}><Minus size={16}/></button><output aria-live="polite" aria-label="Количество">{quantity}</output><button aria-label="Увеличить количество" disabled={quantity===99} onClick={()=>setQuantity(v=>Math.min(99,v+1))}><Plus size={16}/></button></div>}
      {p.price>0?<button className="skp-pdp-cart" onClick={()=>add(Array(quantity).fill(p.id))}><ShoppingBag size={19}/><span>В корзину</span></button>:data.whatsapp?<a className="skp-pdp-cart" target="_blank" rel="noreferrer" href={'https://wa.me/'+data.whatsapp+'?text='+encodeURIComponent('Здравствуйте! Подскажите цену и наличие: '+p.name)}>Уточнить цену</a>:<span className="skp-pdp-inquiry">Уточните стоимость у магазина</span>}
      <button className="skp-pdp-icon" aria-label={favorites.includes(p.id)?'Убрать из избранного':'В избранное'} aria-pressed={favorites.includes(p.id)} onClick={()=>fav(p.id)}><Heart size={20} fill={favorites.includes(p.id)?'currentColor':'none'}/></button>
      <button className="skp-pdp-icon" aria-label={compared.includes(p.id)?'Убрать из сравнения':'Сравнить'} aria-pressed={compared.includes(p.id)} onClick={()=>compare(p)}><GitCompareArrows size={20}/></button>
+    {p.category==='pc'&&<><GamingFps product={p} games={data.fpsGames} hardware={fromReadyPC(p)} inlineAction/><button type="button" className="button outline skp-pdp-share" aria-label="Поделиться ссылкой на ПК" title="Поделиться" onClick={()=>void share()}><Share2 size={18}/><span>Поделиться</span></button></>}
     </div>
-    {p.category==='pc'&&<div className="skp-pdp-pc-actions"><GamingFps product={p} games={data.fpsGames} hardware={fromReadyPC(p)} inlineAction/><button type="button" className="button outline" onClick={()=>void share()}><Share2 size={18}/>Поделиться</button>{shareNotice&&<span role="status">{shareNotice}</span>}</div>}
+    {shareNotice&&<span className="skp-pdp-share-notice" role="status">{shareNotice}</span>}
     {p.category==='laptops'&&<GamingFps product={p} games={data.fpsGames} hardware={fromLaptop(p)} inlineAction/>}
     <div className="skp-pdp-services"><a href="/contacts" onClick={go('/contacts')}><Truck/><span>Доставка<small>Условия у менеджера</small></span></a><a href="/contacts" onClick={go('/contacts')}><PackageCheck/><span>Самовывоз<small>В магазине SKP</small></span></a><a href="/installments" onClick={go('/installments')}><CreditCard/><span>Рассрочка<small>До 12 месяцев, 4%/мес.</small></span></a></div>
    </div>
