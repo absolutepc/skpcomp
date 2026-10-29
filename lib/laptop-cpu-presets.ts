@@ -51,7 +51,7 @@ export function findLaptopCpuPreset(model:string):LaptopCpuPreset|undefined{
 export function applyLaptopCpuPreset(product:Product,model:string):Product{
  if(product.category!=='laptops')return product;
  const preset=findLaptopCpuPreset(model);
- const specs={...product.specs,cpu:model};
+ const specs:Record<string,string>={...product.specs,cpu:model};
  for(const key of laptopCpuSpecFields)specs[key]=preset?.specs[key]??'';
  return {...product,specs};
 }
