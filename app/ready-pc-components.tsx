@@ -27,13 +27,14 @@ function matchPart(value:string,key:string,catalog:Product[]):Product|undefined{
 }
 export default function ReadyPcComponents({product,catalog}:{product:Product;catalog:Product[]}){
  if(product.category!=='pc')return null;
- const requiredComponents=['cpu','gpu','motherboard','ram','ssd','psu','cooler','case'] as const;
+ const preferred=['cpu','gpu','motherboard','ram','ssd','psu','cooler','case'];
  const allRows=getBuildRows(product);
- const rows=requiredComponents.flatMap(key=>allRows.filter(row=>row.key===key).slice(0,1));
- if(!rows.length)return null;
+ // Show everything entered by the administrator, including additional drives,
+ // case fans, networking, OS, and custom extras. Keep the core eight first.
+ const rows=[...preferred.flatMap(key=>allRows.filter(row=>row.key===key)),...allRows.filter(row=>!preferred.includes(row.key))];
  return <section className="skp-ready-pc-parts" aria-labelledby="skp-ready-pc-parts-title">
-  <div className="skp-ready-pc-parts-heading"><span>КОМПЛЕКТАЦИЯ СБОРКИ</span><h2 id="skp-ready-pc-parts-title">Комплектация</h2><p>Все компоненты этой сборки подобраны для максимальной производительности и стабильной работы. Нажмите на компонент, чтобы узнать подробнее.</p></div>
-  <div className="skp-ready-pc-parts-list">{rows.map((row,index)=>{
+  <div className="skp-ready-pc-parts-heading"><span>КОМПЛЕКТАЦИЯ СБОРКИ</span><h2 id="skp-ready-pc-parts-title">Комплектация</h2><p>Здесь перечислены комплектующие, указанные для этого готового ПК. Нажмите на товар, чтобы открыть его страницу в каталоге.</p></div>
+  {!rows.length?<p className="skp-ready-pc-parts-empty">Для этой сборки комплектация пока не указана. Уточните список установленных компонентов у менеджера SKP.</p>:<div className="skp-ready-pc-parts-list">{rows.map((row,index)=>{
    const matched=matchPart(row.value,row.key,catalog);
    const image=matched?getProductImages(matched)[0]:undefined;
    const Icon=categoryIcons[matched?.category||row.key]||Package;
@@ -50,6 +51,6 @@ export default function ReadyPcComponents({product,catalog}:{product:Product;cat
      {href&&<a className="skp-ready-pc-part-more" href={href}>Перейти к товару <span aria-hidden="true">→</span></a>}
     </div>
    </article>;
-  })}</div>
+  })}</div>}
  </section>;
 }
