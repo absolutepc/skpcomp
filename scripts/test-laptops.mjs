@@ -116,4 +116,12 @@ assert.match(shop,/<AdminLaptopSpecs product=\{editing\} onChange=\{setEditing\}
 assert.match(editor,/laptopFieldGroups\.map\(/);
 assert.match(editor,/laptopProcessors\.filter\(/);
 assert.match(editor,/laptopGraphics\.filter\(/);
+const laptopCss=readFileSync(new URL('../app/admin-laptop-specs.css',import.meta.url),'utf8');
+assert.match(shop,/skp-admin-laptop-gallery/,'Gallery spacing scope is limited to laptop editing');
+assert.match(laptopCss,/\.skp-laptop-editor\s*>\s*\.skp-laptop-model-picker[\s\S]*?margin:0;/,
+ 'Laptop model panels must override global section margins');
+assert.match(laptopCss,/\.skp-laptop-editor\s*>\s*\.skp-laptop-spec-section[\s\S]*?margin:0;/,
+ 'Laptop specification sections must also match gallery width');
+assert.match(laptopCss,/\.skp-admin-laptop-gallery\s*\{\s*padding-bottom:20px;/,
+ 'Gallery needs distinct breathing room before the laptop info notice');
 console.log('Laptop tests passed: grouped specifications, guided CPU/GPU choices, preserved product data and FPS integration.');
