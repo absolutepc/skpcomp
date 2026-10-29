@@ -78,3 +78,4 @@ export default function AdminCpuPreset({product,onChange}:{product:Product;onCha
   </>}
   {notice&&<p className="skp-gpu-preset-notice" role="status">{notice}</p>}
  </section>;
+}
