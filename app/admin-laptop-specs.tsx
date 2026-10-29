@@ -6,6 +6,7 @@ import {fieldValue} from '../lib/catalog';
 import {laptopFieldChoices,laptopFieldGroups} from '../lib/laptop-specs';
 import {laptopGraphics,laptopProcessors} from '../lib/laptop-models';
 import {applyLaptopCpuPreset,findLaptopCpuPreset} from '../lib/laptop-cpu-presets';
+import {applyLaptopGpuPreset,findLaptopGpuPreset} from '../lib/laptop-gpu-presets';
 import './admin-laptop-specs.css';
 
 function QuickChoice({label,value,choices,numeric,onChange}:{
@@ -33,6 +34,7 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
  const cpuPreset=laptopProcessors.find(p=>p.name===currentCpu);
  const cpuSpecsPreset=findLaptopCpuPreset(currentCpu);
  const gpuPreset=laptopGraphics.find(p=>p.name===currentGpu);
+ const gpuSpecsPreset=findLaptopGpuPreset(currentGpu);
  const [cpuBrand,setCpuBrand]=useState(cpuPreset?.brand||'');
  const [cpuLine,setCpuLine]=useState(cpuPreset?.line||'');
  const [cpuGeneration,setCpuGeneration]=useState(cpuPreset?.generation||'');
@@ -53,6 +55,7 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
 
  const change=(key:string,value:string)=>onChange({...product,specs:{...product.specs,[key]:value}});
  const selectCpu=(name:string)=>onChange(applyLaptopCpuPreset(product,name));
+ const selectGpu=(name:string)=>onChange(applyLaptopGpuPreset(product,name));
  const cpuLines=[...new Set(laptopProcessors.filter(p=>p.brand===cpuBrand).map(p=>p.line))];
  const cpuGenerations=[...new Set(laptopProcessors.filter(p=>p.brand===cpuBrand&&p.line===cpuLine).map(p=>p.generation))];
  const cpus=laptopProcessors.filter(p=>p.brand===cpuBrand&&p.line===cpuLine&&p.generation===cpuGeneration);
@@ -96,16 +99,27 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
     <label>2. Поколение<select value={gpuGeneration} disabled={!gpuBrand} onChange={e=>{setGpuGeneration(e.target.value);setCustomGpu(false)}}>
      <option value="">Выбрать</option>{gpuGenerations.map(v=><option key={v} value={v}>{v}</option>)}
     </select></label>
-    <label>3. Модель<select value={!customGpu&&gpus.some(v=>v.name===currentGpu)?currentGpu:''} disabled={!gpuGeneration} onChange={e=>{if(e.target.value){change('gpu',e.target.value);setCustomGpu(false)}}}>
+    <label>3. Модель<select value={!customGpu&&gpus.some(v=>v.name===currentGpu)?currentGpu:''} disabled={!gpuGeneration} onChange={e=>{if(e.target.value){selectGpu(e.target.value);setCustomGpu(false)}}}>
      <option value="">Выбрать модель</option>{gpus.map(v=><option key={v.name} value={v.name}>{v.name}</option>)}
     </select></label>
    </div>
    <div className="skp-laptop-current-model"><span>Графика:</span><strong>{currentGpu||'Не выбрана'}</strong>
     <button type="button" onClick={()=>setCustomGpu(v=>!v)}>{customGpu?'Скрыть ввод':'Другая модель'}</button>
    </div>
-   {customGpu&&<label className="skp-laptop-manual-model">Точная модель встроенной или дискретной графики<input type="text" maxLength={200} value={currentGpu} onChange={e=>change('gpu',e.target.value)}/></label>}
+   {gpuSpecsPreset&&!customGpu&&<div className="skp-laptop-cpu-preset-actions">
+    <button className="skp-laptop-preset-apply" type="button" onClick={()=>selectGpu(currentGpu)}>Заполнить характеристики GPU повторно</button>
+    <a href={gpuSpecsPreset.source} target="_blank" rel="noopener noreferrer">Характеристики производителя ↗</a>
+   </div>}
+   {gpuSpecsPreset?.vramOptions&&<label className="skp-laptop-manual-model">Объём видеопамяти зависит от версии GPU
+    <select value={product.specs?.gpuVram||''} onChange={e=>change('gpuVram',e.target.value)}>
+     <option value="">Выбрать по характеристикам ноутбука</option>
+     {gpuSpecsPreset.vramOptions.map(size=><option key={size} value={size}>{size} ГБ</option>)}
+    </select>
+   </label>}
+   {!gpuSpecsPreset&&currentGpu&&!customGpu&&<p className="skp-laptop-cpu-no-data">Для этой модели пока нет полного набора данных GPU. Заполните известные характеристики вручную.</p>}
+   {customGpu&&<label className="skp-laptop-manual-model">Точная модель встроенной или дискретной графики<input type="text" maxLength={200} value={currentGpu} onChange={e=>selectGpu(e.target.value)}/></label>}
   </section>
-  <p className="skp-laptop-verification">Boost CPU и TDP берутся из спецификаций производителя, если модель есть в справочнике. TDP с диапазоном остаётся диапазоном; реальные лимиты питания и частоты могут зависеть от ноутбука. Видеопамять, TGP с Dynamic Boost, тип экрана, яркость, порты и батарею указывайте по точной модели ноутбука.</p>
+  <p className="skp-laptop-verification">Характеристики CPU и GPU автоматически подставляются из справочника производителя. Если у видеокарты бывают разные объёмы VRAM, выберите вариант конкретного ноутбука. TGP с Dynamic Boost, MUX, экран, порты и батарея заполняются отдельно по точной модели ноутбука.</p>
   {laptopFieldGroups.map(group=>{
    const fields=group.fields.filter(field=>field.key!=='cpu'&&field.key!=='gpu');
    const filled=fields.filter(field=>fieldValue(product,field.key).trim()).length;
