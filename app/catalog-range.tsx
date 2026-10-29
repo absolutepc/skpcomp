@@ -2,7 +2,7 @@
 import type {CSSProperties} from 'react';
 
 type RangeValue={min?:string;max?:string};
-export default function CatalogRange({label,values,value,onChange,showLimits=true}:{showLimits?:boolean;label:string;values:number[];value:RangeValue;onChange:(value:RangeValue)=>void}){
+export default function CatalogRange({label,values,value,onChange,showLimits=false}:{showLimits?:boolean;label:string;values:number[];value:RangeValue;onChange:(value:RangeValue)=>void}){
  const valid=values.filter(Number.isFinite);
  const min=valid.length?Math.min(...valid):0;
  const max=valid.length?Math.max(...valid):0;
