@@ -200,3 +200,156 @@ main.skp-admin-workspace{
  .skp-admin-workspace .skp-brands-list,.skp-admin-workspace .skp-brands-editor{background:#151b1d}
  .skp-admin-edit-backdrop .modal{background:#111819}
 }
+
+
+/* October 29 visual fixes: the dark input base styles accidentally wrapped
+ * search fields in a second border/padded rectangle. Keep ONE seamless field.
+ * Safari paints <input type=search> differently unless explicitly reset. */
+.skp-admin-workspace .skp-admin-global-search,
+.skp-admin-workspace .skp-brands-search,
+.skp-admin-workspace .skp-admin-local-search{
+ display:flex;
+ flex-direction:row;
+ align-items:center;
+ gap:10px;
+ border:0;
+ box-shadow:none;
+ background:#1b2022;
+ border-radius:9px;
+ min-width:0;
+}
+.skp-admin-workspace .skp-admin-global-search{padding:0 16px;height:46px}
+.skp-admin-workspace .skp-brands-search{padding:0 12px;height:43px;margin-bottom:10px}
+.skp-admin-workspace .skp-admin-global-search>svg,
+.skp-admin-workspace .skp-brands-search>svg,
+.skp-admin-workspace .skp-admin-local-search>svg{flex:0 0 auto}
+.skp-admin-workspace .skp-admin-global-search input,
+.skp-admin-workspace .skp-brands-search input[type="search"],
+.skp-admin-workspace .skp-admin-local-search input{
+ display:block;
+ flex:1 1 auto;
+ width:100%;
+ min-width:0;
+ height:100%;
+ min-height:0;
+ margin:0;
+ padding:0;
+ color:#eef1f1;
+ background:transparent!important;
+ border:0!important;
+ border-radius:0;
+ box-shadow:none!important;
+ outline:0!important;
+ -webkit-appearance:none;
+ appearance:none;
+ font-size:13px;
+ line-height:normal;
+}
+.skp-admin-workspace .skp-brands-search input[type="search"]::-webkit-search-decoration,
+.skp-admin-workspace .skp-brands-search input[type="search"]::-webkit-search-results-button,
+.skp-admin-workspace .skp-brands-search input[type="search"]::-webkit-search-results-decoration{
+ display:none;
+}
+.skp-admin-workspace .skp-admin-global-search:focus-within,
+.skp-admin-workspace .skp-brands-search:focus-within,
+.skp-admin-workspace .skp-admin-local-search:focus-within{
+ outline:1px solid #b6a12a;
+ outline-offset:1px;
+}
+.skp-admin-workspace .skp-admin-global-search input::placeholder,
+.skp-admin-workspace .skp-brands-search input::placeholder{color:#899496}
+
+/* Category area already lives in the product panel. Do not render another
+ * framed card around it; keep only individual category chip boundaries. */
+.skp-admin-workspace .skp-admin-products>.skp-admin-card{
+ border:0;
+ background:transparent;
+ box-shadow:none;
+ padding:0;
+}
+.skp-admin-workspace .skp-admin-category-picker.skp-admin-category-always-visible{
+ margin:0 0 20px;
+ padding:0;
+ border:0;
+ border-radius:0;
+ background:transparent;
+ box-shadow:none;
+}
+.skp-admin-workspace .skp-admin-category-section{
+ padding:0;
+ background:transparent;
+ border:0;
+}
+.skp-admin-workspace .skp-brands-list,.skp-admin-workspace .skp-brands-editor{
+ box-shadow:none;
+}
+
+/* The photo column needs a transparent, fixed-size thumbnail holder.
+ * Previous theme introduced solid backgrounds around isolated product art.
+ * Keep every row and its image vertically centered (Safari desktop included). */
+.skp-admin-workspace .skp-admin-data-table{
+ border-collapse:collapse;
+ border-spacing:0;
+}
+.skp-admin-workspace .skp-admin-data-table tbody tr{
+ height:70px;
+ background:transparent;
+}
+.skp-admin-workspace .skp-admin-data-table tbody td{
+ height:70px;
+ vertical-align:middle;
+ padding-top:9px;
+ padding-bottom:9px;
+ line-height:1.35;
+ background:transparent;
+}
+.skp-admin-workspace .skp-admin-data-table tbody tr:hover td{background:#202525}
+.skp-admin-workspace .skp-admin-data-table .skp-admin-product-photo,
+.skp-admin-workspace .skp-admin-mobile-product .skp-admin-product-photo{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ width:58px;
+ height:50px;
+ margin:0;
+ padding:0;
+ background:transparent;
+ border:0;
+ box-shadow:none;
+ overflow:hidden;
+}
+.skp-admin-workspace .skp-admin-product-photo img{
+ display:block;
+ width:100%;
+ height:100%;
+ max-width:100%;
+ max-height:100%;
+ margin:auto;
+ object-fit:contain;
+ object-position:center;
+ background:transparent;
+}
+.skp-admin-workspace .skp-admin-data-table .skp-admin-name{
+ display:block;
+ margin:0;
+ padding:0;
+ line-height:1.4;
+}
+.skp-admin-workspace .skp-admin-data-table .skp-admin-brand-name{
+ display:block;
+ margin:4px 0 0;
+ line-height:1.3;
+}
+@media(max-width:700px){
+ .skp-admin-workspace .skp-admin-global-search.mobile-expanded{
+  padding:0 12px;
+  border:0;
+ }
+ .skp-admin-workspace .skp-admin-mobile-product .skp-admin-product-photo{
+  width:100%;
+  height:100%;
+  min-height:0;
+  align-self:center;
+ }
+ .skp-admin-workspace .skp-admin-global-search input{font-size:16px}
+}
