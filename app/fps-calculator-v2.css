@@ -150,10 +150,16 @@
 .skp-fps-v2-select-field:focus-within{border-color:#ffe500;box-shadow:0 0 0 1px #ffe50024}
 .skp-fps-v2-additional{
  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;
- align-items:stretch;min-height:66px;
+ align-items:start;grid-auto-rows:74px;min-height:74px;
  margin-top:12px;color:#d6dcdf;font-size:10px;
 }
-.skp-fps-v2-additional>div{min-width:0;display:flex;align-items:stretch}
+.skp-fps-v2-additional>div{min-width:0;display:flex;align-items:flex-start}
+/* Keep the quality selector in a stable slot even without upscaling.
+   The inactive state dims the field without changing its geometry. */
+.skp-fps-v2-extra-quality.is-inactive{opacity:.48}
+.skp-fps-v2-extra-quality.is-inactive .skp-fps-v2-select-field{cursor:not-allowed}
+.skp-fps-v2-extra-quality.is-inactive select{cursor:not-allowed}
+.skp-fps-v2-additional .skp-fps-v2-select-field{box-sizing:border-box}
 .skp-fps-v2-additional .skp-fps-v2-select{flex:1}
 .skp-fps-v2-additional .skp-fps-v2-tgp{
  display:flex;flex:1;flex-direction:column;justify-content:space-between;
@@ -169,7 +175,7 @@
 .skp-fps-v2-tgp input{width:95px}
 .skp-fps-v2-additional .skp-fps-v2-ray{
  display:flex;align-items:center;justify-content:flex-start;
- width:100%;height:100%;min-height:53px;padding:10px 12px;
+ width:100%;height:74px;min-height:74px;max-height:74px;padding:10px 12px;
  gap:10px;border:1px solid #39434c;border-radius:10px;
  background:#161c20;color:#f1f3f4;text-align:left;cursor:pointer;
  box-sizing:border-box;
@@ -307,9 +313,9 @@
  outline:2px solid #ffe500;outline-offset:2px;
 }
 @media(max-width:760px){
- .skp-fps-v2-additional{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;min-height:58px}
+ .skp-fps-v2-additional{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:67px;gap:9px;min-height:67px}
  .skp-fps-v2-extra-tgp{grid-column:1/-1}
- .skp-fps-v2-additional .skp-fps-v2-ray{min-height:59px;padding:8px}
+ .skp-fps-v2-additional .skp-fps-v2-ray{height:67px;min-height:67px;max-height:67px;padding:8px}
  .skp-fps-v2-ray-switch{flex-basis:37px}
  .skp-fps-v2-ray-label{font-size:10px}
 }
