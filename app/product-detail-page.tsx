@@ -32,8 +32,10 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
  // The monitor editor has detailed groups; keep the six most helpful basic specs
  // visible before the collapsed full list, without omitting any other attributes.
  const monitorMainSpecs=['diagonal','resolution','panel','refresh','response','hdr'];
- const rows=p.category==='monitor'
-  ?[...allRows.filter(row=>monitorMainSpecs.includes(row.key)).sort((a,b)=>monitorMainSpecs.indexOf(a.key)-monitorMainSpecs.indexOf(b.key)),...allRows.filter(row=>!monitorMainSpecs.includes(row.key))]
+ const laptopMainSpecs=['cpu','gpu','capacity','driveCapacity','diagonal','resolution','panel','refresh','gpuPowerWatts'];
+ const priority=p.category==='monitor'?monitorMainSpecs:p.category==='laptops'?laptopMainSpecs:[];
+ const rows=priority.length
+  ?[...allRows.filter(row=>priority.includes(row.key)).sort((a,b)=>priority.indexOf(a.key)-priority.indexOf(b.key)),...allRows.filter(row=>!priority.includes(row.key))]
   :allRows;
  const category=components[p.category]||peripherals[p.category]||({pc:'Готовые ПК',laptops:'Ноутбуки',furniture:'Компьютерная мебель',peripherals:'Периферия'} as Record<string,string>)[p.category]||'Каталог';
  const categoryHref=p.category==='pc'?'/pc':'/catalog/'+p.category;
