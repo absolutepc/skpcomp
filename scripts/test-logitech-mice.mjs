@@ -53,7 +53,8 @@ const route=readFileSync(new URL('../app/api/store/route.ts',import.meta.url),'u
 assert.match(route,/upgradeLogitechGamingMice\(products,seed\.products,oldVersion\)/,'D1 upgrade connected');
 // Two Superlight 2 color variants keep their unique IDs and color metadata,
  // while their public names omit the redundant color suffix.
- const catalog=load('lib/catalog.ts',{'./seed':{seed},'./product-photos':{productPhotos:{}},'./product-brands':{gpuChipBrand:()=>''}});
+ const laptopSpecs=load('lib/laptop-specs.ts');
+ const catalog=load('lib/catalog.ts',{'./seed':{seed},'./product-photos':{productPhotos:{}},'./product-brands':{gpuChipBrand:()=>''},'./laptop-specs':laptopSpecs});
  const white=seed.products.find(p=>p.id==='mouse');
  const black=seed.products.find(p=>p.id==='logitech-pro-x-superlight-2-black');
  for(const product of [white,black]){
