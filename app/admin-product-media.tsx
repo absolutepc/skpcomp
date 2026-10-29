@@ -3,6 +3,7 @@ import {useRef,useState} from 'react';
 import {ArrowLeft,ArrowRight,Camera,Check,ImagePlus,LoaderCircle,Star,Trash2} from 'lucide-react';
 import type {Product} from '../lib/seed';
 import {getProductImages,MAX_GALLERY_IMAGES,updateProductGallery} from '../lib/product-gallery';
+import {productMediaFolder} from '../lib/product-media-path';
 
 type Props={
  product:Product;
@@ -65,6 +66,17 @@ export default function AdminProductMedia({product,change}:Props){
     // The actual filename is not needed because the API generates a safe UUID.
     const data=new FormData();
     data.append('productId',product.id);
+    data.append('productCategory',product.category);
+    data.append('productName',product.name);
+    data.append('productBrand',product.brand);
+    data.append('productArt',product.art);
+    data.append('productSocket',product.socket||'');
+    data.append('productMemory',product.memory||'');
+    data.append('specSocket',product.specs?.socket||'');
+    data.append('specMemory',product.specs?.memory||'');
+    data.append('gpuChipBrand',product.specs?.gpuChipBrand||'');
+    data.append('gpuModel',product.specs?.gpu||'');
+    data.append('coolingType',product.specs?.coolingType||'');
     data.append('file',image,'skp-product-image.'+extension);
     let response:Response;
     try{response=await fetch('/api/media',{method:'POST',body:data})}
@@ -93,7 +105,7 @@ export default function AdminProductMedia({product,change}:Props){
   finally{setBusy(false);if(picker.current)picker.current.value=''}
  }
  return <section className="skp-admin-media">
-  <div className="skp-admin-media-heading"><div><h3>Галерея товара</h3><p>Для каждого цвета своя галерея. Первая фотография показывается в каталоге. Принимаются PNG/WebP с прозрачным фоном. WebP используется, когда поддерживается браузером; в Safari допускается PNG.</p></div><span>{images.length} / {MAX_GALLERY_IMAGES}</span></div>
+  <div className="skp-admin-media-heading"><div><h3>Галерея товара</h3><p>Для каждого цвета своя галерея. Первая фотография показывается в каталоге. Принимаются PNG/WebP с прозрачным фоном. WebP используется, когда поддерживается браузером; в Safari допускается PNG.</p><p>Папка R2: <code>{productMediaFolder(product)}/{product.id}/</code></p></div><span>{images.length} / {MAX_GALLERY_IMAGES}</span></div>
   <input ref={picker} className="skp-media-file-input" type="file" accept="image/png,image/webp" multiple onChange={event=>void upload(event.target.files)} disabled={busy||images.length>=MAX_GALLERY_IMAGES} aria-label="Выбрать фотографии товара"/>
   <button type="button" className="skp-media-upload" disabled={busy||images.length>=MAX_GALLERY_IMAGES} onClick={()=>picker.current?.click()}>
    {busy?<LoaderCircle className="skp-media-spinner" size={20}/>:<ImagePlus size={20}/>}
