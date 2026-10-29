@@ -60,6 +60,14 @@ assert(api.indexOf('if(!await adminAuth(request))')<api.indexOf("searchParams.ge
 assert(api.includes("status='completed' THEN total ELSE 0"),'Only completed orders counted in amount');
 const theme=readFileSync(path.join(root,'app/admin-dark-theme.css'),'utf8');
 const brandsView=readFileSync(path.join(root,'app/admin-brands.tsx'),'utf8');
+const desktopAndTabletTheme=theme.split('@media(max-width:700px)')[0];
+assert(/body:has\(\.skp-admin-workspace\),\s*html:has\(\.skp-admin-workspace\)\{\s*background:#000;/.test(desktopAndTabletTheme),'Full-size admin document has black background');
+assert(desktopAndTabletTheme.includes('--skp-admin-bg:#000;'),'Universal admin CSS token is pure black');
+assert(desktopAndTabletTheme.includes('--skp-admin-panel:#101010;'),'Cards retain subtle separation from black workspace');
+assert(desktopAndTabletTheme.includes('.skp-admin-workspace .skp-admin-work,')&&desktopAndTabletTheme.includes('.skp-admin-workspace .skp-admin-main{'),'Desktop/tablet admin work area is explicitly black');
+assert(desktopAndTabletTheme.includes('.skp-admin-workspace .skp-admin-sidebar{background:#000;'),'Desktop/tablet sidebar uses pure black');
+assert(desktopAndTabletTheme.includes('.skp-admin-workspace .skp-admin-topbar{background:#000;'),'Desktop/tablet topbar uses pure black');
+assert(desktopAndTabletTheme.includes('.skp-admin-workspace .skp-admin-menu>.skp-admin-tab.active{background:#ffe500;'),'Yellow selected menu item stays the same');
 assert(theme.includes('.skp-admin-workspace .skp-admin-global-search input,'),'Global admin search has its own seamless input rule');
 assert(theme.includes('.skp-admin-workspace .skp-brands-search input[type="search"],'),'Brand search has its own seamless input rule');
 assert(theme.includes('padding:0!important;')&&theme.includes('border:0!important;')&&theme.includes('background:transparent!important;'),'Search must not have a second framed input');
