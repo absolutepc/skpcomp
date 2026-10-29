@@ -8,6 +8,7 @@ import {upgradeReadyPcDemos} from '../../../lib/ready-pc-demos';
 import {validateFpsGames} from '../../../lib/fps-game-catalog';
 import {productPhotos} from '../../../lib/product-photos';
 import {buildComponentFields} from '../../../lib/build-components';
+import {maxProductSpecFields} from '../../../lib/catalog';
 import {isProductImageUrl,MAX_GALLERY_IMAGES} from '../../../lib/product-gallery';
 import {validateHeroSlides,upgradeRogSwiftOledSlide,HERO_SLIDES_VERSION,upgradeComputerHeroImage,COMPUTER_HERO_IMAGE_VERSION,swapSecondAndFourthHeroSlides,HERO_SLIDE_ORDER_VERSION} from '../../../lib/hero-slides';
 import {CATALOG_VERSION,FEATURED_MONITOR_ID,upgradeFeaturedMonitorProducts,linkFeaturedMonitorSlide} from '../../../lib/featured-monitor';
@@ -186,7 +187,7 @@ if(d.products.some((p:any)=>p.gallery!==undefined&&(
  p.gallery.some((url:unknown)=>typeof url!=='string'||!url||!isProductImageUrl(url))||
  new Set([p.image,...p.gallery]).size!==1+p.gallery.length
 )))return Response.json({error:'Проверьте фотографии галереи: максимум 16, без дубликатов'},{status:400});
-if(d.products.some((p:any)=>p.specs!==undefined&&(!p.specs||typeof p.specs!=='object'||Array.isArray(p.specs)||Object.keys(p.specs).length>80||Object.entries(p.specs).some(([k,v])=>k.length>50||typeof v!=='string'||v.length>300))))return Response.json({error:'Проверьте характеристики товаров'},{status:400});
+if(d.products.some((p:any)=>p.specs!==undefined&&(!p.specs||typeof p.specs!=='object'||Array.isArray(p.specs)||Object.keys(p.specs).length>maxProductSpecFields(typeof p.category==='string'?p.category:'')||Object.entries(p.specs).some(([k,v])=>k.length>50||typeof v!=='string'||v.length>300))))return Response.json({error:'Проверьте характеристики товаров'},{status:400});
 const validBuildFields=new Set<string>(buildComponentFields.map(field=>field.key));
 if(d.products.some((p:any)=>p.buildComponents!==undefined&&(
  !p.buildComponents||typeof p.buildComponents!=='object'||Array.isArray(p.buildComponents)||
