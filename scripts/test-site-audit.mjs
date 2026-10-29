@@ -55,7 +55,7 @@ assert(ordersAPI.includes("access_hash=?"),'Customer order lookup requires acces
 assert(ordersAPI.includes('const total=orderTotal(items)'),'Order totals are calculated on the server');
 assert(mediaAPI.includes('gameProfiles.some(game=>game.id===assetId)'),'FPS media uploads restrict game IDs');
 assert(mediaAPI.includes('FPS_MEDIA_KEY'),'FPS cover URLs have a dedicated R2 namespace');
-assert(reviewAPI.includes("status='pending'"),'Reviews are moderated before publication');
+assert(reviewAPI.includes("VALUES (?,?,?,?,?,'pending',?)")&&reviewAPI.includes("status='approved'"),'New reviews are pending until approved');
 for(const [label,file] of [
  ['Logo','public/images/skp-logo.jpg'],
  ['PC category','public/images/category-components.webp'],
