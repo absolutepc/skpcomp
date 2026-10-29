@@ -9,7 +9,7 @@ export const laptopFieldGroups:{title:string;fields:Field[]}[]=[
  {title:'Процессор и графика',fields:[
   f('cpu','Модель процессора'),f('cpuCores','Количество ядер CPU','шт.'),
   f('cpuThreads','Количество потоков CPU','шт.'),f('cpuBoost','Макс. частота CPU','ГГц'),
-  f('cpuPowerWatts','Номинальная мощность CPU','Вт'),f('integratedGpu','Встроенная графика'),
+  {...f('cpuPowerWatts','TDP / базовая мощность CPU','Вт'),numeric:false},f('integratedGpu','Встроенная графика'),
   f('gpu','Дискретная видеокарта'),f('gpuVram','Видеопамять','ГБ'),
   f('gpuMemoryType','Тип видеопамяти'),f('gpuPowerWatts','Мощность видеокарты (TGP с Dynamic Boost)','Вт'),
   f('muxSwitch','MUX Switch'),f('advancedOptimus','Advanced Optimus')
