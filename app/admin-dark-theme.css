@@ -1,35 +1,42 @@
 /*
  * SKP admin dark theme — shared across desktop and mobile.
- * The storefront palette is graphite/black with restrained SKP yellow highlights.
+ * SKP uses a true black workspace on all devices, with yellow accents and
+ * subtle near-black surfaces only inside cards, fields and controls.
  * All selectors are scoped to the admin workspace or product editor; the store
  * itself and the interactive hero-slide preview must not be recolored.
  */
 body:has(.skp-admin-workspace),
 html:has(.skp-admin-workspace){
- background:#090b0b;
+ background:#000;
  color:#f3f5f3;
 }
 main.skp-admin-workspace{
- --skp-admin-bg:#090b0b;
- --skp-admin-panel:#141718;
- --skp-admin-card:#191d1f;
- --skp-admin-field:#111517;
- --skp-admin-border:#303638;
+ --skp-admin-bg:#000;
+ --skp-admin-panel:#101010;
+ --skp-admin-card:#101010;
+ --skp-admin-field:#0e0e0e;
+ --skp-admin-border:#292929;
  --skp-admin-text:#f3f5f3;
  --skp-admin-muted:#aab1b3;
  --skp-admin-yellow:#ffe500;
  background:var(--skp-admin-bg);
  color:var(--skp-admin-text);
 }
-.skp-admin-workspace .skp-admin-layout{background:var(--skp-admin-bg);color:var(--skp-admin-text)}
-.skp-admin-workspace .skp-admin-sidebar{background:#0e1112;border-right:1px solid #292f30}
+.skp-admin-workspace .skp-admin-layout,
+.skp-admin-workspace .skp-admin-work,
+.skp-admin-workspace .skp-admin-main{
+ background:var(--skp-admin-bg);
+ color:var(--skp-admin-text);
+}
+.skp-admin-workspace .skp-admin-sidebar{background:#000;border-right:1px solid #292929}
+.skp-admin-workspace .skp-admin-brand{background:#000}
 .skp-admin-workspace .skp-admin-tab{color:#d0d4d4}
 .skp-admin-workspace .skp-admin-menu>.skp-admin-tab:hover{background:#232829;color:#fff}
 .skp-admin-workspace .skp-admin-menu>.skp-admin-tab.active{background:#ffe500;color:#101112}
-.skp-admin-workspace .skp-admin-topbar{background:#101314;border-bottom:1px solid var(--skp-admin-border)}
+.skp-admin-workspace .skp-admin-topbar{background:#000;border-bottom:1px solid var(--skp-admin-border)}
 .skp-admin-workspace .skp-admin-global-search,
 .skp-admin-workspace .skp-admin-local-search,
-.skp-admin-workspace .skp-brands-search{background:#1b2022;color:#cbd2d2;border:1px solid #32393b}
+.skp-admin-workspace .skp-brands-search{background:#101010;color:#cbd2d2;border:1px solid #303030}
 .skp-admin-workspace .skp-admin-account{color:#eff1f1}
 .skp-admin-workspace .skp-admin-account>span{background:#2a2e30;color:#ffe500}
 .skp-admin-workspace .skp-admin-account small{color:var(--skp-admin-muted)}
@@ -64,9 +71,9 @@ main.skp-admin-workspace{
 .skp-admin-workspace select,.skp-admin-workspace textarea,
 .skp-admin-edit-backdrop input:not([type=checkbox]):not([type=radio]):not([type=range]),
 .skp-admin-edit-backdrop select,.skp-admin-edit-backdrop textarea{
- background:#111719;
+ background:var(--skp-admin-field);
  color:#f1f4f4;
- border:1px solid #3b4548;
+ border:1px solid #303030;
  color-scheme:dark;
 }
 .skp-admin-workspace input::placeholder,.skp-admin-workspace textarea::placeholder,
@@ -192,12 +199,12 @@ main.skp-admin-workspace{
 /* Mobile admin already uses dark shades; align its remaining desktop overrides. */
 @media(max-width:700px){
  main.skp-admin-workspace{background:#090b0b}
- .skp-admin-workspace .skp-admin-layout{background:#090b0b}
- .skp-admin-workspace .skp-admin-topbar{background:#101415}
- .skp-admin-workspace .skp-admin-sidebar{background:#0d1213}
- .skp-admin-workspace .skp-admin-global-search.mobile-expanded{background:#1b2224}
- .skp-admin-workspace .skp-admin-mobile-product,.skp-admin-workspace .skp-admin-stat{background:#171c1e}
- .skp-admin-workspace .skp-brands-list,.skp-admin-workspace .skp-brands-editor{background:#151b1d}
+ .skp-admin-workspace .skp-admin-layout{background:#000}
+ .skp-admin-workspace .skp-admin-topbar{background:#000}
+ .skp-admin-workspace .skp-admin-sidebar{background:#000}
+ .skp-admin-workspace .skp-admin-global-search.mobile-expanded{background:#101010}
+ .skp-admin-workspace .skp-admin-mobile-product,.skp-admin-workspace .skp-admin-stat{background:#101010}
+ .skp-admin-workspace .skp-brands-list,.skp-admin-workspace .skp-brands-editor{background:#101010}
  .skp-admin-edit-backdrop .modal{background:#111819}
 }
 
@@ -214,7 +221,7 @@ main.skp-admin-workspace{
  gap:10px;
  border:0;
  box-shadow:none;
- background:#1b2022;
+ background:#101010;
  border-radius:9px;
  min-width:0;
 }
@@ -367,6 +374,27 @@ main.skp-admin-workspace{
  }
 }
 
+
+
+/* Universal black admin palette: desktop and tablet should match mobile.
+   Raised cards remain near-black for legibility; active accents stay yellow. */
+.skp-admin-workspace .skp-brands-list,
+.skp-admin-workspace .skp-brands-editor,
+.skp-admin-workspace .skp-brands-category-options,
+.skp-admin-workspace .skp-admin-mobile-product{
+ background:#101010;
+ border-color:#292929;
+}
+.skp-admin-workspace .skp-admin-data-table th{background:#111}
+.skp-admin-workspace .skp-admin-category-always-visible .skp-admin-category-group button,
+.skp-admin-workspace .skp-admin-category-always-visible .skp-admin-category-all button{
+ background:#101010;
+ border-color:#303030;
+}
+.skp-admin-workspace .skp-admin-local-search,
+.skp-admin-workspace .skp-brands-search{
+ background:#101010;
+}
 
 /* Mobile admin: restore SKP's true black surfaces and the original
  * header behavior. The graphite theme added an always-visible search
