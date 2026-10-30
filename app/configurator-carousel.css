@@ -18,3 +18,20 @@
 @media(prefers-reduced-motion:reduce){.config-slide,.config-studio .config-slide .component-card{transition:none}}
 .config-models-title{flex-wrap:wrap}.config-models-title>div{display:flex;align-items:center;gap:10px;min-width:0;flex:1}.config-models-title>div>span{display:none}.config-models-title .config-filter-buttons{flex-wrap:wrap;gap:6px}.config-studio .config-models-title .config-filter-buttons button{border-radius:24px;min-height:34px;font-size:10px;padding:7px 17px}.config-selection-filters>div:first-child{flex:0 1 270px}.config-selection-filters>div:nth-child(2){flex:1 1 400px}
 @media(max-width:700px){.config-models-title>div{flex-basis:100%}.config-models-title .config-filter-buttons{flex-wrap:nowrap;overflow-x:auto}.config-studio .config-models-title .config-filter-buttons button{min-height:44px}.config-selection-filters>div:first-child,.config-selection-filters>div:nth-child(2){flex-basis:100%}}
+/* Each card has its own perspective: distance from the viewport edge cannot enlarge it. */
+.config-studio .config-showcase-rail{perspective:none}
+.config-studio .config-slide,.config-studio .config-slide.is-focused{transform:perspective(1000px) scale(var(--slide-scale)) rotateY(var(--slide-angle));transform-origin:center;filter:brightness(.88)}
+.config-studio .config-slide.is-focused{filter:brightness(1)}
+.config-page.config-studio .component-card .price-line{display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:10px}
+.config-page.config-studio .component-card .price-line strong{min-width:0;white-space:nowrap;font-size:clamp(16px,1.45vw,23px)}
+.config-page.config-studio .component-card .price-line>.skp-card-purchase-actions{width:auto;flex:0 0 auto;margin-left:auto}
+.config-page.config-studio .component-card .skp-card-purchase-actions>.config-add-component{width:44px;height:44px;min-height:44px;max-width:44px;flex:0 0 44px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.config-page.config-studio .component-card .config-add-component>svg{width:22px;height:22px}
+@media(max-width:700px){.config-page.config-studio .component-card .price-line strong{font-size:18px}.config-page.config-studio .config-models .component-card .price-line strong{font-size:15px}}
+.config-studio .config-showcase-rail.is-recentering .config-slide{transition:none}
+.config-color-filter{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.config-color-filter button{display:flex;align-items:center;gap:8px;min-height:40px;padding:8px 14px;border:1px solid #39464e;border-radius:8px;background:#0d151a;font-size:12px;color:#dae2e7}
+.config-color-filter button.selected{border-color:#ffe500;color:#ffe500;background:#ffe5000c}
+.config-color-filter i{display:block;width:15px;height:15px;border:1px solid #7c858b;border-radius:50%}
+.config-color-filter i.white{background:#f4f4f4}.config-color-filter i.black{background:#111}
+@media(max-width:700px){.config-color-filter button{min-height:44px;flex:1;padding:8px 10px;font-size:11px}}
