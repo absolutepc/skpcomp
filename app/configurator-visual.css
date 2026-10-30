@@ -406,3 +406,48 @@
  .config-page.config-studio .configuration-row{padding:11px 0}
  .config-page.config-studio .config-build-actions>.button{flex-basis:100%}
 }
+
+/* Configurator header and controls: replace all graphite surfaces with pure black.
+   Yellow stays only on active controls and selection outlines. */
+.config-page.config-studio .config-controls,
+.config-page.config-studio .config-selection-filters,
+.config-page.config-studio .config-brand-filter,
+.config-page.config-studio .component-steps,
+.config-page.config-studio .config-header-actions{background:#000}
+.config-page.config-studio .config-header-actions>button,
+.config-page.config-studio .config-manage>summary,
+.config-page.config-studio .config-manage>div,
+.config-page.config-studio .component-steps>button,
+.config-page.config-studio .config-controls .config-color-filter button,
+.config-page.config-studio .config-controls .config-filter-buttons button:not(.selected),
+.config-page.config-studio .config-view-switch,
+.config-page.config-studio .config-view-switch button,
+.config-page.config-studio .config-controls .component-search>div,
+.config-page.config-studio .config-controls .component-search input{
+ background:#000;
+ box-shadow:none;
+}
+.config-page.config-studio .config-header-actions>button,
+.config-page.config-studio .config-manage>summary,
+.config-page.config-studio .config-controls .config-color-filter button,
+.config-page.config-studio .config-controls .config-filter-buttons button:not(.selected),
+.config-page.config-studio .config-view-switch,
+.config-page.config-studio .config-controls .component-search>div{
+ border-color:#2e2e2e;
+}
+.config-page.config-studio .config-controls .component-search input{color:#eee}
+.config-page.config-studio .config-controls .component-search input::placeholder{color:#858585}
+.config-page.config-studio .config-view-switch button[aria-pressed=true]{
+ background:#181818;
+ color:#ffe500;
+}
+.config-page.config-studio .component-steps>button.current{
+ background:#000;
+ color:#ffe500;
+}
+.config-page.config-studio .component-steps .step-num{background:#151515}
+.config-page.config-studio .config-color-filter button.selected{
+ background:#000;
+ color:#ffe500;
+ border-color:#ffe500;
+}
