@@ -61,7 +61,7 @@ export default function ConfiguratorCarousel({cards,names,label,controls}:{cards
    {slides.map((card,index)=>{
     const offset=index-position;
     const pose=carouselPose(offset,geometry.width,geometry.gap);
-    const style={'--slide-scale':pose.scale,'--slide-angle':`${pose.angle}deg`,'--slide-shift':`${pose.shift}px`,visibility:Math.abs(offset)>3?'hidden':'visible'} as CSSProperties;
+    const style={'--slide-scale':pose.scale,'--slide-angle':`${pose.angle}deg`,'--slide-shift':`${pose.shift}px`,zIndex:4-Math.min(Math.abs(offset),3),visibility:Math.abs(offset)>3?'hidden':'visible'} as CSSProperties;
     return <div key={index} style={style} className={'config-slide'+(position===index?' is-focused':'')} inert={Math.abs(offset)>3} role="group" aria-roledescription="слайд" aria-label={`${index%count+1} из ${count}: ${names[index%count]}`} onFocusCapture={()=>{if(index!==position)go(index)}}>{card}</div>;
    })}
   </div>

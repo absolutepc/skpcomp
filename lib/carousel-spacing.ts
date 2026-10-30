@@ -14,7 +14,9 @@ export function carouselPose(offset:number,width:number,nativeGap:number,gap=10)
  const direction=Math.sign(offset);
  for(let i=1;i<=Math.abs(offset);i++){
   const previous=bounds((i-1)*direction),next=bounds(i*direction);
-  target+=direction*(direction>0?previous.right+gap+next.left:previous.left+gap+next.right);
+  // Keep the central pair separated; outer cards tuck behind their neighbours.
+  const spacing=i===1?gap:-width*(i===2?.12:.32);
+  target+=direction*(direction>0?previous.right+spacing+next.left:previous.left+spacing+next.right);
  }
  return {...current,shift:target-offset*(width+nativeGap),center:target};
 }
