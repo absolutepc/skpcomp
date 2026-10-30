@@ -167,3 +167,242 @@
 @media(prefers-reduced-motion:reduce){
  .config-confirm-backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
 }
+
+/* GPU model chip selection. Manufacturer is an independent filter. */
+.config-page.config-studio .config-gpu-models{
+ display:flex;
+ align-items:center;
+ gap:13px;
+ width:100%;
+ min-width:0;
+ margin:4px 0 13px;
+ color:#d9dfe2;
+}
+.config-gpu-models>span{
+ flex-shrink:0;
+ font-size:12px;
+ font-weight:650;
+}
+.config-gpu-models-list{
+ display:flex;
+ flex:1 1 auto;
+ gap:7px;
+ min-width:0;
+ padding:3px 1px 5px;
+ overflow-x:auto;
+ overscroll-behavior-x:contain;
+ scrollbar-width:none;
+}
+.config-gpu-models-list::-webkit-scrollbar{display:none}
+.config-page.config-studio .config-gpu-models-list>button{
+ flex:0 0 auto;
+ min-height:36px;
+ padding:7px 13px;
+ border:1px solid #323232;
+ border-radius:8px;
+ background:#000;
+ color:#e1e6e8;
+ font-size:11px;
+ white-space:nowrap;
+}
+.config-page.config-studio .config-gpu-models-list>button:hover{
+ border-color:#a8992a;
+}
+.config-page.config-studio .config-gpu-models-list>button.selected{
+ background:#ffe500;
+ border-color:#ffe500;
+ color:#070707;
+ font-weight:750;
+}
+
+/* Simplified composition: solid black instead of graphite surfaces, show only
+   selected parts and keep calculations expandable. Scoped to configurator. */
+.config-page.config-studio .config-build-details{
+ background:#000;
+ border:1px solid #292929;
+ border-radius:11px;
+ overflow:hidden;
+}
+.config-page.config-studio .config-build-details>summary{
+ background:#000;
+ padding:15px 18px;
+ color:#f5f5f5;
+}
+.config-page.config-studio .config-build-details[open]>summary{
+ border-bottom:1px solid #1f1f1f;
+}
+.config-page.config-studio .configuration-panel{
+ background:#000;
+ border:0;
+ border-radius:0;
+ padding:15px 18px 18px;
+ gap:0 22px;
+}
+.config-page.config-studio .configuration-panel>h3{
+ grid-column:1/-1;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ margin:2px 0 9px;
+ padding:0;
+ font-size:14px;
+ color:#fff;
+}
+.config-page.config-studio .configuration-panel>h3 span{
+ color:#939393;
+ font-size:11px;
+ font-weight:500;
+}
+.config-page.config-studio .config-parts-empty{
+ grid-column:1/-1;
+ margin:0;
+ padding:13px 0;
+ font-size:12px;
+ line-height:1.6;
+ color:#999;
+}
+.config-page.config-studio .configuration-row{
+ margin:0;
+ padding:11px 0;
+ gap:10px;
+ min-width:0;
+ background:#000;
+ border-bottom:1px solid #202020;
+}
+.config-page.config-studio .configuration-item-art,
+.config-page.config-studio .configuration-item-art.has-image{
+ background:#000;
+ border:0;
+ color:#d0d0d0;
+}
+.config-page.config-studio .configuration-row>button:first-of-type>span{
+ color:#bcbcbc;
+}
+.config-page.config-studio .configuration-row>button:first-of-type>small.filled{
+ color:#f4f4f4;
+}
+.config-page.config-studio .configuration-item-price{color:#ffe500}
+.config-page.config-studio .configuration-panel>.skp-assembly-fee-row,
+.config-page.config-studio .configuration-panel>.configuration-total,
+.config-page.config-studio .configuration-panel>.config-build-actions{
+ grid-column:1/-1;
+}
+.config-page.config-studio .configuration-panel>.skp-assembly-fee-row{
+ margin:12px 0 0;
+ border-top:1px solid #292929;
+ padding:13px 0 0;
+}
+.config-page.config-studio .configuration-panel>.skp-build-checks{
+ grid-column:1/-1;
+ background:#000;
+ margin:16px 0 13px;
+ padding:13px 0 0;
+ border:0;
+ border-top:1px solid #292929;
+ box-shadow:none;
+ color:#e8e8e8;
+}
+.config-page.config-studio .skp-build-checks-title>span{color:#b5b5b5}
+.config-page.config-studio .skp-check-positive,
+.config-page.config-studio .skp-power-pending{color:#a9a9a9}
+.config-page.config-studio .skp-check-explainer{
+ margin:9px 0 0;
+ color:#929292;
+}
+.config-page.config-studio .skp-check-explainer>summary{
+ display:list-item;
+ width:fit-content;
+ cursor:pointer;
+ font-size:11px;
+}
+.config-page.config-studio .skp-check-explainer .skp-check-caveat{
+ margin:8px 0 0;
+ color:#959595;
+ font-size:11px;
+}
+.config-page.config-studio .skp-power-collapsible{
+ margin:15px 0 0;
+ padding-top:10px;
+ border-top:1px solid #262626;
+}
+.config-page.config-studio .skp-power-collapsible>summary{
+ display:flex;
+ align-items:center;
+ gap:9px;
+ cursor:pointer;
+ list-style:none;
+ padding:7px 0;
+ color:#e6e6e6;
+}
+.config-page.config-studio .skp-power-collapsible>summary::-webkit-details-marker{display:none}
+.config-page.config-studio .skp-power-collapsible>summary>span{
+ margin-left:auto;
+ color:#ffe500;
+ font-size:11px;
+}
+.config-page.config-studio .skp-power-collapsible .skp-power-title{
+ margin:0;
+ border:0;
+}
+.config-page.config-studio .skp-power-metrics>div{
+ background:#000;
+ border:1px solid #2b2b2b;
+ border-radius:7px;
+}
+.config-page.config-studio .skp-power-metrics small{color:#aaa}
+.config-page.config-studio .skp-power-details{
+ background:#000;
+ border-color:#292929;
+}
+.config-page.config-studio .configuration-panel>.configuration-total{
+ padding:15px 0 3px;
+ margin:3px 0 13px;
+ border-top:1px solid #2a2a2a;
+}
+.config-page.config-studio .configuration-total strong:last-child{
+ color:#ffe500;
+ font-size:clamp(20px,2.2vw,27px);
+}
+.config-page.config-studio .config-build-actions{
+ display:flex;
+ flex-wrap:wrap;
+ align-items:stretch;
+ gap:10px;
+}
+.config-page.config-studio .config-build-actions>.button{
+ flex:1 1 190px;
+ width:auto;
+ min-height:45px;
+ margin:0;
+ padding:10px 12px;
+ font-size:12px;
+ justify-content:center;
+}
+.config-page.config-studio .config-build-actions>.outline{
+ background:#000;
+ border-color:#333;
+}
+.config-page.config-studio .config-disclaimer{
+ grid-column:1/-1;
+ margin:11px 0 0;
+ color:#858585;
+ font-size:10px;
+ line-height:1.5;
+}
+@media(max-width:700px){
+ .config-page.config-studio .config-gpu-models{
+  align-items:flex-start;
+  flex-direction:column;
+  gap:5px;
+  margin:9px 0 12px;
+ }
+ .config-page.config-studio .config-gpu-models-list{
+  width:100%;
+  max-width:100%;
+ }
+ .config-page.config-studio .config-gpu-models-list>button{min-height:44px}
+ .config-page.config-studio .configuration-panel{padding:12px 14px}
+ .config-page.config-studio .configuration-row{padding:11px 0}
+ .config-page.config-studio .config-build-actions>.button{flex-basis:100%}
+}
