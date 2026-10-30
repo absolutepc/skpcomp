@@ -438,8 +438,9 @@
 .config-page.config-studio .config-controls .component-search input{color:#eee}
 .config-page.config-studio .config-controls .component-search input::placeholder{color:#858585}
 .config-page.config-studio .config-view-switch button[aria-pressed=true]{
- background:#181818;
+ background:#000;
  color:#ffe500;
+ box-shadow:inset 0 0 0 1px #ffe500;
 }
 .config-page.config-studio .component-steps>button.current{
  background:#000;
