@@ -109,23 +109,48 @@ assert.match(shopUI,/loaded=\{loaded\}/);
 
 const layout=readFileSync(new URL('../app/configurator-visual.css',import.meta.url),'utf8');
 const carouselLayout=readFileSync(new URL('../app/configurator-carousel.css',import.meta.url),'utf8');
-assert.match(builderUI,/<section className="config-summary" aria-label="Текущая сборка">/,
- 'Configurator summary is an ordinary in-page section');
-assert.doesNotMatch(builderUI,/className="config-dock"/,
- 'Configurator no longer mounts the fixed component dock');
-assert.match(builderUI,/config-summary-parts/,
- 'Selected components are shown in a dedicated compact area');
-assert.match(builderUI,/get\(key\)\)\)\.map/,
- 'Only selected components appear in the inline build summary');
-assert.match(layout,/\.config-page\.config-studio \.config-summary\{\s*position:static;/,
- 'Summary scrolls normally with the configurator page');
-assert.match(layout,/background:#0d1317;/,
- 'Summary has a solid non-transparent background');
-assert.doesNotMatch(layout,/\.config-dock\{position:fixed/,
- 'Obsolete fixed overlay styles are removed');
+assert.doesNotMatch(builderUI,/className="config-summary"/,
+ 'Duplicate lower selected-parts panel must not be rendered');
+assert.match(builderUI,/<details className="config-build-details">/,
+ 'Detailed build composition and compatibility section stays available');
+assert.match(builderUI,/problems\.length\?problems\.length\+' конфликт\(ов\)':money\(total\)/,
+ 'Existing composition heading displays total without redundant panel');
+assert.match(builderUI,/const current=get\(step\)/,
+ 'Candidate price comparison uses the already selected category component');
+assert.match(builderUI,/delta=current&&current\.id!==p\.id&&current\.price>0&&p\.price>0\?p\.price-current\.price:null/,
+ 'Alternative price is calculated as difference from selected item');
+assert.match(builderUI,/delta>0\?'\+':delta<0\?'−':''/,
+ 'Positive and negative price differences use appropriate signs');
+assert.match(builderUI,/delta!==null\?'Разница с выбранным':'Цена товара'/,
+ 'Price label clearly identifies differences and ordinary prices');
+assert.match(builderUI,/disabled=\{conflict\|\|isChosen\}/,
+ 'Already selected parts and incompatible products cannot be added again');
+assert.match(builderUI,/const choose=\(p:Product\)=>setPendingChoice\(\{step,product:p\}\)/,
+ 'Card click creates pending choice instead of instantly selecting it');
+assert.match(builderUI,/const chooseOs=\(id:string\)=>setPendingChoice\(\{step:'os',osId:id\}\)/,
+ 'Operating-system selection also needs confirmation');
+assert.match(builderUI,/const confirmChoice=\(advance:boolean\)=>\{/,
+ 'Both staying and advancing after confirmation are supported');
+const confirmation=builderUI.slice(builderUI.indexOf('const confirmChoice='),builderUI.indexOf('const pendingCurrent='));
+assert.match(confirmation,/setSelected\(nextSelection\)/,
+ 'Build changes only inside explicit confirmation handler');
+assert.match(confirmation,/if\(!advance\)return;/,
+ 'No automatic transition when choosing to stay in current category');
+assert.match(confirmation,/candidateErrors\(chosenStep,product,selected,data\.products\)/,
+ 'Compatibility is rechecked before applying confirmed choice');
+assert.match(builderUI,/role="dialog" aria-modal="true" aria-labelledby="skp-config-confirm-title"/,
+ 'Selection confirmation is an accessible modal dialog');
+for(const label of ['Отмена','Подтвердить и остаться','Подтвердить и продолжить'])
+ assert.ok(builderUI.includes(label),'Confirmation must provide action: '+label);
 assert.match(layout,/\.config-page\.config-studio \.component-steps\{\s*border:0;/,
- 'Upper navigation divider rules are removed');
+ 'Upper navigation divider lines remain removed');
+assert.match(layout,/\.config-confirm-backdrop\{\s*position:fixed;/,
+ 'Only confirmation modal overlays the viewport, not selected parts');
+assert.doesNotMatch(layout,/\.config-dock\{position:fixed/,
+ 'Obsolete fixed component overlay styles remain removed');
+assert.doesNotMatch(layout,/\.config-page\.config-studio \.config-summary\{/,
+ 'Duplicate lower summary layout styles are removed');
 assert.doesNotMatch(carouselLayout,/config-dock/,
- 'Outdated fixed dock overrides are removed from carousel styles');
+ 'Outdated fixed dock overrides remain removed');
 
 console.log('Configurator tests passed: compatibility grouping, shared icons, sockets, memory, dimensions, PSU, saved builds, share links and integration.');
