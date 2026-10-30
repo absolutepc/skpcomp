@@ -96,3 +96,44 @@
 
 
 }
+
+/* Safari trackpad fix: cards live in one layered viewport, not a horizontally
+   scrolling rail of cloned products. This prevents momentum from fighting 3D
+   transforms, scroll snapping and timer-driven recentring. */
+.config-page.config-studio .config-showcase-rail{
+ display:grid;
+ grid-template-columns:minmax(0,1fr);
+ place-items:stretch center;
+ gap:0;
+ overflow:hidden;
+ overflow-x:hidden;
+ overflow-y:hidden;
+ scroll-snap-type:none;
+ overscroll-behavior:contain;
+ touch-action:pan-y;
+ padding:18px 0 14px;
+}
+.config-page.config-studio .config-showcase-rail::before,
+.config-page.config-studio .config-showcase-rail::after{
+ display:none;
+ content:none;
+}
+.config-page.config-studio .config-showcase-rail .config-slide{
+ grid-area:1 / 1;
+ justify-self:center;
+ align-self:stretch;
+ box-sizing:border-box;
+ flex:none;
+ width:var(--card-width);
+ max-width:var(--card-width);
+ scroll-snap-align:none;
+ will-change:transform;
+}
+.config-page.config-studio .config-showcase-rail:focus-visible{
+ outline:2px solid #ffe500;
+ outline-offset:-2px;
+ border-radius:10px;
+}
+@media(max-width:700px){
+ .config-page.config-studio .config-showcase-rail{padding:24px 0 20px}
+}
