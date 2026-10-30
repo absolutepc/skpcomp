@@ -23,7 +23,8 @@ export function BuildDiagnostics({analysis}:{analysis:BuildAnalysis}){
    <li className={issue.severity} key={issue.code}><AlertTriangle size={14}/><span>{issue.message}</span></li>
   )}</ul>}
   <p className="skp-check-caveat">Проверяются сокет, DDR, форм-фактор, кулер, размеры, слоты памяти и питание — если характеристики указаны в каталоге. BIOS, разъёмы питания, точные зазоры и комплектацию подтвердит менеджер.</p>
-  <div className="skp-power-title"><Zap size={18}/><strong>Калькулятор питания</strong></div>
+  <details className="skp-power-collapsible">
+  <summary className="skp-power-title"><Zap size={18}/><strong>Калькулятор питания</strong><span>{power.knownLoads?watts(power.drawWatts):'Подробнее'}</span></summary>
   <div className="skp-power-metrics">
    <div><small>Оценка потребления</small><strong>{watts(power.drawWatts)}</strong></div>
    <div><small>БП с запасом 35%</small><strong>{power.knownLoads?watts(power.recommendedWatts):'Недостаточно данных'}</strong></div>
@@ -37,6 +38,7 @@ export function BuildDiagnostics({analysis}:{analysis:BuildAnalysis}){
   <details className="skp-power-details"><summary>Расчёт потребления по компонентам</summary>
    {power.rows.map(row=><div key={row.label}><span>{row.label}{row.estimated?' *':''}</span><strong>{row.watts?watts(row.watts):'Не указано'}</strong></div>)}
    <p>* Вспомогательные нагрузки оценочные. Значения CPU/GPU взяты из характеристик товара. Расчёт не заменяет проверку реального энергопотребления, коннекторов и рекомендаций производителя.</p>
+  </details>
   </details>
  </div>;
 }
