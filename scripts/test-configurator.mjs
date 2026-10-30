@@ -41,19 +41,27 @@ for(const [width,nativeGap] of [[230,8],[260,14],[330,14]]){
 }
 const gpuModels=load('lib/gpu-model-family.ts');
 assert.equal(gpuModels.gpuModelFamily({name:'GeForce RTX 5060 Palit OC',specs:{}}),'RTX 5060');
-assert.equal(gpuModels.gpuModelFamily({name:'ASUS GeForce RTX 5060 Ti White',specs:{}}),'RTX 5060',
- 'RTX Ti variants share the base chip-model filter');
+assert.equal(gpuModels.gpuModelFamily({name:'MSI GeForce RTX 5060 Ti 8GB',specs:{vram:'8'}}),'RTX 5060 Ti 8GB');
+assert.equal(gpuModels.gpuModelFamily({name:'GeForce RTX 5060 Ti 16 ГБ White',specs:{}}),'RTX 5060 Ti 16GB');
+assert.equal(gpuModels.gpuModelFamily({name:'ASUS RTX 5060 Ti GDDR7',specs:{vram:'16'}}),'RTX 5060 Ti 16GB');
+assert.equal(gpuModels.gpuModelFamily({name:'ASUS RTX 5060 Ti GDDR7',specs:{vram:'8'}}),'RTX 5060 Ti 8GB');
+assert.equal(gpuModels.gpuModelFamily({name:'ASUS RTX 5060 Ti GDDR7',specs:{}}),'RTX 5060 Ti',
+ 'Unknown Ti memory cannot be guessed as 8GB or 16GB');
+assert.equal(gpuModels.gpuModelFamily({name:'Palit RTX 5070 White',specs:{vram:'12'}}),'RTX 5070');
+assert.equal(gpuModels.gpuModelFamily({name:'MSI RTX 5070 Ti Gaming Trio',specs:{vram:'16'}}),'RTX 5070 Ti');
+assert.equal(gpuModels.gpuModelFamily({name:'GeForce RTX 5070 Ti',specs:{gpu:'RTX 5070'}}),'RTX 5070 Ti',
+ 'Exact retail product name has priority over generic CPU/GPU preset');
 assert.equal(gpuModels.gpuModelFamily({name:'MSI RTX 5090 Gaming Trio',specs:{}}),'RTX 5090');
-assert.equal(gpuModels.gpuModelFamily({name:'Sapphire Radeon RX 7900 XT',specs:{}}),'RX 7900');
+assert.equal(gpuModels.gpuModelFamily({name:'Sapphire Radeon RX 7900 XT',specs:{}}),'RX 7900 XT');
 assert.equal(gpuModels.gpuModelFamily({name:'Intel Arc B580',specs:{}}),'Arc B580');
-assert.equal(gpuModels.gpuModelFamily({name:'ASUS ROG STRIX',specs:{gpu:'GeForce RTX 5070'}}),'RTX 5070',
- 'GPU model can be derived from product specifications if the name is generic');
+assert.equal(gpuModels.gpuModelFamily({name:'ASUS ROG STRIX',specs:{gpu:'GeForce RTX 5070'}}),'RTX 5070');
 assert.equal(gpuModels.gpuModelFamily({name:'Custom OEM graphics',specs:{}}),'');
 assert.equal(JSON.stringify(gpuModels.availableGpuModels([
- {name:'GeForce RTX 5090',specs:{}},{name:'GeForce RTX 5060',specs:{}},
- {name:'RTX 5060 Ti',specs:{}},{name:'GeForce RTX 5070',specs:{}}
-])),JSON.stringify(['RTX 5060','RTX 5070','RTX 5090']),
- 'GPU chip models sort numerically and collapse board/Ti variants');
+ {name:'GeForce RTX 5090',specs:{}},{name:'GeForce RTX 5060 Ti',specs:{vram:'16'}},
+ {name:'GeForce RTX 5060',specs:{}},{name:'GeForce RTX 5070 Ti',specs:{}},
+ {name:'GeForce RTX 5060 Ti 8GB',specs:{}},{name:'GeForce RTX 5070',specs:{}}
+])),JSON.stringify(['RTX 5060','RTX 5060 Ti 8GB','RTX 5060 Ti 16GB','RTX 5070','RTX 5070 Ti','RTX 5090']),
+ 'Distinct GPU chip variants sort predictably by generation, Ti and VRAM');
 const {seed}=load('lib/seed.ts');
 const logic=load('lib/pc-builder.ts');
 const saved=load('lib/saved-builds.ts',{'./pc-builder':logic});
@@ -146,6 +154,15 @@ assert.match(shopUI,/loaded=\{loaded\}/);
 
 const layout=readFileSync(new URL('../app/configurator-visual.css',import.meta.url),'utf8');
 const carouselLayout=readFileSync(new URL('../app/configurator-carousel.css',import.meta.url),'utf8');
+const carouselRoot=carouselLayout.match(/\.config-page\.config-studio\{background:([^;]+);isolation:isolate\}/)?.[1];
+assert.equal(carouselRoot,'#000','Configurator background must be solid black');
+assert.match(carouselLayout,/\.config-showcase\{[^}]*background:#000\}/,
+ 'Carousel backdrop is pure black rather than a yellow radial glow');
+assert.match(carouselLayout,/\.config-showcase::before,\.config-showcase::after\{content:none;display:none\}/,
+ 'Yellow light streak pseudo-elements are disabled');
+assert.doesNotMatch(carouselLayout,/#ffde0030|#ffd90040|0 0 20px #ffe50060/,
+ 'Removed ambient yellow glows must not return');
+
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
 const configToolsUI=readFileSync(new URL('../app/configurator-tools.tsx',import.meta.url),'utf8');
 assert.doesNotMatch(builderUI,/className="config-summary"/,
