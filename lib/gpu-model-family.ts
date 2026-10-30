@@ -8,7 +8,7 @@ type GpuIdentity=Pick<Product,'name'|'specs'> & Partial<Pick<Product,'descriptio
 
 function vramSize(product:GpuIdentity):number|null{
  const spec=product.specs?.vram||product.specs?.memorySize||'';
- const match=(spec||product.name+' '+(product.description||'')).match(/\b(\d{1,2})\s*(?:GB|ГБ)\b/i);
+ const match=(spec||product.name+' '+(product.description||'')).match(/\b(\d{1,2})\s*(?:GB|ГБ)(?![A-Za-zА-Яа-я0-9])/i);
  // Catalog presets often store the numeric amount without a unit.
  const numeric=Number(spec.trim());
  const value=match?Number(match[1]):Number.isFinite(numeric)&&numeric>0?numeric:null;
