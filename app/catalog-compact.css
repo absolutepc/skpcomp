@@ -1,0 +1,33 @@
+/* Keep the category navigation close to the product results. */
+section.catalog-page{padding-top:18px}
+.catalog-page>.breadcrumb{margin-bottom:10px;font-size:11px;line-height:1.4}
+.catalog-page .catalog-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 20px;margin-bottom:14px}
+.catalog-page .catalog-heading h1{margin:0;font-size:28px;line-height:1.2;letter-spacing:-.7px}
+.catalog-page .catalog-heading .catalog-tabs{margin:0;gap:6px}
+.catalog-page .catalog-heading .catalog-tabs a{display:flex;align-items:center;justify-content:center;min-height:36px;padding:7px 12px;font-size:11px;line-height:1.3}
+.catalog-page .catalog-subcategories{gap:7px;padding-bottom:12px}
+.catalog-page .catalog-subcategories>a{flex-direction:row;gap:7px;min-height:48px;padding:8px 6px;border-radius:8px;font-size:11px}
+.catalog-page .subcategory-icon{width:22px;height:22px}
+.catalog-page .subcategory-icon svg{width:21px;height:21px}
+.catalog-page .catalog-toolbar{gap:10px;padding:10px 0;margin-bottom:12px}
+.catalog-page .catalog-toolbar input,.catalog-page .catalog-toolbar select{height:42px;padding-top:9px;padding-bottom:9px;font-size:13px}
+.catalog-page .catalog-toolbar select{min-width:175px}
+.catalog-page .catalog-result-line{min-height:24px;margin-bottom:10px}
+.catalog-page .active-facets:empty{display:none}
+.catalog-page .active-facets{margin-bottom:10px}
+@media(max-width:700px){
+ section.catalog-page{padding-top:12px}
+ .catalog-page>.breadcrumb{margin-bottom:8px;font-size:10px}
+ .catalog-page .catalog-heading{gap:10px;margin-bottom:10px}
+ .catalog-page .catalog-heading h1{font-size:23px;letter-spacing:-.5px}
+ .catalog-page .catalog-heading .catalog-tabs{width:100%;gap:5px}
+ .catalog-page .catalog-heading .catalog-tabs a{min-height:44px;padding:7px 10px;font-size:10px}
+ .catalog-page .catalog-subcategories{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding-bottom:10px}
+ .catalog-page .catalog-subcategories>a{min-height:44px;gap:5px;padding:7px 5px;font-size:10px}
+ .catalog-page .subcategory-icon{width:18px;height:20px}
+ .catalog-page .subcategory-icon svg{width:18px;height:18px}
+ .catalog-page .catalog-toolbar{gap:8px;padding:8px 0;margin-bottom:10px}
+ .catalog-page .catalog-toolbar input{height:44px;font-size:16px}
+ .catalog-page .catalog-toolbar select{height:44px;min-width:0;font-size:12px}
+ .catalog-page .catalog-result-line{margin-bottom:8px}
+}
