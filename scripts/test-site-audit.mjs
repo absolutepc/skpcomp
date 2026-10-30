@@ -22,7 +22,7 @@ const mediaAPI=source('app/api/media/route.ts');
 const reviewAPI=source('app/api/reviews/route.ts');
 const components={
  'Главная страница':shop.includes('<HeroSlider nav={nav}')&&shop.includes('popularProducts(data.products)'),
- 'Каталог':shop.includes('<CatalogPage')&&catalog.includes('matchesFilters(p,facets'),
+ 'Каталог':shop.includes('<CatalogPage')&&catalog.includes('filterCandidates(base,selection)')&&catalog.includes('const selection={facets,ranges,min,max,stock,query}'),
  'Страница товара':shop.includes('<ProductDetailPage')&&detail.includes('skp-pdp-tabs'),
  'Избранное':shop.includes("path==='/favorites'")&&shop.includes("localStorage.setItem('skp-favorites'"),
  'Сравнение':shop.includes('<ComparePage')&&shop.includes('comparisonCategory(all[0])!==comparisonCategory(p)'),
