@@ -39,6 +39,21 @@ for(const [width,nativeGap] of [[230,8],[260,14],[330,14]]){
   assert.ok(Math.abs(projectedGap-30)<0.001,'Perspective-projected left card spacing remains 30px');
  }
 }
+const gpuModels=load('lib/gpu-model-family.ts');
+assert.equal(gpuModels.gpuModelFamily({name:'GeForce RTX 5060 Palit OC',specs:{}}),'RTX 5060');
+assert.equal(gpuModels.gpuModelFamily({name:'ASUS GeForce RTX 5060 Ti White',specs:{}}),'RTX 5060',
+ 'RTX Ti variants share the base chip-model filter');
+assert.equal(gpuModels.gpuModelFamily({name:'MSI RTX 5090 Gaming Trio',specs:{}}),'RTX 5090');
+assert.equal(gpuModels.gpuModelFamily({name:'Sapphire Radeon RX 7900 XT',specs:{}}),'RX 7900');
+assert.equal(gpuModels.gpuModelFamily({name:'Intel Arc B580',specs:{}}),'Arc B580');
+assert.equal(gpuModels.gpuModelFamily({name:'ASUS ROG STRIX',specs:{gpu:'GeForce RTX 5070'}}),'RTX 5070',
+ 'GPU model can be derived from product specifications if the name is generic');
+assert.equal(gpuModels.gpuModelFamily({name:'Custom OEM graphics',specs:{}}),'');
+assert.equal(JSON.stringify(gpuModels.availableGpuModels([
+ {name:'GeForce RTX 5090',specs:{}},{name:'GeForce RTX 5060',specs:{}},
+ {name:'RTX 5060 Ti',specs:{}},{name:'GeForce RTX 5070',specs:{}}
+])),JSON.stringify(['RTX 5060','RTX 5070','RTX 5090']),
+ 'GPU chip models sort numerically and collapse board/Ti variants');
 const {seed}=load('lib/seed.ts');
 const logic=load('lib/pc-builder.ts');
 const saved=load('lib/saved-builds.ts',{'./pc-builder':logic});
@@ -131,6 +146,8 @@ assert.match(shopUI,/loaded=\{loaded\}/);
 
 const layout=readFileSync(new URL('../app/configurator-visual.css',import.meta.url),'utf8');
 const carouselLayout=readFileSync(new URL('../app/configurator-carousel.css',import.meta.url),'utf8');
+const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
+const configToolsUI=readFileSync(new URL('../app/configurator-tools.tsx',import.meta.url),'utf8');
 assert.doesNotMatch(builderUI,/className="config-summary"/,
  'Duplicate lower selected-parts panel must not be rendered');
 assert.match(builderUI,/<details className="config-build-details">/,
@@ -175,4 +192,30 @@ assert.doesNotMatch(layout,/\.config-page\.config-studio \.config-summary\{/,
 assert.doesNotMatch(carouselLayout,/config-dock/,
  'Outdated fixed dock overrides remain removed');
 
+assert.match(builderUI,/gpuModelFamily\(p\)===gpuModel/,
+ 'The GPU chip-model quick filter actually restricts products');
+assert.match(builderUI,/gpuModels\.map\(model=>/,
+ 'Available GPU models are exposed as buttons');
+assert.match(builderUI,/aria-label="Модель видеокарты"/,
+ 'GPU model filter is accessible');
+assert.match(builderUI,/steps\.slice\(0,9\)\.filter\(/,
+ 'Empty build rows are hidden; only selected components are displayed');
+assert.match(builderUI,/className="config-parts-empty"/,
+ 'Empty configuration has a compact explanation');
+assert.match(builderUI,/className="config-build-actions"/,
+ 'Cart and save buttons remain grouped together');
+assert.match(configToolsUI,/className="skp-power-collapsible"/,
+ 'PSU metrics are expandable, not shown as an oversized section by default');
+assert.match(configToolsUI,/className="skp-check-explainer"/,
+ 'Long compatibility explanation is optional');
+assert.match(layout,/\.config-page\.config-studio \.config-build-details\{\s*background:#000;/,
+ 'Expanded composition uses pure black rather than graphite');
+assert.match(layout,/\.config-page\.config-studio \.config-gpu-models-list>button\.selected\{/,
+ 'Active GPU model option retains the SKP yellow accent');
+assert.match(carouselUI,/element\.addEventListener\('wheel',handleWheel,\{passive:false\}\)/,
+ 'Mac trackpad wheel gestures are deliberately handled without browser passive scroll');
+assert.match(carouselUI,/setTimeout\(settleScroll,190\)/,
+ 'The active carousel pose is committed only after the swipe settles');
+assert.doesNotMatch(carouselUI,/onScroll=\{\(\)=>\{[\s\S]*?setPosition\(nearest\)/,
+ 'Carousel must not restyle every card during each native scroll event');
 console.log('Configurator tests passed: compatibility grouping, shared icons, sockets, memory, dimensions, PSU, saved builds, share links and integration.');
