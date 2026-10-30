@@ -24,3 +24,19 @@ export function carouselPose(offset:number,width:number,nativeGap:number,gap=CON
  }
  return {...current,shift:target-offset*(width+nativeGap),center:target};
 }
+
+/** Display at most five *different* products. Avoid duplicated visual cards
+ * for short lists (the former fivefold native-scroll loop repeated SKUs). */
+export function carouselVisibleOffsets(count:number):number[]{
+ if(count<=0)return [];
+ if(count===1)return [0];
+ if(count===2)return [0,1];
+ if(count===3)return [-1,0,1];
+ if(count===4)return [-1,0,1,2];
+ return [-2,-1,0,1,2];
+}
+
+export function carouselWrappedIndex(cursor:number,offset:number,count:number):number{
+ if(count<1)return 0;
+ return ((cursor+offset)%count+count)%count;
+}
