@@ -22,7 +22,7 @@ export function BuildDiagnostics({analysis}:{analysis:BuildAnalysis}){
   {!!analysis.issues.length&&<ul className="skp-check-issues">{analysis.issues.map(issue=>
    <li className={issue.severity} key={issue.code}><AlertTriangle size={14}/><span>{issue.message}</span></li>
   )}</ul>}
-  <p className="skp-check-caveat">Проверяются сокет, DDR, форм-фактор, кулер, размеры, слоты памяти и питание — если характеристики указаны в каталоге. BIOS, разъёмы питания, точные зазоры и комплектацию подтвердит менеджер.</p>
+  <details className="skp-check-explainer"><summary>Что проверяется</summary><p className="skp-check-caveat">Проверяются сокет, DDR, форм-фактор, кулер, размеры, слоты памяти и питание — если характеристики указаны в каталоге. BIOS, разъёмы питания, точные зазоры и комплектацию подтвердит менеджер.</p></details>
   <details className="skp-power-collapsible">
   <summary className="skp-power-title"><Zap size={18}/><strong>Калькулятор питания</strong><span>{power.knownLoads?watts(power.drawWatts):'Подробнее'}</span></summary>
   <div className="skp-power-metrics">
