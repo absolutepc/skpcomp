@@ -122,7 +122,7 @@ return <><section className="build-page config-page config-studio" aria-label="�
  </button>
  {showIncompatible&&<><p className="skp-incompatible-description">Эти детали конфликтуют с текущей конфигурацией. Выбор заблокирован; причины указаны в карточках.</p>
   <div className="component-grid skp-incompatible-grid">{incompatible.map(renderComponentOption)}</div></>}
-</div>}{step!=='os'&&!options.length&&<div className="component-empty"><Box size={35}/><h3>{search||componentColor||activeFilters.brand?'Ничего не найдено':'Товары пока не добавлены'}</h3><p>{step==='os'?'Операционная система не обязательна для завершения сборки.':componentColor?'Нет компонентов выбранного цвета. Снимите фильтр цвета или измените параметры.':'Выбери другой раздел или измени поиск.'}</p></div>}</div><details className="config-build-details"><summary>Состав сборки и проверка совместимости <span>{picked.length} компонентов · {problems.length?problems.length+' конфликт(ов)':'Подробнее'}</span><ChevronDown size={18}/></summary><aside className="configuration-panel"><h3>Ваша конфигурация</h3>{steps.slice(0,9).map(([key,label,Icon])=>{
+</div>}{step!=='os'&&!options.length&&<div className="component-empty"><Box size={35}/><h3>{search||componentColor||activeFilters.brand?'Ничего не найдено':'Товары пока не добавлены'}</h3><p>{step==='os'?'Операционная система не обязательна для завершения сборки.':componentColor?'Нет компонентов выбранного цвета. Снимите фильтр цвета или измените параметры.':'Выбери другой раздел или измени поиск.'}</p></div>}</div><details className="config-build-details"><summary>Состав сборки и проверка совместимости <span>{picked.length} компонентов · {problems.length?problems.length+' конфликт(ов)':money(total)}</span><ChevronDown size={18}/></summary><aside className="configuration-panel"><h3>Ваша конфигурация</h3>{steps.slice(0,9).map(([key,label,Icon])=>{
  const part=get(key);
  const hasOs=key==='os'&&!!selected.os;
  return <div className={'configuration-row'+(part||hasOs?' has-product':'')} key={key}>
@@ -137,29 +137,4 @@ return <><section className="build-page config-page config-studio" aria-label="�
  <span className="configuration-item-art has-image" aria-hidden="true">{img(get('extras')!)}</span>
  <button type="button" onClick={()=>{setStep('extras');setSearch('')}}><span>Дополнительные опции</span><small className="filled">{get('extras')?.name}</small><strong className="configuration-item-price">{money(get('extras')!.price)}</strong></button>
  <button type="button" className="configuration-item-remove" aria-label="Убрать опцию" onClick={()=>{const n={...selected};delete n.extras;setSelected(n)}}><X size={14}/></button>
- </div>}{picked.length>0&&<div className="skp-assembly-fee-row"><span>Сборка и проверка ПК</span><strong>{money(PC_ASSEMBLY_FEE)}</strong></div>}<BuildDiagnostics analysis={analysis}/><div className="configuration-total"><strong>Итого</strong><strong>{money(total)}</strong></div><button className="button light" disabled={!complete||problems.length>0||!addBuild} onClick={()=>{if(!addBuild)return;addBuild({type:'custom-build',id:'build-'+crypto.randomUUID(),selected:{...selected}})}}><ShoppingBag size={16}/> Добавить в корзину</button><button className="button outline" onClick={requestSave}><Heart size={15}/> Сохранить конфигурацию</button><small className="config-disclaimer">Несовместимые компоненты нельзя добавить в корзину. Уточните BIOS, разъёмы и размеры перед оформлением.</small></aside></details></div><a className="config-ready-link" href="/pc" onClick={e=>{e.preventDefault();nav('/pc')}}>Посмотреть готовые ПК <ArrowRight size={15}/></a>{loaded&&<section className="config-summary" aria-label="Текущая сборка">
- <div className="config-summary-main">
-  <div className="config-summary-heading"><h2>Выбранные комплектующие</h2><span>{picked.length} {picked.length===1?'компонент':picked.length>=2&&picked.length<=4?'компонента':'компонентов'}</span></div>
-  <div className="config-summary-parts">
-   {steps.filter(([key])=>key==='os'?Boolean(selected.os):Boolean(get(key))).map(([key,label,Icon])=>{
-    const part=get(key);
-    return <button type="button" key={key} className={'config-summary-part'+(step===key?' current':'')}
-      onClick={()=>{setStep(key);setSearch('');document.getElementById('skp-builder-options')?.scrollIntoView({behavior:'smooth',block:'start'})}}
-      title={part?.name||label} aria-label={'Изменить '+label}>
-      <span className="config-summary-art" aria-hidden="true">{part?img(part):<Icon size={25}/>}</span>
-      <span className="config-summary-part-copy"><small>{label}</small><strong>{key==='os'?osName(selected.os):part?.name}</strong></span>
-      <ChevronRight size={15} className="config-summary-chevron" aria-hidden="true"/>
-    </button>;
-   })}
-   {picked.length===0&&!selected.os&&<p className="config-summary-empty">Выбранные детали появятся здесь. Начните с процессора, чтобы собрать свой ПК.</p>}
-  </div>
- </div>
- <div className="config-summary-checkout">
-  <div className="config-summary-total"><small>Итого со сборкой</small><strong>{money(total)}</strong><span className={problems.length?'has-conflicts':''}>{problems.length?'Есть несовместимые компоненты':complete?'Основные компоненты выбраны':'Выбрано '+steps.slice(0,8).filter(([key])=>Boolean(get(key))).length+' из 8 основных компонентов'}</span></div>
-  <button className="button light config-summary-add" type="button"
-   disabled={!complete||problems.length>0||!addBuild}
-   onClick={()=>{if(addBuild)addBuild({type:'custom-build',id:'build-'+crypto.randomUUID(),selected:{...selected}})}}>
-   <ShoppingBag size={19}/> Добавить в корзину <ArrowRight size={18}/>
-  </button>
- </div>
- </section>}{mobileSaveOpen&&<MobileSaveBuildModal selected={selected} products={data.products} total={total} notify={notify} onClose={()=>setMobileSaveOpen(false)} onSaved={()=>setSavedRevision(n=>n+1)}/>}</section></>}
+ </div>}{picked.length>0&&<div className="skp-assembly-fee-row"><span>Сборка и проверка ПК</span><strong>{money(PC_ASSEMBLY_FEE)}</strong></div>}<BuildDiagnostics analysis={analysis}/><div className="configuration-total"><strong>Итого</strong><strong>{money(total)}</strong></div><button className="button light" disabled={!complete||problems.length>0||!addBuild} onClick={()=>{if(!addBuild)return;addBuild({type:'custom-build',id:'build-'+crypto.randomUUID(),selected:{...selected}})}}><ShoppingBag size={16}/> Добавить в корзину</button><button className="button outline" onClick={requestSave}><Heart size={15}/> Сохранить конфигурацию</button><small className="config-disclaimer">Несовместимые компоненты нельзя добавить в корзину. Уточните BIOS, разъёмы и размеры перед оформлением.</small></aside></details></div><a className="config-ready-link" href="/pc" onClick={e=>{e.preventDefault();nav('/pc')}}>Посмотреть готовые ПК <ArrowRight size={15}/></a>{mobileSaveOpen&&<MobileSaveBuildModal selected={selected} products={data.products} total={total} notify={notify} onClose={()=>setMobileSaveOpen(false)} onSaved={()=>setSavedRevision(n=>n+1)}/>}</section></>}
