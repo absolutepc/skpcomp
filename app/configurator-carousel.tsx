@@ -2,12 +2,14 @@
 import {useLayoutEffect,useRef,useState,type ReactNode,type CSSProperties} from 'react';
 import {ChevronLeft,ChevronRight} from 'lucide-react';
 import './configurator-carousel.css';
+import {carouselPose} from '../lib/carousel-spacing';
 
-/** Three copies allow native swiping through either end without a visible rewind. */
+/** Repeated copies allow native swiping through either end without a visible rewind. */
 export default function ConfiguratorCarousel({cards,names,label,controls}:{cards:ReactNode[];names:string[];label:string;controls:ReactNode}){
  const count=cards.length;
  const loop=count>1;
- const initial=loop?count:0;
+ const initial=loop?count*2:0;
+ const [geometry,setGeometry]=useState({width:240,gap:14});
  const [position,setPosition]=useState(initial);
  const positionRef=useRef(initial);
  const rail=useRef<HTMLDivElement>(null);
@@ -23,7 +25,7 @@ export default function ConfiguratorCarousel({cards,names,label,controls}:{cards
  const normalize=()=>{
   if(!loop)return;
   const current=positionRef.current;
-  const middle=count+((current%count)+count)%count;
+  const middle=count*2+((current%count)+count)%count;
   if(current===middle)return;
   rail.current?.classList.add('is-recentering');
   positionRef.current=middle;setPosition(middle);center(middle,false);
@@ -31,19 +33,21 @@ export default function ConfiguratorCarousel({cards,names,label,controls}:{cards
  };
  useLayoutEffect(()=>{
   center(initial,false);
-  const observer=new ResizeObserver(()=>center(positionRef.current,false));
+  const measure=()=>{const element=rail.current;const slide=element?.querySelector<HTMLElement>('.config-slide');if(element&&slide)setGeometry({width:slide.offsetWidth,gap:parseFloat(getComputedStyle(element).columnGap)||0});center(positionRef.current,false)};
+  measure();
+  const observer=new ResizeObserver(measure);
   if(rail.current)observer.observe(rail.current);
   return()=>{observer.disconnect();if(settle.current)clearTimeout(settle.current)};
  },[]);
  const go=(index:number)=>{
   if(settle.current)clearTimeout(settle.current);
-  const total=loop?count*3:count;
+  const total=loop?count*5:count;
   let next=index;
   if(next<0||next>=total){normalize();next=positionRef.current+(index<0?-1:1)}
   center(next);
  };
  if(!count)return <div className="config-models-title">{controls}</div>;
- const slides=loop?[...cards,...cards,...cards]:cards;
+ const slides=loop?[...cards,...cards,...cards,...cards,...cards]:cards;
  return <><section className="config-showcase" aria-label="Карусель комплектующих" aria-roledescription="карусель">
   <div className="config-showcase-rail" ref={rail} onScroll={()=>{
    const element=rail.current;if(!element)return;
@@ -56,9 +60,9 @@ export default function ConfiguratorCarousel({cards,names,label,controls}:{cards
   }}>
    {slides.map((card,index)=>{
     const offset=index-position;
-    const distance=Math.min(Math.abs(offset),3);
-    const style={'--slide-scale':distance===0?1.025:distance===1?.9:distance===2?.78:.68,'--slide-angle':`${offset===0?0:Math.sign(offset)*(distance===1?12:distance===2?22:28)}deg`} as CSSProperties;
-    return <div key={index} style={style} className={'config-slide'+(position===index?' is-focused':'')} inert={Math.abs(offset)>2} role="group" aria-roledescription="слайд" aria-label={`${index%count+1} из ${count}: ${names[index%count]}`} onFocusCapture={()=>{if(index!==position)go(index)}}>{card}</div>;
+    const pose=carouselPose(offset,geometry.width,geometry.gap);
+    const style={'--slide-scale':pose.scale,'--slide-angle':`${pose.angle}deg`,'--slide-shift':`${pose.shift}px`,visibility:Math.abs(offset)>3?'hidden':'visible'} as CSSProperties;
+    return <div key={index} style={style} className={'config-slide'+(position===index?' is-focused':'')} inert={Math.abs(offset)>3} role="group" aria-roledescription="слайд" aria-label={`${index%count+1} из ${count}: ${names[index%count]}`} onFocusCapture={()=>{if(index!==position)go(index)}}>{card}</div>;
    })}
   </div>
   <button type="button" className="config-carousel-arrow previous" disabled={!loop} aria-label="Предыдущая модель" onClick={()=>go(positionRef.current-1)}><ChevronLeft size={25}/></button>

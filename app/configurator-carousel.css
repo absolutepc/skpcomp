@@ -37,3 +37,6 @@
 @media(max-width:700px){.config-color-filter button{min-height:44px;flex:1;padding:8px 10px;font-size:11px}}
 .config-price-order{flex-shrink:0;font-size:12px;color:#aab6bf;padding:8px 10px}
 @media(max-width:700px){.config-price-order{font-size:10px;padding:8px 4px}}
+/* Reserve spacing for the projected outlines rather than the unscaled boxes. */
+.config-studio .config-slide,.config-studio .config-slide.is-focused{transform:translateX(var(--slide-shift,0px)) perspective(1000px) scale(var(--slide-scale)) rotateY(var(--slide-angle))}
+@media(min-width:1100px){.config-studio .config-showcase{--card-width:calc((100vw - 180px)/5.5)}.config-studio .config-slide .component-card{min-height:330px}.config-studio .config-slide .component-card h3{font-size:13px}.config-studio .config-slide .config-card-brand img{max-width:100px}}
