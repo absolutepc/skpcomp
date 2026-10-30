@@ -452,3 +452,19 @@
  color:#ffe500;
  border-color:#ffe500;
 }
+
+/* The configurator must fill its entire viewport and footer with true black.
+   Scope the override to pages containing the PC configurator, leaving the
+   catalogue and all other store pages untouched. */
+body:has(.config-page.config-studio),
+body:has(.config-page.config-studio) main,
+body:has(.config-page.config-studio) footer{
+ background:#000;
+}
+body:has(.config-page.config-studio) footer .social,
+body:has(.config-page.config-studio) footer .store-footer-location a{
+ background:#000;
+}
+body:has(.config-page.config-studio) footer{
+ border-top-color:#252525;
+}
