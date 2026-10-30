@@ -11,7 +11,7 @@ import {categoryIcons} from './catalog-icons';
 import type {Product,Store} from '../lib/seed';
 import {getReadyBuildSummary} from '../lib/build-components';
 import {GitCompareArrows} from 'lucide-react';
-import {analyzeBuild,groupCandidateOptions} from '../lib/pc-builder';
+import {analyzeBuild,candidateErrors,groupCandidateOptions} from '../lib/pc-builder';
 import {BUILD_OS_OPTIONS,PC_ASSEMBLY_FEE,type CustomBuildCartItem,osName} from '../lib/custom-build-cart';
 import {readSharedBuild} from '../lib/saved-builds';
 import {BuildDiagnostics,SavedBuildLibrary,MobileSaveBuildModal} from './configurator-tools';
@@ -43,7 +43,16 @@ const [showSaved,setShowSaved]=useState(false);
 const [mobileSaveOpen,setMobileSaveOpen]=useState(false);
 const [savedRevision,setSavedRevision]=useState(0);
 const [showIncompatible,setShowIncompatible]=useState(false);
+const [pendingChoice,setPendingChoice]=useState<{step:string;product?:Product;osId?:string}|null>(null);
+const confirmCancelRef=useRef<HTMLButtonElement>(null);
 const sharedLoaded=useRef(false);
+useEffect(()=>{
+ if(!pendingChoice)return;
+ confirmCancelRef.current?.focus();
+ const dismiss=(event:KeyboardEvent)=>{if(event.key==='Escape')setPendingChoice(null)};
+ window.addEventListener('keydown',dismiss);
+ return()=>window.removeEventListener('keydown',dismiss);
+},[pendingChoice]);
 useEffect(()=>{
  if(!loaded||sharedLoaded.current)return;
  sharedLoaded.current=true;
@@ -75,20 +84,33 @@ const requestSave=()=>{
  }
  openLibrary();
 };
-const choose=(p:Product)=>{
- const activeStep=step;
- setSelected({...selected,[activeStep]:p.id});
- notify('Добавлено: '+p.name);
- const currentIndex=steps.findIndex(([key])=>key===activeStep);
- const next=steps.slice(currentIndex+1).find(([key])=>
+const choose=(p:Product)=>setPendingChoice({step,product:p});
+const chooseOs=(id:string)=>setPendingChoice({step:'os',osId:id});
+const confirmChoice=(advance:boolean)=>{
+ if(!pendingChoice)return;
+ const {step:chosenStep,product,osId}=pendingChoice;
+ if(product){
+  const conflicts=candidateErrors(chosenStep,product,selected,data.products);
+  if(conflicts.length){setPendingChoice(null);notify('Несовместимый компонент: '+conflicts[0].message);return}
+ }
+ const nextSelection={...selected};
+ if(chosenStep==='os'){
+  if(osId)nextSelection.os=osId;
+  else delete nextSelection.os;
+ }else if(product)nextSelection[chosenStep]=product.id;
+ setSelected(nextSelection);
+ setPendingChoice(null);
+ notify(chosenStep==='os'?'Выбрана ОС: '+(osId?osName(osId):'Без ОС'):'Добавлено: '+(product?.name||'компонент'));
+ if(!advance)return;
+ const currentIndex=steps.findIndex(([key])=>key===chosenStep);
+ const nextStep=steps.slice(currentIndex+1).find(([key])=>
   key==='os'?true:key==='extras'?data.products.some(item=>item.category==='peripherals'):
   data.products.some(item=>item.category===key)
  );
- if(!next)return;
- setStep(next[0]);
+ if(!nextStep)return;
+ setStep(nextStep[0]);
  setSearch('');
  setShowIncompatible(false);
- // On small screens, bring the next selection area into view and reveal its tab.
  if(typeof window!=='undefined'&&window.matchMedia('(max-width:700px)').matches){
   requestAnimationFrame(()=>{
    const tabs=document.querySelector('.component-steps');
@@ -100,19 +122,22 @@ const choose=(p:Product)=>{
   });
  }
 };
-const chooseOs=(id:string)=>{
- setSelected({...selected,os:id});
- notify('Выбрана ОС: '+osName(id));
- setStep('extras');setSearch('');setShowIncompatible(false);
-};
+const pendingCurrent=pendingChoice?get(pendingChoice.step):undefined;
+const pendingDelta=pendingChoice?.product&&pendingCurrent&&pendingCurrent.price>0&&pendingChoice.product.price>0
+ ?pendingChoice.product.price-pendingCurrent.price:null;
+const pendingTotal=pendingChoice?.product?total-(pendingCurrent?.price||0)+pendingChoice.product.price:total;
 const brandControls=<>{step!=='cpu'&&brands.length>1&&<div><span>Бренд</span><div className="config-filter-buttons"><button className={!activeFilters.brand?'selected':''} onClick={()=>setFilter('brand','')}>Все</button>{brands.map(value=><button key={value} className={activeFilters.brand===value?'selected':''} onClick={()=>setFilter('brand',value)}>{value}</button>)}</div></div>}</>;
 const renderComponentOption=({product:p,issues:candidateIssues}:(typeof compatible)[number])=>{
  const conflict=candidateIssues.length>0;
- return <article className={'build-card component-card '+(selected[step]===p.id?'is-picked ':'')+(conflict?'is-incompatible':'')} key={p.id}><div className="config-card-brand"><ProductBrandLogo product={p}/></div><a href={'/product/'+p.id} onClick={e=>{e.preventDefault();nav('/product/'+p.id)}} className="build-card-art">{img(p)}</a><CardActionButtons action="favorite" name={p.name} favorite={favorites.includes(p.id)} compared={compared.includes(p.id)} onFavorite={()=>fav(p.id)} onCompare={()=>compare(p)}/><div className="build-card-body"><h3>{p.name}</h3><div className="config-specs">{(p.category==='gpu'?[p.specs?.vram&&p.specs.vram+' ГБ',p.specs?.videoMemory,p.specs?.interface,p.specs?.dlss&&'DLSS '+p.specs.dlss]:[p.socket,p.memory,p.specs?.capacity&&p.specs.capacity+' ГБ',p.specs?.form]).filter(Boolean).slice(0,4).map((value,i)=><span key={i}>{value}</span>)}</div>{conflict&&<p className="compat-error">{candidateIssues[0].message}</p>}<div className="price-line"><strong>{money(p.price)}</strong><div className="skp-card-purchase-actions"><button className="config-add-component" title={conflict?candidateIssues[0].message:selected[step]===p.id?'Уже в сборке':'Добавить в сборку'} aria-label={'Выбрать '+p.name} disabled={!!conflict} onClick={()=>choose(p)}>{selected[step]===p.id?<Check size={22}/>:<Plus size={22}/>}</button></div></div></div></article>;
+ const isChosen=selected[step]===p.id;
+ const current=get(step);
+ const delta=current&&current.id!==p.id&&current.price>0&&p.price>0?p.price-current.price:null;
+ const displayedPrice=delta===null?(p.price>0?money(p.price):'По запросу'):(delta>0?'+':delta<0?'−':'')+money(Math.abs(delta));
+ return <article className={'build-card component-card '+(selected[step]===p.id?'is-picked ':'')+(conflict?'is-incompatible':'')} key={p.id}><div className="config-card-brand"><ProductBrandLogo product={p}/></div><a href={'/product/'+p.id} onClick={e=>{e.preventDefault();nav('/product/'+p.id)}} className="build-card-art">{img(p)}</a><CardActionButtons action="favorite" name={p.name} favorite={favorites.includes(p.id)} compared={compared.includes(p.id)} onFavorite={()=>fav(p.id)} onCompare={()=>compare(p)}/><div className="build-card-body"><h3>{p.name}</h3><div className="config-specs">{(p.category==='gpu'?[p.specs?.vram&&p.specs.vram+' ГБ',p.specs?.videoMemory,p.specs?.interface,p.specs?.dlss&&'DLSS '+p.specs.dlss]:[p.socket,p.memory,p.specs?.capacity&&p.specs.capacity+' ГБ',p.specs?.form]).filter(Boolean).slice(0,4).map((value,i)=><span key={i}>{value}</span>)}</div>{conflict&&<p className="compat-error">{candidateIssues[0].message}</p>}<div className="price-line"><div className="config-card-price"><small>{isChosen?'Выбрано в сборку':delta!==null?'Разница с выбранным':'Цена товара'}</small><strong className={delta===null?'':delta<0?'config-price-decrease':delta>0?'config-price-increase':'config-price-equal'}>{displayedPrice}</strong></div><div className="skp-card-purchase-actions"><button className="config-add-component" title={conflict?candidateIssues[0].message:isChosen?'Уже в сборке':'Выбрать и подтвердить'} aria-label={'Выбрать '+p.name} disabled={conflict||isChosen} onClick={()=>choose(p)}>{isChosen?<Check size={22}/>:<Plus size={22}/>}</button></div></div></div></article>;
 };
 return <><section className="build-page config-page config-studio" aria-label="Конфигуратор ПК"><header className="config-intro"><h1>Конфигуратор <em>ПК</em></h1><div className="config-header-actions"><button onClick={requestSave}><Heart size={16}/> Сохранить</button><details className="config-manage"><summary>Управление <ChevronDown size={14}/></summary><div><button onClick={e=>{openLibrary();e.currentTarget.closest('details')?.removeAttribute('open')}}>Открыть сохранённую</button><button onClick={e=>{setSelected({});e.currentTarget.closest('details')?.removeAttribute('open')}}><RotateCcw size={15}/> Сбросить сборку</button></div></details></div></header>{showSaved&&<SavedBuildLibrary key={savedRevision} selected={selected} products={data.products} onLoad={setSelected} notify={notify}/>}<div className="builder-layout"><aside className="component-steps">{steps.map(([key,label,Icon],i)=><button aria-current={step===key?'step':undefined} className={(step===key?'current ':'')+(get(key)?'completed':'')} key={key} onClick={()=>{setStep(key);setSearch('')}}><span className="step-num">{get(key)?<Check size={14}/>:i+1}</span><Icon size={26}/><span><strong>{label}</strong><small>{key==='os'?(selected.os?osName(selected.os):'Без ОС'):get(key)?.name||(i>7?'Необязательно':'Выберите компонент')}</small></span>{(get(key)||(key==='os'&&selected.os))?<Check size={16}/>:<ChevronRight size={15}/>}</button>)}</aside><div className="component-products" id="skp-builder-options">{step!=='os'&&<div className="config-controls"><div className="config-selection-filters">{step==='cpu'&&<><div><span>Бренд</span><div className="config-filter-buttons">{['AMD','Intel'].map(brand=><button key={brand} aria-pressed={cpuBrand===brand} className={cpuBrand===brand?'selected':''} onClick={()=>{setCpuBrand(current=>current===brand?'':brand);setCpuSocket('')}}>{brand}</button>)}</div></div>{cpuBrand&&cpuSockets.length>0&&<div><span>Сокет</span><div className="config-filter-buttons">{cpuSockets.map(socket=><button key={socket} aria-pressed={cpuSocket===socket} className={cpuSocket===socket?'selected':''} onClick={()=>setCpuSocket(current=>current===socket?'':socket)}>{socket}</button>)}</div></div>}</>}</div>{step!=='cpu'&&<div className="config-color-filter" role="group" aria-label="Цвет компонентов">{([['white','Только белые'],['black','Только чёрные']] as const).map(([color,label])=><button type="button" key={color} aria-pressed={componentColor===color} className={componentColor===color?'selected':''} onClick={()=>setComponentColor(current=>current===color?'':color)}><i className={color} aria-hidden="true"/>{label}</button>)}</div>}<div className="component-search"><div><Search size={15}/><input aria-label="Поиск компонентов" placeholder="Поиск компонента" value={search} onChange={e=>setSearch(e.target.value)}/></div></div><div className="config-brand-filter">{brandControls}</div><div className="config-view-switch" role="group" aria-label="Вид товаров"><button aria-pressed={productView==='carousel'} onClick={()=>setProductView('carousel')}>Карусель</button><button aria-pressed={productView==='list'} onClick={()=>setProductView('list')}>Список</button></div></div>}{incompatible.length>0&&compatible.length>0&&<div className="skp-compatible-heading"><ShieldCheck size={16}/><span>Совместимые комплектующие</span><small>{compatible.length}</small></div>}
 {step==='os'?<div className="skp-os-options">
- <button type="button" className={!selected.os?'selected':''} onClick={()=>{const next={...selected};delete next.os;setSelected(next);setStep('extras')}}><Grid2X2 size={23}/><strong>Без операционной системы</strong><small>Установка ОС не включена</small><b>0 ₽</b></button>
+ <button type="button" className={!selected.os?'selected':''} onClick={()=>chooseOs('')}><Grid2X2 size={23}/><strong>Без операционной системы</strong><small>Установка ОС не включена</small><b>0 ₽</b></button>
  {BUILD_OS_OPTIONS.map(option=><button type="button" key={option.id} className={selected.os===option.id?'selected':''} onClick={()=>chooseOs(option.id)}><Grid2X2 size={23}/><strong>{option.name}</strong><small>Лицензия оплачивается отдельно — цену уточнит менеджер</small><b>По запросу</b></button>)}
  </div>:productView==='list'?<div className="config-models"><div className="config-models-grid">{compatible.map(renderComponentOption)}</div></div>:<ConfiguratorCarousel key={[step,cpuBrand,cpuSocket,componentColor,activeFilters.brand,search,compatible.map(item=>item.product.id).join(',')].join('|')} cards={compatible.map(renderComponentOption)} names={compatible.map(item=>item.product.name)}/>}
 {compatible.length===0&&incompatible.length>0&&<div className="skp-compatible-empty"><ShieldCheck size={22}/><p>Совместимые комплектующие не найдены. Попробуйте изменить выбранные детали или посмотреть ограничения ниже.</p></div>}
@@ -137,4 +162,26 @@ return <><section className="build-page config-page config-studio" aria-label="�
  <span className="configuration-item-art has-image" aria-hidden="true">{img(get('extras')!)}</span>
  <button type="button" onClick={()=>{setStep('extras');setSearch('')}}><span>Дополнительные опции</span><small className="filled">{get('extras')?.name}</small><strong className="configuration-item-price">{money(get('extras')!.price)}</strong></button>
  <button type="button" className="configuration-item-remove" aria-label="Убрать опцию" onClick={()=>{const n={...selected};delete n.extras;setSelected(n)}}><X size={14}/></button>
- </div>}{picked.length>0&&<div className="skp-assembly-fee-row"><span>Сборка и проверка ПК</span><strong>{money(PC_ASSEMBLY_FEE)}</strong></div>}<BuildDiagnostics analysis={analysis}/><div className="configuration-total"><strong>Итого</strong><strong>{money(total)}</strong></div><button className="button light" disabled={!complete||problems.length>0||!addBuild} onClick={()=>{if(!addBuild)return;addBuild({type:'custom-build',id:'build-'+crypto.randomUUID(),selected:{...selected}})}}><ShoppingBag size={16}/> Добавить в корзину</button><button className="button outline" onClick={requestSave}><Heart size={15}/> Сохранить конфигурацию</button><small className="config-disclaimer">Несовместимые компоненты нельзя добавить в корзину. Уточните BIOS, разъёмы и размеры перед оформлением.</small></aside></details></div><a className="config-ready-link" href="/pc" onClick={e=>{e.preventDefault();nav('/pc')}}>Посмотреть готовые ПК <ArrowRight size={15}/></a>{mobileSaveOpen&&<MobileSaveBuildModal selected={selected} products={data.products} total={total} notify={notify} onClose={()=>setMobileSaveOpen(false)} onSaved={()=>setSavedRevision(n=>n+1)}/>}</section></>}
+ </div>}{picked.length>0&&<div className="skp-assembly-fee-row"><span>Сборка и проверка ПК</span><strong>{money(PC_ASSEMBLY_FEE)}</strong></div>}<BuildDiagnostics analysis={analysis}/><div className="configuration-total"><strong>Итого</strong><strong>{money(total)}</strong></div><button className="button light" disabled={!complete||problems.length>0||!addBuild} onClick={()=>{if(!addBuild)return;addBuild({type:'custom-build',id:'build-'+crypto.randomUUID(),selected:{...selected}})}}><ShoppingBag size={16}/> Добавить в корзину</button><button className="button outline" onClick={requestSave}><Heart size={15}/> Сохранить конфигурацию</button><small className="config-disclaimer">Несовместимые компоненты нельзя добавить в корзину. Уточните BIOS, разъёмы и размеры перед оформлением.</small></aside></details></div><a className="config-ready-link" href="/pc" onClick={e=>{e.preventDefault();nav('/pc')}}>Посмотреть готовые ПК <ArrowRight size={15}/></a>{pendingChoice&&<div className="config-confirm-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setPendingChoice(null)}}>
+ <div className="config-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="skp-config-confirm-title">
+  <div className="config-confirm-header">
+   <div><span className="config-confirm-eyebrow">КОНФИГУРАТОР SKP</span><h2 id="skp-config-confirm-title">Подтвердить выбор</h2></div>
+   <button type="button" className="config-confirm-close" onClick={()=>setPendingChoice(null)} aria-label="Закрыть"><X size={19}/></button>
+  </div>
+  <p className="config-confirm-description">Проверьте компонент перед добавлением в сборку. Перейти дальше можно только после подтверждения.</p>
+  <div className="config-confirm-rows">
+   <div><small>Сейчас в сборке</small><strong>{pendingChoice.step==='os'?(selected.os?osName(selected.os):'Без ОС'):pendingCurrent?.name||'Не выбран'}</strong></div>
+   <ArrowRight size={20} aria-hidden="true"/>
+   <div><small>Новый выбор</small><strong>{pendingChoice.step==='os'?(pendingChoice.osId?osName(pendingChoice.osId):'Без ОС'):pendingChoice.product?.name}</strong></div>
+  </div>
+  <div className="config-confirm-total">
+   <span>{pendingChoice.step==='os'?'ОС оплачивается отдельно при необходимости':pendingDelta===null?'Итоговая стоимость со сборкой':pendingDelta===0?'Без изменения стоимости':'Изменение стоимости сборки'}</span>
+   <strong className={pendingDelta!==null&&pendingDelta<0?'is-cheaper':''}>{pendingDelta===null||pendingChoice.step==='os'?money(pendingTotal):pendingDelta===0?'0 ₽':(pendingDelta>0?'+':'−')+money(Math.abs(pendingDelta))}</strong>
+  </div>
+  <div className="config-confirm-actions">
+   <button ref={confirmCancelRef} type="button" className="config-confirm-cancel" onClick={()=>setPendingChoice(null)}>Отмена</button>
+   <button type="button" className="config-confirm-stay" onClick={()=>confirmChoice(false)}>Подтвердить и остаться</button>
+   <button type="button" className="config-confirm-next" onClick={()=>confirmChoice(true)}>Подтвердить и продолжить <ArrowRight size={17}/></button>
+  </div>
+ </div>
+</div>}{mobileSaveOpen&&<MobileSaveBuildModal selected={selected} products={data.products} total={total} notify={notify} onClose={()=>setMobileSaveOpen(false)} onSaved={()=>setSavedRevision(n=>n+1)}/>}</section></>}
