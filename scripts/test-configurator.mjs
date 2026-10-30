@@ -19,6 +19,18 @@ function load(module,dependencies={}){
 }
 const carouselSpacing=load('lib/carousel-spacing.ts');
 assert.equal(carouselSpacing.CONFIG_CAROUSEL_VISIBLE_GAP,30,'Perspective cards must have a larger visible gap');
+for(const [count,expected] of [[0,[]],[1,[0]],[2,[0,1]],[3,[-1,0,1]],[4,[-1,0,1,2]],[5,[-2,-1,0,1,2]],[9,[-2,-1,0,1,2]]]){
+ const offsets=carouselSpacing.carouselVisibleOffsets(count);
+ assert.deepEqual(Array.from(offsets),expected,'Visible slots must have no repeated products for '+count+' available models');
+ if(count>0){
+  for(const cursor of [-4,-1,0,1,2,4,10,45]){
+   const visible=offsets.map(offset=>carouselSpacing.carouselWrappedIndex(cursor,offset,count));
+   assert.equal(new Set(visible).size,visible.length,'No duplicate product cards for '+count+' items at cursor '+cursor);
+   assert.equal(carouselSpacing.carouselWrappedIndex(cursor,0,count),(cursor%count+count)%count);
+  }
+ }
+}
+
 for(const [width,nativeGap] of [[230,8],[260,14],[330,14]]){
  const left=carouselSpacing.carouselPose(-2,width,nativeGap);
  const nearLeft=carouselSpacing.carouselPose(-1,width,nativeGap);
@@ -230,9 +242,23 @@ assert.match(layout,/\.config-page\.config-studio \.config-build-details\{\s*bac
 assert.match(layout,/\.config-page\.config-studio \.config-gpu-models-list>button\.selected\{/,
  'Active GPU model option retains the SKP yellow accent');
 assert.match(carouselUI,/element\.addEventListener\('wheel',handleWheel,\{passive:false\}\)/,
- 'Mac trackpad wheel gestures are deliberately handled without browser passive scroll');
-assert.match(carouselUI,/setTimeout\(settleScroll,190\)/,
- 'The active carousel pose is committed only after the swipe settles');
-assert.doesNotMatch(carouselUI,/onScroll=\{\(\)=>\{[\s\S]*?setPosition\(nearest\)/,
- 'Carousel must not restyle every card during each native scroll event');
+ 'Mac trackpad horizontal wheel is handled as a discrete non-passive gesture');
+assert.match(carouselUI,/wheelLocked\.current=true/,
+ 'Momentum events must not advance multiple cards per swipe');
+assert.match(carouselUI,/setTimeout\(\(\)=>\{/,
+ 'Gesture lock is released after inactivity');
+assert.match(carouselUI,/onTouchEnd=\{onTouchEnd\}/,
+ 'Touchscreen swipe navigation remains available');
+assert.match(carouselUI,/onKeyDown=\{event=>\{/,
+ 'Keyboard arrow navigation remains available');
+assert.doesNotMatch(carouselUI,/onScroll=|scrollTo\(|scrollLeft|scroll-snap-align:center|\[\.\.\.cards,\.\.\.cards/,
+ 'Native scrolling, scroll-snapping, and duplicated card arrays must be removed');
+assert.match(carouselLayout,/\.config-page\.config-studio \.config-showcase-rail\{\s*display:grid;/,
+ 'Cards use a fixed layered viewport instead of a long native-scroll rail');
+assert.match(carouselLayout,/scroll-snap-type:none;/,
+ 'Safari scroll-snap must not fight trackpad wheel navigation');
+assert.match(layout,/body:has\(\.config-page\.config-studio\) footer\{\s*background:#000;/,
+ 'Configurator footer uses pure black, scoped only to configurator');
+assert.match(layout,/body:has\(\.config-page\.config-studio\)\s*,/,
+ 'Configurator surrounding body area uses pure black');
 console.log('Configurator tests passed: compatibility grouping, shared icons, sockets, memory, dimensions, PSU, saved builds, share links and integration.');
