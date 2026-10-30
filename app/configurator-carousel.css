@@ -40,3 +40,59 @@
 /* Reserve spacing for the projected outlines rather than the unscaled boxes. */
 .config-studio .config-slide,.config-studio .config-slide.is-focused{transform:translateX(var(--slide-shift,0px)) perspective(1000px) scale(var(--slide-scale)) rotateY(var(--slide-angle))}
 @media(min-width:1100px){.config-studio .config-showcase{--card-width:clamp(230px,20vw,330px)}}
+
+/* Compact workspace: keep product dimensions, reduce surrounding chrome. */
+.config-page.config-studio{padding-top:14px;padding-bottom:110px}
+.config-page.config-studio .config-intro{margin-bottom:10px;gap:12px}
+.config-page.config-studio .config-intro h1{font-size:26px;margin:0;letter-spacing:-.5px}
+.config-header-actions{display:flex;align-items:center;gap:8px}
+.config-header-actions>button,.config-manage>summary{display:flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:8px 12px;border:1px solid #29333a;border-radius:8px;background:#0b1115;color:#dce5e9;font-size:12px;cursor:pointer}
+.config-manage{position:relative}
+.config-manage>summary{list-style:none}
+.config-manage>summary::-webkit-details-marker{display:none}
+.config-manage>div{position:absolute;right:0;top:calc(100% + 6px);z-index:45;min-width:210px;padding:6px;border:1px solid #39464e;border-radius:9px;background:#0b1115;box-shadow:0 10px 25px #0009}
+.config-manage>div>button{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:10px;text-align:left;font-size:12px}
+.config-page.config-studio .builder-layout{gap:10px}
+.config-page.config-studio .component-steps{padding:5px 0}
+.config-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:4px}
+.config-page.config-studio .config-selection-filters{display:flex;flex:0 1 auto;gap:10px;padding:0;margin:0;border:0;border-radius:0;background:none;box-shadow:none}
+.config-page.config-studio .config-selection-filters:empty{display:none}
+.config-page.config-studio .config-selection-filters>div{display:flex;align-items:center;gap:8px;flex:0 1 auto}
+.config-page.config-studio .config-selection-filters>div>span{margin:0;font-size:12px}
+.config-page.config-studio .config-controls .config-filter-buttons{gap:6px}
+.config-page.config-studio .config-controls .config-filter-buttons button{min-height:40px;padding:8px 12px}
+.config-page.config-studio .config-controls .component-search{flex:1 1 220px;min-width:180px;margin:0}
+.config-page.config-studio .config-controls .component-search>div{width:100%;min-width:0}
+.config-page.config-studio .config-controls .component-search input{min-height:40px}
+.config-page.config-studio .config-color-filter{margin:0}
+.config-brand-filter:empty{display:none}
+.config-brand-filter>div{display:flex;align-items:center;gap:8px}
+.config-brand-filter>div>span{display:none}
+.config-view-switch{display:flex;gap:2px;padding:3px;border:1px solid #29333a;border-radius:8px}
+.config-view-switch button{min-height:34px;padding:6px 10px;color:#aab6bf;font-size:11px;border-radius:5px}
+.config-view-switch button[aria-pressed=true]{background:#263038;color:#fff}
+.config-studio .config-showcase-rail{padding-top:18px;padding-bottom:14px}
+.config-studio .config-carousel-caption{margin-bottom:4px}
+.config-ready-link{display:flex;align-items:center;justify-content:center;gap:8px;width:fit-content;margin:16px auto 0;font-size:12px;color:#aab6bf}
+.config-page.config-studio .config-dock{gap:12px;padding-top:8px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+.config-page.config-studio .config-dock-parts>button{min-height:52px;padding:6px 8px;flex-basis:140px}
+.config-page.config-studio .config-dock-art{width:30px;height:32px}
+.config-page.config-studio .config-dock-parts small{margin-bottom:3px}
+.config-page.config-studio .config-dock-total strong{font-size:24px}
+.config-page.config-studio .config-dock>.button{min-height:46px;padding:10px 14px}
+@media(max-width:700px){
+ .config-page.config-studio{padding-bottom:150px}
+ .config-page.config-studio .config-intro{flex-wrap:wrap}
+ .config-page.config-studio .config-intro h1{font-size:23px}
+ .config-header-actions>button,.config-manage>summary{min-height:44px}
+ .config-controls{gap:8px}
+ .config-page.config-studio .config-selection-filters{flex-wrap:wrap;max-width:100%}
+ .config-page.config-studio .config-selection-filters>div{flex-wrap:wrap;max-width:100%}
+ .config-page.config-studio .config-controls .config-filter-buttons button,.config-view-switch button{min-height:44px}
+ .config-page.config-studio .config-controls .component-search{flex-basis:100%}
+ .config-page.config-studio .config-controls .component-search input{min-height:44px}
+ .config-brand-filter{max-width:100%}
+ .config-page.config-studio .config-dock{gap:6px}
+ .config-page.config-studio .config-dock-parts>button{min-height:44px}
+ .config-page.config-studio .config-dock-total strong{font-size:22px}
+}

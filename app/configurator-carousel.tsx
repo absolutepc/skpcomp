@@ -5,7 +5,7 @@ import './configurator-carousel.css';
 import {carouselPose} from '../lib/carousel-spacing';
 
 /** Repeated copies allow native swiping through either end without a visible rewind. */
-export default function ConfiguratorCarousel({cards,names,label,controls}:{cards:ReactNode[];names:string[];label:string;controls:ReactNode}){
+export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];names:string[]}){
  const count=cards.length;
  const loop=count>1;
  const initial=loop?count*2:0;
@@ -46,7 +46,7 @@ export default function ConfiguratorCarousel({cards,names,label,controls}:{cards
   if(next<0||next>=total){normalize();next=positionRef.current+(index<0?-1:1)}
   center(next);
  };
- if(!count)return <div className="config-models-title">{controls}</div>;
+ if(!count)return null;
  const slides=loop?[...cards,...cards,...cards,...cards,...cards]:cards;
  return <><section className="config-showcase" aria-label="Карусель комплектующих" aria-roledescription="карусель">
   <div className="config-showcase-rail" ref={rail} onScroll={()=>{
@@ -67,6 +67,6 @@ export default function ConfiguratorCarousel({cards,names,label,controls}:{cards
   </div>
   <button type="button" className="config-carousel-arrow previous" disabled={!loop} aria-label="Предыдущая модель" onClick={()=>go(positionRef.current-1)}><ChevronLeft size={25}/></button>
   <button type="button" className="config-carousel-arrow next" disabled={!loop} aria-label="Следующая модель" onClick={()=>go(positionRef.current+1)}><ChevronRight size={25}/></button>
-  <div className="config-carousel-caption" aria-live="polite"><span>{names[active]}</span><small>{active+1} / {count}</small></div>
- </section><section className="config-models"><div className="config-models-title"><h2>{label}</h2><span>{count} моделей</span>{controls}</div><div className="config-models-grid">{cards.map((card,index)=><div key={index}>{card}</div>)}</div></section></>;
+  <div className="config-carousel-caption" aria-live="polite"><small>{active+1} / {count}</small></div>
+ </section></>;
 }
