@@ -2,7 +2,7 @@
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode,type CSSProperties,type TouchEvent} from 'react';
 import {ChevronLeft,ChevronRight} from 'lucide-react';
 import './configurator-carousel.css';
-import {carouselPose} from '../lib/carousel-spacing';
+import {carouselPose,carouselVisibleOffsets,carouselWrappedIndex} from '../lib/carousel-spacing';
 
 /**
  * Gesture-controlled carousel, without native horizontal scrolling.
@@ -19,7 +19,7 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
  const wheelIdle=useRef<ReturnType<typeof setTimeout>|null>(null);
  const wheelLocked=useRef(false);
  const touchStart=useRef<{x:number;y:number}|null>(null);
- const active=count?((cursor%count)+count)%count:0;
+ const active=carouselWrappedIndex(cursor,0,count);
  const canNavigate=count>1;
 
  const navigate=(direction:number)=>{
@@ -87,10 +87,7 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
  if(!count)return null;
 
  // No duplicate products: for two SKUs we render two cards, not five clones.
- const offsets=count>=5?[-2,-1,0,1,2]:
-  count===4?[-1,0,1,2]:
-  count===3?[-1,0,1]:
-  count===2?[0,1]:[0];
+ const offsets=carouselVisibleOffsets(count);
 
  return <section className="config-showcase" aria-label="Карусель комплектующих" aria-roledescription="карусель">
   <div className="config-showcase-rail" ref={rail} tabIndex={0}
@@ -102,7 +99,7 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
    }} aria-label="Используйте стрелки или горизонтальный жест для перелистывания">
    {offsets.map(offset=>{
     const virtual=cursor+offset;
-    const index=((virtual%count)+count)%count;
+    const index=carouselWrappedIndex(cursor,offset,count);
     const pose=carouselPose(offset,width,0);
     const style={
      '--slide-scale':pose.scale,
