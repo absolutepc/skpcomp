@@ -42,7 +42,7 @@
 @media(min-width:1100px){.config-studio .config-showcase{--card-width:clamp(230px,20vw,330px)}}
 
 /* Compact workspace: keep product dimensions, reduce surrounding chrome. */
-.config-page.config-studio{padding-top:14px;padding-bottom:110px}
+.config-page.config-studio{padding-top:14px;padding-bottom:40px}
 .config-page.config-studio .config-intro{margin-bottom:10px;gap:12px}
 .config-page.config-studio .config-intro h1{font-size:26px;margin:0;letter-spacing:-.5px}
 .config-header-actions{display:flex;align-items:center;gap:8px}
@@ -74,14 +74,14 @@
 .config-studio .config-showcase-rail{padding-top:18px;padding-bottom:14px}
 .config-studio .config-carousel-caption{margin-bottom:4px}
 .config-ready-link{display:flex;align-items:center;justify-content:center;gap:8px;width:fit-content;margin:16px auto 0;font-size:12px;color:#aab6bf}
-.config-page.config-studio .config-dock{gap:12px;padding-top:8px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
-.config-page.config-studio .config-dock-parts>button{min-height:52px;padding:6px 8px;flex-basis:140px}
-.config-page.config-studio .config-dock-art{width:30px;height:32px}
-.config-page.config-studio .config-dock-parts small{margin-bottom:3px}
-.config-page.config-studio .config-dock-total strong{font-size:24px}
-.config-page.config-studio .config-dock>.button{min-height:46px;padding:10px 14px}
+
+
+
+
+
+
 @media(max-width:700px){
- .config-page.config-studio{padding-bottom:150px}
+ .config-page.config-studio{padding-bottom:24px}
  .config-page.config-studio .config-intro{flex-wrap:wrap}
  .config-page.config-studio .config-intro h1{font-size:23px}
  .config-header-actions>button,.config-manage>summary{min-height:44px}
@@ -92,7 +92,7 @@
  .config-page.config-studio .config-controls .component-search{flex-basis:100%}
  .config-page.config-studio .config-controls .component-search input{min-height:44px}
  .config-brand-filter{max-width:100%}
- .config-page.config-studio .config-dock{gap:6px}
- .config-page.config-studio .config-dock-parts>button{min-height:44px}
- .config-page.config-studio .config-dock-total strong{font-size:22px}
+
+
+
 }
