@@ -106,4 +106,26 @@ assert.match(builderUI,/\['gpu','Видеокарта',categoryIcons\.gpu\]/);
 assert.match(builderUI,/<BuildDiagnostics analysis=\{analysis\}/);
 assert.match(builderUI,/<SavedBuildLibrary /);
 assert.match(shopUI,/loaded=\{loaded\}/);
+
+const layout=readFileSync(new URL('../app/configurator-visual.css',import.meta.url),'utf8');
+const carouselLayout=readFileSync(new URL('../app/configurator-carousel.css',import.meta.url),'utf8');
+assert.match(builderUI,/<section className="config-summary" aria-label="Текущая сборка">/,
+ 'Configurator summary is an ordinary in-page section');
+assert.doesNotMatch(builderUI,/className="config-dock"/,
+ 'Configurator no longer mounts the fixed component dock');
+assert.match(builderUI,/config-summary-parts/,
+ 'Selected components are shown in a dedicated compact area');
+assert.match(builderUI,/get\(key\)\)\)\.map/,
+ 'Only selected components appear in the inline build summary');
+assert.match(layout,/\.config-page\.config-studio \.config-summary\{\s*position:static;/,
+ 'Summary scrolls normally with the configurator page');
+assert.match(layout,/background:#0d1317;/,
+ 'Summary has a solid non-transparent background');
+assert.doesNotMatch(layout,/\.config-dock\{position:fixed/,
+ 'Obsolete fixed overlay styles are removed');
+assert.match(layout,/\.config-page\.config-studio \.component-steps\{\s*border:0;/,
+ 'Upper navigation divider rules are removed');
+assert.doesNotMatch(carouselLayout,/config-dock/,
+ 'Outdated fixed dock overrides are removed from carousel styles');
+
 console.log('Configurator tests passed: compatibility grouping, shared icons, sockets, memory, dimensions, PSU, saved builds, share links and integration.');
