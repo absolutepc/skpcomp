@@ -35,3 +35,5 @@
 .config-color-filter i{display:block;width:15px;height:15px;border:1px solid #7c858b;border-radius:50%}
 .config-color-filter i.white{background:#f4f4f4}.config-color-filter i.black{background:#111}
 @media(max-width:700px){.config-color-filter button{min-height:44px;flex:1;padding:8px 10px;font-size:11px}}
+.config-price-order{flex-shrink:0;font-size:12px;color:#aab6bf;padding:8px 10px}
+@media(max-width:700px){.config-price-order{font-size:10px;padding:8px 4px}}
