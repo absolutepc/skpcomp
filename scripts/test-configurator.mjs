@@ -17,6 +17,28 @@ function load(module,dependencies={}){
  },URL,URLSearchParams,Date,Math});
  return exports;
 }
+const carouselSpacing=load('lib/carousel-spacing.ts');
+assert.equal(carouselSpacing.CONFIG_CAROUSEL_VISIBLE_GAP,30,'Perspective cards must have a larger visible gap');
+for(const [width,nativeGap] of [[230,8],[260,14],[330,14]]){
+ const left=carouselSpacing.carouselPose(-2,width,nativeGap);
+ const nearLeft=carouselSpacing.carouselPose(-1,width,nativeGap);
+ const middle=carouselSpacing.carouselPose(0,width,nativeGap);
+ const nearRight=carouselSpacing.carouselPose(1,width,nativeGap);
+ const right=carouselSpacing.carouselPose(2,width,nativeGap);
+ assert.equal(left.angle,-38,'Outer left card tilts further inward');
+ assert.equal(right.angle,38,'Outer right card tilts further inward');
+ assert.equal(nearRight.angle,16,'Near card has a gentler perspective');
+ assert.equal(middle.angle,0,'Center card must remain straight');
+ assert.ok(Math.abs(left.center+right.center)<0.001,'Carousel is symmetric across the center');
+ for(const [a,b] of [[middle,nearRight],[nearRight,right]]){
+  const projectedGap=b.center-a.center-a.right-b.left;
+  assert.ok(Math.abs(projectedGap-30)<0.001,'Perspective-projected right card spacing remains 30px');
+ }
+ for(const [a,b] of [[nearLeft,middle],[left,nearLeft]]){
+  const projectedGap=b.center-a.center-a.right-b.left;
+  assert.ok(Math.abs(projectedGap-30)<0.001,'Perspective-projected left card spacing remains 30px');
+ }
+}
 const {seed}=load('lib/seed.ts');
 const logic=load('lib/pc-builder.ts');
 const saved=load('lib/saved-builds.ts',{'./pc-builder':logic});
