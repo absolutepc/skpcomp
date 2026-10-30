@@ -1,127 +1,128 @@
 'use client';
-import {useEffect,useLayoutEffect,useRef,useState,type ReactNode,type CSSProperties} from 'react';
+import {useEffect,useLayoutEffect,useRef,useState,type ReactNode,type CSSProperties,type TouchEvent} from 'react';
 import {ChevronLeft,ChevronRight} from 'lucide-react';
 import './configurator-carousel.css';
 import {carouselPose} from '../lib/carousel-spacing';
 
-/** Native touch swipes remain scrollable. Trackpad gestures move one item at a time,
- * while active-slide perspective is committed only after scrolling has settled:
- * changing every slide's 3D transform on each Safari scroll event caused jitter.
+/**
+ * Gesture-controlled carousel, without native horizontal scrolling.
+ * Safari used to scroll five cloned lists while transforms and focus were
+ * recalculated on a timer: on a Mac trackpad the two systems could fight,
+ * causing oscillations, repeated cards and the wrong position indicator.
+ * We now advance once per horizontal gesture and render each visible SKU once.
  */
 export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];names:string[]}){
  const count=cards.length;
- const loop=count>1;
- const initial=loop?count*2:0;
- const [geometry,setGeometry]=useState({width:240,gap:14});
- const [position,setPosition]=useState(initial);
- const positionRef=useRef(initial);
- const nearestRef=useRef(initial);
- const requestedRef=useRef(initial);
+ const [cursor,setCursor]=useState(0);
+ const [width,setWidth]=useState(260);
  const rail=useRef<HTMLDivElement>(null);
- const settle=useRef<ReturnType<typeof setTimeout>|null>(null);
  const wheelIdle=useRef<ReturnType<typeof setTimeout>|null>(null);
  const wheelLocked=useRef(false);
- const active=count?position%count:0;
+ const touchStart=useRef<{x:number;y:number}|null>(null);
+ const active=count?((cursor%count)+count)%count:0;
+ const canNavigate=count>1;
 
- const center=(index:number,animate=true)=>{
-  const element=rail.current;
-  const card=element?.querySelectorAll<HTMLElement>('.config-slide')[index];
-  if(!element||!card)return;
-  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  element.scrollTo({left:card.offsetLeft-(element.clientWidth-card.offsetWidth)/2,behavior:animate&&!reduced?'smooth':'auto'});
- };
- const settleScroll=()=>{
-  const index=nearestRef.current;
-  // Loop back to an identical copy without an animated rewind.
-  const middle=count*2+((index%count)+count)%count;
-  if(loop&&index!==middle){
-   rail.current?.classList.add('is-recentering');
-   positionRef.current=middle;
-   requestedRef.current=middle;
-   nearestRef.current=middle;
-   setPosition(middle);
-   center(middle,false);
-   requestAnimationFrame(()=>requestAnimationFrame(()=>rail.current?.classList.remove('is-recentering')));
-  }else{
-   positionRef.current=index;
-   requestedRef.current=index;
-   setPosition(index);
-  }
- };
- const onScroll=()=>{
-  const element=rail.current;
-  if(!element)return;
-  const midpoint=element.scrollLeft+element.clientWidth/2;
-  let nearest=nearestRef.current,distance=Infinity;
-  element.querySelectorAll<HTMLElement>('.config-slide').forEach((slide,index)=>{
-   const delta=Math.abs(slide.offsetLeft+slide.offsetWidth/2-midpoint);
-   if(delta<distance){nearest=index;distance=delta}
-  });
-  nearestRef.current=nearest;
-  if(settle.current)clearTimeout(settle.current);
-  settle.current=setTimeout(settleScroll,190);
- };
- const go=(index:number)=>{
-  if(settle.current)clearTimeout(settle.current);
-  const total=loop?count*5:count;
-  const safe=Math.max(0,Math.min(total-1,index));
-  requestedRef.current=safe;
-  center(safe);
+ const navigate=(direction:number)=>{
+  if(!canNavigate)return;
+  setCursor(current=>current+direction);
  };
 
  useLayoutEffect(()=>{
-  center(initial,false);
+  const element=rail.current;
+  if(!element)return;
   const measure=()=>{
-   const element=rail.current;
-   const slide=element?.querySelector<HTMLElement>('.config-slide');
-   if(!element||!slide)return;
-   setGeometry({width:slide.offsetWidth,gap:parseFloat(getComputedStyle(element).columnGap)||0});
-   center(requestedRef.current,false);
+   const slide=element.querySelector<HTMLElement>('.config-slide');
+   if(!slide)return;
+   const next=slide.offsetWidth;
+   if(next>0)setWidth(previous=>Math.abs(previous-next)<0.5?previous:next);
   };
   measure();
   const observer=new ResizeObserver(measure);
-  if(rail.current)observer.observe(rail.current);
-  return()=>{
-   observer.disconnect();
-   if(settle.current)clearTimeout(settle.current);
-   if(wheelIdle.current)clearTimeout(wheelIdle.current);
-  };
- },[]);
+  observer.observe(element);
+  return()=>observer.disconnect();
+ },[count]);
 
  useEffect(()=>{
   const element=rail.current;
-  if(!element||!loop)return;
+  if(!element||!canNavigate)return;
   const handleWheel=(event:WheelEvent)=>{
-   // Preserve ordinary vertical page scrolling, browser zoom and touch gestures.
-   if(event.ctrlKey||Math.abs(event.deltaX)<4||Math.abs(event.deltaX)<=Math.abs(event.deltaY))return;
+   // Don't intercept page scrolling, pinch-to-zoom, or vertical gestures.
+   if(event.ctrlKey||event.metaKey||
+      Math.abs(event.deltaX)<4||
+      Math.abs(event.deltaX)<=Math.abs(event.deltaY))return;
    event.preventDefault();
+   // Momentum is part of the SAME trackpad swipe; it cannot advance again.
    if(wheelIdle.current)clearTimeout(wheelIdle.current);
-   wheelIdle.current=setTimeout(()=>{wheelLocked.current=false},240);
+   wheelIdle.current=setTimeout(()=>{
+    wheelLocked.current=false;
+    wheelIdle.current=null;
+   },260);
    if(wheelLocked.current)return;
    wheelLocked.current=true;
-   go(requestedRef.current+(event.deltaX>0?1:-1));
+   setCursor(current=>current+(event.deltaX>0?1:-1));
   };
   element.addEventListener('wheel',handleWheel,{passive:false});
   return()=>{
    element.removeEventListener('wheel',handleWheel);
    if(wheelIdle.current)clearTimeout(wheelIdle.current);
+   wheelIdle.current=null;
    wheelLocked.current=false;
   };
- },[count]);
+ },[canNavigate]);
 
+ const onTouchStart=(event:TouchEvent<HTMLDivElement>)=>{
+  if(event.touches.length!==1){touchStart.current=null;return}
+  const touch=event.touches[0];
+  touchStart.current={x:touch.clientX,y:touch.clientY};
+ };
+ const onTouchEnd=(event:TouchEvent<HTMLDivElement>)=>{
+  const start=touchStart.current;
+  touchStart.current=null;
+  if(!start||!canNavigate||!event.changedTouches.length)return;
+  const touch=event.changedTouches[0];
+  const dx=touch.clientX-start.x;
+  const dy=touch.clientY-start.y;
+  if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.3)navigate(dx<0?1:-1);
+ };
  if(!count)return null;
- const slides=loop?[...cards,...cards,...cards,...cards,...cards]:cards;
+
+ // No duplicate products: for two SKUs we render two cards, not five clones.
+ const offsets=count>=5?[-2,-1,0,1,2]:
+  count===4?[-1,0,1,2]:
+  count===3?[-1,0,1]:
+  count===2?[0,1]:[0];
+
  return <section className="config-showcase" aria-label="Карусель комплектующих" aria-roledescription="карусель">
-  <div className="config-showcase-rail" ref={rail} onScroll={onScroll}>
-   {slides.map((card,index)=>{
-    const offset=index-position;
-    const pose=carouselPose(offset,geometry.width,geometry.gap);
-    const style={'--slide-scale':pose.scale,'--slide-angle':`${pose.angle}deg`,'--slide-shift':`${pose.shift}px`,zIndex:4-Math.min(Math.abs(offset),3),visibility:Math.abs(offset)>2?'hidden':'visible'} as CSSProperties;
-    return <div key={index} style={style} className={'config-slide'+(position===index?' is-focused':'')} inert={Math.abs(offset)>2} role="group" aria-roledescription="слайд" aria-label={`${index%count+1} из ${count}: ${names[index%count]}`} onFocusCapture={()=>{if(index!==position)go(index)}}>{card}</div>;
+  <div className="config-showcase-rail" ref={rail} tabIndex={0}
+   onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onTouchCancel={()=>{touchStart.current=null}}
+   onKeyDown={event=>{
+    if(event.target!==event.currentTarget)return;
+    if(event.key==='ArrowLeft'){event.preventDefault();navigate(-1)}
+    else if(event.key==='ArrowRight'){event.preventDefault();navigate(1)}
+   }} aria-label="Используйте стрелки или горизонтальный жест для перелистывания">
+   {offsets.map(offset=>{
+    const virtual=cursor+offset;
+    const index=((virtual%count)+count)%count;
+    const pose=carouselPose(offset,width,0);
+    const style={
+     '--slide-scale':pose.scale,
+     '--slide-angle':`${pose.angle}deg`,
+     '--slide-shift':`${pose.center}px`,
+     zIndex:5-Math.abs(offset)
+    } as CSSProperties;
+    return <div key={virtual} style={style}
+     className={'config-slide'+(offset===0?' is-focused':'')}
+     role="group" aria-roledescription="слайд"
+     aria-current={offset===0?'true':undefined}
+     aria-label={`${index+1} из ${count}: ${names[index]}`}>
+     {cards[index]}
+    </div>;
    })}
   </div>
-  <button type="button" className="config-carousel-arrow previous" disabled={!loop} aria-label="Предыдущая модель" onClick={()=>go(requestedRef.current-1)}><ChevronLeft size={25}/></button>
-  <button type="button" className="config-carousel-arrow next" disabled={!loop} aria-label="Следующая модель" onClick={()=>go(requestedRef.current+1)}><ChevronRight size={25}/></button>
+  <button type="button" className="config-carousel-arrow previous" disabled={!canNavigate}
+   aria-label="Предыдущая модель" onClick={()=>navigate(-1)}><ChevronLeft size={25}/></button>
+  <button type="button" className="config-carousel-arrow next" disabled={!canNavigate}
+   aria-label="Следующая модель" onClick={()=>navigate(1)}><ChevronRight size={25}/></button>
   <div className="config-carousel-caption" aria-live="polite"><small>{active+1} / {count}</small></div>
  </section>;
 }
