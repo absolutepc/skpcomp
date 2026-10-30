@@ -1,17 +1,24 @@
 'use client';
-import {useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import {filterCandidates} from '../lib/catalog-filter-options';
 import CatalogRange from './catalog-range';
 import {catalogFilterOrder} from '../lib/catalog-filter-order';
 import './catalog-filters.css';
 import './catalog-compact.css';
-import {Search,SlidersHorizontal,X,LayoutGrid} from 'lucide-react';
+import {Search,SlidersHorizontal,X,LayoutGrid,ChevronDown} from 'lucide-react';
 import {categoryIcons} from './catalog-icons';
 import {Product} from '../lib/seed';
 import {components,peripherals,categoryFields,fieldValue,specValue,splitValues,inCategory,matchesFilters,Facets,Ranges} from '../lib/catalog';
 const groups:Record<string,string>={all:'Все товары',components:'Комплектующие',peripherals:'Периферия',laptops:'Ноутбуки',furniture:'Компьютерная мебель'};
 export default function CatalogPage({category,products,nav,card}:{category:string;products:Product[];nav:(p:string)=>void;card:(p:Product)=>React.ReactNode}){
  const [query,setQuery]=useState(''),[sort,setSort]=useState('popular'),[min,setMin]=useState(''),[max,setMax]=useState(''),[stock,setStock]=useState(false),[facets,setFacets]=useState<Facets>({}),[ranges,setRanges]=useState<Ranges>({}),[open,setOpen]=useState(false),[allBrands,setAllBrands]=useState(false);
+ const categoryMenu=useRef<HTMLDetailsElement>(null);
+ useEffect(()=>{
+  const closeOutside=(event:PointerEvent)=>{if(event.target instanceof Node&&!categoryMenu.current?.contains(event.target))categoryMenu.current?.removeAttribute('open')};
+  const closeEscape=(event:KeyboardEvent)=>{if(event.key==='Escape'&&categoryMenu.current?.open){categoryMenu.current.removeAttribute('open');categoryMenu.current.querySelector('summary')?.focus()}};
+  document.addEventListener('pointerdown',closeOutside);document.addEventListener('keydown',closeEscape);
+  return()=>{document.removeEventListener('pointerdown',closeOutside);document.removeEventListener('keydown',closeEscape)};
+ },[]);
  const parent=category==='components'||category in components?'components':category==='peripherals'||category in peripherals?'peripherals':category;
  const subdivisions=parent==='components'?components:parent==='peripherals'?peripherals:null;
  const base=products.filter(p=>inCategory(p,category));
@@ -32,7 +39,7 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  const count=Object.values(facets).reduce((s,a)=>s+a.length,0)+Object.values(ranges).filter(r=>r.min||r.max).length+Number(!!min||!!max)+Number(stock);
  function reset(){setFacets({});setRanges({});setMin('');setMax('');setStock(false);setQuery('');setAllBrands(false)}
  const link=(id:string,label:string,active:boolean)=><a key={id} href={'/catalog/'+id} className={active?'selected':''} aria-current={active?'page':undefined} onClick={e=>{e.preventDefault();nav('/catalog/'+id)}}>{label}</a>;
- return <section className="catalog-page" aria-label={components[category]||peripherals[category]||groups[category]||'Каталог'}><div className="breadcrumb">SKP / Каталог{subdivisions?' / '+groups[parent]:''}</div><div className="catalog-heading"><div className="catalog-tabs">{Object.entries(groups).map(([id,label])=>link(id,label,parent===id))}</div></div>{subdivisions&&<nav className="catalog-subcategories" aria-label="Подразделы каталога">{[[parent,'Все категории'],...Object.entries(subdivisions)].map(([id,label])=>{const Icon=categoryIcons[id]||LayoutGrid;return <a key={id} href={'/catalog/'+id} className={category===id?'selected':''} aria-current={category===id?'page':undefined} onClick={e=>{e.preventDefault();nav('/catalog/'+id)}}><span className="subcategory-icon"><Icon size={27} strokeWidth={1.5} aria-hidden="true"/></span><span>{label}</span></a>})}</nav>}
+ return <section className="catalog-page" aria-label={components[category]||peripherals[category]||groups[category]||'Каталог'}><div className="breadcrumb">SKP / Каталог{subdivisions?' / '+groups[parent]:''}</div><div className="catalog-heading"><div className="catalog-tabs">{Object.entries(groups).map(([id,label])=>link(id,label,parent===id))}</div>{subdivisions&&<details ref={categoryMenu} className="catalog-category-menu"><summary><LayoutGrid size={17}/><span>{subdivisions[category]||'Все категории'}</span><ChevronDown size={16}/></summary><nav className="catalog-subcategories" aria-label="Подразделы каталога">{[[parent,'Все категории'],...Object.entries(subdivisions)].map(([id,label])=>{const Icon=categoryIcons[id]||LayoutGrid;return <a key={id} href={'/catalog/'+id} className={category===id?'selected':''} aria-current={category===id?'page':undefined} onClick={e=>{e.preventDefault();categoryMenu.current?.removeAttribute('open');nav('/catalog/'+id)}}><span className="subcategory-icon"><Icon size={27} strokeWidth={1.5} aria-hidden="true"/></span><span>{label}</span></a>})}</nav></details>}</div>
  <div className="catalog-toolbar"><div className="search"><Search size={18}/><input id="search" aria-label="Поиск товаров" placeholder="Поиск в разделе" value={query} onChange={e=>setQuery(e.target.value)}/></div><select aria-label="Сортировка товаров" value={sort} onChange={e=>setSort(e.target.value)}><option value="popular">По умолчанию</option><option value="low">Сначала дешевле</option><option value="high">Сначала дороже</option><option value="name">По названию</option></select><button className="catalog-filter-toggle button outline" aria-expanded={open} aria-controls="category-filters" onClick={()=>setOpen(!open)}><SlidersHorizontal size={17}/> Фильтры {count>0&&`(${count})`}</button></div>
  <div className="catalog-layout"><aside id="category-filters" className={'catalog-facets'+(open?' is-open':'')}><div className="facet-title"><h2>Фильтры</h2><button onClick={reset}>Сбросить</button></div>{(new Set(priceValues).size>1||min||max)&&<fieldset><legend>Цена, ₽</legend><CatalogRange showLimits={false} label="Цена" values={priceValues} value={{min,max}} onChange={value=>{setMin(value.min||'');setMax(value.max||'')}}/></fieldset>}
  {visibleFields.map(field=>{
