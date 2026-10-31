@@ -182,6 +182,8 @@ assert.match(layout,/\.config-page\.config-studio \.component-card \.config-spec
  'Specification labels are black rather than graphite');
 assert.match(layout,/\.config-page\.config-studio \.component-card \.skp-card-purchase-actions>\.config-add-component\.config-replace-component\{/,
  'Replacement button has its own high-specificity outline style');
+assert.match(layout,/\.config-page\.config-studio \.component-card \.skp-card-purchase-actions>\.config-selected-component\{/,
+ 'Selected product status has separate styling');
 assert.match(layout,/\.config-page\.config-studio \.component-card\.is-picked,\s*\.config-page\.config-studio \.config-models \.component-card\.is-picked/,
  'Selected part retains a yellow selection frame in both views');
 
@@ -201,21 +203,21 @@ assert.match(builderUI,/delta>0\?'\+':delta<0\?'−':''/,
 assert.match(builderUI,/delta!==null\?'Разница с выбранным':'Цена товара'/,
  'Price label clearly identifies differences and ordinary prices');
 assert.match(builderUI,/disabled=\{conflict\}/,
- 'Only incompatible candidates are disabled; selected parts expose an active Replace action');
-assert.doesNotMatch(builderUI,/disabled=\{conflict\|\|isChosen\}/,
- 'Selected part replacement must not be disabled');
-assert.match(builderUI,/config-replace-component/,
- 'Selected component has a separate replacement button style');
-assert.match(builderUI,/isChosen\?startReplacement\(\):choose\(p\)/,
- 'Replace and add buttons trigger different actions');
-assert.match(builderUI,/aria-label=\{\(isChosen\?'Заменить ':'Выбрать '\)\+p\.name\}/,
- 'The selected component exposes an accessible Replace label');
-assert.match(builderUI,/replacementStep===step&&get\(step\)/,
- 'Choosing Replace shows the guidance without removing the installed part');
-assert.match(builderUI,/Текущий компонент останется в сборке до подтверждения замены/,
- 'Replacement must preserve current part until the explicit confirmation');
-assert.match(builderUI,/setReplacementStep\(''\)/,
- 'Replacement guide clears after a confirmed choice');
+ 'Only incompatible candidates are disabled; alternatives remain actionable');
+assert.match(builderUI,/className=\{'config-add-component'\+\(current\?' config-replace-component':''\)\}/,
+ 'Every alternative part has Replace when a component is selected');
+assert.match(builderUI,/aria-label=\{\(current\?'Заменить на ':'Выбрать '\)\+p\.name\}/,
+ 'Replacement and initial addition have different accessible names');
+assert.match(builderUI,/current\?<><RefreshCw size=\{18\}\/><span>Заменить<\/span><\/>:<Plus size=\{22\}\/>/,
+ 'Alternative button shows Replace with selected component and plus otherwise');
+assert.match(builderUI,/isChosen\?\s*<span className="config-selected-component"/,
+ 'Already selected product displays a status instead of replacement action');
+assert.match(builderUI,/aria-label=\{'Выбрано в сборку: '\+p\.name\}/,
+ 'Selected status has an accessible description');
+assert.match(builderUI,/onClick=\{\(\)=>choose\(p\)\}/,
+ 'Alternative replacement opens confirmation directly');
+assert.doesNotMatch(builderUI,/startReplacement\(|replacementStep|setReplacementStep/,
+ 'No intermediate Replace mode is required');
 assert.match(builderUI,/const choose=\(p:Product\)=>setPendingChoice\(\{step,product:p\}\)/,
  'Card click creates pending choice instead of instantly selecting it');
 assert.match(builderUI,/const chooseOs=\(id:string\)=>setPendingChoice\(\{step:'os',osId:id\}\)/,
