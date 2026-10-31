@@ -194,31 +194,17 @@ assert.match(layout,/\.config-page\.config-studio \.config-models \.component-ca
  'Long list product titles wrap cleanly below the image');
 
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
-assert.match(builderUI,/return <article data-component-type=\{step\} className=\{'build-card component-card '/,
- 'Configurator cards expose their component category');
-assert.match(builderUI,/onLoadCapture=\{e=>\{/,
- 'GPU image loading can distinguish a padded canvas from a wide product cutout');
-assert.match(builderUI,/image\.naturalWidth\/image\.naturalHeight<1\.85\?'crop':'contain'/,
- 'Aspect-ratio crop is applied only to square-ish GPU source images');
-assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art\{\s*height:154px;\s*min-height:154px;/,
- 'GPU list cards use a large, shared image viewport instead of tiny image heights');
-assert.match(layout,/\.config-page\.config-studio \.config-showcase \.config-slide \.component-card\[data-component-type="gpu"\] \.build-card-art\{\s*height:205px;\s*min-height:205px;/,
- 'Carousel GPUs keep their larger images');
-assert.match(layout,/\.config-page\.config-studio \.component-card\[data-component-type="gpu"\] \.build-card-art>img\{[\s\S]*?width:100%;\s*height:100%;\s*max-width:100%;\s*max-height:100%;\s*object-fit:contain;/,
- 'Tightly cropped GPU cutouts remain fully visible and proportional');
-assert.match(layout,/\.build-card-art\[data-image-fit="crop"\]>img\{\s*width:92%;\s*max-width:92%;\s*object-fit:cover;/,
- 'Square GPU exports crop empty space without warping the image');
-assert.doesNotMatch(layout,/height:88px;\s*max-width:100%;\s*max-height:88px;/,
- 'The old image-height cap that made GPU photos tiny is removed');
-assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art,[\s\S]*?margin-bottom:6px;/,
- 'Photo-to-name gap stays compact');
 
-assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-art,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-art\{\s*margin-top:auto;\s*margin-bottom:5px;\s*align-items:flex-end;/,
- 'Photo is bottom aligned and sits close to the model name in both views');
-assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-body,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-body\{\s*flex:0 0 auto;\s*justify-content:flex-start;/,
- 'Card body no longer stretches and creates blank space below the photo');
-assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3,[\s\S]*?min-height:0;\s*margin:0 0 4px;/,
- 'The small title-to-price gap remains unchanged');
+assert.match(builderUI,/return <article className=\{'build-card component-card '/,
+ 'Configurator product cards preserve their original markup');
+assert.doesNotMatch(builderUI,/data-image-fit|onLoadCapture/,
+ 'Experimental image cropping and source-size detection have been removed');
+assert.doesNotMatch(layout,/\.component-card\[data-component-type="gpu"\] \.build-card-art/,
+ 'No GPU-only image size overrides remain');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-art\{[\s\S]*?height:clamp\(140px,12vw,184px\);/,
+ 'Restore the original list-card photo layout');
+assert.match(layout,/\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-art\{[\s\S]*?height:clamp\(185px,17vw,245px\);/,
+ 'Restore the original carousel photo layout');
 
 assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.component-card h3\{\s*display:block;[\s\S]*?white-space:nowrap;\s*overflow:hidden;\s*text-overflow:ellipsis;/,
  'Product names are limited to one line with ellipsis in list and carousel');
