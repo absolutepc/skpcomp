@@ -46,7 +46,6 @@ const [mobileSaveOpen,setMobileSaveOpen]=useState(false);
 const [savedRevision,setSavedRevision]=useState(0);
 const [showIncompatible,setShowIncompatible]=useState(false);
 const [pendingChoice,setPendingChoice]=useState<{step:string;product?:Product;osId?:string}|null>(null);
-const [replacementStep,setReplacementStep]=useState('');
 const confirmCancelRef=useRef<HTMLButtonElement>(null);
 const sharedLoaded=useRef(false);
 useEffect(()=>{
@@ -90,19 +89,6 @@ const requestSave=()=>{
  openLibrary();
 };
 const choose=(p:Product)=>setPendingChoice({step,product:p});
-const startReplacement=()=>{
- setReplacementStep(step);
- setSearch('');
- setComponentFilters({step,brand:''});
- setComponentColor('');
- setGpuModel('');
- setCpuBrand('');
- setCpuSocket('');
- requestAnimationFrame(()=>{
-  document.getElementById('skp-builder-options')?.scrollIntoView({behavior:'smooth',block:'start'});
-  document.querySelector<HTMLInputElement>('.config-page.config-studio .component-search input')?.focus({preventScroll:true});
- });
-};
 const chooseOs=(id:string)=>setPendingChoice({step:'os',osId:id});
 const confirmChoice=(advance:boolean)=>{
  if(!pendingChoice)return;
@@ -118,7 +104,6 @@ const confirmChoice=(advance:boolean)=>{
  }else if(product)nextSelection[chosenStep]=product.id;
  setSelected(nextSelection);
  setPendingChoice(null);
- setReplacementStep('');
  notify(chosenStep==='os'?'Выбрана ОС: '+(osId?osName(osId):'Без ОС'):'Добавлено: '+(product?.name||'компонент'));
  if(!advance)return;
  const currentIndex=steps.findIndex(([key])=>key===chosenStep);
@@ -152,14 +137,16 @@ const renderComponentOption=({product:p,issues:candidateIssues}:(typeof compatib
  const current=get(step);
  const delta=current&&current.id!==p.id&&current.price>0&&p.price>0?p.price-current.price:null;
  const displayedPrice=delta===null?(p.price>0?money(p.price):'По запросу'):(delta>0?'+':delta<0?'−':'')+money(Math.abs(delta));
- return <article className={'build-card component-card '+(selected[step]===p.id?'is-picked ':'')+(conflict?'is-incompatible':'')} key={p.id}><div className="config-card-brand"><ProductBrandLogo product={p}/></div><a href={'/product/'+p.id} onClick={e=>{e.preventDefault();nav('/product/'+p.id)}} className="build-card-art">{img(p)}</a><CardActionButtons action="favorite" name={p.name} favorite={favorites.includes(p.id)} compared={compared.includes(p.id)} onFavorite={()=>fav(p.id)} onCompare={()=>compare(p)}/><div className="build-card-body"><h3>{p.name}</h3><div className="config-specs">{(p.category==='gpu'?[p.specs?.vram&&p.specs.vram+' ГБ',p.specs?.videoMemory,p.specs?.interface,p.specs?.dlss&&'DLSS '+p.specs.dlss]:[p.socket,p.memory,p.specs?.capacity&&p.specs.capacity+' ГБ',p.specs?.form]).filter(Boolean).slice(0,4).map((value,i)=><span key={i}>{value}</span>)}</div>{conflict&&<p className="compat-error">{candidateIssues[0].message}</p>}<div className="price-line"><div className="config-card-price"><small>{isChosen?'Выбрано в сборку':delta!==null?'Разница с выбранным':'Цена товара'}</small><strong className={delta===null?'':delta<0?'config-price-decrease':delta>0?'config-price-increase':'config-price-equal'}>{displayedPrice}</strong></div><div className="skp-card-purchase-actions"><button type="button" className={'config-add-component'+(isChosen?' config-replace-component':'')} title={conflict?candidateIssues[0].message:isChosen?'Заменить выбранный компонент':'Выбрать и подтвердить'} aria-label={(isChosen?'Заменить ':'Выбрать ')+p.name} disabled={conflict} onClick={()=>isChosen?startReplacement():choose(p)}>{isChosen?<><RefreshCw size={18}/><span>Заменить</span></>:<Plus size={22}/>}</button></div></div></div></article>;
+ return <article className={'build-card component-card '+(selected[step]===p.id?'is-picked ':'')+(conflict?'is-incompatible':'')} key={p.id}><div className="config-card-brand"><ProductBrandLogo product={p}/></div><a href={'/product/'+p.id} onClick={e=>{e.preventDefault();nav('/product/'+p.id)}} className="build-card-art">{img(p)}</a><CardActionButtons action="favorite" name={p.name} favorite={favorites.includes(p.id)} compared={compared.includes(p.id)} onFavorite={()=>fav(p.id)} onCompare={()=>compare(p)}/><div className="build-card-body"><h3>{p.name}</h3><div className="config-specs">{(p.category==='gpu'?[p.specs?.vram&&p.specs.vram+' ГБ',p.specs?.videoMemory,p.specs?.interface,p.specs?.dlss&&'DLSS '+p.specs.dlss]:[p.socket,p.memory,p.specs?.capacity&&p.specs.capacity+' ГБ',p.specs?.form]).filter(Boolean).slice(0,4).map((value,i)=><span key={i}>{value}</span>)}</div>{conflict&&<p className="compat-error">{candidateIssues[0].message}</p>}<div className="price-line"><div className="config-card-price"><small>{isChosen?'Выбрано в сборку':delta!==null?'Разница с выбранным':'Цена товара'}</small><strong className={delta===null?'':delta<0?'config-price-decrease':delta>0?'config-price-increase':'config-price-equal'}>{displayedPrice}</strong></div><div className="skp-card-purchase-actions">{isChosen?
+ <span className="config-selected-component" role="status" aria-label={'Выбрано в сборку: '+p.name} title="Уже выбран"><Check size={18}/><span>Выбран</span></span>:
+ <button type="button" className={'config-add-component'+(current?' config-replace-component':'')} title={conflict?candidateIssues[0].message:current?'Заменить выбранный компонент':'Выбрать и подтвердить'} aria-label={(current?'Заменить на ':'Выбрать ')+p.name} disabled={conflict} onClick={()=>choose(p)}>{current?<><RefreshCw size={18}/><span>Заменить</span></>:<Plus size={22}/>}</button>}</div></div></div></article>;
 };
 return <><section className="build-page config-page config-studio" aria-label="Конфигуратор ПК"><header className="config-intro"><h1>Конфигуратор <em>ПК</em></h1><div className="config-header-actions"><button onClick={requestSave}><Heart size={16}/> Сохранить</button><details className="config-manage"><summary>Управление <ChevronDown size={14}/></summary><div><button onClick={e=>{openLibrary();e.currentTarget.closest('details')?.removeAttribute('open')}}>Открыть сохранённую</button><button onClick={e=>{setSelected({});e.currentTarget.closest('details')?.removeAttribute('open')}}><RotateCcw size={15}/> Сбросить сборку</button></div></details></div></header>{showSaved&&<SavedBuildLibrary key={savedRevision} selected={selected} products={data.products} onLoad={setSelected} notify={notify}/>}<div className="builder-layout"><aside className="component-steps">{steps.map(([key,label,Icon],i)=><button aria-current={step===key?'step':undefined} className={(step===key?'current ':'')+(get(key)?'completed':'')} key={key} onClick={()=>{setStep(key);setSearch('')}}><span className="step-num">{get(key)?<Check size={14}/>:i+1}</span><Icon size={26}/><span><strong>{label}</strong><small>{key==='os'?(selected.os?osName(selected.os):'Без ОС'):get(key)?.name||(i>7?'Необязательно':'Выберите компонент')}</small></span>{(get(key)||(key==='os'&&selected.os))?<Check size={16}/>:<ChevronRight size={15}/>}</button>)}</aside><div className="component-products" id="skp-builder-options">{step!=='os'&&<div className="config-controls"><div className="config-selection-filters">{step==='cpu'&&<><div><span>Бренд</span><div className="config-filter-buttons">{['AMD','Intel'].map(brand=><button key={brand} aria-pressed={cpuBrand===brand} className={cpuBrand===brand?'selected':''} onClick={()=>{setCpuBrand(current=>current===brand?'':brand);setCpuSocket('')}}>{brand}</button>)}</div></div>{cpuBrand&&cpuSockets.length>0&&<div><span>Сокет</span><div className="config-filter-buttons">{cpuSockets.map(socket=><button key={socket} aria-pressed={cpuSocket===socket} className={cpuSocket===socket?'selected':''} onClick={()=>setCpuSocket(current=>current===socket?'':socket)}>{socket}</button>)}</div></div>}</>}</div>{step!=='cpu'&&<div className="config-color-filter" role="group" aria-label="Цвет компонентов">{([['white','Только белые'],['black','Только чёрные']] as const).map(([color,label])=><button type="button" key={color} aria-pressed={componentColor===color} className={componentColor===color?'selected':''} onClick={()=>setComponentColor(current=>current===color?'':color)}><i className={color} aria-hidden="true"/>{label}</button>)}</div>}<div className="component-search"><div><Search size={15}/><input aria-label="Поиск компонентов" placeholder="Поиск компонента" value={search} onChange={e=>setSearch(e.target.value)}/></div></div><div className="config-brand-filter">{brandControls}</div><div className="config-view-switch" role="group" aria-label="Вид товаров"><button aria-pressed={productView==='carousel'} onClick={()=>setProductView('carousel')}>Карусель</button><button aria-pressed={productView==='list'} onClick={()=>setProductView('list')}>Список</button></div></div>}{step==='gpu'&&gpuModels.length>1&&<div className="config-gpu-models" role="group" aria-label="Модель видеокарты">
   <span>Модель GPU</span><div className="config-gpu-models-list">
    <button type="button" aria-pressed={!gpuModel} className={!gpuModel?'selected':''} onClick={()=>setGpuModel('')}>Все модели</button>
    {gpuModels.map(model=><button key={model} type="button" aria-pressed={gpuModel===model} className={gpuModel===model?'selected':''} onClick={()=>setGpuModel(current=>current===model?'':model)}>{model}</button>)}
   </div>
- </div>}{replacementStep===step&&get(step)&&<div className="config-replace-hint" role="status"><RefreshCw size={16}/><span>Выберите другую модель. Текущий компонент останется в сборке до подтверждения замены.</span><button type="button" onClick={()=>setReplacementStep('')} aria-label="Закрыть подсказку"><X size={16}/></button></div>}{incompatible.length>0&&compatible.length>0&&<div className="skp-compatible-heading"><ShieldCheck size={16}/><span>Совместимые комплектующие</span><small>{compatible.length}</small></div>}
+ </div>}{incompatible.length>0&&compatible.length>0&&<div className="skp-compatible-heading"><ShieldCheck size={16}/><span>Совместимые комплектующие</span><small>{compatible.length}</small></div>}
 {step==='os'?<div className="skp-os-options">
  <button type="button" className={!selected.os?'selected':''} onClick={()=>chooseOs('')}><Grid2X2 size={23}/><strong>Без операционной системы</strong><small>Установка ОС не включена</small><b>0 ₽</b></button>
  {BUILD_OS_OPTIONS.map(option=><button type="button" key={option.id} className={selected.os===option.id?'selected':''} onClick={()=>chooseOs(option.id)}><Grid2X2 size={23}/><strong>{option.name}</strong><small>Лицензия оплачивается отдельно — цену уточнит менеджер</small><b>По запросу</b></button>)}
