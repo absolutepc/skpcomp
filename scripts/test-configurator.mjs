@@ -195,15 +195,23 @@ assert.match(layout,/\.config-page\.config-studio \.config-models \.component-ca
 
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
 assert.match(builderUI,/return <article data-component-type=\{step\} className=\{'build-card component-card '/,
- 'Configurator cards expose their component category for targeted image normalization');
-assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art>img\{[\s\S]*?width:auto;\s*height:88px;\s*max-width:100%;\s*max-height:88px;\s*object-fit:contain;/,
- 'Desktop GPU list images share a uniform target height without distortion');
-assert.match(layout,/\.config-page\.config-studio \.config-showcase \.config-slide \.component-card\[data-component-type="gpu"\] \.build-card-art>img\{[\s\S]*?width:auto;\s*height:102px;\s*max-width:100%;\s*max-height:102px;\s*object-fit:contain;/,
- 'Carousel GPU images share a consistent fitted-height target');
-assert.match(layout,/@media\(max-width:700px\)\{[\s\S]*?\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art>img\{[\s\S]*?height:56px;/,
- 'Narrow GPU card images fit within the mobile card width');
-assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art\{[\s\S]*?margin-bottom:5px;/,
- 'GPU image stays close to the product name');
+ 'Configurator cards expose their component category');
+assert.match(builderUI,/onLoadCapture=\{e=>\{/,
+ 'GPU image loading can distinguish a padded canvas from a wide product cutout');
+assert.match(builderUI,/image\.naturalWidth\/image\.naturalHeight<1\.85\?'crop':'contain'/,
+ 'Aspect-ratio crop is applied only to square-ish GPU source images');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art\{\s*height:154px;\s*min-height:154px;/,
+ 'GPU list cards use a large, shared image viewport instead of tiny image heights');
+assert.match(layout,/\.config-page\.config-studio \.config-showcase \.config-slide \.component-card\[data-component-type="gpu"\] \.build-card-art\{\s*height:205px;\s*min-height:205px;/,
+ 'Carousel GPUs keep their larger images');
+assert.match(layout,/\.config-page\.config-studio \.component-card\[data-component-type="gpu"\] \.build-card-art>img\{[\s\S]*?width:100%;\s*height:100%;\s*max-width:100%;\s*max-height:100%;\s*object-fit:contain;/,
+ 'Tightly cropped GPU cutouts remain fully visible and proportional');
+assert.match(layout,/\.build-card-art\[data-image-fit="crop"\]>img\{\s*width:92%;\s*max-width:92%;\s*object-fit:cover;/,
+ 'Square GPU exports crop empty space without warping the image');
+assert.doesNotMatch(layout,/height:88px;\s*max-width:100%;\s*max-height:88px;/,
+ 'The old image-height cap that made GPU photos tiny is removed');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art,[\s\S]*?margin-bottom:6px;/,
+ 'Photo-to-name gap stays compact');
 
 assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-art,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-art\{\s*margin-top:auto;\s*margin-bottom:5px;\s*align-items:flex-end;/,
  'Photo is bottom aligned and sits close to the model name in both views');
