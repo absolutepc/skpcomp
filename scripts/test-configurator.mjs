@@ -19,6 +19,16 @@ function load(module,dependencies={}){
 }
 const carouselSpacing=load('lib/carousel-spacing.ts');
 assert.equal(carouselSpacing.CONFIG_CAROUSEL_VISIBLE_GAP,30,'Perspective cards must have a larger visible gap');
+for(const [dx,dy,expected] of [
+ [0,0,null],[2,2,null],[3,45,'vertical'],[4,30,'vertical'],
+ [17,12,'vertical'],[30,15,'vertical'],[25,8,'horizontal'],
+ [24,3,'horizontal'],[-35,1,'horizontal'],[14,14,'vertical'],
+ [30,20,'vertical'],[3,-60,'vertical'],[Infinity,0,null]
+]){
+ assert.equal(carouselSpacing.carouselWheelAxis(dx,dy),expected,
+  'Trackpad gesture should not hijack vertical document scrolling: '+dx+','+dy);
+}
+
 for(const [count,expected] of [[0,[]],[1,[0]],[2,[0,1]],[3,[-1,0,1]],[4,[-1,0,1,2]],[5,[-2,-1,0,1,2]],[9,[-2,-1,0,1,2]]]){
  const offsets=carouselSpacing.carouselVisibleOffsets(count);
  assert.deepEqual(Array.from(offsets),expected,'Visible slots must have no repeated products for '+count+' available models');
@@ -314,8 +324,14 @@ assert.match(layout,/\.config-page\.config-studio \.config-gpu-models-list>butto
  'Active GPU model option retains the SKP yellow accent');
 assert.match(carouselUI,/element\.addEventListener\('wheel',handleWheel,\{passive:false\}\)/,
  'Mac trackpad horizontal wheel is handled as a discrete non-passive gesture');
-assert.match(carouselUI,/wheelLocked\.current=true/,
- 'Momentum events must not advance multiple cards per swipe');
+assert.match(carouselUI,/wheelAxis\.current=carouselWheelAxis\(event\.deltaX,event\.deltaY\)/,
+ 'Trackpad gestures use the conservative horizontal/vertical classifier');
+assert.match(carouselUI,/if\(wheelAxis\.current!=='horizontal'\)return;/,
+ 'Vertical and diagonal gestures are left entirely to native page scrolling');
+assert.match(carouselUI,/if\(event\.cancelable\)event\.preventDefault\(\);/,
+ 'Only clear horizontal gestures prevent browser default actions');
+assert.match(carouselUI,/wheelHandled\.current=true;/,
+ 'Only one carousel card changes per horizontal swipe');
 assert.match(carouselUI,/setTimeout\(\(\)=>\{/,
  'Gesture lock is released after inactivity');
 assert.match(carouselUI,/onTouchEnd=\{onTouchEnd\}/,
@@ -328,6 +344,11 @@ assert.match(carouselLayout,/\.config-page\.config-studio \.config-showcase-rail
  'Cards use a fixed layered viewport instead of a long native-scroll rail');
 assert.match(carouselLayout,/scroll-snap-type:none;/,
  'Safari scroll-snap must not fight trackpad wheel navigation');
+assert.match(carouselLayout,/\.config-page\.config-studio \.config-showcase-rail\{[\s\S]*?overflow:clip;[\s\S]*?overscroll-behavior:auto;/,
+ 'Carousel visuals are clipped without creating a nested scroll trap');
+assert.doesNotMatch(carouselLayout,/\.config-page\.config-studio \.config-showcase-rail\{[\s\S]*?overscroll-behavior:contain;/,
+ 'Carousel must not contain the vertical scroll chain');
+
 assert.match(layout,/body:has\(\.config-page\.config-studio\) footer\{\s*background:#000;/,
  'Configurator footer uses pure black, scoped only to configurator');
 assert.match(layout,/body:has\(\.config-page\.config-studio\)\s*,/,
