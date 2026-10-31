@@ -176,6 +176,15 @@ assert.doesNotMatch(carouselLayout,/#ffde0030|#ffd90040|0 0 20px #ffe50060/,
  'Removed ambient yellow glows must not return');
 
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.component-card\{\s*background:#000;/,
+ 'Configurator list and carousel product cards use black surfaces');
+assert.match(layout,/\.config-page\.config-studio \.component-card \.config-specs span\{\s*background:#000;/,
+ 'Specification labels are black rather than graphite');
+assert.match(layout,/\.config-page\.config-studio \.component-card \.skp-card-purchase-actions>\.config-add-component\.config-replace-component\{/,
+ 'Replacement button has its own high-specificity outline style');
+assert.match(layout,/\.config-page\.config-studio \.component-card\.is-picked\{/,
+ 'Selected part retains a yellow selection frame');
+
 const configToolsUI=readFileSync(new URL('../app/configurator-tools.tsx',import.meta.url),'utf8');
 assert.doesNotMatch(builderUI,/className="config-summary"/,
  'Duplicate lower selected-parts panel must not be rendered');
@@ -191,8 +200,22 @@ assert.match(builderUI,/delta>0\?'\+':delta<0\?'−':''/,
  'Positive and negative price differences use appropriate signs');
 assert.match(builderUI,/delta!==null\?'Разница с выбранным':'Цена товара'/,
  'Price label clearly identifies differences and ordinary prices');
-assert.match(builderUI,/disabled=\{conflict\|\|isChosen\}/,
- 'Already selected parts and incompatible products cannot be added again');
+assert.match(builderUI,/disabled=\{conflict\}/,
+ 'Only incompatible candidates are disabled; selected parts expose an active Replace action');
+assert.doesNotMatch(builderUI,/disabled=\{conflict\|\|isChosen\}/,
+ 'Selected part replacement must not be disabled');
+assert.match(builderUI,/config-replace-component/,
+ 'Selected component has a separate replacement button style');
+assert.match(builderUI,/isChosen\?startReplacement\(\):choose\(p\)/,
+ 'Replace and add buttons trigger different actions');
+assert.match(builderUI,/aria-label=\{\(isChosen\?'Заменить ':'Выбрать '\)\+p\.name\}/,
+ 'The selected component exposes an accessible Replace label');
+assert.match(builderUI,/replacementStep===step&&get\(step\)/,
+ 'Choosing Replace shows the guidance without removing the installed part');
+assert.match(builderUI,/Текущий компонент останется в сборке до подтверждения замены/,
+ 'Replacement must preserve current part until the explicit confirmation');
+assert.match(builderUI,/setReplacementStep\(''\)/,
+ 'Replacement guide clears after a confirmed choice');
 assert.match(builderUI,/const choose=\(p:Product\)=>setPendingChoice\(\{step,product:p\}\)/,
  'Card click creates pending choice instead of instantly selecting it');
 assert.match(builderUI,/const chooseOs=\(id:string\)=>setPendingChoice\(\{step:'os',osId:id\}\)/,
