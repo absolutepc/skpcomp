@@ -750,3 +750,44 @@ body:has(.config-page.config-studio) footer{
   padding:4px 10px;
  }
 }
+
+/* Center product brand marks above each image (list and carousel). Keep a
+   clear area for the favorite control at the top-right of the card. */
+.config-page.config-studio .config-models .config-card-brand,
+.config-page.config-studio .config-showcase .config-slide .config-card-brand{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ width:100%;
+ padding:0;
+ margin:0;
+ box-sizing:border-box;
+}
+.config-page.config-studio .config-models .config-card-brand>img,
+.config-page.config-studio .config-showcase .config-slide .config-card-brand>img{
+ display:block;
+ width:auto;
+ max-width:min(144px,calc(100% - 72px));
+ max-height:27px;
+ height:auto;
+ margin:0 auto;
+ object-fit:contain;
+ object-position:center center;
+}
+.config-page.config-studio .config-models .config-card-brand>span,
+.config-page.config-studio .config-showcase .config-slide .config-card-brand>span{
+ display:block;
+ max-width:calc(100% - 72px);
+ margin:0 auto;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+ text-align:center;
+}
+@media(max-width:700px){
+ .config-page.config-studio .config-models .config-card-brand>img,
+ .config-page.config-studio .config-showcase .config-slide .config-card-brand>img{
+  max-height:23px;
+ }
+}
