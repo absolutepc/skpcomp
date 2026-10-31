@@ -182,8 +182,8 @@ assert.match(layout,/\.config-page\.config-studio \.component-card \.config-spec
  'Specification labels are black rather than graphite');
 assert.match(layout,/\.config-page\.config-studio \.component-card \.skp-card-purchase-actions>\.config-add-component\.config-replace-component\{/,
  'Replacement button has its own high-specificity outline style');
-assert.match(layout,/\.config-page\.config-studio \.component-card\.is-picked\{/,
- 'Selected part retains a yellow selection frame');
+assert.match(layout,/\.config-page\.config-studio \.component-card\.is-picked,\s*\.config-page\.config-studio \.config-models \.component-card\.is-picked/,
+ 'Selected part retains a yellow selection frame in both views');
 
 const configToolsUI=readFileSync(new URL('../app/configurator-tools.tsx',import.meta.url),'utf8');
 assert.doesNotMatch(builderUI,/className="config-summary"/,
