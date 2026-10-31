@@ -40,3 +40,12 @@ export function carouselWrappedIndex(cursor:number,offset:number,count:number):n
  if(count<1)return 0;
  return ((cursor+offset)%count+count)%count;
 }
+
+/** A Mac trackpad emits both X and Y deltas even during a mostly vertical
+ * swipe. Only an unmistakably horizontal gesture should control the
+ * carousel; everything else must scroll the document normally. */
+export function carouselWheelAxis(deltaX:number,deltaY:number):'horizontal'|'vertical'|null{
+ const x=Math.abs(deltaX),y=Math.abs(deltaY);
+ if(!Number.isFinite(x)||!Number.isFinite(y)||Math.max(x,y)<5)return null;
+ return x>=10&&x>y*3?'horizontal':'vertical';
+}
