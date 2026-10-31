@@ -154,9 +154,9 @@
 
 /* Native menus overlay the page without increasing the filter row height. */
 .config-page.config-studio .config-filters-row{flex-wrap:nowrap;min-height:44px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;padding-bottom:2px}
-.config-page.config-studio .config-select-filter{display:flex;align-items:center;gap:6px;flex:0 0 190px;min-width:0;height:44px;box-sizing:border-box;padding:0 10px;border:1px solid #303030;border-radius:8px;background:#080808;color:#d5d5d5;font-size:12px}
+.config-page.config-studio .config-select-filter{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px;flex:0 0 190px;min-width:0;height:44px;box-sizing:border-box;padding:0 10px;border:1px solid #303030;border-radius:8px;background:#080808;color:#d5d5d5;font-size:12px}
 .config-page.config-studio .config-select-filter>span{flex-shrink:0}
-.config-page.config-studio .config-select-filter select{flex:1;width:0;min-width:0;min-height:42px;padding:0 4px;border:0;background:transparent;color:#fff;font:inherit;color-scheme:dark;cursor:pointer}
+.config-page.config-studio .config-select-filter select{width:100%;min-width:0;height:42px;min-height:42px;appearance:auto;-webkit-appearance:menulist;padding:0 4px;border:0;background:transparent;color:#fff;font:inherit;color-scheme:dark;cursor:pointer}
 .config-page.config-studio .config-select-filter:focus-within{outline:2px solid #ffe500;outline-offset:-2px}
 .config-page.config-studio .config-select-filter select:focus{outline:none}
 .config-page.config-studio .config-select-gpu{flex-basis:235px}
