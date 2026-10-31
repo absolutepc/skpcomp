@@ -93,7 +93,13 @@ const choose=(p:Product)=>setPendingChoice({step,product:p});
 const startReplacement=()=>{
  setReplacementStep(step);
  setSearch('');
+ setComponentFilters({step,brand:''});
+ setComponentColor('');
+ setGpuModel('');
+ setCpuBrand('');
+ setCpuSocket('');
  requestAnimationFrame(()=>{
+  document.getElementById('skp-builder-options')?.scrollIntoView({behavior:'smooth',block:'start'});
   document.querySelector<HTMLInputElement>('.config-page.config-studio .component-search input')?.focus({preventScroll:true});
  });
 };
