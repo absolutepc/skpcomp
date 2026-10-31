@@ -1,3 +1,4 @@
+import {isBuildExtra} from './build-selection';
 import type {Product} from './seed';
 
 export const PC_ASSEMBLY_FEE=3000;
@@ -52,7 +53,7 @@ export function summarizeCart(cart:readonly CartEntry[],products:readonly Produc
    details.push({slot,label:BUILD_SLOT_LABELS[slot],name:p.name,price:p.price});
   }
   if(selected.extras){
-   const p=products.find(item=>item.id===selected.extras&&item.category==='peripherals');
+   const p=products.find(item=>item.id===selected.extras&&isBuildExtra(item));
    if(!p||p.price<=0)valid=false;
    else details.push({slot:'extras',label:'Дополнительно',name:p.name,price:p.price});
   }

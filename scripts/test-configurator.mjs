@@ -85,7 +85,8 @@ assert.equal(JSON.stringify(gpuModels.availableGpuModels([
 ])),JSON.stringify(['RTX 5060','RTX 5060 Ti 8GB','RTX 5060 Ti 16GB','RTX 5070','RTX 5070 Ti','RTX 5090']),
  'Distinct GPU chip variants sort predictably by generation, Ti and VRAM');
 const {seed}=load('lib/seed.ts');
-const logic=load('lib/pc-builder.ts');
+const selection=load('lib/build-selection.ts');
+const logic=load('lib/pc-builder.ts',{'./build-selection':selection});
 const saved=load('lib/saved-builds.ts',{'./pc-builder':logic});
 const {analyzeBuild,candidateErrors,sanitizeBuildSelection}=logic;
 const products=seed.products;
@@ -188,7 +189,7 @@ assert.doesNotMatch(carouselLayout,/#ffde0030|#ffd90040|0 0 20px #ffe50060/,
 assert.doesNotMatch(builderUI,/<div className="config-specs">/,
  'Configurator product cards omit specification badges in both list and carousel');
 const modelCard=builderUI.slice(builderUI.indexOf('const renderComponentOption='),builderUI.indexOf('return <><section className="build-page',builderUI.indexOf('const renderComponentOption=')));
-assert.ok(modelCard.indexOf('className="build-card-art"')<modelCard.indexOf('<h3>{p.name}</h3>'),
+assert.ok(modelCard.indexOf('className="build-card-art"')<modelCard.indexOf('<h3 title={p.name}>{p.name}</h3>'),
  'Product photo must precede the model name');
 assert.match(modelCard,/className="config-card-brand"/,
  'Product brand remains visible above the photo');
@@ -248,7 +249,7 @@ assert.doesNotMatch(builderUI,/className="config-summary"/,
  'Duplicate lower selected-parts panel must not be rendered');
 assert.match(builderUI,/<details className="config-build-details">/,
  'Detailed build composition and compatibility section stays available');
-assert.match(builderUI,/problems\.length\?problems\.length\+' конфликт\(ов\)':money\(total\)/,
+assert.match(builderUI,/problems\.length\?problems\.length\+' конфликт\(ов\)':analysis\.issues\.length\?analysis\.issues\.length\+' предупреждений':money\(total\)/,
  'Existing composition heading displays total without redundant panel');
 assert.match(builderUI,/const current=get\(step\)/,
  'Candidate price comparison uses the already selected category component');
@@ -258,8 +259,8 @@ assert.match(builderUI,/delta>0\?'\+':delta<0\?'−':''/,
  'Positive and negative price differences use appropriate signs');
 assert.match(builderUI,/delta!==null\?'Разница с выбранным':'Цена товара'/,
  'Price label clearly identifies differences and ordinary prices');
-assert.match(builderUI,/disabled=\{conflict\}/,
- 'Only incompatible candidates are disabled; alternatives remain actionable');
+assert.match(builderUI,/disabled=\{conflict\|\|p\.price<=0\}/,
+ 'Incompatible and unpriced candidates are disabled');
 assert.match(builderUI,/className=\{'config-add-component'\+\(current\?' config-replace-component':''\)\}/,
  'Every alternative part has Replace when a component is selected');
 assert.match(builderUI,/aria-label=\{\(current\?'Заменить на ':'Выбрать '\)\+p\.name\}/,
@@ -274,7 +275,7 @@ assert.match(builderUI,/onClick=\{\(\)=>choose\(p\)\}/,
  'Alternative replacement opens confirmation directly');
 assert.doesNotMatch(builderUI,/startReplacement\(|replacementStep|setReplacementStep/,
  'No intermediate Replace mode is required');
-assert.match(builderUI,/const choose=\(p:Product\)=>setPendingChoice\(\{step,product:p\}\)/,
+assert.match(builderUI,/const choose=\(p:Product\)=>\{[\s\S]*?setPendingChoice\(\{step,product:p\}\)/,
  'Card click creates pending choice instead of instantly selecting it');
 assert.match(builderUI,/const chooseOs=\(id:string\)=>setPendingChoice\(\{step:'os',osId:id\}\)/,
  'Operating-system selection also needs confirmation');
@@ -354,3 +355,18 @@ assert.match(layout,/body:has\(\.config-page\.config-studio\) footer\{\s*backgro
 assert.match(layout,/body:has\(\.config-page\.config-studio\)\s*,/,
  'Configurator surrounding body area uses pure black');
 console.log('Configurator tests passed: compatibility grouping, shared icons, sockets, memory, dimensions, PSU, saved builds, share links and integration.');
+
+const zeroM2={...byId('b650'),specs:{...byId('b650').specs,m2Slots:'0'}};
+const nvme={...byId('ssd-1tb'),specs:{form:'M.2',interface:'NVMe'}};
+assert.ok(analyzeBuild({motherboard:zeroM2.id,ssd:nvme.id},[zeroM2,nvme]).issues.some(i=>i.code==='m2-slots'&&i.severity==='error'));
+const missingCpu={...byId('ryzen-7500f'),socket:'',specs:{}};
+assert.ok(analyzeBuild({cpu:missingCpu.id,motherboard:zeroM2.id},[missingCpu,zeroM2]).issues.some(i=>i.code==='socket-unknown'));
+const first={...byId('ryzen-7500f'),price:14900};
+assert.equal(selection.buildSelectionTotal({},[first],3000),0);
+assert.equal(selection.buildSelectionTotal({cpu:first.id},[first],3000),17900);
+assert.equal(selection.buildSelectionTotal({cpu:first.id,os:'windows-11'},[first],3000),17900);
+for(const category of ['mouse','keyboard','monitor','headphones','webcam']){
+ const extra={...first,id:'extra-'+category,category};
+ assert.equal(sanitizeBuildSelection({extras:extra.id},[extra]).extras,extra.id);
+}
+console.log('Audit regressions passed: first-part assembly fee, missing sockets, zero M.2 and peripheral categories.');

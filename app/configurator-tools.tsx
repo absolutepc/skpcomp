@@ -42,7 +42,7 @@ export function BuildDiagnostics({analysis}:{analysis:BuildAnalysis}){
   </details>
  </div>;
 }
-export function SavedBuildLibrary({selected,products,onLoad,notify}:{selected:BuildSelection;products:Product[];onLoad:(value:BuildSelection)=>void;notify:(text:string)=>void}){
+export function SavedBuildLibrary({selected,products,onLoad,notify,onClose}:{selected:BuildSelection;products:Product[];onLoad:(value:BuildSelection)=>void;notify:(text:string)=>void;onClose?:()=>void}){
  const [list,setList]=useState<SavedBuild[]>([]);
  const [name,setName]=useState('Моя сборка');
  useEffect(()=>{try{setList(readSavedBuilds(localStorage,products))}catch{}},[products]);
@@ -63,7 +63,7 @@ export function SavedBuildLibrary({selected,products,onLoad,notify}:{selected:Bu
   }catch{notify('Не удалось скопировать ссылку. Проверьте разрешение браузера')}
  };
  return <section className="skp-saved-builds" aria-label="Сохранённые конфигурации" id="skp-saved-builds">
-  <div className="skp-saved-title"><div><Save size={21}/><h2>Мои конфигурации</h2></div><span>{list.length}/{MAX_SAVED_BUILDS}</span></div>
+  <div className="skp-saved-title"><div><Save size={21}/><h2>Мои конфигурации</h2></div><span>{list.length}/{MAX_SAVED_BUILDS}</span>{onClose&&<button type="button" onClick={onClose} aria-label="Закрыть сохранённые сборки"><X size={20}/></button>}</div>
   <p>Храните несколько вариантов в этом браузере, открывайте их позже или делитесь ссылкой. Сохранение не требует аккаунта.</p>
   <div className="skp-saved-controls">
    <label>Название сборки<input aria-label="Название сборки" maxLength={60} placeholder="Например, Игровой ПК" value={name} onChange={e=>setName(e.target.value)}/></label>

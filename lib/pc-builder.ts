@@ -1,3 +1,4 @@
+import {isBuildExtra} from './build-selection';
 import type {Product} from './seed';
 
 export type BuildSelection=Record<string,string>;
@@ -35,23 +36,26 @@ export function sanitizeBuildSelection(raw:unknown,products:Product[]):BuildSele
   if(typeof id!=='string'||id.length>100)continue;
   if(slot==='os'&&OS_IDS.some(option=>option===id)){result.os=id;continue}
   const p=products.find(item=>item.id===id);
-  if(p&&(p.category===slot||(slot==='extras'&&p.category==='peripherals')))result[slot]=id;
+  if(p&&(p.category===slot||(slot==='extras'&&isBuildExtra(p))))result[slot]=id;
  }
  return result;
 }
 export function analyzeBuild(selected:BuildSelection,products:Product[]):BuildAnalysis{
  const items:Record<string,Product|undefined>={};
- for(const key of allowedSlots)items[key]=products.find(p=>p.id===selected[key]&&(p.category===key||(key==='extras'&&p.category==='peripherals')));
+ for(const key of allowedSlots)items[key]=products.find(p=>p.id===selected[key]&&(p.category===key||(key==='extras'&&isBuildExtra(p))));
  const cpu=items.cpu,board=items.motherboard,ram=items.ram,gpu=items.gpu,psu=items.psu,chassis=items.case,cooler=items.cooler,ssd=items.ssd;
  const issues:BuildIssue[]=[];
  const push=(code:string,severity:BuildIssue['severity'],message:string,...slots:string[])=>issues.push({code,severity,message,slots});
  const cpuSocket=field(cpu,'socket'),boardSocket=field(board,'socket');
+ if(cpu&&board&&(!cpuSocket||!boardSocket))
+  push('socket-unknown','warning','Не указан сокет CPU или платы — совместимость не проверена.','cpu','motherboard');
  if(cpu&&board&&cpuSocket&&boardSocket&&!matching(cpuSocket,boardSocket))
   push('cpu-socket','error','Сокет процессора ('+cpuSocket+') не подходит к плате ('+boardSocket+').','cpu','motherboard');
  for(const [a,b,slotA,slotB] of [
   [cpu,board,'cpu','motherboard'],[board,ram,'motherboard','ram'],[cpu,ram,'cpu','ram']
  ] as const){
   const am=memory(a),bm=memory(b);
+  if(a&&b&&(!am||!bm))push('memory-unknown-'+slotA+'-'+slotB,'warning','Не указан тип памяти: '+labels[slotA]+' / '+labels[slotB]+'.',slotA,slotB);
   if(a&&b&&am&&bm&&!matching(am,bm))
    push('ram-'+slotA+'-'+slotB,'error','Несовместимая память: '+am+' и '+bm+'.',slotA,slotB);
  }
@@ -101,7 +105,8 @@ export function analyzeBuild(selected:BuildSelection,products:Product[]):BuildAn
  const capacity=toNum(field(ram,'capacity')),maxRam=toNum(field(board,'maxRam'));
  if(ram&&board&&capacity&&maxRam&&capacity>maxRam)
   push('ram-capacity','error','Объём памяти '+capacity+' ГБ превышает лимит платы '+maxRam+' ГБ.','ram','motherboard');
- const m2=toNum(field(board,'m2Slots'));
+ const m2Value=field(board,'m2Slots');
+ const m2=/^0(?:\.0+)?$/.test(m2Value)?0:toNum(m2Value);
  if(ssd&&board&&/\bM\.?2\b|NVME/i.test(field(ssd,'form')+' '+field(ssd,'interface'))&&m2===null)
   push('m2-unknown','warning','Число разъёмов M.2 не указано — уточните поддержку SSD.','ssd','motherboard');
  if(ssd&&board&&/\bM\.?2\b|NVME/i.test(field(ssd,'form')+' '+field(ssd,'interface'))&&m2!==null&&m2<1)

@@ -12,7 +12,8 @@ function load(name,deps={}){
  return exports;
 }
 const {seed}=load('lib/seed.ts');
-const customBuild=load('lib/custom-build-cart.ts');
+const selectionHelpers=load('lib/build-selection.ts');
+const customBuild=load('lib/custom-build-cart.ts',{'./build-selection':selectionHelpers});
 const orders=load('lib/orders.ts',{'./custom-build-cart':customBuild});
 const {normalizeOrderItems,validateContact,ORDER_LABELS,ORDER_TRANSITIONS,canTransition,isOrderStatus,groupCart,parseOrderKeys,rememberOrder,ORDER_HISTORY_STORAGE}=orders;
 assert.deepEqual(Object.values(ORDER_LABELS),['В процессе','Собран','Отменён','Выполнен']);
@@ -111,3 +112,9 @@ assert.match(buyer,/Оформить заявку/);
 assert.match(buyer,/История заказов/);
 assert.match(buyer,/Отменить заказ/);
 console.log('Order tests passed: valid workflow, snapshots, contact validation, secure history and SKP integrations.');
+
+for(const category of ['mouse','keyboard','monitor','headphones','webcam']){
+ const accessory={id:'audit-'+category,category,price:1000,name:category};
+ const rows=customBuild.summarizeCart([{type:'custom-build',id:'build-1234567890',selected:{extras:accessory.id}}],[accessory]);
+ assert.ok(rows[0].details.some(d=>d.slot==='extras'&&d.price===1000),'Peripheral reaches cart: '+category);
+}
