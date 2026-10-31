@@ -137,3 +137,17 @@
 .config-page.config-studio .config-availability{display:block;margin:2px 0 8px;color:#bac4cb;font-size:11px}
 .config-page.config-studio .config-reset-filters{display:flex;align-items:center;gap:6px;min-height:44px;padding:8px;color:#ffe500;font-size:12px}
 .config-page.config-studio .skp-saved-title>button{margin-left:auto;min-height:44px;min-width:44px}
+
+/* Search has its own row, independent of the category's filter count. */
+.config-page.config-studio .config-controls{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.config-page.config-studio .config-search-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;min-width:0}
+.config-page.config-studio .config-search-row .component-search{width:100%;min-width:0;margin:0}
+.config-page.config-studio .config-search-row .component-search input{width:100%;min-width:0}
+.config-page.config-studio .config-search-row .config-view-switch{flex-shrink:0}
+.config-page.config-studio .config-filters-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;min-width:0}
+.config-page.config-studio .config-filters-row .config-gpu-models{margin:0;min-width:0;max-width:100%;flex-wrap:wrap}
+@media(max-width:700px){
+ .config-page.config-studio .config-search-row{gap:6px}
+ .config-page.config-studio .config-search-row .config-view-switch button{padding:6px 8px}
+ .config-page.config-studio .config-search-row .component-search input{padding-inline:8px}
+}
