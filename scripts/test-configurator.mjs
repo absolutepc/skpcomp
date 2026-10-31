@@ -194,6 +194,17 @@ assert.match(layout,/\.config-page\.config-studio \.config-models \.component-ca
  'Long list product titles wrap cleanly below the image');
 
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
+assert.match(builderUI,/return <article data-component-type=\{step\} className=\{'build-card component-card '/,
+ 'Configurator cards expose their component category for targeted image normalization');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art>img\{[\s\S]*?width:auto;\s*height:88px;\s*max-width:100%;\s*max-height:88px;\s*object-fit:contain;/,
+ 'Desktop GPU list images share a uniform target height without distortion');
+assert.match(layout,/\.config-page\.config-studio \.config-showcase \.config-slide \.component-card\[data-component-type="gpu"\] \.build-card-art>img\{[\s\S]*?width:auto;\s*height:102px;\s*max-width:100%;\s*max-height:102px;\s*object-fit:contain;/,
+ 'Carousel GPU images share a consistent fitted-height target');
+assert.match(layout,/@media\(max-width:700px\)\{[\s\S]*?\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art>img\{[\s\S]*?height:56px;/,
+ 'Narrow GPU card images fit within the mobile card width');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\[data-component-type="gpu"\] \.build-card-art\{[\s\S]*?margin-bottom:5px;/,
+ 'GPU image stays close to the product name');
+
 assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-art,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-art\{\s*margin-top:auto;\s*margin-bottom:5px;\s*align-items:flex-end;/,
  'Photo is bottom aligned and sits close to the model name in both views');
 assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-body,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-body\{\s*flex:0 0 auto;\s*justify-content:flex-start;/,
