@@ -194,6 +194,15 @@ assert.match(layout,/\.config-page\.config-studio \.config-models \.component-ca
  'Long list product titles wrap cleanly below the image');
 
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.component-card h3\{\s*display:block;[\s\S]*?white-space:nowrap;\s*overflow:hidden;\s*text-overflow:ellipsis;/,
+ 'Product names are limited to one line with ellipsis in list and carousel');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3,[\s\S]*?min-height:0;\s*margin:0 0 4px;/,
+ 'Title no longer reserves a multi-line block before the price');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card \.price-line,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.price-line\{\s*margin-top:0;/,
+ 'Price immediately follows the title instead of an automatic flex gap');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-body,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-body\{\s*justify-content:flex-end;/,
+ 'Title and price stay together near the bottom of their card');
+
 assert.match(layout,/\.config-page\.config-studio \.config-models \.config-card-brand,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.config-card-brand\{\s*display:flex;\s*align-items:center;\s*justify-content:center;/,
  'Brand logos are centered in both grid/list and carousel product cards');
 assert.match(layout,/\.config-page\.config-studio \.config-models \.config-card-brand>img,[\s\S]*?object-position:center center;/,
