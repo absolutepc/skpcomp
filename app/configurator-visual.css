@@ -818,3 +818,22 @@ body:has(.config-page.config-studio) footer{
 .config-page.config-studio .config-showcase .config-slide .price-line{
  margin-top:0;
 }
+
+/* Keep the photo, title and price grouped together. Previously the flexible
+   .build-card-body stretched to the card bottom, leaving a large empty gap
+   after the photo. Let free space accumulate ABOVE the image instead. */
+.config-page.config-studio .config-models .build-card-art,
+.config-page.config-studio .config-showcase .config-slide .build-card-art{
+ margin-top:auto;
+ margin-bottom:5px;
+ align-items:flex-end;
+}
+.config-page.config-studio .config-models .build-card-art>img,
+.config-page.config-studio .config-showcase .config-slide .build-card-art>img{
+ object-position:center bottom;
+}
+.config-page.config-studio .config-models .build-card-body,
+.config-page.config-studio .config-showcase .config-slide .build-card-body{
+ flex:0 0 auto;
+ justify-content:flex-start;
+}
