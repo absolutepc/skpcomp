@@ -105,11 +105,11 @@
  grid-template-columns:minmax(0,1fr);
  place-items:stretch center;
  gap:0;
- overflow:hidden;
- overflow-x:hidden;
- overflow-y:hidden;
+ /* Clip visuals without creating a nested scroll container that traps
+    vertical wheel/trackpad scrolling on Safari. */
+ overflow:clip;
  scroll-snap-type:none;
- overscroll-behavior:contain;
+ overscroll-behavior:auto;
  touch-action:pan-y;
  padding:18px 0 14px;
 }
