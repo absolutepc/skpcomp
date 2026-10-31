@@ -592,3 +592,161 @@ body:has(.config-page.config-studio) footer{
  }
  .config-page.config-studio .config-selected-component>span{display:none}
 }
+
+/* Product-first layout for the SKP configurator (list and 3D carousel).
+   Brand stays above the image, the full model name moves below it,
+   and specification badges are intentionally omitted. */
+.config-page.config-studio .config-models .component-card{
+ display:flex;
+ flex-direction:column;
+ align-items:stretch;
+ gap:0;
+ height:100%;
+ min-height:340px;
+ padding:11px;
+}
+.config-page.config-studio .config-models .config-card-brand{
+ flex:0 0 34px;
+ align-self:stretch;
+ width:100%;
+ height:34px;
+ min-height:34px;
+ margin:0;
+ padding:1px 34px 0 2px;
+ box-sizing:border-box;
+}
+.config-page.config-studio .config-models .config-card-brand img{
+ max-width:115px;
+ height:27px;
+ max-height:27px;
+ object-fit:contain;
+ object-position:left center;
+}
+.config-page.config-studio .config-models .build-card-art{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ flex:0 0 auto;
+ align-self:stretch;
+ width:100%;
+ height:clamp(140px,12vw,184px);
+ min-height:0;
+ aspect-ratio:auto;
+ margin:7px 0 10px;
+ padding:4px;
+ box-sizing:border-box;
+}
+.config-page.config-studio .config-models .build-card-art>img,
+.config-page.config-studio .config-models .build-card-art>svg{
+ width:100%;
+ height:100%;
+ max-height:100%;
+ object-fit:contain;
+}
+.config-page.config-studio .config-models .build-card-body{
+ display:flex;
+ flex:1 1 auto;
+ min-width:0;
+ flex-direction:column;
+ padding:0 3px 3px;
+}
+.config-page.config-studio .config-models .component-card h3{
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:3;
+ overflow:hidden;
+ flex:0 0 auto;
+ width:100%;
+ max-width:100%;
+ min-height:46px;
+ margin:0 0 9px;
+ padding:0;
+ font-size:12px;
+ line-height:1.32;
+ overflow-wrap:anywhere;
+}
+.config-page.config-studio .config-models .component-card .price-line{
+ width:100%;
+ margin-top:auto;
+ align-self:stretch;
+}
+.config-page.config-studio .config-showcase .config-slide .component-card{
+ display:flex;
+ flex-direction:column;
+ min-height:415px;
+}
+.config-page.config-studio .config-showcase .config-slide .config-card-brand{
+ height:43px;
+ min-height:43px;
+ padding:8px 40px 0 12px;
+}
+.config-page.config-studio .config-showcase .config-slide .build-card-art{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ flex:0 0 auto;
+ width:100%;
+ height:clamp(185px,17vw,245px);
+ min-height:0;
+ aspect-ratio:auto;
+ padding:6px 12px;
+ box-sizing:border-box;
+}
+.config-page.config-studio .config-showcase .config-slide .build-card-art>img,
+.config-page.config-studio .config-showcase .config-slide .build-card-art>svg{
+ width:100%;
+ height:100%;
+ object-fit:contain;
+}
+.config-page.config-studio .config-showcase .config-slide .build-card-body{
+ display:flex;
+ flex:1 1 auto;
+ flex-direction:column;
+ min-width:0;
+ padding:8px 14px 15px;
+}
+.config-page.config-studio .config-showcase .config-slide .component-card h3{
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:3;
+ overflow:hidden;
+ min-height:47px;
+ margin:0 0 10px;
+ font-size:14px;
+ line-height:1.35;
+ overflow-wrap:anywhere;
+}
+.config-page.config-studio .config-showcase .config-slide .price-line{
+ margin-top:auto;
+}
+@media(max-width:700px){
+ .config-page.config-studio .config-models .component-card{
+  min-height:295px;
+  padding:9px;
+ }
+ .config-page.config-studio .config-models .config-card-brand{
+  height:30px;
+  min-height:30px;
+  flex-basis:30px;
+ }
+ .config-page.config-studio .config-models .config-card-brand img{
+  max-width:84px;
+  height:22px;
+ }
+ .config-page.config-studio .config-models .build-card-art{
+  height:clamp(118px,30vw,160px);
+  margin:5px 0 8px;
+  padding:2px;
+ }
+ .config-page.config-studio .config-models .component-card h3{
+  min-height:48px;
+  font-size:11px;
+ }
+ .config-page.config-studio .config-showcase .config-slide .component-card{
+  min-height:390px;
+ }
+ .config-page.config-studio .config-showcase .config-slide .build-card-art{
+  height:clamp(180px,55vw,230px);
+  padding:4px 10px;
+ }
+}
