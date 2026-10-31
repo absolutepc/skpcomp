@@ -194,6 +194,13 @@ assert.match(layout,/\.config-page\.config-studio \.config-models \.component-ca
  'Long list product titles wrap cleanly below the image');
 
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-art,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-art\{\s*margin-top:auto;\s*margin-bottom:5px;\s*align-items:flex-end;/,
+ 'Photo is bottom aligned and sits close to the model name in both views');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-body,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-body\{\s*flex:0 0 auto;\s*justify-content:flex-start;/,
+ 'Card body no longer stretches and creates blank space below the photo');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3,[\s\S]*?min-height:0;\s*margin:0 0 4px;/,
+ 'The small title-to-price gap remains unchanged');
+
 assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.component-card h3\{\s*display:block;[\s\S]*?white-space:nowrap;\s*overflow:hidden;\s*text-overflow:ellipsis;/,
  'Product names are limited to one line with ellipsis in list and carousel');
 assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3,[\s\S]*?min-height:0;\s*margin:0 0 4px;/,
