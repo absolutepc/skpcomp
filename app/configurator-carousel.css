@@ -166,3 +166,15 @@
  .config-page.config-studio .config-select-filter select{font-size:16px}
  .config-page.config-studio .config-select-gpu{flex-basis:235px}
 }
+
+/* Highlight the complete search control, including its icon. */
+.config-page.config-studio .config-controls .component-search>div:focus-within{
+ border-color:#ffe500;
+ outline:2px solid #ffe500;
+ outline-offset:-2px;
+}
+.config-page.config-studio .config-controls .component-search input:focus,
+.config-page.config-studio .config-controls .component-search input:focus-visible{
+ outline:none;
+ box-shadow:none;
+}
