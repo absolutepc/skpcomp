@@ -468,3 +468,118 @@ body:has(.config-page.config-studio) footer .store-footer-location a{
 body:has(.config-page.config-studio) footer{
  border-top-color:#252525;
 }
+
+/* PC configurator: pure-black merchandise cards and specification pills.
+   Keep brand art, yellow selection outlines and price accents intact. */
+.config-page.config-studio .component-card,
+.config-page.config-studio .config-models .component-card,
+.config-page.config-studio .config-showcase .config-slide .component-card{
+ background:#000;
+ background-image:none;
+ border-color:#333;
+ box-shadow:none;
+}
+.config-page.config-studio .component-card.is-picked,
+.config-page.config-studio .config-models .component-card.is-picked,
+.config-page.config-studio .config-showcase .config-slide .component-card.is-picked{
+ border-color:#ffe500;
+ box-shadow:inset 0 0 0 1px #ffe50066;
+}
+.config-page.config-studio .component-card .build-card-art,
+.config-page.config-studio .component-card .build-card-body,
+.config-page.config-studio .component-card .config-card-brand,
+.config-page.config-studio .component-card .price-line{
+ background:#000;
+ background-image:none;
+}
+.config-page.config-studio .component-card .config-specs span{
+ background:#000;
+ color:#c2c7ca;
+ border:1px solid #303030;
+}
+.config-page.config-studio .component-card .config-card-price small{
+ color:#a6a6a6;
+}
+.config-page.config-studio .component-card:hover,
+.config-page.config-studio .component-card:focus-within{
+ box-shadow:none;
+}
+.config-page.config-studio .component-card.is-picked:hover,
+.config-page.config-studio .component-card.is-picked:focus-within{
+ box-shadow:inset 0 0 0 1px #ffe50066;
+}
+/* Selected item: a working replacement action, visually distinct from the
+   solid yellow plus used to add a different part. Never grey it out. */
+.config-page.config-studio .component-card .skp-card-purchase-actions>.config-add-component.config-replace-component{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:5px;
+ flex:0 0 96px;
+ width:96px;
+ min-width:96px;
+ max-width:96px;
+ height:44px;
+ min-height:44px;
+ padding:0 7px;
+ border:1px solid #ffe500;
+ border-radius:8px;
+ background:#000;
+ color:#ffe500;
+ box-shadow:none;
+ opacity:1;
+ cursor:pointer;
+}
+.config-page.config-studio .component-card .config-replace-component>span{
+ display:inline;
+ font-size:10px;
+ font-weight:750;
+ white-space:nowrap;
+}
+.config-page.config-studio .component-card .config-replace-component>svg{
+ flex-shrink:0;
+ width:16px;
+ height:16px;
+}
+.config-page.config-studio .component-card .config-replace-component:hover{
+ border-color:#fff36b;
+ color:#fff36b;
+ background:#000;
+}
+.config-page.config-studio .config-replace-hint{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ margin:8px 0 13px;
+ padding:11px 13px;
+ border:1px solid #4d471a;
+ border-left:3px solid #ffe500;
+ border-radius:8px;
+ background:#000;
+ color:#dadada;
+ font-size:12px;
+ line-height:1.5;
+}
+.config-page.config-studio .config-replace-hint>svg{
+ flex-shrink:0;
+ color:#ffe500;
+}
+.config-page.config-studio .config-replace-hint>span{flex:1;min-width:0}
+.config-page.config-studio .config-replace-hint>button{
+ flex:0 0 32px;
+ width:32px;
+ height:32px;
+ color:#ccc;
+ border-radius:6px;
+}
+@media(max-width:700px){
+ .config-page.config-studio .component-card .skp-card-purchase-actions>.config-add-component.config-replace-component{
+  flex-basis:44px;
+  width:44px;
+  min-width:44px;
+  max-width:44px;
+  padding:0;
+ }
+ .config-page.config-studio .component-card .config-replace-component>span{display:none}
+ .config-page.config-studio .config-replace-hint{font-size:11px}
+}
