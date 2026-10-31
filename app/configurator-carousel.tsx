@@ -2,7 +2,7 @@
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode,type CSSProperties,type TouchEvent} from 'react';
 import {ChevronLeft,ChevronRight} from 'lucide-react';
 import './configurator-carousel.css';
-import {carouselPose,carouselVisibleOffsets,carouselWrappedIndex} from '../lib/carousel-spacing';
+import {carouselPose,carouselVisibleOffsets,carouselWrappedIndex,carouselWheelAxis} from '../lib/carousel-spacing';
 
 /**
  * Gesture-controlled carousel, without native horizontal scrolling.
@@ -17,7 +17,8 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
  const [width,setWidth]=useState(260);
  const rail=useRef<HTMLDivElement>(null);
  const wheelIdle=useRef<ReturnType<typeof setTimeout>|null>(null);
- const wheelLocked=useRef(false);
+ const wheelAxis=useRef<'horizontal'|'vertical'|null>(null);
+ const wheelHandled=useRef(false);
  const touchStart=useRef<{x:number;y:number}|null>(null);
  const active=carouselWrappedIndex(cursor,0,count);
  const canNavigate=count>1;
@@ -46,27 +47,35 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
   const element=rail.current;
   if(!element||!canNavigate)return;
   const handleWheel=(event:WheelEvent)=>{
-   // Don't intercept page scrolling, pinch-to-zoom, or vertical gestures.
-   if(event.ctrlKey||event.metaKey||
-      Math.abs(event.deltaX)<4||
-      Math.abs(event.deltaX)<=Math.abs(event.deltaY))return;
-   event.preventDefault();
-   // Momentum is part of the SAME trackpad swipe; it cannot advance again.
+   // Safari can report some deltaX during an ordinary vertical swipe.
+   // Classify once per gesture, then NEVER prevent default for vertical
+   // movement (including its diagonal/momentum wheel events).
+   if(event.ctrlKey||event.metaKey)return;
    if(wheelIdle.current)clearTimeout(wheelIdle.current);
    wheelIdle.current=setTimeout(()=>{
-    wheelLocked.current=false;
+    wheelAxis.current=null;
+    wheelHandled.current=false;
     wheelIdle.current=null;
    },260);
-   if(wheelLocked.current)return;
-   wheelLocked.current=true;
-   setCursor(current=>current+(event.deltaX>0?1:-1));
+   if(wheelAxis.current===null){
+    wheelAxis.current=carouselWheelAxis(event.deltaX,event.deltaY);
+   }
+   if(wheelAxis.current!=='horizontal')return;
+   // Only a clear horizontal gesture belongs to the carousel.
+   // It advances once; all further momentum belongs to that same swipe.
+   if(event.cancelable)event.preventDefault();
+   if(wheelAxis.current==='horizontal'&&!wheelHandled.current){
+    wheelHandled.current=true;
+    setCursor(current=>current+(event.deltaX>0?1:-1));
+   }
   };
   element.addEventListener('wheel',handleWheel,{passive:false});
   return()=>{
    element.removeEventListener('wheel',handleWheel);
    if(wheelIdle.current)clearTimeout(wheelIdle.current);
    wheelIdle.current=null;
-   wheelLocked.current=false;
+   wheelAxis.current=null;
+   wheelHandled.current=false;
   };
  },[canNavigate]);
 
