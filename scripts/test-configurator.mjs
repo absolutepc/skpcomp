@@ -175,6 +175,24 @@ assert.match(carouselLayout,/\.config-showcase::before,\.config-showcase::after\
 assert.doesNotMatch(carouselLayout,/#ffde0030|#ffd90040|0 0 20px #ffe50060/,
  'Removed ambient yellow glows must not return');
 
+assert.doesNotMatch(builderUI,/<div className="config-specs">/,
+ 'Configurator product cards omit specification badges in both list and carousel');
+const modelCard=builderUI.slice(builderUI.indexOf('const renderComponentOption='),builderUI.indexOf('return <><section className="build-page',builderUI.indexOf('const renderComponentOption=')));
+assert.ok(modelCard.indexOf('className="build-card-art"')<modelCard.indexOf('<h3>{p.name}</h3>'),
+ 'Product photo must precede the model name');
+assert.match(modelCard,/className="config-card-brand"/,
+ 'Product brand remains visible above the photo');
+assert.match(modelCard,/className="price-line"/,
+ 'Product price and selection action remain visible');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\{\s*display:flex;\s*flex-direction:column;/,
+ 'List cards use vertical flow instead of image/title sharing the same row');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-art\{[\s\S]*?height:clamp\(140px,12vw,184px\);/,
+ 'List product images get a larger dedicated display area');
+assert.match(layout,/\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-art\{[\s\S]*?height:clamp\(185px,17vw,245px\);/,
+ 'Carousel product images get a larger dedicated display area');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3\{[\s\S]*?-webkit-line-clamp:3;/,
+ 'Long list product titles wrap cleanly below the image');
+
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
 assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.component-card\{\s*background:#000;/,
  'Configurator list and carousel product cards use black surfaces');
