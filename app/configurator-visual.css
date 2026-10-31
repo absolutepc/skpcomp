@@ -200,7 +200,7 @@
  padding:7px 13px;
  border:1px solid #323232;
  border-radius:8px;
- background:#000;
+ background:#080b0c;
  color:#e1e6e8;
  font-size:11px;
  white-space:nowrap;
@@ -215,16 +215,16 @@
  font-weight:750;
 }
 
-/* Simplified composition: solid black instead of graphite surfaces, show only
+/* Simplified composition: compact dark surfaces, show only
    selected parts and keep calculations expandable. Scoped to configurator. */
 .config-page.config-studio .config-build-details{
- background:#000;
+ background:#080b0c;
  border:1px solid #292929;
  border-radius:11px;
  overflow:hidden;
 }
 .config-page.config-studio .config-build-details>summary{
- background:#000;
+ background:#080b0c;
  padding:15px 18px;
  color:#f5f5f5;
 }
@@ -232,7 +232,7 @@
  border-bottom:1px solid #1f1f1f;
 }
 .config-page.config-studio .configuration-panel{
- background:#000;
+ background:#080b0c;
  border:0;
  border-radius:0;
  padding:15px 18px 18px;
@@ -267,12 +267,12 @@
  padding:11px 0;
  gap:10px;
  min-width:0;
- background:#000;
+ background:#080b0c;
  border-bottom:1px solid #202020;
 }
 .config-page.config-studio .configuration-item-art,
 .config-page.config-studio .configuration-item-art.has-image{
- background:#000;
+ background:#080b0c;
  border:0;
  color:#d0d0d0;
 }
@@ -295,7 +295,7 @@
 }
 .config-page.config-studio .configuration-panel>.skp-build-checks{
  grid-column:1/-1;
- background:#000;
+ background:#080b0c;
  margin:16px 0 13px;
  padding:13px 0 0;
  border:0;
@@ -346,13 +346,13 @@
  border:0;
 }
 .config-page.config-studio .skp-power-metrics>div{
- background:#000;
+ background:#080b0c;
  border:1px solid #2b2b2b;
  border-radius:7px;
 }
 .config-page.config-studio .skp-power-metrics small{color:#aaa}
 .config-page.config-studio .skp-power-details{
- background:#000;
+ background:#080b0c;
  border-color:#292929;
 }
 .config-page.config-studio .configuration-panel>.configuration-total{
@@ -380,7 +380,7 @@
  justify-content:center;
 }
 .config-page.config-studio .config-build-actions>.outline{
- background:#000;
+ background:#080b0c;
  border-color:#333;
 }
 .config-page.config-studio .config-disclaimer{
@@ -407,13 +407,13 @@
  .config-page.config-studio .config-build-actions>.button{flex-basis:100%}
 }
 
-/* Configurator header and controls: replace all graphite surfaces with pure black.
+/* Configurator header and controls: dark surfaces matching the product page.
    Yellow stays only on active controls and selection outlines. */
 .config-page.config-studio .config-controls,
 .config-page.config-studio .config-selection-filters,
 .config-page.config-studio .config-brand-filter,
 .config-page.config-studio .component-steps,
-.config-page.config-studio .config-header-actions{background:#000}
+.config-page.config-studio .config-header-actions{background:#080b0c}
 .config-page.config-studio .config-header-actions>button,
 .config-page.config-studio .config-manage>summary,
 .config-page.config-studio .config-manage>div,
@@ -424,7 +424,7 @@
 .config-page.config-studio .config-view-switch button,
 .config-page.config-studio .config-controls .component-search>div,
 .config-page.config-studio .config-controls .component-search input{
- background:#000;
+ background:#0c1419;
  box-shadow:none;
 }
 .config-page.config-studio .config-header-actions>button,
@@ -433,50 +433,49 @@
 .config-page.config-studio .config-controls .config-filter-buttons button:not(.selected),
 .config-page.config-studio .config-view-switch,
 .config-page.config-studio .config-controls .component-search>div{
- border-color:#2e2e2e;
+ border-color:#202a30;
 }
 .config-page.config-studio .config-controls .component-search input{color:#eee}
 .config-page.config-studio .config-controls .component-search input::placeholder{color:#858585}
 .config-page.config-studio .config-view-switch button[aria-pressed=true]{
- background:#000;
+ background:#080b0c;
  color:#ffe500;
  box-shadow:inset 0 0 0 1px #ffe500;
 }
 .config-page.config-studio .component-steps>button.current{
- background:#000;
+ background:#080b0c;
  color:#ffe500;
 }
 .config-page.config-studio .component-steps .step-num{background:#151515}
 .config-page.config-studio .config-color-filter button.selected{
- background:#000;
+ background:#080b0c;
  color:#ffe500;
  border-color:#ffe500;
 }
 
-/* The configurator must fill its entire viewport and footer with true black.
+/* The configurator must use a consistent near-black canvas.
    Scope the override to pages containing the PC configurator, leaving the
    catalogue and all other store pages untouched. */
 body:has(.config-page.config-studio),
 body:has(.config-page.config-studio) main,
 body:has(.config-page.config-studio) footer{
- background:#000;
+ background:#080b0c;
 }
 body:has(.config-page.config-studio) footer .social,
 body:has(.config-page.config-studio) footer .store-footer-location a{
- background:#000;
+ background:#080b0c;
 }
 body:has(.config-page.config-studio) footer{
  border-top-color:#252525;
 }
 
-/* PC configurator: pure-black merchandise cards and specification pills.
+/* PC configurator: cool dark merchandise cards and specification pills.
    Keep brand art, yellow selection outlines and price accents intact. */
 .config-page.config-studio .component-card,
 .config-page.config-studio .config-models .component-card,
 .config-page.config-studio .config-showcase .config-slide .component-card{
- background:#000;
- background-image:none;
- border-color:#333;
+ background:linear-gradient(135deg,#0e171b,#0b1115);
+ border-color:#28363e;
  box-shadow:none;
 }
 .config-page.config-studio .component-card.is-picked,
@@ -489,11 +488,11 @@ body:has(.config-page.config-studio) footer{
 .config-page.config-studio .component-card .build-card-body,
 .config-page.config-studio .component-card .config-card-brand,
 .config-page.config-studio .component-card .price-line{
- background:#000;
+ background:transparent;
  background-image:none;
 }
 .config-page.config-studio .component-card .config-specs span{
- background:#000;
+ background:#080b0c;
  color:#c2c7ca;
  border:1px solid #303030;
 }
@@ -524,7 +523,7 @@ body:has(.config-page.config-studio) footer{
  padding:0 7px;
  border:1px solid #ffe500;
  border-radius:8px;
- background:#000;
+ background:#080b0c;
  color:#ffe500;
  box-shadow:none;
  opacity:1;
@@ -544,7 +543,7 @@ body:has(.config-page.config-studio) footer{
 .config-page.config-studio .component-card .config-replace-component:hover{
  border-color:#fff36b;
  color:#fff36b;
- background:#000;
+ background:#080b0c;
 }
 @media(max-width:700px){
  .config-page.config-studio .component-card .skp-card-purchase-actions>.config-add-component.config-replace-component{
@@ -571,7 +570,7 @@ body:has(.config-page.config-studio) footer{
  padding:0 8px;
  border:1px solid #5d5725;
  border-radius:8px;
- background:#000;
+ background:#080b0c;
  color:#ffe500;
  box-sizing:border-box;
  font-size:10px;
