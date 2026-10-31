@@ -837,3 +837,70 @@ body:has(.config-page.config-studio) footer{
  flex:0 0 auto;
  justify-content:flex-start;
 }
+
+/* Normalize the visible GPU photo size across products in each row. Image
+   assets have varying source aspect ratios; scaling them to 100% width made
+   their visual heights inconsistent. Use one shared fitted-height target
+   without stretching or cropping, and keep photo/name/price grouped. */
+.config-page.config-studio .config-models .component-card[data-component-type="gpu"] .build-card-art{
+ display:flex;
+ justify-content:center;
+ align-items:flex-end;
+ height:106px;
+ min-height:106px;
+ margin-top:auto;
+ margin-bottom:5px;
+ padding:3px 1px;
+ box-sizing:border-box;
+}
+.config-page.config-studio .config-models .component-card[data-component-type="gpu"] .build-card-art>img{
+ display:block;
+ flex:none;
+ width:auto;
+ height:88px;
+ max-width:100%;
+ max-height:88px;
+ object-fit:contain;
+ object-position:center bottom;
+}
+.config-page.config-studio .config-showcase .config-slide .component-card[data-component-type="gpu"] .build-card-art{
+ display:flex;
+ justify-content:center;
+ align-items:flex-end;
+ height:124px;
+ min-height:124px;
+ margin-top:auto;
+ margin-bottom:5px;
+ padding:4px 8px;
+ box-sizing:border-box;
+}
+.config-page.config-studio .config-showcase .config-slide .component-card[data-component-type="gpu"] .build-card-art>img{
+ display:block;
+ flex:none;
+ width:auto;
+ height:102px;
+ max-width:100%;
+ max-height:102px;
+ object-fit:contain;
+ object-position:center bottom;
+}
+@media(max-width:700px){
+ .config-page.config-studio .config-models .component-card[data-component-type="gpu"] .build-card-art{
+  height:70px;
+  min-height:70px;
+  margin-bottom:5px;
+  padding:2px 0;
+ }
+ .config-page.config-studio .config-models .component-card[data-component-type="gpu"] .build-card-art>img{
+  height:56px;
+  max-height:56px;
+ }
+ .config-page.config-studio .config-showcase .config-slide .component-card[data-component-type="gpu"] .build-card-art{
+  height:118px;
+  min-height:118px;
+ }
+ .config-page.config-studio .config-showcase .config-slide .component-card[data-component-type="gpu"] .build-card-art>img{
+  height:98px;
+  max-height:98px;
+ }
+}
