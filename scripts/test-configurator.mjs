@@ -194,6 +194,13 @@ assert.match(layout,/\.config-page\.config-studio \.config-models \.component-ca
  'Long list product titles wrap cleanly below the image');
 
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.config-card-brand,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.config-card-brand\{\s*display:flex;\s*align-items:center;\s*justify-content:center;/,
+ 'Brand logos are centered in both grid/list and carousel product cards');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.config-card-brand>img,[\s\S]*?object-position:center center;/,
+ 'Brand images are centered without stretching');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.config-card-brand>span,[\s\S]*?text-align:center;/,
+ 'Brands without logo images are also centered');
+
 assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.component-card\{\s*background:#000;/,
  'Configurator list and carousel product cards use black surfaces');
 assert.match(layout,/\.config-page\.config-studio \.component-card \.config-specs span\{\s*background:#000;/,
