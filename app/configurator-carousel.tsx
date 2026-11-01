@@ -96,7 +96,7 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
  if(!count)return null;
 
  // No duplicate products: for two SKUs we render two cards, not five clones.
- const offsets=carouselVisibleOffsets(count);
+ const offsets=carouselVisibleOffsets(count).filter(offset=>Math.abs(offset)<=1);
 
  return <section className="config-showcase" aria-label="Карусель комплектующих" aria-roledescription="карусель">
   <div className="config-showcase-rail" ref={rail} tabIndex={0}
@@ -109,7 +109,7 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
    {offsets.map(offset=>{
     const virtual=cursor+offset;
     const index=carouselWrappedIndex(cursor,offset,count);
-    const pose=carouselPose(offset,width,0);
+    const pose=carouselPose(offset,width,0,14);
     const style={
      '--slide-scale':pose.scale,
      '--slide-angle':`${pose.angle}deg`,
