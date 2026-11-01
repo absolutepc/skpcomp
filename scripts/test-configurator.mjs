@@ -291,3 +291,16 @@ for(const category of ['mouse','keyboard','monitor','headphones','webcam']){
  assert.equal(sanitizeBuildSelection({extras:extra.id},[extra]).extras,extra.id);
 }
 console.log('Audit regressions passed: first-part assembly fee, missing sockets, zero M.2 and peripheral categories.');
+
+// Projected outlines must fit the column with 50px reserved on each side.
+for(const container of [320,390,619,620,720,850,1000,1440]){
+ for(const count of [1,2,3,10]){
+  const layout=carouselSpacing.carouselLayout(container,count);
+  assert.ok(layout.width>0);
+  for(const offset of layout.offsets){
+   const pose=carouselSpacing.carouselPose(offset,layout.width,0,14);
+   assert.ok(container/2+pose.center-pose.left>=49.9,`left outline ${container}/${count}`);
+   assert.ok(container/2+pose.center+pose.right<=container-49.9,`right outline ${container}/${count}`);
+  }
+ }
+}

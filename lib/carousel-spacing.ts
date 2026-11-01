@@ -49,3 +49,20 @@ export function carouselWheelAxis(deltaX:number,deltaY:number):'horizontal'|'ver
  if(!Number.isFinite(x)||!Number.isFinite(y)||Math.max(x,y)<5)return null;
  return x>=10&&x>y*3?'horizontal':'vertical';
 }
+
+/** Fit projected cards inside their actual column, reserving navigation gutters. */
+export function carouselLayout(containerWidth:number,count:number){
+ const compact=containerWidth<620;
+ const offsets=compact?[0]:carouselVisibleOffsets(count).filter(offset=>Math.abs(offset)<=1);
+ const available=Math.max(1,containerWidth-100);
+ let low=0,high=360;
+ for(let i=0;i<24;i++){
+  const width=(low+high)/2;
+  const extent=Math.max(...offsets.map(offset=>{
+   const pose=carouselPose(offset,width,0,14);
+   return Math.max(Math.abs(pose.center-pose.left),Math.abs(pose.center+pose.right));
+  }));
+  if(extent*2<=available)low=width;else high=width;
+ }
+ return {width:Math.floor(low),offsets};
+}

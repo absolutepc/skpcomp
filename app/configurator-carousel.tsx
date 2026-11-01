@@ -2,7 +2,7 @@
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode,type CSSProperties,type TouchEvent} from 'react';
 import {ChevronLeft,ChevronRight} from 'lucide-react';
 import './configurator-carousel.css';
-import {carouselPose,carouselVisibleOffsets,carouselWrappedIndex,carouselWheelAxis} from '../lib/carousel-spacing';
+import {carouselPose,carouselLayout,carouselWrappedIndex,carouselWheelAxis} from '../lib/carousel-spacing';
 
 /**
  * Gesture-controlled carousel, without native horizontal scrolling.
@@ -14,7 +14,8 @@ import {carouselPose,carouselVisibleOffsets,carouselWrappedIndex,carouselWheelAx
 export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];names:string[]}){
  const count=cards.length;
  const [cursor,setCursor]=useState(0);
- const [width,setWidth]=useState(260);
+ const [containerWidth,setContainerWidth]=useState(0);
+ const {width,offsets}=carouselLayout(containerWidth,count);
  const rail=useRef<HTMLDivElement>(null);
  const wheelIdle=useRef<ReturnType<typeof setTimeout>|null>(null);
  const wheelAxis=useRef<'horizontal'|'vertical'|null>(null);
@@ -32,10 +33,8 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
   const element=rail.current;
   if(!element)return;
   const measure=()=>{
-   const slide=element.querySelector<HTMLElement>('.config-slide');
-   if(!slide)return;
-   const next=slide.offsetWidth;
-   if(next>0)setWidth(previous=>Math.abs(previous-next)<0.5?previous:next);
+   const next=element.clientWidth;
+   if(next>0)setContainerWidth(previous=>Math.abs(previous-next)<0.5?previous:next);
   };
   measure();
   const observer=new ResizeObserver(measure);
@@ -96,9 +95,9 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
  if(!count)return null;
 
  // No duplicate products: for two SKUs we render two cards, not five clones.
- const offsets=carouselVisibleOffsets(count).filter(offset=>Math.abs(offset)<=1);
 
- return <section className="config-showcase" aria-label="Карусель комплектующих" aria-roledescription="карусель">
+
+ return <section style={{'--card-width':`${width}px`,visibility:containerWidth?'visible':'hidden'} as CSSProperties} className="config-showcase" aria-label="Карусель комплектующих" aria-roledescription="карусель">
   <div className="config-showcase-rail" ref={rail} tabIndex={0}
    onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onTouchCancel={()=>{touchStart.current=null}}
    onKeyDown={event=>{
