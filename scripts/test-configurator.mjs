@@ -175,6 +175,19 @@ assert.match(builderUI,/<BuildDiagnostics analysis=\{analysis\}/);
 assert.match(builderUI,/<SavedBuildLibrary /);
 assert.match(shopUI,/loaded=\{loaded\}/);
 
+const layout=readFileSync(new URL('../app/configurator-visual.css',import.meta.url),'utf8');
+const carouselLayout=readFileSync(new URL('../app/configurator-carousel.css',import.meta.url),'utf8');
+const carouselRoot=carouselLayout.match(/\.config-page\.config-studio\{background:([^;]+);isolation:isolate\}/)?.[1];
+assert.equal(carouselRoot,'#000','Configurator background must be solid black');
+assert.match(carouselLayout,/\.config-showcase\{[^}]*background:#000\}/,
+ 'Carousel backdrop is pure black rather than a yellow radial glow');
+assert.match(carouselLayout,/\.config-showcase::before,\.config-showcase::after\{content:none;display:none\}/,
+ 'Yellow light streak pseudo-elements are disabled');
+assert.doesNotMatch(carouselLayout,/#ffde0030|#ffd90040|0 0 20px #ffe50060/,
+ 'Removed ambient yellow glows must not return');
+
+assert.doesNotMatch(builderUI,/<div className="config-specs">/,
+ 'Configurator product cards omit specification badges in both list and carousel');
 const modelCard=builderUI.slice(builderUI.indexOf('const renderComponentOption='),builderUI.indexOf('return <><section className="build-page',builderUI.indexOf('const renderComponentOption=')));
 assert.ok(modelCard.indexOf('className="build-card-art"')<modelCard.indexOf('<h3 title={p.name}>{p.name}</h3>'),
  'Product photo must precede the model name');
@@ -182,6 +195,14 @@ assert.match(modelCard,/className="config-card-brand"/,
  'Product brand remains visible above the photo');
 assert.match(modelCard,/className="price-line"/,
  'Product price and selection action remain visible');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card\{\s*display:flex;\s*flex-direction:column;/,
+ 'List cards use vertical flow instead of image/title sharing the same row');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-art\{[\s\S]*?height:clamp\(140px,12vw,184px\);/,
+ 'List product images get a larger dedicated display area');
+assert.match(layout,/\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-art\{[\s\S]*?height:clamp\(185px,17vw,245px\);/,
+ 'Carousel product images get a larger dedicated display area');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3\{[\s\S]*?-webkit-line-clamp:3;/,
+ 'Long list product titles wrap cleanly below the image');
 
 const carouselUI=readFileSync(new URL('../app/configurator-carousel.tsx',import.meta.url),'utf8');
 
@@ -189,13 +210,47 @@ assert.match(builderUI,/return <article className=\{'build-card component-card '
  'Configurator product cards preserve their original markup');
 assert.doesNotMatch(builderUI,/data-image-fit|onLoadCapture/,
  'Experimental image cropping and source-size detection have been removed');
+assert.doesNotMatch(layout,/\.component-card\[data-component-type="gpu"\] \.build-card-art/,
+ 'No GPU-only image size overrides remain');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-art\{[\s\S]*?height:clamp\(140px,12vw,184px\);/,
+ 'Restore the original list-card photo layout');
+assert.match(layout,/\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-art\{[\s\S]*?height:clamp\(185px,17vw,245px\);/,
+ 'Restore the original carousel photo layout');
+
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.component-card h3\{\s*display:block;[\s\S]*?white-space:nowrap;\s*overflow:hidden;\s*text-overflow:ellipsis;/,
+ 'Product names are limited to one line with ellipsis in list and carousel');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card h3,[\s\S]*?min-height:0;\s*margin:0 0 4px;/,
+ 'Title no longer reserves a multi-line block before the price');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card \.price-line,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.price-line\{\s*margin-top:0;/,
+ 'Price immediately follows the title instead of an automatic flex gap');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.build-card-body,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.build-card-body\{\s*justify-content:flex-end;/,
+ 'Title and price stay together near the bottom of their card');
+
+assert.match(layout,/\.config-page\.config-studio \.config-models \.config-card-brand,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.config-card-brand\{\s*display:flex;\s*align-items:center;\s*justify-content:center;/,
+ 'Brand logos are centered in both grid/list and carousel product cards');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.config-card-brand>img,[\s\S]*?object-position:center center;/,
+ 'Brand images are centered without stretching');
+assert.match(layout,/\.config-page\.config-studio \.config-models \.config-card-brand>span,[\s\S]*?text-align:center;/,
+ 'Brands without logo images are also centered');
+
+assert.match(layout,/\.config-page\.config-studio \.config-models \.component-card,\s*\.config-page\.config-studio \.config-showcase \.config-slide \.component-card\{\s*background:#000;/,
+ 'Configurator list and carousel product cards use black surfaces');
+assert.match(layout,/\.config-page\.config-studio \.component-card \.config-specs span\{\s*background:#000;/,
+ 'Specification labels are black rather than graphite');
+assert.match(layout,/\.config-page\.config-studio \.component-card \.skp-card-purchase-actions>\.config-add-component\.config-replace-component\{/,
+ 'Replacement button has its own high-specificity outline style');
+assert.match(layout,/\.config-page\.config-studio \.component-card \.skp-card-purchase-actions>\.config-selected-component\{/,
+ 'Selected product status has separate styling');
+assert.match(layout,/\.config-page\.config-studio \.component-card\.is-picked,\s*\.config-page\.config-studio \.config-models \.component-card\.is-picked/,
+ 'Selected part retains a yellow selection frame in both views');
 
 const configToolsUI=readFileSync(new URL('../app/configurator-tools.tsx',import.meta.url),'utf8');
 assert.doesNotMatch(builderUI,/className="config-summary"/,
  'Duplicate lower selected-parts panel must not be rendered');
-assert.match(builderUI,/<aside className="config-build-details" aria-label="Сборка ПК">/,
+assert.match(builderUI,/<details className="config-build-details">/,
  'Detailed build composition and compatibility section stays available');
-
+assert.match(builderUI,/problems\.length\?problems\.length\+' конфликт\(ов\)':analysis\.issues\.length\?analysis\.issues\.length\+' предупреждений':money\(total\)/,
+ 'Existing composition heading displays total without redundant panel');
 assert.match(builderUI,/const current=get\(step\)/,
  'Candidate price comparison uses the already selected category component');
 assert.match(builderUI,/delta=current&&current\.id!==p\.id&&current\.price>0&&p\.price>0\?p\.price-current\.price:null/,
@@ -237,6 +292,16 @@ assert.match(builderUI,/role="dialog" aria-modal="true" aria-labelledby="skp-con
  'Selection confirmation is an accessible modal dialog');
 for(const label of ['Отмена','Подтвердить и остаться','Подтвердить и продолжить'])
  assert.ok(builderUI.includes(label),'Confirmation must provide action: '+label);
+assert.match(layout,/\.config-page\.config-studio \.component-steps\{\s*border:0;/,
+ 'Upper navigation divider lines remain removed');
+assert.match(layout,/\.config-confirm-backdrop\{\s*position:fixed;/,
+ 'Only confirmation modal overlays the viewport, not selected parts');
+assert.doesNotMatch(layout,/\.config-dock\{position:fixed/,
+ 'Obsolete fixed component overlay styles remain removed');
+assert.doesNotMatch(layout,/\.config-page\.config-studio \.config-summary\{/,
+ 'Duplicate lower summary layout styles are removed');
+assert.doesNotMatch(carouselLayout,/config-dock/,
+ 'Outdated fixed dock overrides remain removed');
 
 assert.match(builderUI,/gpuModelFamily\(p\)===gpuModel/,
  'The GPU chip-model quick filter actually restricts products');
@@ -254,6 +319,10 @@ assert.match(configToolsUI,/className="skp-power-collapsible"/,
  'PSU metrics are expandable, not shown as an oversized section by default');
 assert.match(configToolsUI,/className="skp-check-explainer"/,
  'Long compatibility explanation is optional');
+assert.match(layout,/\.config-page\.config-studio \.config-build-details\{\s*background:#000;/,
+ 'Expanded composition uses pure black rather than graphite');
+assert.match(layout,/\.config-page\.config-studio \.config-gpu-models-list>button\.selected\{/,
+ 'Active GPU model option retains the SKP yellow accent');
 assert.match(carouselUI,/element\.addEventListener\('wheel',handleWheel,\{passive:false\}\)/,
  'Mac trackpad horizontal wheel is handled as a discrete non-passive gesture');
 assert.match(carouselUI,/wheelAxis\.current=carouselWheelAxis\(event\.deltaX,event\.deltaY\)/,
@@ -272,7 +341,19 @@ assert.match(carouselUI,/onKeyDown=\{event=>\{/,
  'Keyboard arrow navigation remains available');
 assert.doesNotMatch(carouselUI,/onScroll=|scrollTo\(|scrollLeft|scroll-snap-align:center|\[\.\.\.cards,\.\.\.cards/,
  'Native scrolling, scroll-snapping, and duplicated card arrays must be removed');
+assert.match(carouselLayout,/\.config-page\.config-studio \.config-showcase-rail\{\s*display:grid;/,
+ 'Cards use a fixed layered viewport instead of a long native-scroll rail');
+assert.match(carouselLayout,/scroll-snap-type:none;/,
+ 'Safari scroll-snap must not fight trackpad wheel navigation');
+assert.match(carouselLayout,/\.config-page\.config-studio \.config-showcase-rail\{[\s\S]*?overflow:clip;[\s\S]*?overscroll-behavior:auto;/,
+ 'Carousel visuals are clipped without creating a nested scroll trap');
+assert.doesNotMatch(carouselLayout,/\.config-page\.config-studio \.config-showcase-rail\{[\s\S]*?overscroll-behavior:contain;/,
+ 'Carousel must not contain the vertical scroll chain');
 
+assert.match(layout,/body:has\(\.config-page\.config-studio\) footer\{\s*background:#000;/,
+ 'Configurator footer uses pure black, scoped only to configurator');
+assert.match(layout,/body:has\(\.config-page\.config-studio\)\s*,/,
+ 'Configurator surrounding body area uses pure black');
 console.log('Configurator tests passed: compatibility grouping, shared icons, sockets, memory, dimensions, PSU, saved builds, share links and integration.');
 
 const zeroM2={...byId('b650'),specs:{...byId('b650').specs,m2Slots:'0'}};
