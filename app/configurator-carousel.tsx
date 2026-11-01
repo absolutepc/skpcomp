@@ -129,6 +129,6 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
    aria-label="Предыдущая модель" onClick={()=>navigate(-1)}><ChevronLeft size={25}/></button>
   <button type="button" className="config-carousel-arrow next" disabled={!canNavigate}
    aria-label="Следующая модель" onClick={()=>navigate(1)}><ChevronRight size={25}/></button>
-  <div className="config-carousel-caption" aria-live="polite"><div className="config-carousel-dots" aria-label="Выбор модели">{Array.from({length:Math.min(count,7)},(_,i)=>{const index=count<=7?i:carouselWrappedIndex(active,i-3,count);return <button key={index} type="button" aria-label={'Модель '+(index+1)+': '+names[index]} aria-pressed={active===index} onClick={()=>setCursor(index)}/>})}</div><small>{active+1} / {count}</small></div>
+  <div className="config-carousel-caption" aria-live="polite"><small>{active+1} / {count}</small></div>
  </section>;
 }
