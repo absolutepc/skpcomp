@@ -171,7 +171,7 @@ assert.match(builderUI,/compatible\.map\(renderComponentOption\)/);
 assert.match(builderUI,/incompatible\.map\(renderComponentOption\)/);
 assert.match(builderUI,/aria-expanded=\{showIncompatible\}/);
 assert.match(builderUI,/\['gpu','Видеокарта',categoryIcons\.gpu\]/);
-assert.match(builderUI,/<BuildDiagnostics analysis=\{analysis\}/);
+assert.doesNotMatch(builderUI,/config-bottom-details/);
 assert.match(builderUI,/<SavedBuildLibrary /);
 assert.match(shopUI,/loaded=\{loaded\}/);
 
