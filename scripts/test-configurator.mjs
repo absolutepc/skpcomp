@@ -246,8 +246,8 @@ assert.match(builderUI,/gpuModels\.map\(model=>/,
  'Available GPU models are exposed as buttons');
 assert.match(builderUI,/aria-label="Модель видеокарты"/,
  'GPU model filter is accessible');
-assert.match(builderUI,/steps\.slice\(0,9\)\.filter\(/,
- 'Empty build rows are hidden; only selected components are displayed');
+assert.match(builderUI,/\{steps\.map\(\(\[key,label,Icon\]\)=>\{/,
+ 'Summary includes every category, including optional OS and extras');
 assert.match(builderUI,/className="config-parts-empty"/,
  'Empty configuration has a compact explanation');
 assert.match(builderUI,/className="config-build-actions"/,
