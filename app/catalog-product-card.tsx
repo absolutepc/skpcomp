@@ -16,10 +16,6 @@ export default function CatalogProductCard({product:p,condensed=false,brands,vis
  return <article className={'card skp-neon-card'+(condensed?' is-condensed':'')} style={{'--brand-accent':accents[p.brand.toLowerCase()]||'#ffe500'} as CSSProperties}>
   {p.brand&&<div className="skp-neon-brand"><div>{!msiMark&&<ProductBrandLogo product={p} brands={brands}/>}</div></div>}
   {msiMark&&<div className="skp-msi-wordmark-layer" role="img" aria-label="MSI"><MSIWordmark/></div>}
-  <div className="skp-neon-mobile-actions">
-   <CardActionButtons action="favorite" name={p.name} favorite={favorite} compared={compared} onFavorite={onFavorite} onCompare={onCompare}/>
-   <CardActionButtons action="compare" name={p.name} favorite={favorite} compared={compared} onFavorite={onFavorite} onCompare={onCompare}/>
-  </div>
   <CardActionButtons action="favorite" name={p.name} favorite={favorite} compared={compared} onFavorite={onFavorite} onCompare={onCompare}/>
   <a className="skp-neon-image" href={href} onClick={follow}>{visual}</a>
   <a className="skp-neon-name" title={p.name} href={href} onClick={follow}><h3>{p.name}</h3></a>
