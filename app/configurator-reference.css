@@ -179,3 +179,16 @@ body:has(.config-reference),body:has(.config-reference) main,body:has(.config-re
 .config-page.config-studio.config-reference .config-models-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:700px){.config-page.config-studio.config-reference .config-models-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:380px){.config-page.config-studio.config-reference .config-models-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Anchor the controls to the search row regardless of the height of the results. */
+.config-reference .config-options-column{grid-column:1;grid-row:3;align-self:start;min-width:0;display:flex;flex-direction:column;justify-content:flex-start}
+.config-page.config-studio.config-reference .config-options-column>.config-controls{flex:none;display:block;margin:0 0 12px;padding:0}
+.config-page.config-studio.config-reference .config-filters-row{align-content:start;justify-content:flex-start}
+.config-page.config-studio.config-reference .component-steps>button{position:relative;background:linear-gradient(145deg,#1a1c1e,#111314);color:#c4c9c1;border-color:#323635;box-shadow:none}
+.config-page.config-studio.config-reference .component-steps>button:hover{border-color:#ffe500}
+.config-page.config-studio.config-reference .component-steps>button.current{background:linear-gradient(145deg,#232112,#10110d);color:#ffe500;border-color:#9f9100;box-shadow:none}
+.config-page.config-studio.config-reference .component-steps>button.current:after{content:'';position:absolute;bottom:0;left:30%;right:30%;height:2px;background:#ffe500}
+.config-page.config-studio.config-reference .component-steps>button>svg:first-of-type{display:block!important;flex:0 0 18px;width:18px;height:18px;color:inherit}
+.config-page.config-studio.config-reference .component-steps>button .step-num{display:none}
+.config-page.config-studio.config-reference .component-steps>button.completed .step-num{display:grid}
+.config-page.config-studio.config-reference .component-steps>button.completed>svg:first-of-type{display:none!important}

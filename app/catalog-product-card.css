@@ -70,3 +70,5 @@
  .skp-neon-card .skp-msi-wordmark-layer{left:16%;width:65%;height:27px}
  .skp-msi-wordmark-layer svg{height:18px}
 }
+
+.card.skp-neon-card.is-condensed .skp-neon-meta{flex-wrap:nowrap;justify-content:space-between;min-height:22px}.card.skp-neon-card.is-condensed .skp-pdp-rating{flex:none;margin-left:auto}
