@@ -46,14 +46,21 @@ assert.match(bannerCss,/@media\(max-width:850px\)\{[\s\S]*?object-fit:contain;/,
  'Mobile shows the full artwork without cropping');
 
 for(const banner of [
- {name:'skp-configurator-home-banner.webp',minBytes:110000},
- {name:'skp-ready-pc-home-banner-mobile.webp',minBytes:150000},
- {name:'skp-configurator-home-banner-mobile.webp',minBytes:200000}
+ {name:'skp-configurator-home-banner.webp',minBytes:100000,width:1600,height:600},
+ {name:'skp-ready-pc-home-banner-mobile.webp',minBytes:75000,width:390,height:560},
+ {name:'skp-configurator-home-banner-mobile.webp',minBytes:75000,width:390,height:560}
 ]){
  const asset=readFileSync(new URL('../public/images/'+banner.name,import.meta.url));
- assert.ok(asset.length>banner.minBytes,'Banner asset included at production quality: '+banner.name);
+ assert.ok(asset.length>banner.minBytes,'Supplied banner included with sufficient image detail: '+banner.name);
  assert.equal(asset.toString('ascii',0,4),'RIFF','Valid WebP file: '+banner.name);
  assert.equal(asset.toString('ascii',8,12),'WEBP','Valid WebP container: '+banner.name);
+ // All three supplied originals were converted without changing pixel values
+ // to WebP lossless. Assert the intrinsic dimensions encoded in VP8L.
+ const header=asset.indexOf(Buffer.from('VP8L'));
+ assert.ok(header>=0,'Banner keeps lossless VP8L encoding: '+banner.name);
+ const sizeBits=asset.readUInt32LE(header+9);
+ assert.equal((sizeBits&0x3fff)+1,banner.width,'Correct banner width: '+banner.name);
+ assert.equal(((sizeBits>>>14)&0x3fff)+1,banner.height,'Correct banner height: '+banner.name);
  assert.ok(shop.includes('/images/'+banner.name),'Banner file is referenced in homepage: '+banner.name);
 }
 assert.match(shop,/srcSet="\/images\/skp-ready-pc-home-banner-mobile\.webp"/,
@@ -72,7 +79,7 @@ assert.match(shop,/<source media="\(max-width: 850px\)" srcSet="\/images\/skp-re
  'Responsive source automatically selects the phone image');
 assert.match(bannerCss,/\.dual-promos \.promo\.promo-banner \.promo-banner-image\{[\s\S]*?width:100%;[\s\S]*?height:100%;[\s\S]*?object-fit:cover;/,
  'Desktop SKP banners fill their entire promo blocks');
-assert.match(bannerCss,/aspect-ratio:1143 \/ 2048;/,
+assert.match(bannerCss,/aspect-ratio:390 \/ 560;/,
  'Phone banners preserve portrait proportions instead of cropping them');
 
 console.log('SKP homepage banners use supplied desktop/mobile imagery with working category links.');
