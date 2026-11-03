@@ -31,6 +31,18 @@ for(const key of ['diagonal','panel','resolution','refresh','capacity','driveCap
 assert.ok(models.laptopProcessors.some(p=>p.name==='AMD Ryzen 7 8845HS'));
 assert.ok(models.laptopProcessors.some(p=>p.name==='Intel Core i7-13620H'));
 assert.ok(models.laptopGraphics.some(p=>p.name==='GeForce RTX 5070 Laptop GPU'));
+for(const [original,short] of [
+ ['GeForce RTX 5050 Laptop GPU','RTX 5050'],
+ ['GeForce RTX 5070 Ti Laptop GPU','RTX 5070 Ti'],
+ ['GeForce RTX 5080 Laptop GPU','RTX 5080'],
+ ['GeForce RTX 4090 Laptop GPU','RTX 4090'],
+ ['Radeon RX 7600M XT','Radeon RX 7600M XT'],
+ ['Intel Arc A770M','Intel Arc A770M'],
+ ['Unlisted OEM Graphics','Unlisted OEM Graphics'],
+]){
+ assert.equal(models.laptopGpuDisplayName(original),short,'Short GPU labels must not modify AMD, Intel or custom names');
+}
+
 assert.equal(new Set(models.laptopProcessors.map(p=>p.name)).size,models.laptopProcessors.length);
 assert.equal(new Set(models.laptopGraphics.map(p=>p.name)).size,models.laptopGraphics.length);
 const {seed}=load('lib/seed.ts');
@@ -116,6 +128,11 @@ assert.match(shop,/<AdminLaptopSpecs product=\{editing\} onChange=\{setEditing\}
 assert.match(editor,/laptopFieldGroups\.map\(/);
 assert.match(editor,/laptopProcessors\.filter\(/);
 assert.match(editor,/laptopGraphics\.filter\(/);
+assert.match(editor,/<option key=\{v.name\} value=\{v.name\}>\{laptopGpuDisplayName\(v.name\)\}<\/option>/,
+ 'Notebook GPU select displays short names while keeping canonical option values');
+assert.match(editor,/currentGpu\?laptopGpuDisplayName\(currentGpu\):'Не выбрана'/,
+ 'Selected notebook GPU summary shows short names');
+
 const laptopCss=readFileSync(new URL('../app/admin-laptop-specs.css',import.meta.url),'utf8');
 assert.match(shop,/skp-admin-laptop-gallery/,'Gallery spacing scope is limited to laptop editing');
 assert.match(laptopCss,/\.skp-laptop-editor\s*>\s*\.skp-laptop-model-picker[\s\S]*?margin:0;/,
