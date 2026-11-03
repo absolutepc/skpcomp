@@ -11,6 +11,7 @@ import {popularProducts} from '../lib/popular-products';
 import {createColorVariant,saveColorVariant} from '../lib/product-color-variant';
 import './admin-color-variant.css';
 import './store-usability.css';
+import './home-ready-pc-banner.css';
 import LiveSectionPreview from './live-section-preview';
 import CatalogPage from './catalog-page';
 import CardActionButtons from './card-action-buttons';
