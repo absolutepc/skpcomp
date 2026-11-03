@@ -39,7 +39,7 @@ const makeGpu=(brand:LaptopGraphics['brand'],generation:string,models:string[]):
  * Preserve the full model name in Product.specs.gpu for presets, FPS and
  * existing saved products; only the UI label is shortened. */
 export const laptopGpuDisplayName=(name:string):string=>
- name.replace(/^GeForce\\s+/i,'').replace(/\\s+Laptop\\s+GPU$/i,'').trim();
+ name.replace(/^GeForce\s+/i,'').replace(/\s+Laptop\s+GPU$/i,'').trim();
 
 export const laptopGraphics:LaptopGraphics[]=[
  ...makeGpu('NVIDIA','GeForce RTX 50',['GeForce RTX 5050 Laptop GPU','GeForce RTX 5060 Laptop GPU','GeForce RTX 5070 Laptop GPU','GeForce RTX 5070 Ti Laptop GPU','GeForce RTX 5080 Laptop GPU','GeForce RTX 5090 Laptop GPU']),
