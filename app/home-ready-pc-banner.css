@@ -1,0 +1,77 @@
+/* Home: the supplied SKP "Готовые ПК" artwork is the banner itself.
+   Keep its original 1600×600 composition and do not repeat the text in HTML. */
+.dual-promos .promo.promo-ready-pc{
+  position:relative;
+  isolation:isolate;
+  min-height:0;
+  aspect-ratio:8 / 3;
+  background:#07090c;
+  overflow:hidden;
+}
+.dual-promos .promo.promo-ready-pc::after{content:none;display:none}
+.dual-promos .promo-ready-pc-image{
+  display:block;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  max-width:none;
+  object-fit:cover;
+  object-position:center;
+}
+.dual-promos .promo.promo-ready-pc>.promo-ready-pc-action{
+  position:absolute;
+  z-index:2;
+  left:clamp(12px,2vw,30px);
+  bottom:clamp(12px,1.45vw,25px);
+  width:auto;
+  margin:0;
+  padding:0;
+}
+.dual-promos .promo-ready-pc-action .promo-ready-pc-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  min-height:40px;
+  padding:10px 15px;
+  border-radius:8px;
+  border:1px solid #ffe500;
+  background:#ffe500;
+  color:#090a0a;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.1;
+  text-decoration:none;
+  box-shadow:0 5px 22px #000a;
+  transition:background-color .2s,border-color .2s;
+}
+.dual-promos .promo-ready-pc-action .promo-ready-pc-link:hover,
+.dual-promos .promo-ready-pc-action .promo-ready-pc-link:focus-visible{
+  background:#fff15c;
+  border-color:#fff15c;
+}
+@media(max-width:850px){
+  /* On phones show the whole picture, with CTA underneath rather than
+     covering the text already embedded into the supplied banner. */
+  .dual-promos .promo.promo-ready-pc{aspect-ratio:auto}
+  .dual-promos .promo-ready-pc-image{
+    position:relative;
+    width:100%;
+    height:auto;
+    aspect-ratio:8 / 3;
+    object-fit:contain;
+  }
+  .dual-promos .promo.promo-ready-pc>.promo-ready-pc-action{
+    position:relative;
+    left:auto;
+    bottom:auto;
+    display:flex;
+    justify-content:flex-start;
+    padding:0 14px 14px;
+  }
+  .dual-promos .promo-ready-pc-action .promo-ready-pc-link{
+    min-height:44px;
+    font-size:12px;
+  }
+}
