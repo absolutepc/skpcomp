@@ -72,3 +72,57 @@
 }
 
 .card.skp-neon-card.is-condensed .skp-neon-meta{flex-wrap:nowrap;justify-content:space-between;min-height:22px}.card.skp-neon-card.is-condensed .skp-pdp-rating{flex:none;margin-left:auto}
+
+/* Mobile storefront product cards: stack the two bare actions in the
+   top-right corner. On desktop Compare stays beside Add to Cart.
+   The controls keep their original handlers and aria-pressed state. */
+@media(max-width:700px){
+ .card.skp-neon-card > .skp-card-actions:not(.skp-card-actions-inline){
+  position:absolute;
+  top:4px;
+  right:3px;
+  z-index:7;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+ }
+ .card.skp-neon-card .skp-neon-purchase-buttons > .skp-card-actions-inline{
+  position:absolute;
+  top:48px;
+  right:3px;
+  z-index:7;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+  margin:0;
+ }
+ .card.skp-neon-card > .skp-card-actions .skp-card-action,
+ .card.skp-neon-card .skp-neon-purchase .skp-card-actions-inline .skp-card-action{
+  display:grid;
+  place-items:center;
+  width:44px;
+  min-width:44px;
+  height:44px;
+  min-height:44px;
+  padding:0;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  box-shadow:none;
+  color:#e6ebed;
+  touch-action:manipulation;
+ }
+ .card.skp-neon-card > .skp-card-actions .skp-card-action svg,
+ .card.skp-neon-card .skp-neon-purchase .skp-card-actions-inline .skp-card-action svg{
+  width:19px;
+  height:19px;
+ }
+ .card.skp-neon-card > .skp-card-actions .skp-card-action:is(:hover,.is-active),
+ .card.skp-neon-card .skp-neon-purchase .skp-card-actions-inline .skp-card-action:is(:hover,.is-active){
+  color:#ffe500;
+  background:transparent;
+  border:0;
+ }
+}
