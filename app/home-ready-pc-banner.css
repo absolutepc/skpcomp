@@ -75,3 +75,67 @@
     font-size:12px;
   }
 }
+
+/* Both SKP homepage banners use the original supplied artwork. The <picture>
+   swaps to a dedicated portrait composition on mobile without zoom/cropping. */
+.dual-promos .promo.promo-banner{
+  position:relative;
+  isolation:isolate;
+  min-height:0;
+  aspect-ratio:8 / 3;
+  background:#07090c;
+  overflow:hidden;
+}
+.dual-promos .promo.promo-banner::after{content:none;display:none}
+.dual-promos .promo.promo-banner>.promo-banner-picture{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+}
+.dual-promos .promo.promo-banner .promo-banner-image{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:none;
+  object-fit:cover;
+  object-position:center center;
+}
+.dual-promos .promo.promo-banner>.promo-ready-pc-action{
+  position:absolute;
+  left:clamp(12px,2vw,30px);
+  bottom:clamp(12px,1.45vw,25px);
+  z-index:2;
+  width:auto;
+  padding:0;
+}
+@media(max-width:850px){
+  .dual-promos .promo.promo-banner{aspect-ratio:auto;min-height:0}
+  .dual-promos .promo.promo-banner>.promo-banner-picture{
+    position:relative;
+    inset:auto;
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  .dual-promos .promo.promo-banner .promo-banner-image{
+    position:relative;
+    inset:auto;
+    display:block;
+    width:100%;
+    height:auto;
+    aspect-ratio:1143 / 2048;
+    object-fit:contain;
+  }
+  .dual-promos .promo.promo-banner>.promo-ready-pc-action{
+    position:relative;
+    left:auto;
+    bottom:auto;
+    display:flex;
+    justify-content:flex-start;
+    padding:0 14px 14px;
+  }
+}
