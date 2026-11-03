@@ -29,7 +29,7 @@ const components={
  'Корзина':shop.includes("path==='/cart'")&&shop.includes('summarizeCart(cart,data.products)'),
  'Заказы':shop.includes('<Checkout')&&shop.includes('<OrderHistory')&&orders.includes("action:'create'")&&ordersAPI.includes('normalizeOrderItems(input.items,catalog.products)'),
  'Готовые ПК':shop.includes('<ReadyPC')&&ready.includes('export function ReadyPC'),
- 'Конфигуратор':shop.includes('<Configurator')&&ready.includes('BuildDiagnostics'),
+ 'Конфигуратор':shop.includes('<Configurator')&&ready.includes('className="config-build-details"')&&ready.includes('SavedBuildLibrary'),
  'Контакты':shop.includes('<StoreLocation')||shop.includes("path==='/contacts'"),
  'Поиск':shop.includes('<StoreSearch')&&storeSearch.includes('role="dialog"'),
  'Админ-панель':shop.includes('<AdminSidebar')&&admin.includes('ADMIN_SECTIONS.map'),
