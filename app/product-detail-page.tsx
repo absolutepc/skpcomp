@@ -1,6 +1,6 @@
 'use client';
 import {useState,type ReactNode} from 'react';
-import {ChevronRight,Share2,Heart,GitCompareArrows,ShoppingBag,Minus,Plus,MapPin,Truck,PackageCheck,CreditCard,Cpu,MemoryStick,Zap,Layers,Monitor} from 'lucide-react';
+import {ChevronRight,Share2,Heart,GitCompareArrows,ShoppingBag,Minus,Plus,MapPin,Truck,PackageCheck,CreditCard} from 'lucide-react';
 import type {Product,Store} from '../lib/seed';
 import {components,peripherals,fieldsForProduct,specValue,fieldValue} from '../lib/catalog';
 import {sameCoolingGroup} from '../lib/cooling-options';
@@ -42,10 +42,7 @@ export default function ProductDetailPage({product:p,data,nav,add,fav,compare,fa
  const variants=p.variantGroup?data.products.filter(v=>v.variantGroup===p.variantGroup):[];
  const related=data.products.filter(v=>v.category===p.category&&(p.category!=='cooler'||sameCoolingGroup(fieldValue(p,'coolingType'),fieldValue(v,'coolingType')))&&v.id!==p.id&&(!p.variantGroup||v.variantGroup!==p.variantGroup)).slice(0,4);
  const go=(path:string)=>(event:React.MouseEvent<HTMLAnchorElement>)=>{event.preventDefault();nav(path)};
- const preferred=p.category==='pc'?['cpu','gpu','ram','ssd','motherboard']:p.category==='monitor'?['diagonal','resolution','panel','refresh','response']:p.category==='gpu'?['architecture','vram','videoMemory','interface','watts']:p.category==='cpu'?['cores','threads','socket','frequency','watts']:['capacity','memory','speed','interface','watts'];
- const highlights=[...rows.filter(row=>preferred.includes(row.key)),...rows.filter(row=>!preferred.includes(row.key))].slice(0,5);
- const icons=[Cpu,MemoryStick,Layers,Zap,Monitor];
- const description=()=> <section className="skp-pdp-description-card"><h2>Описание</h2><p>{p.description||'Описание скоро появится.'}</p>{highlights.length>0&&<div className="skp-pdp-highlights">{highlights.map((row,index)=>{const Icon=icons[index];return <div key={row.key}><Icon size={19}/><span><strong>{row.value}</strong><small>{row.label}</small></span></div>})}</div>}</section>;
+ const description=()=> <section className="skp-pdp-description-card"><h2>Описание</h2><p>{p.description||'Описание скоро появится.'}</p></section>;
  return <section className="skp-pdp">
   <nav className="skp-pdp-breadcrumb" aria-label="Хлебные крошки"><a href="/" onClick={go('/')}>Главная</a><ChevronRight size={13}/><a href={categoryHref} onClick={go(categoryHref)}>{category}</a>{p.brand&&<><ChevronRight size={13}/><span>{p.brand}</span></>}<ChevronRight size={13}/><span className="skp-pdp-crumb-name">{p.name}</span></nav>
   <div className="skp-pdp-hero">
