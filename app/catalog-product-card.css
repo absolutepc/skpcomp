@@ -73,47 +73,49 @@
 
 .card.skp-neon-card.is-condensed .skp-neon-meta{flex-wrap:nowrap;justify-content:space-between;min-height:22px}.card.skp-neon-card.is-condensed .skp-pdp-rating{flex:none;margin-left:auto}
 
-/* Single mobile toolbar: heart above compare, both aligned to the SAME
-   top/right inset. The desktop favorite and inline compare remain unchanged. */
-.skp-neon-mobile-actions{display:none}
-@media(max-width:700px){
- .card.skp-neon-card > .skp-card-actions:not(.skp-card-actions-inline),
- .card.skp-neon-card .skp-neon-purchase-buttons > .skp-card-actions-inline{
-  display:none;
- }
- .card.skp-neon-card > .skp-neon-mobile-actions{
+/* Mobile: reuse the ORIGINAL two action buttons instead of rendering
+   extra duplicate buttons. They are positioned as a close vertical pair
+   at the same right edge of the product card. Desktop remains unchanged. */
+@media (max-width:700px){
+ .card.skp-neon-card > .skp-card-actions:not(.skp-card-actions-inline){
+  display:flex;
   position:absolute;
-  top:8px;
-  right:8px;
-  z-index:7;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  width:44px;
-  gap:0;
- }
- .card.skp-neon-card .skp-neon-mobile-actions > .skp-card-actions,
- .card.skp-neon-card .skp-neon-mobile-actions > .skp-card-actions-inline{
-  position:static;
-  display:flex;
-  flex-direction:column;
+  top:4px;
+  right:4px;
+  z-index:8;
+  width:40px;
+  height:40px;
   align-items:center;
   justify-content:center;
-  width:44px;
-  height:44px;
   margin:0;
   padding:0;
   gap:0;
-  flex:none;
  }
- .card.skp-neon-card .skp-neon-mobile-actions .skp-card-action{
+ .card.skp-neon-card .skp-neon-purchase-buttons > .skp-card-actions-inline{
+  display:flex;
+  position:absolute;
+  top:44px;
+  right:4px;
+  z-index:8;
+  width:40px;
+  height:40px;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  padding:0;
+  gap:0;
+ }
+ .card.skp-neon-card > .skp-card-actions:not(.skp-card-actions-inline) > .skp-card-action,
+ .card.skp-neon-card .skp-neon-purchase-buttons > .skp-card-actions-inline > .skp-card-action{
+  position:static;
   display:grid;
   place-items:center;
   flex:none;
-  width:44px;
-  min-width:44px;
-  height:44px;
-  min-height:44px;
+  box-sizing:border-box;
+  width:40px;
+  min-width:40px;
+  height:40px;
+  min-height:40px;
   margin:0;
   padding:0;
   border:0;
@@ -123,13 +125,15 @@
   color:#e6ebed;
   touch-action:manipulation;
  }
- .card.skp-neon-card .skp-neon-mobile-actions .skp-card-action svg{
-  width:19px;
-  height:19px;
+ .card.skp-neon-card > .skp-card-actions:not(.skp-card-actions-inline) > .skp-card-action svg,
+ .card.skp-neon-card .skp-neon-purchase-buttons > .skp-card-actions-inline > .skp-card-action svg{
+  width:20px;
+  height:20px;
  }
- .card.skp-neon-card .skp-neon-mobile-actions .skp-card-action:is(:hover,.is-active){
-  border:0;
-  background:transparent;
+ .card.skp-neon-card > .skp-card-actions:not(.skp-card-actions-inline) > .skp-card-action:is(:hover,.is-active),
+ .card.skp-neon-card .skp-neon-purchase-buttons > .skp-card-actions-inline > .skp-card-action:is(:hover,.is-active){
   color:#ffe500;
+  background:transparent;
+  border:0;
  }
 }
