@@ -127,6 +127,18 @@ const editor=readFileSync(new URL('../app/admin-laptop-specs.tsx',import.meta.ur
 assert.match(shop,/<AdminLaptopSpecs product=\{editing\} onChange=\{setEditing\}\/>/);
 assert.match(editor,/laptopFieldGroups\.map\(/);
 assert.match(editor,/laptopProcessors\.filter\(/);
+const catalogUi=readFileSync(new URL('../app/catalog-page.tsx',import.meta.url),'utf8');
+assert.match(catalogUi,/import \{laptopGpuDisplayName\} from '\.\.\/lib\/laptop-models';/,
+ 'Notebook catalog reuses the same GPU label formatter as the admin editor');
+assert.match(catalogUi,/category==='laptops'&&key==='gpu'\?laptopGpuDisplayName\(value\):value/,
+ 'Only notebook GPU facets display shortened names');
+assert.match(catalogUi,/onClick=\{\(\)=>toggle\(option\)\}>\{facetLabel\(field\.key,option\)\}<\/button>/,
+ 'GPU facet shows a short label while retaining the full model as its filter key');
+assert.match(catalogUi,/\{fields\.find\(f=>f\.key===key\)\?\.label\}: \{facetLabel\(key,v\)\}/,
+ 'Active filter chips also use the shortened GPU model label');
+assert.match(catalogUi,/const toggle=\(option:string\)=>setFacets\(\{\.\.\.facets/,
+ 'Stored facet values remain unchanged for correct filtering');
+
 assert.match(editor,/laptopGraphics\.filter\(/);
 assert.match(editor,/<option key=\{v.name\} value=\{v.name\}>\{laptopGpuDisplayName\(v.name\)\}<\/option>/,
  'Notebook GPU select displays short names while keeping canonical option values');
