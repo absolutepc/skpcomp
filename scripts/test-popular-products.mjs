@@ -31,22 +31,24 @@ const actionCss=readFileSync('app/catalog-product-card.css','utf8');
 const cardActions=readFileSync('app/card-action-buttons.tsx','utf8');
 assert.match(card,/action="favorite"/,'Product card renders the favorite action');
 assert.match(card,/action="compare"/,'Product card renders the compare action');
-assert.match(card,/<div className="skp-neon-mobile-actions">/,
- 'Favorite and compare share a single mobile toolbar');
-assert.match(card,/<div className="skp-neon-mobile-actions">[\s\S]*?<CardActionButtons action="favorite"[\s\S]*?<CardActionButtons action="compare"[\s\S]*?<\/div>/,
- 'Heart is above compare in the same mobile toolbar');
-assert.match(card,/<div className="skp-neon-purchase-buttons">/,
- 'Cart and desktop comparison remain in the purchase row');
-assert.match(actionCss,/\.skp-neon-mobile-actions\{display:none\}/,
- 'Mobile toolbar is hidden on desktop');
-assert.match(actionCss,/\.card\.skp-neon-card > \.skp-neon-mobile-actions\{\s*position:absolute;\s*top:8px;\s*right:8px;/,
- 'Both mobile actions use the same equal top/right inset');
-assert.match(actionCss,/\.card\.skp-neon-card > \.skp-neon-mobile-actions\{[\s\S]*?gap:0;/,
- 'No extra space is inserted between the mobile icon tap targets');
-assert.match(actionCss,/\.card\.skp-neon-card \.skp-neon-mobile-actions \.skp-card-action\{[\s\S]*?width:44px;[\s\S]*?height:44px;/,
- 'Both actions retain accessible 44px mobile tap targets');
-assert.match(actionCss,/\.card\.skp-neon-card > \.skp-card-actions:not\(\.skp-card-actions-inline\),\s*\.card\.skp-neon-card \.skp-neon-purchase-buttons > \.skp-card-actions-inline\{\s*display:none;/,
- 'Original separated action buttons are hidden on phone');
+assert.equal((card.match(/<CardActionButtons action="favorite"/g)||[]).length,1,
+ 'There must be just one favorite button per product (including mobile)');
+assert.equal((card.match(/<CardActionButtons action="compare"/g)||[]).length,1,
+ 'There must be just one comparison button per product (including mobile)');
+assert.doesNotMatch(card,/skp-neon-mobile-actions/,
+ 'Do not render a second hidden set of action buttons');
+assert.match(card,/<div className="skp-neon-purchase-buttons"><CardActionButtons action="compare"/,
+ 'Desktop compare stays beside the cart');
+assert.match(actionCss,/@media \(max-width:700px\)\{[\s\S]*?\.card\.skp-neon-card > \.skp-card-actions:not\(\.skp-card-actions-inline\)\{\s*display:flex;\s*position:absolute;\s*top:4px;\s*right:4px;/,
+ 'Favorite is absolutely positioned at the same inset from top and right card borders');
+assert.match(actionCss,/\.card\.skp-neon-card \.skp-neon-purchase-buttons > \.skp-card-actions-inline\{\s*display:flex;\s*position:absolute;\s*top:44px;\s*right:4px;/,
+ 'Compare is just 40px beneath the favorite and shares its right alignment');
+assert.match(actionCss,/\.card\.skp-neon-card > \.skp-card-actions:not\(\.skp-card-actions-inline\) > \.skp-card-action,[\s\S]*?width:40px;\s*min-width:40px;\s*height:40px;\s*min-height:40px;/,
+ 'Product action targets have predictable dimensions on phones');
+assert.match(actionCss,/\.card\.skp-neon-card > \.skp-card-actions:not\(\.skp-card-actions-inline\) > \.skp-card-action svg,[\s\S]*?width:20px;\s*height:20px;/,
+ 'Heart and compare use identical centered 20px icons');
+assert.doesNotMatch(actionCss,/\.skp-neon-mobile-actions/,
+ 'No ineffective duplicate mobile toolbar CSS remains');
 assert.match(cardActions,/aria-pressed=\{favorite\}/,'Favorite state remains accessible');
 assert.match(cardActions,/aria-pressed=\{compared\}/,'Compare state remains accessible');
 
