@@ -24,3 +24,23 @@
 .catalog-facets #catalog-brand-options~.facet-checkbox{margin-top:12px;min-height:44px}
 
 .catalog-facets .skp-facet-buttons button:disabled{opacity:.5;cursor:default}
+
+/* Keep verbose technical values from stretching the filter sidebar.
+   Full values remain available in the button title and accessible name. */
+.catalog-facets .skp-facet-buttons button{
+ min-width:0;
+ max-width:100%;
+ overflow:hidden;
+}
+.catalog-facets .skp-facet-buttons .skp-facet-option-text{
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ line-clamp:2;
+ overflow:hidden;
+ overflow-wrap:anywhere;
+ text-overflow:ellipsis;
+ line-height:1.35;
+ max-height:2.7em;
+ min-width:0;
+}
