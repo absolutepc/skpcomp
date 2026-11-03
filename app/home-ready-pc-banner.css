@@ -127,7 +127,9 @@
     display:block;
     width:100%;
     height:auto;
-    aspect-ratio:1143 / 2048;
+    /* Exact aspect ratio of both uploaded mobile banners (390 × 560).
+       Display the entire artwork; the mobile CTA remains below the image. */
+    aspect-ratio:390 / 560;
     object-fit:contain;
   }
   .dual-promos .promo.promo-banner>.promo-ready-pc-action{
