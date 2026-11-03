@@ -35,6 +35,12 @@ export const laptopProcessors:LaptopProcessor[]=[
 export type LaptopGraphics={brand:'NVIDIA'|'AMD'|'Intel';generation:string;name:string};
 const makeGpu=(brand:LaptopGraphics['brand'],generation:string,models:string[]):LaptopGraphics[]=>
  models.map(name=>({brand,generation,name}));
+/** Short display label for notebook GPU selectors.
+ * Preserve the full model name in Product.specs.gpu for presets, FPS and
+ * existing saved products; only the UI label is shortened. */
+export const laptopGpuDisplayName=(name:string):string=>
+ name.replace(/^GeForce\\s+/i,'').replace(/\\s+Laptop\\s+GPU$/i,'').trim();
+
 export const laptopGraphics:LaptopGraphics[]=[
  ...makeGpu('NVIDIA','GeForce RTX 50',['GeForce RTX 5050 Laptop GPU','GeForce RTX 5060 Laptop GPU','GeForce RTX 5070 Laptop GPU','GeForce RTX 5070 Ti Laptop GPU','GeForce RTX 5080 Laptop GPU','GeForce RTX 5090 Laptop GPU']),
  ...makeGpu('NVIDIA','GeForce RTX 40',['GeForce RTX 4050 Laptop GPU','GeForce RTX 4060 Laptop GPU','GeForce RTX 4070 Laptop GPU','GeForce RTX 4080 Laptop GPU','GeForce RTX 4090 Laptop GPU']),
