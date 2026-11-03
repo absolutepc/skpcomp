@@ -278,3 +278,55 @@
  .skp-ready-color-swatch.white{background:#f2f2f2}
  .skp-ready-color-swatch.black{background:#171b1b}
 }
+
+/* Match catalog's mobile favorite/compare pair: same right edge, 4px icon gap.
+   Reuse the existing actions; desktop layout and cart remain unchanged. */
+@media(max-width:700px){
+ .skp-ready-page .skp-ready-card > .skp-card-actions:not(.skp-card-actions-inline),
+ .skp-ready-page .skp-ready-card .price-line .skp-card-actions-inline{
+  display:flex;
+  position:absolute;
+  right:4px;
+  z-index:8;
+  width:40px;
+  height:40px;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  padding:0;
+  gap:0;
+ }
+ .skp-ready-page .skp-ready-card > .skp-card-actions:not(.skp-card-actions-inline){top:4px}
+ .skp-ready-page .skp-ready-card .price-line .skp-card-actions-inline{top:32px}
+ .skp-ready-page .skp-ready-card > .skp-card-actions .skp-card-action,
+ .skp-ready-page .skp-ready-card .price-line .skp-card-actions-inline .skp-card-action{
+  position:static;
+  display:grid;
+  place-items:center;
+  box-sizing:border-box;
+  flex:none;
+  width:40px;
+  min-width:40px;
+  height:40px;
+  min-height:40px;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  box-shadow:none;
+  color:#e6ebed;
+  touch-action:manipulation;
+ }
+ .skp-ready-page .skp-ready-card > .skp-card-actions .skp-card-action svg,
+ .skp-ready-page .skp-ready-card .price-line .skp-card-actions-inline .skp-card-action svg{
+  width:20px;
+  height:20px;
+ }
+ .skp-ready-page .skp-ready-card > .skp-card-actions .skp-card-action:is(:hover,.is-active),
+ .skp-ready-page .skp-ready-card .price-line .skp-card-actions-inline .skp-card-action:is(:hover,.is-active){
+  color:#ffe500;
+  background:transparent;
+  border:0;
+ }
+}
