@@ -1983,3 +1983,45 @@ html,body{overflow-x:clip}
 
 /* Unified SKP page canvas across storefront tabs. Component cards and promotional media retain their own approved treatments. */
 body > main, main:not(.skp-admin-workspace){background-color:#000}
+
+
+/* SKP palette consistency: catalog filters and contact surfaces use the
+   same neutral near-black family as product cards, without green casts. */
+.catalog-page .catalog-facets{
+ background:#080c0e;
+ border-color:#30383c;
+}
+.catalog-page .catalog-facets fieldset{border-top-color:#30383c}
+.catalog-page .catalog-facets .skp-facet-buttons button,
+.catalog-page .catalog-facets .skp-range-inputs label{
+ background:#101416;
+ border-color:#30383c;
+ color:#d6dadd;
+}
+.catalog-page .catalog-facets .skp-facet-buttons button[aria-pressed="true"]{
+ background:#171b1d;
+ border-color:#ffe500;
+ color:#ffe500;
+}
+.catalog-page .catalog-facets .skp-range-inputs label>span,
+.catalog-page .catalog-facets .skp-range-limits{color:#a0a8ac}
+.store-contacts .store-location-panel{
+ background:linear-gradient(145deg,#151719,#0b0d0f 90%);
+ border-color:#30383c;
+}
+.store-contacts .store-map-wrap{
+ background:#101214;
+ border-color:#30383c;
+}
+.store-contacts .store-map-wrap iframe{background:#101214}
+.store-contacts .store-map-bar{background:#101214;color:#c5cbd0}
+.store-contacts .store-location-kicker,
+.store-contacts .store-location-desc,
+.store-contacts .store-contacts-head p,
+.store-contacts .store-location-small-link{color:#a9afb3}
+.store-contacts .store-location-panel address{color:#eef1f2}
+.store-contacts .store-location-actions .button.outline{
+ background:#101214;
+ border-color:#444a4e;
+ color:#edf0f2;
+}
