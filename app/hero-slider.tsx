@@ -1,6 +1,6 @@
 'use client';
 import {Fragment,useEffect,useRef,useState} from 'react';
-import {ArrowLeft,ArrowRight,Pause,Play,Cpu,ShieldCheck,MessageCircle} from 'lucide-react';
+import {ArrowLeft,ArrowRight} from 'lucide-react';
 import {defaultHeroSlides,type HeroSlide,type HeroBreakpoint,type HeroPlacement} from '../lib/hero-slides';
 import HeroCanvasLayers from './hero-canvas-layers';
 
@@ -76,7 +76,6 @@ export function HeroSlideContent({slide,nav,editable=false,previewMode='desktop'
     <a className="button light" href={slide.href} onClick={go(slide.href)}>{slide.primary}<ArrowRight size={18}/></a>
     <a className="button outline" href={slide.secondHref} onClick={go(slide.secondHref)}>{slide.secondary}</a>
    </div>
-   <div className="hero-benefits"><div><Cpu/><span>Подбор<br/>комплектующих</span></div><div><ShieldCheck/><span>Продуманная<br/>сборка</span></div><div><MessageCircle/><span>Помощь<br/>с выбором</span></div></div>
   </div>
   {slide.layers?.length?<HeroCanvasLayers layers={slide.layers} previewMode={previewMode} editable={editable} selectedId={selectedId} onSelect={onSelect} onChange={onPositionChange}/>:<div className="hero-visual" key={'image-'+slide.id}><SlideImage slide={slide}/></div>}
 
@@ -98,11 +97,11 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
  const slides=items;
  const [index,setIndex]=useState(0);
  const [interactionPaused,setInteractionPaused]=useState(false);
- const [userPaused,setUserPaused]=useState(false);
+ const [reducedMotion,setReducedMotion]=useState(false);
  const [pageHidden,setPageHidden]=useState(false);
  useEffect(()=>{
   const media=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const sync=()=>{if(media.matches)setUserPaused(true)};
+  const sync=()=>{setReducedMotion(media.matches)};
   sync();media.addEventListener('change',sync);
   return()=>media.removeEventListener('change',sync);
  },[]);
@@ -118,10 +117,10 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
   return()=>document.removeEventListener('visibilitychange',sync);
  },[]);
  useEffect(()=>{
-  if(slides.length<2||userPaused||interactionPaused||pageHidden)return;
+  if(slides.length<2||reducedMotion||interactionPaused||pageHidden)return;
   const timeout=window.setTimeout(()=>setIndex(current=>(current+1)%slides.length),HERO_AUTOPLAY_MS);
   return()=>window.clearTimeout(timeout);
- },[index,userPaused,interactionPaused,pageHidden,slides.length]);
+ },[index,reducedMotion,interactionPaused,pageHidden,slides.length]);
  if(!slide)return null;
  return <section className={"hero hero-carousel"+(slide.layout==='logitech'?" mouse-launch":slide.layout==='rog'?" rog-anniversary":"")+(isRogOledFeature(slide)?" rog-oled-feature":"")+" skp-active-"+slide.id}
   aria-label="Предложения SKP" aria-roledescription="карусель" tabIndex={0}
@@ -132,7 +131,6 @@ export default function HeroSlider({nav,items=defaultHeroSlides}:{nav:(path:stri
   onTouchStart={e=>{touch.current=e.touches[0].clientX}}
   onTouchEnd={e=>{if(touch.current!==null){const distance=e.changedTouches[0].clientX-touch.current;if(Math.abs(distance)>55)move(distance<0?1:-1);touch.current=null}}}>
   <HeroSlideContent slide={slide} nav={nav}/>
-  {slides.length>1&&<button type="button" className="skp-carousel-pause" aria-label={userPaused?'Продолжить автопрокрутку баннеров':'Приостановить автопрокрутку баннеров'} onClick={()=>setUserPaused(value=>!value)}>{userPaused?<Play size={16}/>:<Pause size={16}/>}<span>{userPaused?'Продолжить':'Пауза'}</span></button>}
   {slides.length>1&&<div className="carousel-controls">
    <button className="carousel-arrow" aria-label="Предыдущий слайд" onClick={()=>move(-1)}><ArrowLeft size={19}/></button>
    <div className="carousel-dots" role="group" aria-label="Выбор слайда">{slides.map((s,i)=><button key={s.id} className={i===activeIndex?'current':''} aria-label={`Показать слайд ${i+1}: ${s.label}`} aria-current={i===activeIndex?'true':undefined} onClick={()=>setIndex(i)}><span/></button>)}</div>

@@ -1475,12 +1475,12 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  width:max-content;
  max-width:calc(100% - 14px);
  padding:8px clamp(29px,2.6vw,38px) 7px;
- background:#0a0c0e;
+ background:transparent;
  border:0;
  border-radius:0;
  box-shadow:none;
  backdrop-filter:none;
- clip-path:polygon(11% 0,89% 0,100% 100%,0 100%);
+ clip-path:none;
  isolation:isolate;
 }
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls::before{
@@ -1489,13 +1489,7 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  inset:0;
  z-index:0;
  pointer-events:none;
- background:var(--skp-hero-seam,#414345);
- /* One consistent accent-colored upper border and shoulders on every slide. */
- clip-path:polygon(
-  11% 0,89% 0,100% 100%,
-  calc(100% - 1px) 100%,calc(89% - 1px) 2px,
-  calc(11% + 1px) 2px,1px 100%,0 100%
- );
+ background:url('/images/hero-control-edge.svg') center / 100% 100% no-repeat;
 }
 .hero-carousel:not(.skp-slide-preview)>.carousel-controls>*{
  position:relative;
@@ -1510,8 +1504,8 @@ main.wide-shop>section{margin-left:0;margin-right:0;max-width:none;min-width:0}
  display:grid;
  place-items:center;
  padding:0;
- background:#1a1c1e;
- border:1px solid #3a4534;
+ background:transparent;
+ border:0;
  border-radius:7px;
  clip-path:none;
  color:#c9d0c4;

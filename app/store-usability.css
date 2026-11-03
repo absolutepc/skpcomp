@@ -13,8 +13,6 @@
 footer .footer-top p,footer .footer-top a,footer .footer-top small,footer .footer-bottom{color:#bfc6cc}
 footer .footer-top h4{color:#f3f5f6}
 footer .footer-top a:hover{color:#ffe500}
-.hero-carousel .skp-carousel-pause{position:absolute;z-index:6;right:18px;bottom:62px;display:flex;align-items:center;gap:7px;min-height:44px;padding:10px 14px;background:#080b0eed;border:1px solid #7b858d;border-radius:7px;color:#f4f6f8;font-size:12px}
-.hero-carousel .skp-carousel-pause:focus-visible{outline:2px solid #ffe500;outline-offset:3px}
 @media(max-width:700px){
  .card.skp-neon-card .skp-neon-name h3{font-size:13px}
  .card.skp-neon-card>.skp-card-actions .skp-card-action{width:44px;height:44px}
