@@ -4,7 +4,7 @@ import {ChevronDown,Info} from 'lucide-react';
 import type {Product} from '../lib/seed';
 import {fieldValue} from '../lib/catalog';
 import {laptopFieldChoices,laptopFieldGroups} from '../lib/laptop-specs';
-import {laptopGraphics,laptopProcessors} from '../lib/laptop-models';
+import {laptopGraphics,laptopProcessors,laptopGpuDisplayName} from '../lib/laptop-models';
 import {applyLaptopCpuPreset,findLaptopCpuPreset} from '../lib/laptop-cpu-presets';
 import {applyLaptopGpuPreset,findLaptopGpuPreset} from '../lib/laptop-gpu-presets';
 import './admin-laptop-specs.css';
@@ -100,10 +100,10 @@ export default function AdminLaptopSpecs({product,onChange}:{product:Product;onC
      <option value="">Выбрать</option>{gpuGenerations.map(v=><option key={v} value={v}>{v}</option>)}
     </select></label>
     <label>3. Модель<select value={!customGpu&&gpus.some(v=>v.name===currentGpu)?currentGpu:''} disabled={!gpuGeneration} onChange={e=>{if(e.target.value){selectGpu(e.target.value);setCustomGpu(false)}}}>
-     <option value="">Выбрать модель</option>{gpus.map(v=><option key={v.name} value={v.name}>{v.name}</option>)}
+     <option value="">Выбрать модель</option>{gpus.map(v=><option key={v.name} value={v.name}>{laptopGpuDisplayName(v.name)}</option>)}
     </select></label>
    </div>
-   <div className="skp-laptop-current-model"><span>Графика:</span><strong>{currentGpu||'Не выбрана'}</strong>
+   <div className="skp-laptop-current-model"><span>Графика:</span><strong>{currentGpu?laptopGpuDisplayName(currentGpu):'Не выбрана'}</strong>
     <button type="button" onClick={()=>setCustomGpu(v=>!v)}>{customGpu?'Скрыть ввод':'Другая модель'}</button>
    </div>
    {gpuSpecsPreset&&!customGpu&&<div className="skp-laptop-cpu-preset-actions">
