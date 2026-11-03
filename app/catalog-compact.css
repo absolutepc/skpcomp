@@ -9,7 +9,7 @@ section.catalog-page{padding-top:18px}
 .catalog-page .catalog-subcategories>a{flex-direction:row;gap:7px;min-height:48px;padding:8px 6px;border-radius:8px;font-size:11px}
 .catalog-page .subcategory-icon{width:22px;height:22px}
 .catalog-page .subcategory-icon svg{width:21px;height:21px}
-.catalog-page .catalog-toolbar{gap:10px;padding:10px 0;margin-bottom:12px}
+.catalog-page .catalog-toolbar{gap:10px;border-block:0;padding:10px 0;margin-bottom:12px}
 .catalog-page .catalog-toolbar input,.catalog-page .catalog-toolbar select{height:42px;padding-top:9px;padding-bottom:9px;font-size:13px}
 .catalog-page .catalog-toolbar select{min-width:175px}
 .catalog-page .catalog-result-line{min-height:24px;margin-bottom:10px}
