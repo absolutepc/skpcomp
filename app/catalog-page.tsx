@@ -3,6 +3,7 @@ import {useState} from 'react';
 import {filterCandidates} from '../lib/catalog-filter-options';
 import CatalogRange from './catalog-range';
 import {catalogFilterOrder} from '../lib/catalog-filter-order';
+import {laptopGpuDisplayName} from '../lib/laptop-models';
 import './catalog-filters.css';
 import './catalog-compact.css';
 import {Search,SlidersHorizontal,X,LayoutGrid} from 'lucide-react';
@@ -23,6 +24,7 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  const base=hasDataTabs&&sectionTab?sectionProducts.filter(p=>tabValue(p)===sectionTab):sectionProducts;
  const fields=[{key:'brand',label:'Бренд'},...(categoryFields[category]||[])];
  const laptopFilterKeys=['brand','cpu','gpu','capacity','memoryType','driveCapacity','diagonal','resolution','panel','refresh','gpuPowerWatts'];
+ const facetLabel=(key:string,value:string)=>category==='laptops'&&key==='gpu'?laptopGpuDisplayName(value):value;
  const priority=['brand',...(catalogFilterOrder[category]||[])];
  const rank=(key:string)=>{const index=priority.indexOf(key);return index<0?priority.length:index};
  const visibleFields=fields.filter(field=>field.key!=='cpuModel'&&
@@ -61,11 +63,11 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  return <fieldset key={field.key}><legend>{field.label}{field.unit?`, ${field.unit}`:''}</legend>
  {field.numeric?<CatalogRange label={field.label} values={availableProducts.map(p=>specValue(p,field)).filter(v=>v.trim()!=='').map(v=>Number(v.replace(',','.')))} value={range} onChange={value=>setRanges({...ranges,[field.key]:value})}/>
  :options.length?<div id={field.key==='brand'?'catalog-brand-options':undefined} className={inline?'skp-facet-buttons':'facet-values'}>{displayedOptions.map(option=>inline?
- <button type="button" key={option} disabled={!selected.includes(option)&&(!availableOptions.includes(option)||(field.key!=='brand'&&availableOptions.length===1))} aria-pressed={(facets[field.key]||[]).includes(option)} onClick={()=>toggle(option)}>{option}</button>:
- <label className="facet-checkbox" key={option}><input type="checkbox" checked={(facets[field.key]||[]).includes(option)} onChange={()=>toggle(option)}/><span>{option}</span><small>{base.filter(p=>splitValues(specValue(p,field)).includes(option)).length}</small></label>)}</div>
+ <button type="button" key={option} disabled={!selected.includes(option)&&(!availableOptions.includes(option)||(field.key!=='brand'&&availableOptions.length===1))} aria-pressed={(facets[field.key]||[]).includes(option)} onClick={()=>toggle(option)}>{facetLabel(field.key,option)}</button>:
+ <label className="facet-checkbox" key={option}><input type="checkbox" checked={(facets[field.key]||[]).includes(option)} onChange={()=>toggle(option)}/><span>{facetLabel(field.key,option)}</span><small>{base.filter(p=>splitValues(specValue(p,field)).includes(option)).length}</small></label>)}</div>
  :<small className="facet-no-data">Нет заполненных значений</small>}
  {field.key==='brand'&&<>{options.length>0&&<button type="button" className="skp-all-brands" aria-expanded={allBrands} aria-controls="catalog-brand-options" onClick={()=>setAllBrands(!allBrands)}>{allBrands?'Свернуть бренды':`Все бренды (${options.length})`}</button>}<label className="facet-checkbox"><input type="checkbox" checked={stock} onChange={e=>setStock(e.target.checked)}/> Только в наличии</label></>}
  </fieldset>;
  })}<button className="button light catalog-filter-close" onClick={()=>setOpen(false)}>Показать товары ({shown.length})</button></aside>
- <div className="catalog-results"><div className="catalog-result-line"><span aria-live="polite">Найдено товаров: {shown.length}</span>{(count>0||query)&&<button onClick={reset}><X size={14}/> Сбросить всё</button>}</div><div className="active-facets" aria-label="Выбранные фильтры" style={{height:38,flexWrap:'nowrap',overflowX:'auto',overflowY:'hidden',alignItems:'center',whiteSpace:'nowrap'}}>{Object.entries(facets).flatMap(([key,values])=>values.map(v=><button style={{flexShrink:0}} key={key+v} onClick={()=>setFacets({...facets,[key]:values.filter(x=>x!==v)})}>{fields.find(f=>f.key===key)?.label}: {v}<X size={12}/></button>))}{Object.entries(ranges).filter(([,r])=>r.min||r.max).map(([key,r])=><button style={{flexShrink:0}} key={key} onClick={()=>setRanges({...ranges,[key]:{}})}>{fields.find(f=>f.key===key)?.label}: {r.min||'0'} — {r.max||'∞'}<X size={12}/></button>)}</div><div className="grid">{shown.map(card)}</div>{!shown.length&&<div className="empty"><h2>{base.length?'Нет товаров с такими параметрами':'В этом разделе пока нет товаров'}</h2><p>{base.length?'Попробуйте изменить фильтры.':'Новые товары появятся здесь после добавления в каталог.'}</p>{base.length>0&&<button className="button outline" onClick={reset}>Сбросить фильтры</button>}</div>}</div></div></section>
+ <div className="catalog-results"><div className="catalog-result-line"><span aria-live="polite">Найдено товаров: {shown.length}</span>{(count>0||query)&&<button onClick={reset}><X size={14}/> Сбросить всё</button>}</div><div className="active-facets" aria-label="Выбранные фильтры" style={{height:38,flexWrap:'nowrap',overflowX:'auto',overflowY:'hidden',alignItems:'center',whiteSpace:'nowrap'}}>{Object.entries(facets).flatMap(([key,values])=>values.map(v=><button style={{flexShrink:0}} key={key+v} onClick={()=>setFacets({...facets,[key]:values.filter(x=>x!==v)})}>{fields.find(f=>f.key===key)?.label}: {facetLabel(key,v)}<X size={12}/></button>))}{Object.entries(ranges).filter(([,r])=>r.min||r.max).map(([key,r])=><button style={{flexShrink:0}} key={key} onClick={()=>setRanges({...ranges,[key]:{}})}>{fields.find(f=>f.key===key)?.label}: {r.min||'0'} — {r.max||'∞'}<X size={12}/></button>)}</div><div className="grid">{shown.map(card)}</div>{!shown.length&&<div className="empty"><h2>{base.length?'Нет товаров с такими параметрами':'В этом разделе пока нет товаров'}</h2><p>{base.length?'Попробуйте изменить фильтры.':'Новые товары появятся здесь после добавления в каталог.'}</p>{base.length>0&&<button className="button outline" onClick={reset}>Сбросить фильтры</button>}</div>}</div></div></section>
 }
