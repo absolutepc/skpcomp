@@ -27,4 +27,22 @@ assert.ok(shop.includes('href="/images/skp-reference.png"'),'Unchanged fallback 
 assert.match(css,/\.category \.skp-category-photo\{[\s\S]*?object-fit:cover/);
 assert.match(css,/\.category:has\(\.skp-category-photo\):after/,'Category label gradient remains readable');
 assert.ok(shop.includes("furniture:'/images/category-furniture.jpg'"),'Furniture category keeps its configured product photo');
-console.log('SKP homepage categories use the three original uploaded images, full-res and category-matched.');
+const readyBannerPath=new URL('../public/images/skp-ready-pc-home-banner.webp',import.meta.url);
+const readyBanner=readFileSync(readyBannerPath);
+assert.ok(readyBanner.length>70000,'Ready-PC banner is stored locally in the repo at web quality');
+assert.equal(readyBanner.toString('ascii',0,4),'RIFF','Ready-PC banner has a valid WebP file header');
+assert.equal(readyBanner.toString('ascii',8,12),'WEBP','Ready-PC banner has a valid WebP container');
+assert.ok(shop.includes('src="/images/skp-ready-pc-home-banner.webp"'),'Homepage ready-PC promo uses the supplied artwork');
+assert.match(shop,/className="promo promo-ready-pc"/,'Ready-PC homepage promo uses the dedicated full-bleed layout');
+assert.match(shop,/link\('\/pc',<>Смотреть сборки <ArrowRight size=\{17\}\/><\/>,'button light promo-ready-pc-link'\)/,
+ 'Ready-PC homepage banner keeps the catalog action');
+assert.doesNotMatch(shop,/<LiveSectionPreview href="\/pc"/,
+ 'The ready-PC promo no longer hides the image behind an interactive page preview');
+assert.ok(shop.includes("import './home-ready-pc-banner.css'"),'Responsive banner styles are loaded');
+const bannerCss=readFileSync(new URL('../app/home-ready-pc-banner.css',import.meta.url),'utf8');
+assert.match(bannerCss,/\.dual-promos \.promo-ready-pc-image\{[\s\S]*?width:100%;[\s\S]*?height:100%;[\s\S]*?object-fit:cover;/,
+ 'Desktop banner image fills the whole ready-PC block');
+assert.match(bannerCss,/@media\(max-width:850px\)\{[\s\S]*?object-fit:contain;/,
+ 'Mobile shows the full artwork without cropping');
+
+console.log('SKP homepage categories use uploaded category images and the ready PC banner with working CTA.');
