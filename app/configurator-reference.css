@@ -187,8 +187,22 @@ body:has(.config-reference),body:has(.config-reference) main,body:has(.config-re
 .config-page.config-studio.config-reference .component-steps>button{position:relative;background:linear-gradient(145deg,#1a1c1e,#111314);color:#c4c9c1;border-color:#323635;box-shadow:none}
 .config-page.config-studio.config-reference .component-steps>button:hover{border-color:#ffe500}
 .config-page.config-studio.config-reference .component-steps>button.current{background:linear-gradient(145deg,#232112,#10110d);color:#ffe500;border-color:#9f9100;box-shadow:none}
-.config-page.config-studio.config-reference .component-steps>button.current:after{content:'';position:absolute;bottom:0;left:30%;right:30%;height:2px;background:#ffe500}
 .config-page.config-studio.config-reference .component-steps>button>svg:first-of-type{display:block!important;flex:0 0 18px;width:18px;height:18px;color:inherit}
 .config-page.config-studio.config-reference .component-steps>button .step-num{display:none}
 .config-page.config-studio.config-reference .component-steps>button.completed .step-num{display:grid}
 .config-page.config-studio.config-reference .component-steps>button.completed>svg:first-of-type{display:none!important}
+
+/* Keep the moving cards on the same rail until the outgoing edge fades. */
+.config-reference .config-showcase-rail .config-slide{
+ transition:transform 380ms cubic-bezier(.22,.72,.18,1),opacity 240ms ease,filter 300ms ease;
+}
+.config-reference .config-showcase-rail .config-slide.is-leaving{opacity:0;pointer-events:none}
+@starting-style{
+ .config-reference .config-showcase-rail .config-slide.is-entering{
+  opacity:0;
+  transform:translateX(calc(var(--slide-shift) + var(--entry-offset))) perspective(1000px) scale(var(--slide-scale)) rotateY(var(--slide-angle));
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .config-reference .config-showcase-rail .config-slide,.config-reference .config-slide .component-card{transition:none}
+}

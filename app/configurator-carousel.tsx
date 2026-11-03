@@ -13,7 +13,13 @@ import {carouselPose,carouselLayout,carouselWrappedIndex,carouselWheelAxis} from
  */
 export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];names:string[]}){
  const count=cards.length;
- const [cursor,setCursor]=useState(0);
+ const [{cursor,from},setFrame]=useState({cursor:0,from:0});
+ const advance=(direction:number)=>setFrame(({cursor})=>({cursor:cursor+direction,from:cursor}));
+ useEffect(()=>{
+  if(cursor===from)return;
+  const timeout=setTimeout(()=>setFrame(frame=>frame.cursor===cursor?{cursor,from:cursor}:frame),420);
+  return()=>clearTimeout(timeout);
+ },[cursor,from]);
  const [containerWidth,setContainerWidth]=useState(0);
  const {width,offsets}=carouselLayout(containerWidth,count);
  const rail=useRef<HTMLDivElement>(null);
@@ -26,7 +32,7 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
 
  const navigate=(direction:number)=>{
   if(!canNavigate)return;
-  setCursor(current=>current+direction);
+  advance(direction);
  };
 
  useLayoutEffect(()=>{
@@ -65,7 +71,7 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
    if(event.cancelable)event.preventDefault();
    if(wheelAxis.current==='horizontal'&&!wheelHandled.current){
     wheelHandled.current=true;
-    setCursor(current=>current+(event.deltaX>0?1:-1));
+    advance(event.deltaX>0?1:-1);
    }
   };
   element.addEventListener('wheel',handleWheel,{passive:false});
@@ -94,7 +100,12 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
  };
  if(!count)return null;
 
- // No duplicate products: for two SKUs we render two cards, not five clones.
+ const positions=offsets.map(offset=>cursor+offset);
+ const previous=offsets.map(offset=>from+offset);
+ const moving=cursor!==from;
+ const direction=Math.sign(cursor-from);
+ const visibleIds=new Set(positions.map(v=>carouselWrappedIndex(v,0,count)));
+ const leaving=moving?previous.filter(v=>!positions.includes(v)&&!visibleIds.has(carouselWrappedIndex(v,0,count))):[];
 
 
  return <section style={{'--card-width':`${width}px`,visibility:containerWidth?'visible':'hidden'} as CSSProperties} className="config-showcase" aria-label="Карусель комплектующих" aria-roledescription="карусель">
@@ -105,20 +116,24 @@ export default function ConfiguratorCarousel({cards,names}:{cards:ReactNode[];na
     if(event.key==='ArrowLeft'){event.preventDefault();navigate(-1)}
     else if(event.key==='ArrowRight'){event.preventDefault();navigate(1)}
    }} aria-label="Используйте стрелки или горизонтальный жест для перелистывания">
-   {offsets.map(offset=>{
-    const virtual=cursor+offset;
-    const index=carouselWrappedIndex(cursor,offset,count);
+   {[...positions,...leaving].map(virtual=>{
+    const exiting=leaving.includes(virtual);
+    const entering=moving&&!previous.includes(virtual)&&!exiting;
+    const offset=virtual-(exiting?from:cursor);
+    const index=carouselWrappedIndex(virtual,0,count);
     const pose=carouselPose(offset,width,0,14);
     const style={
      '--slide-scale':pose.scale,
      '--slide-angle':`${pose.angle}deg`,
-     '--slide-shift':`${pose.center}px`,
+     '--slide-shift':`${pose.center-(exiting?direction*width*.27:0)}px`,
+     '--entry-offset':`${direction*width*.27}px`,
      zIndex:5-Math.abs(offset)
     } as CSSProperties;
     return <div key={virtual} style={style}
-     className={'config-slide'+(offset===0?' is-focused':'')}
+     className={'config-slide'+(!exiting&&offset===0?' is-focused':'')+(exiting?' is-leaving':entering?' is-entering':'')}
+     inert={exiting} aria-hidden={exiting||undefined}
      role="group" aria-roledescription="слайд"
-     aria-current={offset===0?'true':undefined}
+     aria-current={!exiting&&offset===0?'true':undefined}
      aria-label={`${index+1} из ${count}: ${names[index]}`}>
      {cards[index]}
     </div>;
