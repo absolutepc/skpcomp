@@ -33,7 +33,7 @@ assert.ok(readyBanner.length>70000,'Ready-PC banner is stored locally in the rep
 assert.equal(readyBanner.toString('ascii',0,4),'RIFF','Ready-PC banner has a valid WebP file header');
 assert.equal(readyBanner.toString('ascii',8,12),'WEBP','Ready-PC banner has a valid WebP container');
 assert.ok(shop.includes('src="/images/skp-ready-pc-home-banner.webp"'),'Homepage ready-PC promo uses the supplied artwork');
-assert.match(shop,/className="promo promo-ready-pc"/,'Ready-PC homepage promo uses the dedicated full-bleed layout');
+assert.match(shop,/className="promo promo-banner promo-ready-pc"/,'Ready-PC homepage promo uses the full-bleed artwork layout');
 assert.match(shop,/link\('\/pc',<>Смотреть сборки <ArrowRight size=\{17\}\/><\/>,'button light promo-ready-pc-link'\)/,
  'Ready-PC homepage banner keeps the catalog action');
 assert.doesNotMatch(shop,/<LiveSectionPreview href="\/pc"/,
@@ -45,4 +45,34 @@ assert.match(bannerCss,/\.dual-promos \.promo-ready-pc-image\{[\s\S]*?width:100%
 assert.match(bannerCss,/@media\(max-width:850px\)\{[\s\S]*?object-fit:contain;/,
  'Mobile shows the full artwork without cropping');
 
-console.log('SKP homepage categories use uploaded category images and the ready PC banner with working CTA.');
+for(const banner of [
+ {name:'skp-configurator-home-banner.webp',minBytes:110000},
+ {name:'skp-ready-pc-home-banner-mobile.webp',minBytes:150000},
+ {name:'skp-configurator-home-banner-mobile.webp',minBytes:200000}
+]){
+ const asset=readFileSync(new URL('../public/images/'+banner.name,import.meta.url));
+ assert.ok(asset.length>banner.minBytes,'Banner asset included at production quality: '+banner.name);
+ assert.equal(asset.toString('ascii',0,4),'RIFF','Valid WebP file: '+banner.name);
+ assert.equal(asset.toString('ascii',8,12),'WEBP','Valid WebP container: '+banner.name);
+ assert.ok(shop.includes('/images/'+banner.name),'Banner file is referenced in homepage: '+banner.name);
+}
+assert.match(shop,/srcSet="\/images\/skp-ready-pc-home-banner-mobile\.webp"/,
+ 'Ready-PC mobile banner uses supplied vertical image');
+assert.match(shop,/srcSet="\/images\/skp-configurator-home-banner-mobile\.webp"/,
+ 'Configurator mobile banner uses supplied vertical image');
+assert.match(shop,/src="\/images\/skp-configurator-home-banner\.webp"/,
+ 'Configurator desktop banner uses supplied landscape image');
+assert.match(shop,/className="promo promo-banner promo-configurator"/,
+ 'Configurator promo uses the same banner system as ready PCs');
+assert.match(shop,/link\('\/configurator',<>Собрать свой ПК <ArrowRight size=\{17\}\/><\/>,'button light promo-ready-pc-link'\)/,
+ 'Configurator CTA still opens the builder');
+assert.doesNotMatch(shop,/<LiveSectionPreview href="\/configurator"/,
+ 'Old interactive preview is replaced by the user-provided banner');
+assert.match(shop,/<source media="\(max-width: 850px\)" srcSet="\/images\/skp-ready-pc-home-banner-mobile\.webp"/,
+ 'Responsive source automatically selects the phone image');
+assert.match(bannerCss,/\.dual-promos \.promo\.promo-banner \.promo-banner-image\{[\s\S]*?width:100%;[\s\S]*?height:100%;[\s\S]*?object-fit:cover;/,
+ 'Desktop SKP banners fill their entire promo blocks');
+assert.match(bannerCss,/aspect-ratio:1143 \/ 2048;/,
+ 'Phone banners preserve portrait proportions instead of cropping them');
+
+console.log('SKP homepage banners use supplied desktop/mobile imagery with working category links.');
