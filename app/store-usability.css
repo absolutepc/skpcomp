@@ -34,3 +34,17 @@ footer .footer-top p,footer .footer-top small,footer .footer-bottom{font-size:12
  .catalog-toolbar button,.catalog-facets button{min-height:44px}
  .catalog-facets .facet-checkbox{min-height:44px;display:flex;align-items:center}
 }
+
+/* Admin product modal: technical section containers should not look like input fields. */
+.admin-spec-fields .skp-technical-spec-group {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 0 22px !important;
+}
+.admin-spec-fields .skp-technical-spec-group > h4 {
+  margin: 0 0 12px;
+}
