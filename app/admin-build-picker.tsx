@@ -26,7 +26,7 @@ export default function AdminBuildPicker({field,products,value,onSelect,onClear,
  const searchRef=useRef<HTMLInputElement>(null);
  // Available and out-of-stock catalog parts can both be used in a ready PC.
  const options=products.filter(product=>product.category!=='pc'&&(
-  field==='extra'?product.category in components||['fans','network','os'].includes(product.category):
+  field==='extra'?product.category==='fans':
   (categories[field]||[]).includes(product.category)
  )).sort((a,b)=>a.name.localeCompare(b.name,'ru',{numeric:true}));
  const selected=options.find(product=>product.name===value);
