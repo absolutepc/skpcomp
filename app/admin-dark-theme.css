@@ -593,3 +593,44 @@ main.skp-admin-workspace{
  .skp-admin-workspace .skp-admin-data-table tbody tr:hover td,
  .skp-admin-workspace .skp-admin-data-table tbody tr:focus-within td{background:#fff!important;color:#22272e!important}
 }
+
+
+/* Light product-edit modal, matching the white admin workspace. */
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign){
+ background:#fff!important;color:#1b2027!important;
+ border:1px solid #e0e4ea!important;color-scheme:light;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .section-head,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-edit-section,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-technical-spec-group,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .admin-spec-fields,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media{
+ background:#fff!important;color:#1b2027!important;
+ border-color:#e0e4ea!important;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) h2,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) h3,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) label{
+ color:#222831!important;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) p,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) small{
+ color:#697480;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) input:not([type=checkbox]):not([type=radio]),
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) select,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) textarea{
+ background:#f6f7f9!important;color:#1b2027!important;
+ border:1px solid #dfe3e9!important;color-scheme:light;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) input::placeholder,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) textarea::placeholder{color:#89919a}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) option{background:#fff;color:#20262e}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-item,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-preview{
+ background:#f7f8fa!important;border-color:#dfe3e9!important;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-footnote{color:#66717d}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .button.light{
+ background:#ffe500!important;color:#111!important;
+}
