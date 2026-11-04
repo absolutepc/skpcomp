@@ -634,3 +634,23 @@ main.skp-admin-workspace{
 .skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .button.light{
  background:#ffe500!important;color:#111!important;
 }
+
+
+/* Neutral black accents inside the white product editing dialog only. */
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-heading strong,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-count,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-upload,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-upload *,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-item button,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-technical-spec-group h4{
+ color:#171717!important;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-upload{
+ background:#f4f5f7!important;border:1px dashed #7c858f!important;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-count{
+ background:#eef0f3!important;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .button.light{
+ background:#171717!important;color:#fff!important;border-color:#171717!important;
+}
