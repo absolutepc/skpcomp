@@ -481,3 +481,107 @@ main.skp-admin-workspace{
   border-color:#303030;
  }
 }
+
+
+/* SKP light main workspace — black navigation sidebar stays unchanged.
+   Match approved white-background admin reference, desktop only. */
+@media(min-width:701px){
+ main.skp-admin-workspace{
+  --skp-admin-bg:#fff;--skp-admin-panel:#f7f8fa;
+  --skp-admin-card:#f5f6f8;--skp-admin-field:#f4f5f8;
+  --skp-admin-border:#e0e3e9;--skp-admin-text:#15191e;
+  --skp-admin-muted:#6f7783;
+  background:#fff;color:#15191e;color-scheme:light;
+ }
+ .skp-admin-workspace .skp-admin-layout,
+ .skp-admin-workspace .skp-admin-work,
+ .skp-admin-workspace .skp-admin-main{background:#fff;color:#15191e}
+ .skp-admin-workspace .skp-admin-sidebar,
+ .skp-admin-workspace .skp-admin-brand{background:#000;color:#fff}
+ .skp-admin-workspace .skp-admin-topbar{background:#fff;border-bottom:1px solid #e4e6eb}
+ .skp-admin-workspace .skp-admin-account{color:#171b20}
+ .skp-admin-workspace .skp-admin-account>span{background:#252a30;color:#ffe500}
+ .skp-admin-workspace .skp-admin-global-search,
+ .skp-admin-workspace .skp-admin-local-search,
+ .skp-admin-workspace .skp-brands-search{background:#f0f1f4;color:#252a31;border:1px solid #e2e5eb}
+ .skp-admin-workspace .skp-admin-global-search input,
+ .skp-admin-workspace .skp-admin-local-search input{background:transparent!important;border:0!important}
+ .skp-admin-workspace .skp-admin-card,
+ .skp-admin-workspace .skp-admin-stat,
+ .skp-admin-workspace .admin-settings,
+ .skp-admin-workspace .skp-admin-information,
+ .skp-admin-workspace .skp-admin-hero,
+ .skp-admin-workspace .skp-admin-orders,
+ .skp-admin-workspace .skp-admin-reviews,
+ .skp-admin-workspace .skp-brands-list,
+ .skp-admin-workspace .skp-brands-editor,
+ .skp-admin-workspace .skp-brands-category-options{
+  background:#f8f9fb;border-color:#e0e3e9;color:#171b20;
+ }
+ .skp-admin-workspace h1,
+ .skp-admin-workspace h2:not(.hero-carousel *),
+ .skp-admin-workspace h3:not(.hero-carousel *),
+ .skp-admin-workspace .skp-admin-stat strong,
+ .skp-admin-workspace .skp-admin-name,
+ .skp-admin-workspace .skp-admin-price{color:#171b20}
+ .skp-admin-workspace .skp-admin-panel-header p,
+ .skp-admin-workspace .skp-admin-information p,
+ .skp-admin-workspace .skp-admin-orders-header p,
+ .skp-admin-workspace .skp-orders-lead,
+ .skp-admin-workspace .skp-admin-stat small,
+ .skp-admin-workspace .skp-admin-brand-name{color:#747c86}
+ .skp-admin-workspace input:not([type=checkbox]):not([type=radio]):not([type=range]),
+ .skp-admin-workspace select,
+ .skp-admin-workspace textarea{
+  background:#f5f6f8;color:#1e242b;border:1px solid #dfe3e9;color-scheme:light;
+ }
+ .skp-admin-workspace input::placeholder,
+ .skp-admin-workspace textarea::placeholder{color:#8c939c}
+ .skp-admin-workspace option{background:#fff;color:#171b20}
+ .skp-admin-workspace label{color:#424b56}
+ .skp-admin-workspace .skp-admin-data-table{color:#22272e}
+ .skp-admin-workspace .skp-admin-data-table th{background:#f0f1f5;color:#626a75}
+ .skp-admin-workspace .skp-admin-data-table td{border-bottom:1px solid #e6e8ed}
+ .skp-admin-workspace .skp-admin-data-table tbody tr:hover{background:#fffdf0}
+ .skp-admin-workspace .skp-admin-product-photo{background:#f2f3f6;color:#858d98}
+ .skp-admin-workspace .skp-admin-row-actions button,
+ .skp-admin-workspace .skp-admin-row-actions a,
+ .skp-admin-workspace .skp-admin-pagination button,
+ .skp-admin-workspace .skp-admin-filters>button,
+ .skp-admin-workspace .button.outline:not(.hero-carousel *),
+ .skp-admin-workspace .skp-admin-refresh{
+  background:#f0f2f5;border:1px solid #dce1e7;color:#29313b;
+ }
+ .skp-admin-workspace .skp-admin-stock.available{background:#c4eed5;color:#206a43}
+ .skp-admin-workspace .skp-admin-stock.unavailable{background:#fff0dd;color:#96621b}
+ .skp-admin-workspace .skp-admin-category-picker,
+ .skp-admin-workspace .skp-admin-category-always-visible .skp-admin-category-group button,
+ .skp-admin-workspace .skp-admin-category-always-visible .skp-admin-category-all button{
+  background:#f5f6f8;border:1px solid #dfe2e8;color:#252b33;
+ }
+ .skp-admin-workspace .skp-admin-category-always-visible .skp-admin-category-group h3{color:#303740}
+ .skp-admin-workspace .skp-admin-category-always-visible .skp-admin-category-chip-icon{color:#333a43}
+ .skp-admin-workspace .skp-admin-category-always-visible .skp-admin-category-count,
+ .skp-admin-workspace .skp-admin-category-always-visible .skp-admin-category-all small{color:#656d77}
+ .skp-admin-workspace .skp-admin-category-always-visible button:hover{background:#fff9e1!important;border-color:#e2cb40!important;color:#202020}
+ .skp-admin-workspace .skp-admin-category-always-visible button.selected{
+  background:#fff5c7!important;border-color:#f1cf00!important;color:#171717;
+ }
+ .skp-admin-workspace .skp-admin-category-always-visible button.selected .skp-admin-category-chip-icon{color:#1c1c1c}
+ .skp-admin-workspace .skp-admin-category-always-visible button.selected small{color:#4a4430}
+ .skp-admin-workspace .skp-brands-admin,
+ .skp-admin-workspace .skp-brands-list-item,
+ .skp-admin-workspace .skp-brands-category-toggle{color:#242a32}
+ .skp-admin-workspace .skp-brands-list-item:hover{background:#eceff3}
+ .skp-admin-workspace .skp-brands-list-item.selected{background:#fff6d5;border-color:#e2cb48}
+ .skp-admin-workspace .skp-brand-thumb,
+ .skp-admin-workspace .skp-brands-logo-preview{background:#fff;border-color:#dfe3e9;color:#606b76}
+ .skp-admin-workspace .skp-brand-default-logo{filter:none}
+ .skp-admin-workspace .skp-order-card,
+ .skp-admin-workspace .skp-admin-order-details,
+ .skp-admin-workspace .skp-hero-admin-item,
+ .skp-admin-workspace .skp-hero-edit,
+ .skp-admin-workspace .skp-hero-photo-control,
+ .skp-admin-workspace .skp-review{background:#f8f9fb;border-color:#e0e3e9;color:#20252c}
+ .skp-admin-workspace .skp-admin-menu>.skp-admin-tab.active{background:#ffe500;color:#111}
+}
