@@ -9,7 +9,7 @@ import './catalog-compact.css';
 import {Search,SlidersHorizontal,X,LayoutGrid} from 'lucide-react';
 import {categoryIcons} from './catalog-icons';
 import {Product} from '../lib/seed';
-import {components,peripherals,categoryFields,fieldValue,specValue,splitValues,filterValues,inCategory,matchesFilters,Facets,Ranges} from '../lib/catalog';
+import {components,peripherals,categoryFields,fieldValue,specValue,splitValues,filterValues,catalogColor,inCategory,matchesFilters,Facets,Ranges} from '../lib/catalog';
 const groups:Record<string,string>={all:'Все товары',components:'Комплектующие',peripherals:'Периферия',laptops:'Ноутбуки',furniture:'Компьютерная мебель'};
 export default function CatalogPage({category,products,nav,card}:{category:string;products:Product[];nav:(p:string)=>void;card:(p:Product)=>React.ReactNode}){
  const [query,setQuery]=useState(''),[sort,setSort]=useState('popular'),[min,setMin]=useState(''),[max,setMax]=useState(''),[stock,setStock]=useState(false),[facets,setFacets]=useState<Facets>({}),[ranges,setRanges]=useState<Ranges>({}),[open,setOpen]=useState(false),[allBrands,setAllBrands]=useState(false);
@@ -22,14 +22,14 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  const hasDataTabs=parent==='furniture'||parent==='laptops';
  const tabValues=hasDataTabs?Array.from(new Set(sectionProducts.map(tabValue).filter(Boolean))).sort((a,b)=>a.localeCompare(b,'ru')):[];
  const base=hasDataTabs&&sectionTab?sectionProducts.filter(p=>tabValue(p)===sectionTab):sectionProducts;
- const fields=[{key:'brand',label:'Бренд'},...(categoryFields[category]||[])];
+ const fields=[{key:'brand',label:'Бренд'},...((categoryFields[category]||[]).filter(field=>field.key!=='color')),{key:'catalogColor',label:'Цвет'}];
  const laptopFilterKeys=['brand','cpu','gpu','capacity','memoryType','driveCapacity','diagonal','resolution','panel','refresh','gpuPowerWatts'];
  const facetLabel=(key:string,value:string)=>category==='laptops'&&key==='gpu'?laptopGpuDisplayName(value):value;
  const priority=['brand',...(catalogFilterOrder[category]||[])];
  const rank=(key:string)=>{const index=priority.indexOf(key);return index<0?priority.length:index};
  const visibleFields=fields.filter(field=>field.key!=='cpuModel'&&
   (category!=='laptops'||laptopFilterKeys.includes(field.key))&&
-  (field.key==='brand'||base.some(product=>specValue(product,field).trim()!=='')))
+  (field.key==='brand'||base.some(product=>(field.key==='catalogColor'?catalogColor(product):specValue(product,field)).trim()!=='')))
   .sort((a,b)=>rank(a.key)-rank(b.key));
 
  const selection={facets,ranges,min,max,stock,query};
@@ -50,7 +50,7 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  <div className="catalog-layout"><aside id="category-filters" className={'catalog-facets'+(open?' is-open':'')}><div className="facet-title"><h2>Фильтры</h2><button onClick={reset}>Сбросить</button></div>{(new Set(priceValues).size>1||min||max)&&<fieldset><legend>Цена, ₽</legend><CatalogRange showLimits={false} label="Цена" values={priceValues} value={{min,max}} onChange={value=>{setMin(value.min||'');setMax(value.max||'')}}/></fieldset>}
  {visibleFields.map(field=>{
  const availableProducts=candidates(field.key);
- const availableOptions=Array.from(new Set(availableProducts.flatMap(p=>filterValues(field.key,specValue(p,field)))));
+ const availableOptions=Array.from(new Set(availableProducts.flatMap(p=>filterValues(field.key,field.key==='catalogColor'?catalogColor(p):specValue(p,field)))));
  const selected=facets[field.key]||[];
  const activeRange=ranges[field.key];
  const distinctCount=field.numeric?new Set(availableOptions.map(v=>Number(v.replace(',','.'))).filter(Number.isFinite)).size:availableOptions.length;
