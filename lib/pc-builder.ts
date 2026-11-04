@@ -115,8 +115,8 @@ export function analyzeBuild(selected:BuildSelection,products:Product[]):BuildAn
  // when a product is missing power metadata; never treat an unknown load as zero.
  const cpuRecorded=toNum(cpu?.specs?.maxTurboPower)??toNum(cpu?.specs?.watts)??toNum(cpu?.watts);
  const gpuRecorded=toNum(gpu?.specs?.watts)??toNum(gpu?.watts);
- const cpuFallback=cpu&&/\\b9800X3D\\b/i.test(cpu.name)?170:null;
- const gpuFallback=gpu&&/\\bRTX\\s*5090\\b/i.test(gpu.name)?575:null;
+ const cpuFallback=cpu&&/\b9800X3D\b/i.test(cpu.name)?170:null;
+ const gpuFallback=gpu&&/\bRTX\s*5090\b/i.test(gpu.name)?575:null;
  const cpuLoad=cpuRecorded??cpuFallback;
  const gpuLoad=gpuRecorded??gpuFallback;
  const ramPower=(toNum(field(ram,'modules'))??(ram?2:0))*4;
