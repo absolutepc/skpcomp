@@ -9,7 +9,7 @@ import './catalog-compact.css';
 import {Search,SlidersHorizontal,X,LayoutGrid} from 'lucide-react';
 import {categoryIcons} from './catalog-icons';
 import {Product} from '../lib/seed';
-import {components,peripherals,categoryFields,fieldValue,specValue,splitValues,inCategory,matchesFilters,Facets,Ranges} from '../lib/catalog';
+import {components,peripherals,categoryFields,fieldValue,specValue,splitValues,filterValues,inCategory,matchesFilters,Facets,Ranges} from '../lib/catalog';
 const groups:Record<string,string>={all:'Все товары',components:'Комплектующие',peripherals:'Периферия',laptops:'Ноутбуки',furniture:'Компьютерная мебель'};
 export default function CatalogPage({category,products,nav,card}:{category:string;products:Product[];nav:(p:string)=>void;card:(p:Product)=>React.ReactNode}){
  const [query,setQuery]=useState(''),[sort,setSort]=useState('popular'),[min,setMin]=useState(''),[max,setMax]=useState(''),[stock,setStock]=useState(false),[facets,setFacets]=useState<Facets>({}),[ranges,setRanges]=useState<Ranges>({}),[open,setOpen]=useState(false),[allBrands,setAllBrands]=useState(false);
@@ -50,12 +50,12 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  <div className="catalog-layout"><aside id="category-filters" className={'catalog-facets'+(open?' is-open':'')}><div className="facet-title"><h2>Фильтры</h2><button onClick={reset}>Сбросить</button></div>{(new Set(priceValues).size>1||min||max)&&<fieldset><legend>Цена, ₽</legend><CatalogRange showLimits={false} label="Цена" values={priceValues} value={{min,max}} onChange={value=>{setMin(value.min||'');setMax(value.max||'')}}/></fieldset>}
  {visibleFields.map(field=>{
  const availableProducts=candidates(field.key);
- const availableOptions=Array.from(new Set(availableProducts.flatMap(p=>splitValues(specValue(p,field)))));
+ const availableOptions=Array.from(new Set(availableProducts.flatMap(p=>filterValues(field.key,specValue(p,field)))));
  const selected=facets[field.key]||[];
  const activeRange=ranges[field.key];
  const distinctCount=field.numeric?new Set(availableOptions.map(v=>Number(v.replace(',','.'))).filter(Number.isFinite)).size:availableOptions.length;
  if(distinctCount<=1&&!selected.length&&!activeRange?.min&&!activeRange?.max)return field.key==='brand'?<label key="stock" className="facet-checkbox"><input type="checkbox" checked={stock} onChange={e=>setStock(e.target.checked)}/> Только в наличии</label>:null;
- const options=Array.from(new Set([...(field.key==='brand'?base.flatMap(p=>splitValues(specValue(p,field))):availableOptions),...selected])).sort((a,b)=>a.localeCompare(b,'ru',{numeric:true}));
+ const options=Array.from(new Set([...(field.key==='brand'?base.flatMap(p=>filterValues(field.key,specValue(p,field))):availableOptions),...selected])).sort((a,b)=>a.localeCompare(b,'ru',{numeric:true}));
  const displayedOptions=field.key==='brand'&&!allBrands?options.filter((option,index)=>index<6||(facets.brand||[]).includes(option)):options;
  const range=ranges[field.key]||{};
  const toggle=(option:string)=>setFacets({...facets,[field.key]:(facets[field.key]||[]).includes(option)?facets[field.key].filter(x=>x!==option):[...(facets[field.key]||[]),option]});
