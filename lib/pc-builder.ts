@@ -111,14 +111,20 @@ export function analyzeBuild(selected:BuildSelection,products:Product[]):BuildAn
   push('m2-unknown','warning','Число разъёмов M.2 не указано — уточните поддержку SSD.','ssd','motherboard');
  if(ssd&&board&&/\bM\.?2\b|NVME/i.test(field(ssd,'form')+' '+field(ssd,'interface'))&&m2!==null&&m2<1)
   push('m2-slots','error','На материнской плате нет разъёма M.2 для выбранного SSD.','ssd','motherboard');
- const cpuLoad=toNum(cpu?.specs?.watts)??toNum(cpu?.watts);
- const gpuLoad=toNum(gpu?.specs?.watts)??toNum(gpu?.watts);
+ // Prefer product-specific peak CPU power and GPU board power. Only use model defaults
+ // when a product is missing power metadata; never treat an unknown load as zero.
+ const cpuRecorded=toNum(cpu?.specs?.maxTurboPower)??toNum(cpu?.specs?.watts)??toNum(cpu?.watts);
+ const gpuRecorded=toNum(gpu?.specs?.watts)??toNum(gpu?.watts);
+ const cpuFallback=cpu&&/\\b9800X3D\\b/i.test(cpu.name)?170:null;
+ const gpuFallback=gpu&&/\\bRTX\\s*5090\\b/i.test(gpu.name)?575:null;
+ const cpuLoad=cpuRecorded??cpuFallback;
+ const gpuLoad=gpuRecorded??gpuFallback;
  const ramPower=(toNum(field(ram,'modules'))??(ram?2:0))*4;
  const fanCount=toNum(field(chassis,'fans'))??(chassis?2:0);
  const rows:PowerRow[]=[
   {label:'Плата и базовая система',watts:45,estimated:true},
-  ...(cpu?[{label:labels.cpu,watts:cpuLoad??0,estimated:cpuLoad===null}]:[]),
-  ...(gpu?[{label:labels.gpu,watts:gpuLoad??0,estimated:gpuLoad===null}]:[]),
+  ...(cpu?[{label:labels.cpu,watts:cpuLoad??0,estimated:cpuRecorded===null}]:[]),
+  ...(gpu?[{label:labels.gpu,watts:gpuLoad??0,estimated:gpuRecorded===null}]:[]),
   ...(ram?[{label:'Оперативная память',watts:ramPower,estimated:true}]:[]),
   ...(ssd?[{label:'SSD',watts:toNum(ssd.specs?.watts)??8,estimated:true}]:[]),
   ...(cooler?[{label:'Охлаждение',watts:toNum(cooler.specs?.power)??7,estimated:true}]:[]),
@@ -126,14 +132,14 @@ export function analyzeBuild(selected:BuildSelection,products:Product[]):BuildAn
   {label:'USB и периферия',watts:15,estimated:true}
  ];
  const drawWatts=rows.reduce((sum,row)=>sum+row.watts,0);
- const knownLoads=Boolean(cpu&&gpu&&cpuLoad&&gpuLoad);
+ const knownLoads=Boolean(cpu&&gpu&&cpuLoad!==null&&gpuLoad!==null);
  const recommendedWatts=Math.ceil(drawWatts*1.35/50)*50;
  const supplyWatts=psu?toNum(psu.specs?.watts)??toNum(psu.watts):null;
  const reserveWatts=supplyWatts===null?null:supplyWatts-drawWatts;
  if(psu&&knownLoads&&supplyWatts!==null&&supplyWatts<recommendedWatts)
   push('psu-capacity','error','БП '+supplyWatts+' Вт: рекомендуется не менее '+recommendedWatts+' Вт с запасом 35%.','psu','cpu','gpu');
  if(psu&&supplyWatts===null)push('psu-unknown','warning','Мощность блока питания неизвестна — проверьте паспортные данные.','psu');
- if(psu&&!knownLoads)push('power-unknown','warning','Нужны данные по потреблению процессора и видеокарты для проверки БП.','psu');
+ if(psu&&!knownLoads)push('power-unknown','warning','Недостаточно данных о мощности CPU или GPU: проверка блока питания пока невозможна.','psu','cpu','gpu');
  const cpuTdp=cpuLoad,coolerTdp=toNum(field(cooler,'tdp'));
  if(cpu&&cooler&&cpuTdp&&coolerTdp&&coolerTdp<cpuTdp)
   push('cooler-capacity','warning','Заявленная рассеиваемая мощность кулера ниже энергопотребления CPU. Проверьте совместимость по рекомендациям производителя.','cooler','cpu');
