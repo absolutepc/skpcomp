@@ -44,3 +44,44 @@
  max-height:2.7em;
  min-width:0;
 }
+
+/* Ready-PC-inspired compact checkbox facets, two choices per row. */
+.catalog-facets .skp-facet-check-grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:9px 8px;
+ padding:5px 0;
+}
+.catalog-facets .skp-facet-check{
+ display:flex;
+ align-items:flex-start;
+ gap:8px;
+ min-width:0;
+ margin:0;
+ padding:3px 0;
+ color:#c5c9c9;
+ font-size:12px;
+ line-height:1.4;
+ cursor:pointer;
+}
+.catalog-facets .skp-facet-check input[type="checkbox"]{
+ flex:0 0 14px;
+ width:14px;
+ height:14px;
+ margin:1px 0 0;
+ accent-color:#ffe500;
+ cursor:pointer;
+}
+.catalog-facets .skp-facet-check span{
+ min-width:0;
+ overflow:hidden;
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ line-clamp:2;
+ overflow-wrap:anywhere;
+}
+.catalog-facets .skp-facet-check:has(input:checked){color:#fff}
+.catalog-facets .skp-facet-check:has(input:disabled){opacity:.45;cursor:default}
+.catalog-facets .skp-facet-check input:focus-visible{outline:2px solid #ffe500;outline-offset:2px}
+.catalog-facets #catalog-brand-options.skp-facet-check-grid{max-height:320px;overflow-y:auto}
