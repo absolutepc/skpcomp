@@ -159,8 +159,8 @@ export default function AdminBrands({brands,products,onSave,onDelete}:Props){
      </div>
     </div>
     <div className="skp-brands-categories-title"><div><h3>Категории и серии</h3><p>Здесь показаны добавленные категории бренда. Для каждой можно настроить серии или линейки.</p></div><span><Layers size={15}/>{Object.keys(draft.categories).length}</span></div>
-    <div className="skp-brands-category-add">
-     <button ref={categoryAddButton} type="button" className="skp-brands-add" disabled={busy||uploading} aria-expanded={categoryPickerOpen} aria-controls="brand-category-options" onClick={()=>setCategoryPickerOpen(open=>!open)}><Plus size={16}/> Добавить категорию</button>
+    <div style={{marginBottom:16,display:"block",width:"100%",background:"transparent"}}>
+     <button ref={categoryAddButton} type="button" className="skp-brands-add" style={{display:"inline-flex",width:"max-content",maxWidth:"100%",flex:"none",alignSelf:"flex-start",background:"#202429",color:"#fff",border:0,borderRadius:9,padding:"12px 17px"}} disabled={busy||uploading} aria-expanded={categoryPickerOpen} aria-controls="brand-category-options" onClick={()=>setCategoryPickerOpen(open=>!open)}><Plus size={16}/> Добавить категорию</button>
      {categoryPickerOpen&&<div id="brand-category-options" className="skp-brands-category-options" onKeyDown={event=>{if(event.key==='Escape'){setCategoryPickerOpen(false);categoryAddButton.current?.focus()}}}>
       <div className="skp-brands-category-heading"><strong>Выберите категории</strong><button type="button" aria-label="Закрыть выбор категории" onClick={()=>{setCategoryPickerOpen(false);categoryAddButton.current?.focus()}}><X size={16}/></button></div>
       <div className="skp-brands-category-choices">{Object.entries(categories).filter(([id])=>!Object.hasOwn(draft.categories,id)).map(([id,label])=><button type="button" key={id} disabled={busy||uploading} onClick={()=>toggleCategory(id)}><Plus size={14}/>{label}</button>)}</div>
