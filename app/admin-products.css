@@ -122,9 +122,9 @@ html:has(.skp-admin-workspace){overflow-y:scroll;scrollbar-gutter:stable}
   padding:18px;border:1px solid #22313d;border-radius:10px;
   background:linear-gradient(125deg,#0b151d,#081018);
  }
- .skp-admin-editor-redesign>.skp-admin-edit-section:nth-of-type(2){grid-column:1;grid-row:2}
- .skp-admin-editor-redesign>.skp-admin-edit-section:nth-of-type(3){grid-column:2;grid-row:2 / span 2;align-self:start}
- .skp-admin-editor-redesign>.skp-admin-edit-section:nth-of-type(4){grid-column:1;grid-row:3}
+ .skp-admin-editor-redesign>.skp-admin-editor-basic{grid-column:1;grid-row:2}
+ .skp-admin-editor-redesign>.skp-admin-editor-gallery{grid-column:2;grid-row:2 / span 2;align-self:start}
+ .skp-admin-editor-redesign>.skp-admin-editor-specs{grid-column:1;grid-row:3}
  .skp-admin-editor-redesign>.skp-admin-edit-save{
   grid-column:2;grid-row:4;justify-self:end;min-width:210px;
   background:#ffe500!important;color:#101010!important;border-radius:8px;
