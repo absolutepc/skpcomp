@@ -70,6 +70,22 @@ export const coolerFieldGroups:{title:string;fields:Field[]}[]=[
   f('fanConnector','Коннектор вентилятора'),f('rgb','Подсветка')
  ]}
 ];
+export const liquidCoolerFieldGroups:{title:string;fields:Field[]}[]=[
+ {title:'Радиатор и водоблок СЖО',fields:[
+  f('socket','Поддерживаемые сокеты'),f('tdp','Рассеиваемая мощность','Вт'),
+  f('radiator','Размер радиатора','мм'),f('aioRadiatorDimensions','Габариты радиатора'),
+  f('aioRadiatorMaterial','Материал радиатора'),f('aioTubeLength','Длина шлангов','мм'),
+  f('aioTubeMaterial','Материал шлангов'),f('aioBlockDimensions','Габариты водоблока'),
+  f('aioColdPlateMaterial','Материал основания водоблока')
+ ]},
+ {title:'Помпа СЖО',fields:[
+  f('pumpModel','Модель помпы'),f('pumpRpmMin','Минимальные обороты помпы','об/мин'),
+  f('pumpRpmMax','Максимальные обороты помпы','об/мин'),
+  f('pumpNoise','Шум помпы','дБ(А)'),f('pumpConnector','Коннектор помпы'),
+  f('pumpPower','Потребление помпы','Вт')
+ ]},
+ {title:'Вентиляторы радиатора',fields:coolerFieldGroups[1].fields}
+];
 /** SSD and HDD details share the storage category. Leave unpublished specs empty. */
 export const ssdFieldGroups:{title:string;fields:Field[]}[]=[
  {title:'Тип, форм-фактор и подключение',fields:[
@@ -398,7 +414,7 @@ export const categoryFields:Record<string,Field[]>={
  ram:[f('memory','Тип памяти'),f('capacity','Общий объём','ГБ'),f('modules','Количество модулей','шт.'),f('speed','Частота','МГц'),f('bandwidth','Пропускная способность','ГБ/с'),f('voltage','Напряжение','В'),f('latency','Тайминги CL'),f('form','Форм-фактор'),f('rgb','Подсветка')],
  ssd:ssdFieldGroups.flatMap(group=>group.fields),
  psu:psuFieldGroups.flatMap(group=>group.fields),
- cooler:coolerFieldGroups.flatMap(group=>group.fields),
+ cooler:[...coolerFieldGroups.flatMap(group=>group.fields),...liquidCoolerFieldGroups.flatMap(group=>group.fields).filter(field=>!coolerFieldGroups.some(group=>group.fields.some(existing=>existing.key===field.key)))],
  case:caseFieldGroups.flatMap(group=>group.fields),
  monitor:monitorFieldGroups.flatMap(group=>group.fields),
  mouse:[
