@@ -675,3 +675,22 @@ main.skp-admin-workspace{
 .skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-actions button:disabled svg{
  color:#7d858d!important;stroke:#7d858d!important;
 }
+
+
+/* Correct actual gallery selectors: counter, upload action and cover label. */
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-heading > span{
+ color:#171717!important;background:#edf0f3!important;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-media-upload{
+ background:#171717!important;border:1px dashed #171717!important;color:#fff!important;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-media-upload svg,
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-media-upload span{
+ color:#fff!important;stroke:currentColor;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-preview > span{
+ background:#171717!important;color:#fff!important;
+}
+.skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-preview > span svg{
+ color:#fff!important;
+}
