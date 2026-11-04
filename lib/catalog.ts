@@ -59,7 +59,7 @@ export const coolerFieldGroups:{title:string;fields:Field[]}[]=[
  ]},
  {title:'Вентилятор в комплекте',fields:[
   f('fanModel','Модель вентилятора'),f('fanCount','Количество в комплекте','шт.'),
-  f('fanDimensions','Размеры вентилятора'),f('fanSize','Размер вентилятора','мм'),
+  f('fanDimensions','Размеры вентилятора'),
   f('fanBearing','Тип подшипника'),
   f('fanRpmMin','Минимальная скорость вращения','об/мин'),
   f('fanRpmMax','Максимальная скорость вращения','об/мин'),
