@@ -17,7 +17,7 @@ import CatalogPage from './catalog-page';
 import CardActionButtons from './card-action-buttons';
 import CatalogProductCard from './catalog-product-card';
 import StoreSearch from './store-search';
-import {components,peripherals,categoryFields,gpuFieldGroups,ssdFieldGroups,psuFieldGroups,caseFieldGroups,monitorFieldGroups,fieldsForProduct,normalizeProduct,fieldValue} from '../lib/catalog';
+import {components,peripherals,categoryFields,gpuFieldGroups,coolerFieldGroups,ssdFieldGroups,psuFieldGroups,caseFieldGroups,monitorFieldGroups,fieldsForProduct,normalizeProduct,fieldValue} from '../lib/catalog';
 import {buildComponentFields} from '../lib/build-components';
 import Installments from './installments';
 import {Checkout,OrderHistory,AdminOrders} from './orders';
@@ -238,8 +238,8 @@ const updated={...editing,brand,specs:{...editing.specs,brandSeries:selectedSeri
   {(editing.buildExtras||[]).length<20&&<div className="admin-build-add-picker">
    <AdminBuildPicker field="extra" title="Добавить компонент" products={data.products} buildComponents={editing.buildComponents} value="" onSelect={part=>setEditing({...editing,buildExtras:[...(editing.buildExtras||[]),{name:components[part.category]||({fans:'Вентиляторы',network:'Сетевое оборудование',os:'Операционная система'} as Record<string,string>)[part.category]||'Комплектующая',value:part.name.slice(0,300)}]})}/>
   </div>}
- </div>}{editing.category==='laptops'&&<AdminLaptopSpecs product={editing} onChange={setEditing}/>}{editing.category!=='pc'&&editing.category!=='laptops'&&<div className="admin-spec-fields"><h3>Характеристики для фильтров</h3><p>Заполняйте только известные значения. Несколько вариантов разделяйте символом |, например DDR4 | DDR5. Числа указывайте без единиц измерения.</p>{(editing.category==='gpu'||editing.category==='ssd'||editing.category==='psu'||editing.category==='case'||editing.category==='monitor')
- ?(editing.category==='gpu'?gpuFieldGroups:editing.category==='ssd'?ssdFieldGroups:editing.category==='psu'?psuFieldGroups:editing.category==='case'?caseFieldGroups:monitorFieldGroups).map(group=><section className="skp-technical-spec-group" key={group.title}>
+ </div>}{editing.category==='laptops'&&<AdminLaptopSpecs product={editing} onChange={setEditing}/>}{editing.category!=='pc'&&editing.category!=='laptops'&&<div className="admin-spec-fields"><h3>Характеристики для фильтров</h3><p>Заполняйте только известные значения. Несколько вариантов разделяйте символом |, например DDR4 | DDR5. Числа указывайте без единиц измерения.</p>{(editing.category==='gpu'||editing.category==='ssd'||editing.category==='psu'||editing.category==='case'||editing.category==='monitor'||editing.category==='cooler')
+ ?(editing.category==='gpu'?gpuFieldGroups:editing.category==='ssd'?ssdFieldGroups:editing.category==='psu'?psuFieldGroups:editing.category==='case'?caseFieldGroups:editing.category==='cooler'?coolerFieldGroups:monitorFieldGroups).map(group=><section className="skp-technical-spec-group" key={group.title}>
   <h4>{group.title}</h4>
   {editing.category==='ssd'&&group.title==='Кэширование'&&<p className="skp-storage-spec-note">DRAM-кэш указывайте в МБ (0, если его нет). pSLC-кэш бывает статическим или динамическим: максимальный объём указывайте только если он известен. HMB заполняется отдельно.</p>}
   {editing.category==='psu'&&group.title==='Разъёмы и кабели'&&<p className="skp-storage-spec-note">Указывайте количество физических разъёмов на кабелях, а не количество кабелей. 12V-2x6 и 12VHPWR различаются: уточните тип по данным производителя.</p>}
