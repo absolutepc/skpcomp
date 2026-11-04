@@ -495,7 +495,14 @@ export function socketValues(value:string):string[]{
  }
  return [...new Set(result)];
 }
-export const filterValues=(key:string,value:string)=>key==='socket'?socketValues(value):splitValues(value);
+/** Treat each supported GPU PCIe generation as its own filter option. */
+export function gpuPcieValues(value:string):string[]{
+ const versions=[...value.matchAll(/(?:PCI[\s-]*E\s*)?(\d+(?:[.,]\d+)?)/gi)]
+  .map(match=>'PCIe '+match[1].replace(',','.'))
+  .filter(version=>/^PCIe \d+(?:\.\d+)?$/.test(version));
+ return versions.length?[...new Set(versions)]:splitValues(value);
+}
+export const filterValues=(key:string,value:string)=>key==='socket'?socketValues(value):key==='gpuPcie'?gpuPcieValues(value):splitValues(value);
 
 export function inCategory(p:Product,category:string){const c=normalizeProduct(p).category;return category==='all'?true:category==='components'?c in components:category==='peripherals'?c in peripherals||c==='peripherals':c===category}
 export type Facets=Record<string,string[]>;
