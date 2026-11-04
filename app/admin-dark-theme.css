@@ -821,3 +821,40 @@ main.skp-admin-workspace{
 .skp-admin-edit-backdrop .skp-laptop-spec-toggle small{color:#697580!important}
 .skp-admin-edit-backdrop .skp-laptop-cpu-preset-actions a{color:#5b6570!important}
 .skp-admin-edit-backdrop .skp-laptop-cpu-no-data{color:#91661b!important}
+
+/* Admin light surfaces: actionable buttons must remain visible against white. */
+.skp-admin-workspace .skp-brands-save:not(:disabled),
+.skp-admin-workspace .skp-brands-add,
+.skp-admin-workspace .skp-brands-category-add,
+.skp-admin-workspace .skp-brands-category-options button[type="button"]:not(.skp-brands-category-toggle),
+.skp-admin-edit-backdrop .modal .button.primary,
+.skp-admin-edit-backdrop .modal button[type="submit"]{
+ background:#17191d!important;
+ color:#fff!important;
+ border-color:#17191d!important;
+}
+.skp-admin-workspace .skp-brands-save:not(:disabled):hover,
+.skp-admin-workspace .skp-brands-add:hover,
+.skp-admin-workspace .skp-brands-category-add:hover,
+.skp-admin-edit-backdrop .modal .button.primary:hover,
+.skp-admin-edit-backdrop .modal button[type="submit"]:hover{
+ background:#30343a!important;
+ color:#fff!important;
+ border-color:#30343a!important;
+}
+/* Disabled actions should still be distinguishable, without pale-yellow-on-white. */
+.skp-admin-workspace .skp-brands-save:disabled,
+.skp-admin-edit-backdrop .modal button[type="submit"]:disabled{
+ background:#e3e6eb!important;
+ color:#68717d!important;
+ border-color:#e3e6eb!important;
+}
+/* Brand categories: neutral border, no yellow outline or accent stripe. */
+.skp-admin-workspace .skp-brands-category,
+.skp-admin-workspace .skp-brands-category.enabled{
+ border:1px solid #dfe4ea!important;
+ border-left:1px solid #dfe4ea!important;
+ box-shadow:none!important;
+ outline:none!important;
+ background:#f7f8fa!important;
+}
