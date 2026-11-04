@@ -769,3 +769,55 @@ main.skp-admin-workspace{
 .skp-admin-edit-backdrop .skp-build-picker-option-art{background:#fff!important;border-color:#e0e4e9!important}
 .skp-admin-edit-backdrop .skp-build-picker-option-copy small{color:#65707a!important}
 .skp-admin-edit-backdrop .skp-build-picker-option-price{color:#826d00!important}
+
+/* Final light-theme corrections: no beige category panels and no dark editor islands. */
+.skp-admin-workspace .skp-brands-category,
+.skp-admin-workspace .skp-brands-category.enabled{
+ background:#f7f8fa!important;
+ border-color:#dfe4ea!important;
+ color:#252b33!important;
+}
+.skp-admin-workspace .skp-brands-category.enabled{border-left:3px solid #e4c900!important}
+.skp-admin-workspace .skp-brands-series{border-top-color:#e4e8ee!important}
+.skp-admin-workspace .skp-brands-series-item input{background:#fff!important;color:#242a32!important;border-color:#dce1e7!important}
+.skp-admin-workspace .skp-brands-series-item button{color:#626b76!important}
+.skp-admin-workspace .skp-brands-editor-top h2,
+.skp-admin-workspace .skp-brands-categories-title h3{color:#222831!important}
+
+/* Ready-PC assembly panel: correct the dark wrapper, headings and help copy. */
+.skp-admin-edit-backdrop .admin-build-components,
+.skp-admin-edit-backdrop .admin-build-fields,
+.skp-admin-edit-backdrop .admin-build-section,
+.skp-admin-edit-backdrop .admin-build-components-section{
+ background:#f7f8fa!important;color:#232b33!important;border-color:#e0e5eb!important;
+}
+.skp-admin-edit-backdrop .admin-build-components h3,
+.skp-admin-edit-backdrop .admin-build-components h4,
+.skp-admin-edit-backdrop .admin-build-components p,
+.skp-admin-edit-backdrop .admin-build-components label,
+.skp-admin-edit-backdrop .admin-build-section h3,
+.skp-admin-edit-backdrop .admin-build-section p,
+.skp-admin-edit-backdrop .admin-build-slot-label{color:#303944!important}
+
+/* Laptop selectors and technical specification groups use the same light palette. */
+.skp-admin-edit-backdrop .skp-laptop-model-picker,
+.skp-admin-edit-backdrop .skp-laptop-spec-section{background:#f7f8fa!important;border-color:#dfe4ea!important;color:#232b33!important}
+.skp-admin-edit-backdrop .skp-laptop-model-picker h4{color:#292f37!important}
+.skp-admin-edit-backdrop .skp-laptop-picker-steps label,
+.skp-admin-edit-backdrop .skp-laptop-manual-model,
+.skp-admin-edit-backdrop .skp-laptop-spec-field{color:#434c56!important}
+.skp-admin-edit-backdrop .skp-laptop-picker-steps select,
+.skp-admin-edit-backdrop .skp-laptop-spec-field select,
+.skp-admin-edit-backdrop .skp-laptop-spec-field input{background:#fff!important;color:#232b33!important;border-color:#dce1e7!important}
+.skp-admin-edit-backdrop .skp-laptop-current-model>span,
+.skp-admin-edit-backdrop .skp-laptop-verification{color:#68737e!important}
+.skp-admin-edit-backdrop .skp-laptop-current-model strong{color:#202832!important}
+.skp-admin-edit-backdrop .skp-laptop-current-model button,
+.skp-admin-edit-backdrop .skp-laptop-preset-apply{background:#fff!important;border-color:#dce1e7!important;color:#806b00!important}
+.skp-admin-edit-backdrop .skp-laptop-guide{background:#fffdf0!important;border-color:#e7dcab!important;color:#675800!important}
+.skp-admin-edit-backdrop .skp-laptop-guide p{color:#505964!important}
+.skp-admin-edit-backdrop .skp-laptop-spec-toggle{background:#eef1f5!important;color:#202831!important}
+.skp-admin-edit-backdrop .skp-laptop-spec-toggle strong{color:#202831!important}
+.skp-admin-edit-backdrop .skp-laptop-spec-toggle small{color:#697580!important}
+.skp-admin-edit-backdrop .skp-laptop-cpu-preset-actions a{color:#5b6570!important}
+.skp-admin-edit-backdrop .skp-laptop-cpu-no-data{color:#91661b!important}
