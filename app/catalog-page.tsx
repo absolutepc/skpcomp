@@ -59,12 +59,11 @@ export default function CatalogPage({category,products,nav,card}:{category:strin
  const displayedOptions=field.key==='brand'&&!allBrands?options.filter((option,index)=>index<6||(facets.brand||[]).includes(option)):options;
  const range=ranges[field.key]||{};
  const toggle=(option:string)=>setFacets({...facets,[field.key]:(facets[field.key]||[]).includes(option)?facets[field.key].filter(x=>x!==option):[...(facets[field.key]||[]),option]});
- const inline=!field.numeric;
  return <fieldset key={field.key}><legend>{field.label}{field.unit?`, ${field.unit}`:''}</legend>
  {field.numeric?<CatalogRange label={field.label} values={availableProducts.map(p=>specValue(p,field)).filter(v=>v.trim()!=='').map(v=>Number(v.replace(',','.')))} value={range} onChange={value=>setRanges({...ranges,[field.key]:value})}/>
- :options.length?<div id={field.key==='brand'?'catalog-brand-options':undefined} className={inline?'skp-facet-buttons':'facet-values'}>{displayedOptions.map(option=>inline?
- <button type="button" key={option} disabled={!selected.includes(option)&&(!availableOptions.includes(option)||(field.key!=='brand'&&availableOptions.length===1))} aria-pressed={(facets[field.key]||[]).includes(option)} onClick={()=>toggle(option)} title={facetLabel(field.key,option)} aria-label={facetLabel(field.key,option)}><span className="skp-facet-option-text">{facetLabel(field.key,option)}</span></button>:
- <label className="facet-checkbox" key={option}><input type="checkbox" checked={(facets[field.key]||[]).includes(option)} onChange={()=>toggle(option)}/><span>{facetLabel(field.key,option)}</span><small>{base.filter(p=>splitValues(specValue(p,field)).includes(option)).length}</small></label>)}</div>
+ :options.length?<div id={field.key==='brand'?'catalog-brand-options':undefined} className="skp-facet-check-grid">{displayedOptions.map(option=><label className="skp-facet-check" key={option} title={facetLabel(field.key,option)}>
+ <input type="checkbox" disabled={!selected.includes(option)&&(!availableOptions.includes(option)||(field.key!=='brand'&&availableOptions.length===1))} checked={selected.includes(option)} onChange={()=>toggle(option)}/><span>{facetLabel(field.key,option)}</span>
+ </label>)}</div>
  :<small className="facet-no-data">Нет заполненных значений</small>}
  {field.key==='brand'&&<>{options.length>0&&<button type="button" className="skp-all-brands" aria-expanded={allBrands} aria-controls="catalog-brand-options" onClick={()=>setAllBrands(!allBrands)}>{allBrands?'Свернуть бренды':`Все бренды (${options.length})`}</button>}<label className="facet-checkbox"><input type="checkbox" checked={stock} onChange={e=>setStock(e.target.checked)}/> Только в наличии</label></>}
  </fieldset>;
