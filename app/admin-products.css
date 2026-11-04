@@ -148,3 +148,56 @@ html:has(.skp-admin-workspace){overflow-y:scroll;scrollbar-gutter:stable}
 @media(min-width:901px) and (max-width:1250px){
  .skp-admin-edit-backdrop .skp-admin-editor-redesign{grid-template-columns:minmax(0,1.25fr) minmax(280px,1fr);padding:18px;column-gap:12px}
 }
+
+
+/* Editor usability corrections: no overlaid save action or nested gallery cards. */
+@media(min-width:901px){
+ .skp-admin-edit-backdrop .skp-admin-editor-redesign{
+  grid-template-rows:auto auto auto auto;
+  align-content:start;
+  padding-bottom:40px;
+ }
+ .skp-admin-editor-redesign>.skp-admin-editor-gallery{
+  grid-row:2 / span 2;align-self:stretch;
+ }
+ .skp-admin-editor-redesign>.skp-admin-edit-save{
+  grid-column:1/-1;grid-row:4;
+  position:static!important;justify-self:end;
+  width:auto!important;margin:4px 0 0!important;z-index:auto!important;
+ }
+ .skp-admin-editor-redesign .skp-admin-media{
+  border:0!important;padding:0!important;box-shadow:none!important;
+  background:transparent!important;
+ }
+ .skp-admin-editor-redesign .skp-admin-media-heading p{font-size:11px;line-height:1.5;color:#9aa8b3}
+ .skp-admin-editor-redesign .skp-admin-media-featured{
+  display:grid;place-items:center;height:270px;margin:12px 0;
+  overflow:hidden;border:1px solid #293b47;border-radius:8px;
+  background:#080e14;
+ }
+ .skp-admin-editor-redesign .skp-admin-media-featured img{
+  display:block;max-width:100%;max-height:100%;object-fit:contain;
+ }
+ .skp-admin-editor-redesign .skp-admin-media-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;
+ }
+ .skp-admin-editor-redesign .skp-admin-media-item{min-width:0;padding:5px}
+ .skp-admin-editor-redesign .skp-admin-media-preview{cursor:pointer}
+ .skp-admin-editor-redesign .skp-admin-media-footnote{font-size:10px;color:#83919b}
+ .skp-admin-editor-redesign .skp-admin-editor-basic>.form-grid>label:nth-child(2){
+  grid-column:1;grid-row:2;
+ }
+ .skp-admin-editor-redesign .skp-admin-editor-basic>.form-grid>label:nth-child(1){
+  grid-column:1/-1;grid-row:1;
+ }
+ .skp-admin-editor-redesign .skp-admin-editor-basic>.form-grid>label:nth-child(3){
+  grid-column:1/-1;grid-row:auto;
+ }
+ .skp-admin-editor-redesign .skp-admin-editor-basic>.form-grid>label:nth-child(4){
+  grid-column:1/-1;grid-row:auto;
+ }
+}
+@media(max-width:900px){
+ .skp-admin-media-featured{display:grid;place-items:center;min-height:180px;margin:12px 0;border:1px solid #293b47;border-radius:9px;background:#080e14}
+ .skp-admin-media-featured img{max-width:100%;max-height:250px;object-fit:contain}
+}
