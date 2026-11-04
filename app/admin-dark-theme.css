@@ -882,3 +882,40 @@ main.skp-admin-workspace{
 .skp-admin-workspace .skp-brands-save:not(:disabled):hover{
  background:#30343a!important;border-color:#30343a!important;color:#fff!important;
 }
+
+/* Ready-PC catalog search: prevent nested input borders and focus rings in Safari. */
+.skp-admin-edit-backdrop .skp-build-picker-dialog .skp-build-picker-search{
+ border:1px solid #dce1e7!important;
+ box-shadow:none!important;
+ outline:0!important;
+ overflow:hidden;
+}
+.skp-admin-edit-backdrop .skp-build-picker-dialog .skp-build-picker-search input,
+.skp-admin-edit-backdrop .skp-build-picker-dialog .skp-build-picker-search input:focus,
+.skp-admin-edit-backdrop .skp-build-picker-dialog .skp-build-picker-search input:focus-visible,
+.skp-admin-edit-backdrop .skp-build-picker-dialog .skp-build-picker-search input:hover{
+ border:0!important;
+ border-inline:0!important;
+ outline:0!important;
+ outline-offset:0!important;
+ box-shadow:none!important;
+ -webkit-box-shadow:none!important;
+ background:transparent!important;
+ background-image:none!important;
+ -webkit-appearance:none!important;
+ appearance:none!important;
+}
+.skp-admin-edit-backdrop .skp-build-picker-dialog .skp-build-picker-search input::-webkit-search-decoration,
+.skp-admin-edit-backdrop .skp-build-picker-dialog .skp-build-picker-search input::-webkit-search-cancel-button,
+.skp-admin-edit-backdrop .skp-build-picker-dialog .skp-build-picker-search input::-webkit-search-results-button{
+ -webkit-appearance:none;
+}
+/* Laptop editor navigation chevrons: neutral on the white admin surfaces. */
+.skp-admin-edit-backdrop .skp-laptop-model-picker svg.lucide-chevron-right,
+.skp-admin-edit-backdrop .skp-laptop-model-picker svg.lucide-chevron-down,
+.skp-admin-edit-backdrop .skp-laptop-model-picker svg.lucide-arrow-right,
+.skp-admin-edit-backdrop .skp-laptop-spec-section svg.lucide-chevron-right,
+.skp-admin-edit-backdrop .skp-build-part-trigger svg.lucide-chevron-right{
+ color:#68737e!important;
+ stroke:#68737e!important;
+}
