@@ -919,3 +919,39 @@ main.skp-admin-workspace{
  color:#68737e!important;
  stroke:#68737e!important;
 }
+
+/* Accordion arrows are children of the specification TOGGLE itself, not the section. */
+.skp-admin-edit-backdrop .skp-laptop-spec-toggle svg,
+.skp-admin-edit-backdrop .skp-laptop-spec-toggle svg *,
+.skp-admin-edit-backdrop .skp-laptop-spec-toggle [class*="chevron"],
+.skp-admin-edit-backdrop .skp-laptop-spec-toggle [class*="arrow"]{
+ color:#606b76!important;
+ stroke:#606b76!important;
+}
+.skp-admin-edit-backdrop .skp-laptop-spec-toggle::after,
+.skp-admin-edit-backdrop .skp-laptop-spec-toggle::before{
+ color:#606b76!important;
+ border-color:#606b76!important;
+}
+/* One visible perimeter for the catalog search; nested wrappers and input have none. */
+.skp-admin-edit-backdrop .skp-build-picker-search{
+ border:1px solid #dce1e7!important;
+ border-radius:9px!important;
+ box-shadow:none!important;
+ outline:0!important;
+}
+.skp-admin-edit-backdrop .skp-build-picker-search > :not(svg):not(input),
+.skp-admin-edit-backdrop .skp-build-picker-search > :not(svg):not(input) > :not(svg),
+.skp-admin-edit-backdrop .skp-build-picker-search input,
+.skp-admin-edit-backdrop .skp-build-picker-search input:is(:focus,:focus-visible,:active){
+ border:0!important;
+ outline:0!important;
+ box-shadow:none!important;
+ -webkit-box-shadow:none!important;
+}
+.skp-admin-edit-backdrop .skp-build-picker-search input{
+ width:100%!important;
+ min-width:0!important;
+ background:transparent!important;
+ border-radius:0!important;
+}
