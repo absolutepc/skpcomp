@@ -268,9 +268,9 @@ const updated={...editing,brand,specs:{...editing.specs,brandSeries:selectedSeri
    {value&&!liquidRadiatorSizes.some(size=>size===value)&&<option value={value}>{value} мм (ранее задано)</option>}
   </select>
  </label>;
- if(editing.category==='motherboard'&&field.key==='powerPhases')return <label key={field.key}>Фазы питания процессора (VRM), шт.
-  <input type="number" min={1} step={1} placeholder="Например, 16" value={value} onChange={e=>setEditing({...editing,specs:{...editing.specs,powerPhases:e.target.value}})}/>
-  <small>Укажите количество фаз CPU: для схемы 16+2+1 — 16. Большее число даст больший показатель на диаграмме.</small>
+ if(editing.category==='motherboard'&&field.key==='powerPhases')return <label key={field.key}>Фазы питания процессора (VRM)
+  <input type="text" inputMode="text" placeholder="Например, 12+2+1" value={value} onChange={e=>setEditing({...editing,specs:{...editing.specs,powerPhases:e.target.value}})}/>
+  <small>Укажите полную схему питания, например 12+2+1 или 16+2+2.</small>
  </label>;
  if(editing.category==='ram'&&field.key==='bandwidth'){
   const storedMBps=editing.specs?.bandwidthMBps;
