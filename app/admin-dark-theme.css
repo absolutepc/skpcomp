@@ -694,3 +694,78 @@ main.skp-admin-workspace{
 .skp-admin-edit-backdrop .modal:not(.skp-admin-editor-redesign) .skp-admin-media-preview > span svg{
  color:#fff!important;
 }
+
+
+/* Light admin content: laptop/ready-PC editors, brand manager and FPS games.
+   The sidebar and the customer-facing storefront retain their own colors. */
+.skp-admin-workspace .skp-brands-admin{color:#1d2229!important}
+.skp-admin-workspace .skp-brands-header p,
+.skp-admin-workspace .skp-brands-categories-title p{color:#747c86!important}
+.skp-admin-workspace .skp-brands-list,
+.skp-admin-workspace .skp-brands-editor,
+.skp-admin-workspace .skp-brands-category-options{background:#fff!important;border:1px solid #e1e5eb!important;box-shadow:none!important}
+.skp-admin-workspace .skp-brands-list-item{color:#242932!important}
+.skp-admin-workspace .skp-brands-list-item:hover{background:#f3f5f7!important}
+.skp-admin-workspace .skp-brands-list-item.selected{background:#fff7d6!important;border-color:#e4cc53!important}
+.skp-admin-workspace .skp-brands-list-item small{color:#737c87!important}
+.skp-admin-workspace .skp-brands-editor label:not(.skp-brands-category-toggle){color:#555e68!important}
+.skp-admin-workspace .skp-brands-category{background:#f8f9fb!important;border-color:#e1e5eb!important}
+.skp-admin-workspace .skp-brands-category.enabled{background:#fff9e8!important;border-color:#e4cf65!important}
+.skp-admin-workspace .skp-brands-category-toggle,
+.skp-admin-workspace .skp-brands-category h4,
+.skp-admin-workspace .skp-brands-category h3{color:#222831!important}
+.skp-admin-workspace .skp-brands-logo-buttons button,
+.skp-admin-workspace .skp-brands-category-choices button{background:#f3f5f7!important;border:1px solid #d9dee5!important;color:#20252c!important}
+.skp-admin-workspace .skp-brands-series-add{color:#806c00!important}
+.skp-admin-workspace .skp-brands-search{background:#f0f2f5!important;border:1px solid #e0e4ea!important;color:#68717c!important}
+.skp-admin-workspace .skp-brands-search input{color:#1d232a!important}
+/* Keep only logo swatches dark: white/transparent brand marks remain legible. */
+.skp-admin-workspace .skp-brand-thumb,
+.skp-admin-workspace .skp-brands-logo-preview{background:#20262b!important;border-color:#414950!important;color:#e3e7ea!important}
+.skp-admin-workspace .skp-brand-thumb img,
+.skp-admin-workspace .skp-brands-logo-preview img{object-fit:contain;max-width:100%;max-height:100%}
+.skp-admin-workspace .skp-brand-default-logo{filter:brightness(0) invert(1)!important}
+
+/* FPS editor: white cards, dark labels, readable fields, preserved yellow accent. */
+.skp-admin-workspace .skp-admin-fps-games{color:#1d232b!important}
+.skp-admin-workspace .skp-admin-fps-header h1{color:#1d232b!important}
+.skp-admin-workspace .skp-admin-fps-header p{color:#6f7782!important}
+.skp-admin-workspace .skp-admin-fps-notice{background:#f4f6f8!important;border-color:#e0e5eb!important;color:#46515d!important}
+.skp-admin-workspace .skp-admin-fps-game{background:#fff!important;border-color:#e1e5eb!important;color:#1d232b!important}
+.skp-admin-workspace .skp-admin-fps-game-fields>label,
+.skp-admin-workspace .skp-admin-fps-visible{color:#3e4650!important}
+.skp-admin-workspace .skp-admin-fps-game-fields input[type="text"]{background:#f5f6f8!important;border-color:#dce1e7!important;color:#1c232b!important}
+.skp-admin-workspace .skp-admin-fps-image{background:#f1f3f5!important;border-color:#dce1e7!important}
+.skp-admin-workspace .skp-admin-fps-game-order button,
+.skp-admin-workspace .skp-admin-fps-upload,
+.skp-admin-workspace .skp-admin-fps-reset{background:#f4f6f8!important;border-color:#d9dee5!important;color:#26313b!important}
+.skp-admin-workspace .skp-admin-fps-game-order span,
+.skp-admin-workspace .skp-admin-fps-game-id{color:#8a7300!important}
+.skp-admin-workspace .skp-admin-fps-success{background:#edf8f1!important;color:#226b42!important;border-color:#b8ddc6!important}
+.skp-admin-workspace .skp-admin-fps-error{background:#fff1ef!important;color:#a72e29!important;border-color:#edb9b4!important}
+
+/* Laptop and ready-PC product editor: remove dark islands in light modal. */
+.skp-admin-edit-backdrop .skp-build-part-trigger{background:#f7f8fa!important;border-color:#dce1e7!important;color:#1d252c!important}
+.skp-admin-edit-backdrop .skp-build-part-trigger:hover{background:#f0f2f5!important;border-color:#bda700!important}
+.skp-admin-edit-backdrop .skp-build-part-text strong,
+.skp-admin-edit-backdrop .admin-build-slot-label{color:#222932!important}
+.skp-admin-edit-backdrop .skp-build-part-text small{color:#6e7883!important}
+.skp-admin-edit-backdrop .skp-build-part-art{background:#fff!important;border-color:#e1e5eb!important}
+.skp-admin-edit-backdrop .skp-build-part-clear,
+.skp-admin-edit-backdrop .admin-build-os-options button{background:#f4f6f8!important;border-color:#dce1e7!important;color:#26313b!important}
+.skp-admin-edit-backdrop .admin-build-os-options button.active{background:#ffe500!important;color:#151515!important;border-color:#ffe500!important}
+.skp-admin-edit-backdrop .skp-build-picker-dialog{background:#fff!important;border-color:#e0e4e9!important;color:#20252d!important}
+.skp-admin-edit-backdrop .skp-build-picker-heading h3{color:#20252d!important}
+.skp-admin-edit-backdrop .skp-build-picker-heading p,
+.skp-admin-edit-backdrop .skp-build-picker-count{color:#66717d!important}
+.skp-admin-edit-backdrop .skp-build-picker-search{background:#f4f6f8!important;border-color:#dce1e7!important;color:#8a7300!important}
+.skp-admin-edit-backdrop .skp-build-picker-search input{color:#20252d!important}
+.skp-admin-edit-backdrop .skp-build-picker-close,
+.skp-admin-edit-backdrop .skp-build-picker-categories button,
+.skp-admin-edit-backdrop .skp-build-picker-option{background:#f6f7f9!important;border-color:#dce1e7!important;color:#20252d!important}
+.skp-admin-edit-backdrop .skp-build-picker-categories button.active{background:#ffe500!important;border-color:#ffe500!important;color:#151515!important}
+.skp-admin-edit-backdrop .skp-build-picker-option:hover,
+.skp-admin-edit-backdrop .skp-build-picker-option.active{background:#fffbe8!important;border-color:#e4cb46!important}
+.skp-admin-edit-backdrop .skp-build-picker-option-art{background:#fff!important;border-color:#e0e4e9!important}
+.skp-admin-edit-backdrop .skp-build-picker-option-copy small{color:#65707a!important}
+.skp-admin-edit-backdrop .skp-build-picker-option-price{color:#826d00!important}
