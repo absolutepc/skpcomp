@@ -154,3 +154,38 @@
 @media(max-width:700px){
  .skp-admin-edit-backdrop .skp-build-picker-option-art{width:53px;height:52px;flex-basis:53px}
 }
+
+/* Picker is portaled outside .skp-admin-edit-backdrop.
+   Give the search exactly one border at its outermost wrapper. */
+.skp-build-picker-backdrop .skp-build-picker-dialog .skp-build-picker-search{
+ box-sizing:border-box!important;
+ border:1px solid #dce1e7!important;
+ outline:0!important;
+ box-shadow:none!important;
+ background:#f4f6f8!important;
+ overflow:hidden!important;
+}
+.skp-build-picker-backdrop .skp-build-picker-dialog .skp-build-picker-search input,
+.skp-build-picker-backdrop .skp-build-picker-dialog .skp-build-picker-search input:hover,
+.skp-build-picker-backdrop .skp-build-picker-dialog .skp-build-picker-search input:focus,
+.skp-build-picker-backdrop .skp-build-picker-dialog .skp-build-picker-search input:focus-visible{
+ box-sizing:border-box!important;
+ display:block!important;
+ flex:1 1 0!important;
+ min-width:0!important;
+ width:100%!important;
+ margin:0!important;
+ padding:0!important;
+ border:0!important;
+ outline:0!important;
+ box-shadow:none!important;
+ -webkit-box-shadow:none!important;
+ background:transparent!important;
+ appearance:none!important;
+ -webkit-appearance:none!important;
+}
+.skp-build-picker-backdrop .skp-build-picker-dialog .skp-build-picker-search:focus-within{
+ border-color:#a8b1bb!important;
+ outline:0!important;
+ box-shadow:none!important;
+}
