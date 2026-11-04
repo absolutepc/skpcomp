@@ -585,3 +585,11 @@ main.skp-admin-workspace{
  .skp-admin-workspace .skp-review{background:#f8f9fb;border-color:#e0e3e9;color:#20252c}
  .skp-admin-workspace .skp-admin-menu>.skp-admin-tab.active{background:#ffe500;color:#111}
 }
+
+/* Keep product table rows white on hover in the light admin workspace. */
+@media(min-width:701px){
+ .skp-admin-workspace .skp-admin-data-table tbody tr:hover,
+ .skp-admin-workspace .skp-admin-data-table tbody tr:focus-within{background:#fff!important;color:#22272e!important}
+ .skp-admin-workspace .skp-admin-data-table tbody tr:hover td,
+ .skp-admin-workspace .skp-admin-data-table tbody tr:focus-within td{background:#fff!important;color:#22272e!important}
+}
