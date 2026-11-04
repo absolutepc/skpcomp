@@ -48,6 +48,7 @@ async function transparentImage(file:File):Promise<Blob>{
 }
 export default function AdminProductMedia({product,change}:Props){
  const [busy,setBusy]=useState(false);
+ const [selectedImage,setSelectedImage]=useState(0);
  const [error,setError]=useState('');
  const [message,setMessage]=useState('');
  const picker=useRef<HTMLInputElement|null>(null);
@@ -105,14 +106,15 @@ export default function AdminProductMedia({product,change}:Props){
   finally{setBusy(false);if(picker.current)picker.current.value=''}
  }
  return <section className="skp-admin-media">
-  <div className="skp-admin-media-heading"><div><h3>Галерея товара</h3><p>Для каждого цвета своя галерея. Первая фотография показывается в каталоге. Принимаются PNG/WebP с прозрачным фоном. WebP используется, когда поддерживается браузером; в Safari допускается PNG.</p><p>Папка R2: <code>{productMediaFolder(product)}/{product.id}/</code></p></div><span>{images.length} / {MAX_GALLERY_IMAGES}</span></div>
+  <div className="skp-admin-media-heading"><div><h3>Галерея товара</h3><p>Первая фотография используется как обложка. PNG / WebP с прозрачным фоном.</p></div><span>{images.length} / {MAX_GALLERY_IMAGES}</span></div>
   <input ref={picker} className="skp-media-file-input" type="file" accept="image/png,image/webp" multiple onChange={event=>void upload(event.target.files)} disabled={busy||images.length>=MAX_GALLERY_IMAGES} aria-label="Выбрать фотографии товара"/>
   <button type="button" className="skp-media-upload" disabled={busy||images.length>=MAX_GALLERY_IMAGES} onClick={()=>picker.current?.click()}>
    {busy?<LoaderCircle className="skp-media-spinner" size={20}/>:<ImagePlus size={20}/>}
    {busy?'Загрузка в хранилище…':'Загрузить фотографии'} <span>PNG / WebP · прозрачный фон</span>
   </button>
+  {images.length>0&&<div className="skp-admin-media-featured"><img src={images[Math.min(selectedImage,images.length-1)]} alt="Предпросмотр выбранного изображения"/></div>}
   {images.length>0&&<div className="skp-admin-media-grid">{images.map((url,i)=><div className="skp-admin-media-item" key={url}>
-    <div className="skp-admin-media-preview"><img src={url} alt={'Фотография '+(i+1)}/>{i===0&&<span><Star size={12} fill="currentColor"/> Обложка</span>}</div>
+    <div className="skp-admin-media-preview" onClick={()=>setSelectedImage(i)} role="button" tabIndex={0} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();setSelectedImage(i)}}}><img src={url} alt={'Фотография '+(i+1)}/>{i===0&&<span><Star size={12} fill="currentColor"/> Обложка</span>}</div>
     <div className="skp-admin-media-actions">
       {i!==0&&<button type="button" aria-label="Сделать обложкой" title="Сделать обложкой" onClick={()=>update(all=>[all[i],...all.filter((_,index)=>index!==i)])}><Star size={16}/></button>}
       <button type="button" aria-label="Сдвинуть фото влево" title="Сдвинуть влево" disabled={i===0} onClick={()=>update(all=>{const a=[...all];[a[i-1],a[i]]=[a[i],a[i-1]];return a})}><ArrowLeft size={15}/></button>
