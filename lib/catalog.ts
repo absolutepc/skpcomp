@@ -461,10 +461,26 @@ export function specValue(product:Product,field:Field):string{
  return field.chip&&gpuChipBrand(product)!==field.chip?'':fieldValue(product,field.key);
 }
 export const splitValues=(v:string)=>v.split(/[|;]/).map(x=>x.trim()).filter(Boolean);
+/** Parse multi-socket compatibility into individual normalized filter choices. */
+export function socketValues(value:string):string[]{
+ const result:string[]=[];
+ let family='';
+ for(const part of value.split(/\s*(?:[|;,/]|\s+\+\s+)\s*/)){
+  const token=part.trim().toUpperCase().replace(/\s+/g,'');
+  if(!token)continue;
+  const match=token.match(/^(LGA|AM|FM|TR|SP|S)(\d+[A-Z0-9]*)$/);
+  if(match){family=match[1];result.push(family+match[2]);continue;}
+  if(/^\d+[A-Z]?$/.test(token)&&family){result.push(family+token);continue;}
+  result.push(token);
+ }
+ return [...new Set(result)];
+}
+export const filterValues=(key:string,value:string)=>key==='socket'?socketValues(value):splitValues(value);
+
 export function inCategory(p:Product,category:string){const c=normalizeProduct(p).category;return category==='all'?true:category==='components'?c in components:category==='peripherals'?c in peripherals||c==='peripherals':c===category}
 export type Facets=Record<string,string[]>;
 export type Ranges=Record<string,{min?:string;max?:string}>;
 export function matchesFilters(p:Product,facets:Facets,ranges:Ranges){
  const get=(key:string)=>{const field=categoryFields[p.category]?.find(f=>f.key===key);return field?specValue(p,field):fieldValue(p,key)};
- return Object.entries(facets).every(([key,chosen])=>!chosen.length||splitValues(get(key)).some(v=>chosen.includes(v)))&&Object.entries(ranges).every(([key,r])=>{if(!r.min&&!r.max)return true;const raw=get(key);const n=Number(raw.replace(',','.'));return raw!==''&&Number.isFinite(n)&&(!r.min||n>=Number(r.min))&&(!r.max||n<=Number(r.max))});
+ return Object.entries(facets).every(([key,chosen])=>!chosen.length||filterValues(key,get(key)).some(v=>chosen.includes(v)))&&Object.entries(ranges).every(([key,r])=>{if(!r.min&&!r.max)return true;const raw=get(key);const n=Number(raw.replace(',','.'));return raw!==''&&Number.isFinite(n)&&(!r.min||n>=Number(r.min))&&(!r.max||n<=Number(r.max))});
 }
