@@ -858,3 +858,27 @@ main.skp-admin-workspace{
  outline:none!important;
  background:#f7f8fa!important;
 }
+
+/* Light admin modal buttons: black even when disabled; disabled state via opacity only. */
+.skp-admin-edit-backdrop .modal .skp-admin-edit-save,
+.skp-admin-edit-backdrop .modal .button.light,
+.skp-admin-edit-backdrop .modal button[type="submit"],
+.skp-admin-workspace .skp-brands-save,
+.skp-admin-workspace .skp-brands-add{
+ background:#17191d!important;
+ border:1px solid #17191d!important;
+ color:#fff!important;
+}
+.skp-admin-edit-backdrop .modal .skp-admin-edit-save:disabled,
+.skp-admin-edit-backdrop .modal .button.light:disabled,
+.skp-admin-edit-backdrop .modal button[type="submit"]:disabled,
+.skp-admin-workspace .skp-brands-save:disabled{
+ background:#17191d!important;
+ border-color:#17191d!important;
+ color:#fff!important;
+ opacity:.48!important;
+}
+.skp-admin-edit-backdrop .modal .skp-admin-edit-save:not(:disabled):hover,
+.skp-admin-workspace .skp-brands-save:not(:disabled):hover{
+ background:#30343a!important;border-color:#30343a!important;color:#fff!important;
+}
