@@ -502,12 +502,19 @@ export function gpuPcieValues(value:string):string[]{
   .filter(version=>/^PCIe \d+(?:\.\d+)?$/.test(version));
  return versions.length?[...new Set(versions)]:splitValues(value);
 }
+/** Unified color label for products whose color is stored as a HEX variant. */
+export function catalogColor(product:Product):string{
+ const explicit=fieldValue(product,'color').trim();
+ if(explicit)return explicit;
+ const colors:Record<string,string>={'#fff':'Белый','#ffffff':'Белый','#000':'Чёрный','#000000':'Чёрный','#ff0000':'Красный','#00ff00':'Зелёный','#0000ff':'Синий','#ffff00':'Жёлтый','#808080':'Серый','#c0c0c0':'Серебристый'};
+ return colors[(product.colorHex||'').trim().toLowerCase()]||'';
+}
 export const filterValues=(key:string,value:string)=>key==='socket'?socketValues(value):key==='gpuPcie'?gpuPcieValues(value):splitValues(value);
 
 export function inCategory(p:Product,category:string){const c=normalizeProduct(p).category;return category==='all'?true:category==='components'?c in components:category==='peripherals'?c in peripherals||c==='peripherals':c===category}
 export type Facets=Record<string,string[]>;
 export type Ranges=Record<string,{min?:string;max?:string}>;
 export function matchesFilters(p:Product,facets:Facets,ranges:Ranges){
- const get=(key:string)=>{const field=categoryFields[p.category]?.find(f=>f.key===key);return field?specValue(p,field):fieldValue(p,key)};
+ const get=(key:string)=>{if(key==='catalogColor')return catalogColor(p);const field=categoryFields[p.category]?.find(f=>f.key===key);return field?specValue(p,field):fieldValue(p,key)};
  return Object.entries(facets).every(([key,chosen])=>!chosen.length||filterValues(key,get(key)).some(v=>chosen.includes(v)))&&Object.entries(ranges).every(([key,r])=>{if(!r.min&&!r.max)return true;const raw=get(key);const n=Number(raw.replace(',','.'));return raw!==''&&Number.isFinite(n)&&(!r.min||n>=Number(r.min))&&(!r.max||n<=Number(r.max))});
 }
