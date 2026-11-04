@@ -122,3 +122,35 @@
 
 .skp-brand-default-logo{filter:brightness(0)}
 @media(max-width:700px){.skp-brand-default-logo{filter:brightness(0) invert(1)}}
+
+/* Brand editor: standalone compact action, not a full-width dark bar. */
+.skp-brands-category-add{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:flex-start!important;
+ width:100%;
+ background:transparent!important;
+}
+.skp-brands-category-add>.skp-brands-add{
+ display:inline-flex!important;
+ width:auto!important;
+ max-width:100%;
+ align-self:flex-start!important;
+ flex:0 0 auto!important;
+ padding:12px 17px!important;
+ border:0!important;
+ border-radius:9px!important;
+ background:#202429!important;
+ color:#fff!important;
+ box-shadow:none!important;
+}
+.skp-brands-category-add>.skp-brands-add:hover{
+ background:#353b42!important;
+}
+.skp-brands-category-add>.skp-brands-add:disabled{
+ opacity:.55;
+}
+.skp-brands-category-add>.skp-brands-category-options{
+ width:100%;
+ box-sizing:border-box;
+}
