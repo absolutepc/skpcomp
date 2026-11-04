@@ -390,6 +390,10 @@ export function maxProductSpecFields(category:string):number{
 
 export function fieldsForProduct(product:Product):Field[]{
  const fields=categoryFields[product.category]||[];
+ if(product.category==='cooler'){
+  const liquid=/сжо|водян|жидкост|aio|water|liquid/i.test(fieldValue(product,'coolingType'));
+  return [{key:'coolingType',label:'Тип охлаждения'},...(liquid?liquidCoolerFieldGroups:coolerFieldGroups).flatMap(group=>group.fields).filter(field=>field.key!=='coolingType')];
+ }
  if(product.category!=='gpu')return fields;
  const chip=gpuChipBrand(product);
  return fields.filter(field=>!field.chip||field.chip===chip);
