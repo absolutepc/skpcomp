@@ -47,6 +47,29 @@ export const gpuFieldGroups:{title:string;fields:Field[]}[]=[
   f('videoEncoders','Кодирование видео (AV1 / H.264 / HEVC)')
  ]}
 ];
+/** Tower and other CPU coolers: heatsink and bundled fan are distinct components. */
+export const coolerFieldGroups:{title:string;fields:Field[]}[]=[
+ {title:'Радиатор и тепловые трубки',fields:[
+  f('coolingType','Тип охлаждения'),f('socket','Поддерживаемые сокеты'),
+  f('tdp','Рассеиваемая мощность','Вт'),f('height','Высота кулера','мм'),
+  f('radiator','Размер радиатора','мм'),f('heatPipes','Количество тепловых трубок','шт.'),
+  f('heatPipeDiameter','Диаметр тепловых трубок','мм'),
+  f('heatPipeContact','Контакт тепловых трубок с процессором'),
+  f('radiatorMaterial','Материал радиатора')
+ ]},
+ {title:'Вентилятор в комплекте',fields:[
+  f('fanModel','Модель вентилятора'),f('fanCount','Количество в комплекте','шт.'),
+  f('fanDimensions','Размеры вентилятора'),f('fanSize','Размер вентилятора','мм'),
+  f('fanBearing','Тип подшипника'),
+  f('fanRpmMin','Минимальная скорость вращения','об/мин'),
+  f('fanRpmMax','Максимальная скорость вращения','об/мин'),
+  f('fanRpmTolerance','Допуск скорости вращения','%'),
+  f('fanAirflow','Максимальный воздушный поток','CFM'),
+  f('fanStaticPressure','Статическое давление','mmH₂O'),
+  f('fanNoise','Максимальный уровень шума','дБ(А)'),
+  f('fanConnector','Коннектор вентилятора'),f('rgb','Подсветка')
+ ]}
+];
 /** SSD and HDD details share the storage category. Leave unpublished specs empty. */
 export const ssdFieldGroups:{title:string;fields:Field[]}[]=[
  {title:'Тип, форм-фактор и подключение',fields:[
@@ -375,7 +398,7 @@ export const categoryFields:Record<string,Field[]>={
  ram:[f('memory','Тип памяти'),f('capacity','Общий объём','ГБ'),f('modules','Количество модулей','шт.'),f('speed','Частота','МГц'),f('bandwidth','Пропускная способность','ГБ/с'),f('voltage','Напряжение','В'),f('latency','Тайминги CL'),f('form','Форм-фактор'),f('rgb','Подсветка')],
  ssd:ssdFieldGroups.flatMap(group=>group.fields),
  psu:psuFieldGroups.flatMap(group=>group.fields),
- cooler:[f('coolingType','Тип охлаждения'),f('socket','Поддерживаемые сокеты'),f('tdp','Рассеиваемая мощность','Вт'),f('height','Высота','мм'),f('radiator','Размер радиатора','мм'),f('fanSize','Размер вентилятора','мм'),f('rgb','Подсветка')],
+ cooler:coolerFieldGroups.flatMap(group=>group.fields),
  case:caseFieldGroups.flatMap(group=>group.fields),
  monitor:monitorFieldGroups.flatMap(group=>group.fields),
  mouse:[
