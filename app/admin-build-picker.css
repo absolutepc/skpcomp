@@ -189,3 +189,30 @@
  outline:0!important;
  box-shadow:none!important;
 }
+
+/* Prevent Safari flexbox from collapsing search and category tabs when many items exist. */
+.skp-build-picker-dialog .skp-build-picker-heading,
+.skp-build-picker-dialog .skp-build-picker-search,
+.skp-build-picker-dialog .skp-build-picker-categories,
+.skp-build-picker-dialog .skp-build-picker-count{
+ flex-shrink:0!important;
+}
+.skp-build-picker-dialog .skp-build-picker-search{
+ min-height:46px!important;
+ height:46px!important;
+ flex:0 0 46px!important;
+ overflow:hidden!important;
+}
+.skp-build-picker-dialog .skp-build-picker-search input{
+ min-height:0!important;
+ height:44px!important;
+ line-height:normal!important;
+}
+.skp-build-picker-dialog .skp-build-picker-categories{
+ min-height:0;
+}
+.skp-build-picker-dialog .skp-build-picker-options{
+ flex:1 1 auto!important;
+ min-height:0!important;
+ overflow-y:auto!important;
+}
