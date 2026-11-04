@@ -85,3 +85,26 @@
 .catalog-facets .skp-facet-check:has(input:disabled){opacity:.45;cursor:default}
 .catalog-facets .skp-facet-check input:focus-visible{outline:2px solid #ffe500;outline-offset:2px}
 .catalog-facets #catalog-brand-options.skp-facet-check-grid{max-height:320px;overflow-y:auto}
+
+/* Keep each brand label alongside its checkbox, not beneath it. */
+.catalog-facets .skp-facet-check-grid .skp-facet-check{
+ display:flex;
+ flex-direction:row;
+ flex-wrap:nowrap;
+ align-items:center;
+ justify-content:flex-start;
+ gap:8px;
+}
+.catalog-facets .skp-facet-check-grid .skp-facet-check input[type="checkbox"]{
+ flex:0 0 14px;
+ display:block;
+ margin:0;
+}
+.catalog-facets .skp-facet-check-grid .skp-facet-check span{
+ flex:1 1 auto;
+ display:block;
+ min-width:0;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
