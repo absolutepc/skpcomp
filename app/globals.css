@@ -2025,3 +2025,14 @@ body > main, main:not(.skp-admin-workspace){background-color:#000}
  border-color:#444a4e;
  color:#edf0f2;
 }
+
+/* Incompatible parts: match the three-card builder rhythm, not the five-up catalog. */
+.config-page .skp-incompatible-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
+.config-page .skp-incompatible-grid .component-card{min-width:0;display:flex;flex-direction:column}
+.config-page .skp-incompatible-grid .build-card-body{display:flex;flex:1;flex-direction:column;min-width:0}
+.config-page .skp-incompatible-grid .price-line{margin-top:auto;min-width:0;display:flex;flex-wrap:wrap;gap:8px}
+.config-page .skp-incompatible-grid .config-card-price{min-width:0;flex:1 1 100px}
+.config-page .skp-incompatible-grid .config-card-price strong{overflow-wrap:anywhere}
+.config-page .skp-incompatible-grid .skp-card-purchase-actions{flex:0 0 auto}
+@media(max-width:950px){.config-page .skp-incompatible-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.config-page .skp-incompatible-grid{grid-template-columns:minmax(0,1fr)}}
