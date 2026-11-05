@@ -14,7 +14,7 @@ export default function ProductReviews({productId}:{productId:string}){
  const [message,setMessage]=useState('');
  useEffect(()=>{
   let active=true;setReviews([]);setMessage('');
-  fetch('/api/reviews?productId='+encodeURIComponent(productId)).then(r=>r.json()).then(raw=>{const d=raw as {reviews?:Review[]};if(active)setReviews(Array.isArray(d.reviews)?d.reviews:[])}).catch(()=>{if(active)setMessage('Отзывы пока не удалось загрузить')});
+  fetch('/api/reviews?productId='+encodeURIComponent(productId)).then(r=>r.json()).then(raw=>{const d=raw as {more?:boolean;reviews?:Review[]};if(active)setReviews(Array.isArray(d.reviews)?d.reviews:[])}).catch(()=>{if(active)setMessage('Отзывы пока не удалось загрузить')});
   return()=>{active=false};
  },[productId]);
  const mean=reviews.length?(reviews.reduce((sum,r)=>sum+r.rating,0)/reviews.length).toFixed(1):null;
@@ -22,7 +22,7 @@ export default function ProductReviews({productId}:{productId:string}){
   e.preventDefault();setLoading(true);setMessage('');
   try{
    const r=await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'submit',productId,author:name,rating,body,website})});
-   const d=await r.json() as {error?:string;reviews?:Review[]};
+   const d=await r.json() as {error?:string;more?:boolean;reviews?:Review[]};
    if(!r.ok)throw Error(d.error||'Не удалось сохранить отзыв');
    setMessage('Спасибо! Отзыв отправлен на модерацию и появится после проверки.');
    setBody('');setRating(5);setName('');
@@ -50,14 +50,16 @@ export function AdminReviews(){
  const [reviews,setReviews]=useState<Review[]>([]);
  const [pending,setPending]=useState(false);
  const [error,setError]=useState('');
- async function load(){setPending(true);try{const r=await fetch('/api/reviews?admin=1',{cache:'no-store'});const d=await r.json() as {error?:string;reviews?:Review[]};if(!r.ok)throw Error(d.error||'Не удалось загрузить отзывы');setReviews(d.reviews||[]);setError('')}catch(e){setError(e instanceof Error?e.message:'Ошибка загрузки')}finally{setPending(false)}}
- useEffect(()=>{void load()},[]);
+ const [offset,setOffset]=useState(0),[more,setMore]=useState(false);
+ async function load(){setPending(true);try{const r=await fetch('/api/reviews?admin=1&offset='+offset,{cache:'no-store'});const d=await r.json() as {error?:string;more?:boolean;reviews?:Review[]};if(!r.ok)throw Error(d.error||'Не удалось загрузить отзывы');setMore(!!d.more);setReviews(d.reviews||[]);setError('')}catch(e){setError(e instanceof Error?e.message:'Ошибка загрузки')}finally{setPending(false)}}
+ useEffect(()=>{void load()},[offset]);
  async function moderate(id:string,status:'approved'|'rejected'){
-  try{const r=await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'moderate',id,status})});const d=await r.json() as {error?:string;reviews?:Review[]};if(!r.ok)throw Error(d.error||'Не удалось обновить');setReviews(list=>list.map(item=>item.id===id?{...item,status}:item));setError('')}catch(e){setError(e instanceof Error?e.message:'Ошибка')}
+  try{const r=await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'moderate',id,status})});const d=await r.json() as {error?:string;more?:boolean;reviews?:Review[]};if(!r.ok)throw Error(d.error||'Не удалось обновить');setReviews(list=>list.map(item=>item.id===id?{...item,status}:item));setError('')}catch(e){setError(e instanceof Error?e.message:'Ошибка')}
  }
  const queue=reviews.filter(r=>r.status==='pending');
  return <section className="skp-admin-reviews"><div className="section-head"><h2>Отзывы на модерации <span className="muted">/ {queue.length}</span></h2><button type="button" className="button outline" onClick={()=>void load()} disabled={pending}>Обновить</button></div>
  {error&&<p role="alert">{error}</p>}
+ <button disabled={!offset||pending} onClick={()=>setOffset(offset-250)}>Назад</button><button disabled={!more||pending} onClick={()=>setOffset(offset+250)}>Далее</button>
  {!queue.length?<p className="skp-reviews-empty">{pending?'Загрузка…':'Новых отзывов нет'}</p>:<div className="skp-review-list">{queue.map(r=><article key={r.id} className="skp-review"><div><strong>{r.author}</strong><span className="skp-stars">{stars(r.rating)}</span></div><small>Товар: {r.product_id} · {r.created_at?.slice(0,10)}</small><p>{r.body}</p><div className="skp-admin-review-actions"><button type="button" onClick={()=>void moderate(r.id,'approved')}><Check size={16}/> Опубликовать</button><button type="button" onClick={()=>void moderate(r.id,'rejected')}><X size={16}/> Отклонить</button></div></article>)}</div>}
  </section>;
 }

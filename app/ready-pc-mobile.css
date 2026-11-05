@@ -63,7 +63,7 @@
   z-index:100;width:min(90vw,410px);max-height:100dvh;
   height:100dvh;overflow-y:auto;overscroll-behavior:contain;
   padding:18px 17px 104px;display:block;grid-template-columns:none;
-  background:#0c1011;border:0;border-left:1px solid #37403d;
+  background:var(--catalog-filter);border:0;border-left:1px solid var(--catalog-border);
   border-radius:0;box-shadow:-18px 0 35px #000a;
   visibility:hidden;pointer-events:none;
   transform:translateX(105%);transition:transform .24s ease,visibility .24s;
@@ -106,7 +106,7 @@
  .skp-ready-page .skp-ready-card .build-card-art{
   position:relative;display:flex;align-items:center;justify-content:center;
   height:clamp(136px,43vw,191px);aspect-ratio:auto;padding:10px 3px 1px;
-  background:radial-gradient(ellipse at 45% 75%,#d4a90022,transparent 66%),#101619;
+  background:transparent;
  }
  .skp-ready-page .skp-ready-card .build-card-art>img,
  .skp-ready-page .skp-ready-card .build-card-art>svg{
@@ -122,8 +122,6 @@
   padding:5px 7px;border-radius:7px;font-size:8px;font-weight:850;
   max-width:calc(100% - 44px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
  }
- .skp-ready-page .skp-ready-card:nth-child(3n+2) .build-badge{background:#6634ed;color:#fff}
- .skp-ready-page .skp-ready-card:nth-child(3n+3) .build-badge{background:#ef6b12;color:#fff}
  .skp-ready-page .skp-ready-card .build-card-body{
   display:flex;flex-direction:column;flex:1;min-height:0;padding:10px 9px 10px
  }
@@ -151,7 +149,7 @@
  }
  .skp-ready-page .skp-ready-card .price-line strong{
   min-width:0;white-space:nowrap;letter-spacing:-.5px;
-  font-size:clamp(13px,3.9vw,19px);color:#fff
+  font-size:clamp(13px,3.9vw,19px);color:var(--catalog-price)
  }
  .skp-ready-page .skp-ready-card .price-line button{
   width:34px;height:37px;min-width:34px;border-radius:9px;

@@ -3,7 +3,10 @@
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 const origin='http://127.0.0.1:5184';
-const child=spawn(process.execPath,['scripts/run-framework.mjs','dev','--port','5184'],{stdio:['ignore','pipe','pipe']});
+const {existsSync,readFileSync}=await import('node:fs');
+const {parseEnv}=await import('node:util');
+const password=(existsSync('.dev.vars') && parseEnv(readFileSync('.dev.vars','utf8')).ADMIN_PASSWORD)||crypto.randomUUID();
+const child=spawn(process.execPath,['scripts/run-framework.mjs','dev','--port','5184'],{env:{...process.env,ADMIN_PASSWORD:password,CLOUDFLARE_INCLUDE_PROCESS_ENV:'true'},stdio:['ignore','pipe','pipe']});
 let logs='';
 child.stdout.on('data',data=>{logs+=data});
 child.stderr.on('data',data=>{logs+=data});
@@ -15,13 +18,16 @@ try{
   await new Promise(resolve=>setTimeout(resolve,500));
  }
  assert(ready,'Dev server failed to start: '+logs);
+ const login=await fetch(origin+'/api/store',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({action:'login',password})});
+ assert.equal(login.status,200);
+ const cookie=login.headers.get('set-cookie').split(';')[0];
  for(const size of [512*1024,2*1024*1024,8*1024*1024,8*1024*1024+1]){
   // Signature-valid transport fixture; image decoding is tested by test-gallery.
   const bytes=new Uint8Array(size);bytes.set([137,80,78,71,13,10,26,10]);
   const form=new FormData();
   form.append('productId','upload-regression');
   form.append('file',new Blob([bytes],{type:'image/png'}),'skp-product-image.png');
-  const response=await fetch(origin+'/api/media',{method:'POST',headers:{Origin:origin},body:form});
+  const response=await fetch(origin+'/api/media',{method:'POST',headers:{Origin:origin,Cookie:cookie},body:form});
   const result=await response.json();
   if(size>8*1024*1024){assert.equal(response.status,400);assert(result.error);continue}
   assert.equal(response.status,201,JSON.stringify(result));
@@ -40,7 +46,7 @@ try{
  cover.append('assetType','fps-game');
  cover.append('gameId','bf6');
  cover.append('file',new Blob([jpg],{type:'image/jpeg'}),'cover.jpg');
- const gameResponse=await fetch(origin+'/api/media',{method:'POST',headers:{Origin:origin},body:cover});
+ const gameResponse=await fetch(origin+'/api/media',{method:'POST',headers:{Origin:origin,Cookie:cookie},body:cover});
  const gameResult=await gameResponse.json();
  assert.equal(gameResponse.status,201,JSON.stringify(gameResult));
  assert.match(gameResult.key,/^fps-games\/bf6\/[0-9a-f-]{36}\.jpg$/);
@@ -52,7 +58,7 @@ try{
  invalidGame.append('assetType','fps-game');
  invalidGame.append('gameId','nonexistent-game');
  invalidGame.append('file',new Blob([jpg],{type:'image/jpeg'}),'cover.jpg');
- const badGameResponse=await fetch(origin+'/api/media',{method:'POST',headers:{Origin:origin},body:invalidGame});
+ const badGameResponse=await fetch(origin+'/api/media',{method:'POST',headers:{Origin:origin,Cookie:cookie},body:invalidGame});
  assert.equal(badGameResponse.status,400);
  console.log('Media integration passed: product PNG uploads/readback at 512 KiB, 2 MiB and 8 MiB, game JPEG cover/readback, invalid game and oversized upload.');
 

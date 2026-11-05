@@ -49,7 +49,7 @@ assert.equal(upgradeLogitechGamingMice(changes,seed.products,11),changes,'Post-m
 const removed=before.filter(p=>p.id!=='logitech-pro-x2-superstrike');
 assert.equal(upgradeLogitechGamingMice(removed,seed.products,10).some(p=>p.id==='logitech-pro-x2-superstrike'),false,
  'An intentionally deleted product stays deleted');
-const route=readFileSync(new URL('../app/api/store/route.ts',import.meta.url),'utf8');
+const route=readFileSync(new URL('../app/api/store/route.ts',import.meta.url),'utf8')+readFileSync(new URL('../lib/read-catalog.ts',import.meta.url),'utf8');
 assert.match(route,/upgradeLogitechGamingMice\(products,seed\.products,oldVersion\)/,'D1 upgrade connected');
 // Two Superlight 2 color variants keep their unique IDs and color metadata,
  // while their public names omit the redundant color suffix.

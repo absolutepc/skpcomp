@@ -20,17 +20,28 @@ export default function StoreSearch({products,onNavigate,onClose}:{
  onClose:()=>void;
 }){
  const [value,setValue]=useState('');
+ const [limit,setLimit]=useState(10);
+ const dialog=useRef<HTMLElement>(null);
  const input=useRef<HTMLInputElement>(null);
  useEffect(()=>{
+  const opener=document.activeElement as HTMLElement|null;
   const previousOverflow=document.body.style.overflow;
   document.body.style.overflow='hidden';
-  const onEscape=(event:KeyboardEvent)=>{if(event.key==='Escape')onClose()};
+  const onEscape=(event:KeyboardEvent)=>{if(event.key==='Escape')onClose();
+   if(event.key==='Tab'){
+    const nodes=dialog.current?.querySelectorAll<HTMLElement>('button:not([disabled]), input');
+    if(!nodes?.length)return;
+    const first=nodes[0],last=nodes[nodes.length-1];
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+    if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+   }};
   document.addEventListener('keydown',onEscape);
   // Safari can require a second tap to raise the keyboard; the field stays visible.
   input.current?.focus({preventScroll:true});
   return()=>{
    document.body.style.overflow=previousOverflow;
    document.removeEventListener('keydown',onEscape);
+   opener?.focus({preventScroll:true});
   };
  },[onClose]);
  const phrase=value.trim().toLocaleLowerCase('ru-RU');
@@ -50,12 +61,12 @@ export default function StoreSearch({products,onNavigate,onClose}:{
   };
   return rank(a)-rank(b);
  });
- const visible=matches.slice(0,10);
+ const visible=matches.slice(0,limit);
  const select=(product:Product)=>{onClose();onNavigate('/product/'+product.id)};
  return <div className="skp-global-search-overlay" onPointerDown={event=>{
    if(event.target===event.currentTarget)onClose();
   }}>
-  <section className="skp-global-search-dialog" role="dialog" aria-modal="true" aria-labelledby="skp-global-search-title">
+  <section ref={dialog} className="skp-global-search-dialog" role="dialog" aria-modal="true" aria-labelledby="skp-global-search-title">
    <div className="skp-global-search-heading">
     <div><span className="skp-global-search-kicker">КАТАЛОГ SKP</span>
      <h2 id="skp-global-search-title">Поиск товаров</h2></div>
@@ -63,9 +74,9 @@ export default function StoreSearch({products,onNavigate,onClose}:{
    </div>
    <div className="skp-global-search-field">
     <Search size={21} aria-hidden="true"/>
-    <input ref={input} autoFocus type="search" enterKeyHint="search"
+    <input ref={input} type="search" enterKeyHint="search"
      aria-label="Название или характеристики товара" autoComplete="off" spellCheck={false}
-     placeholder="Название, модель, процессор..." value={value} onChange={event=>setValue(event.target.value)}
+     placeholder="Название, модель, процессор..." value={value} onChange={event=>{setValue(event.target.value);setLimit(10)}}
      onKeyDown={event=>{if(event.key==='Enter'&&visible.length>0){event.preventDefault();select(visible[0])}}}/>
     {value&&<button type="button" aria-label="Очистить поиск" onClick={()=>{setValue('');input.current?.focus()}}><X size={16}/></button>}
    </div>
@@ -86,6 +97,7 @@ export default function StoreSearch({products,onNavigate,onClose}:{
       </span><ArrowRight size={18} aria-hidden="true" className="skp-global-search-result-arrow"/>
      </button>;
     })}
+    {matches.length>visible.length&&<button type="button" onClick={()=>setLimit(limit+20)}>Показать ещё ({matches.length-visible.length})</button>}
     {phrase&&matches.length===0&&<div className="skp-global-search-empty">
      <PackageSearch size={34}/><strong>Ничего не найдено</strong>
      <span>Попробуйте ввести другую модель или название бренда.</span>

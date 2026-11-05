@@ -64,7 +64,7 @@ assert.equal(linkedOld[1].href,'/product/hand-added-monitor','Existing user prod
 assert.equal(feature.linkFeaturedMonitorSlide(allSlides,before),allSlides,
  'No monitor does not mutate slides');
 
-const route=readFileSync(new URL('../app/api/store/route.ts',import.meta.url),'utf8');
+const route=readFileSync(new URL('../app/api/store/route.ts',import.meta.url),'utf8')+readFileSync(new URL('../lib/read-catalog.ts',import.meta.url),'utf8');
 assert.match(route,/store\.catalogVersion\|\|0\)<CATALOG_VERSION/);
 assert.match(route,/upgradeFeaturedMonitorProducts\(products,monitor,oldVersion\)/);
 assert.match(route,/linkFeaturedMonitorSlide\(/);

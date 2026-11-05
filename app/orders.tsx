@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useState} from 'react';
+import {useEffect,useState,useRef} from 'react';
 import {ArrowRight,CheckCircle2,ClipboardCopy,Clock3,PackageCheck,Phone,RefreshCw,ShoppingBag,XCircle} from 'lucide-react';
 import type {Product} from '../lib/seed';
 import {summarizeCart,cartGrandTotal,type CartEntry} from '../lib/custom-build-cart';
@@ -45,6 +45,7 @@ function OrderCard({order,extra}:{order:PublicOrder;extra?:React.ReactNode}){
 }
 export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:CartEntry[];products:Product[];whatsapp:string;onSuccess:()=>void;nav:(path:string)=>void}){
  const [name,setName]=useState(''),[phone,setPhone]=useState(''),[comment,setComment]=useState('');
+ const lastAttempt=useRef<{signature:string;key:string}|null>(null);
  const [website,setWebsite]=useState('');
  const [submitting,setSubmitting]=useState(false),[error,setError]=useState('');
  const [created,setCreated]=useState<{order:PublicOrder;accessKey:string}|null>(null);
@@ -55,7 +56,15 @@ export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:CartEntry[
   event.preventDefault();if(submitting||created)return;
   setSubmitting(true);setError('');
   try{
-   const response=await orderAPI({action:'create',name,phone,comment,website,items:summary.map(item=>item.build?{...item.build,quantity:1}:{id:item.id,quantity:item.quantity})});
+   const items=summary.map(item=>item.build?{...item.build,quantity:1}:{id:item.id,quantity:item.quantity});
+   const payload={action:'create',name,phone,comment,website,items};
+   const signature=JSON.stringify(payload);
+   let cached=lastAttempt.current;
+   try{cached=cached??JSON.parse(sessionStorage.getItem('skp-checkout-attempt')||'null')}catch{}
+   const attemptKey=cached?.signature===signature&&/^[0-9a-f]{64}$/.test(cached.key)?cached.key:Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
+   lastAttempt.current={signature,key:attemptKey};
+   try{sessionStorage.setItem('skp-checkout-attempt',JSON.stringify(lastAttempt.current))}catch{}
+   const response=await orderAPI({...payload,attemptKey});
    if(!response.order||!response.accessKey)throw Error('Сервер не вернул данные заказа.');
    const order=response.order, accessKey=response.accessKey;
    setCreated({order,accessKey});
@@ -65,6 +74,7 @@ export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:CartEntry[
     });
     localStorage.setItem(ORDER_HISTORY_STORAGE,JSON.stringify(saved));
    }catch{setError('Не удалось сохранить историю в этом браузере. Скопируйте код доступа ниже.')}
+   try{sessionStorage.removeItem('skp-checkout-attempt')}catch{}
    onSuccess();
   }catch(e){setError(e instanceof Error?e.message:'Не удалось оформить заявку.')}finally{setSubmitting(false)}
  }
@@ -153,16 +163,20 @@ export function AdminOrders({products=[]}:{products?:Product[]}){
  const [filter,setFilter]=useState<'all'|OrderStatus>('all');
  const [search,setSearch]=useState('');
  const [pending,setPending]=useState(false),[busy,setBusy]=useState(''),[error,setError]=useState('');
+ const latestLoad=useRef(0);
+ const [offset,setOffset]=useState(0),[more,setMore]=useState(false);
  async function load(){
+  const version=++latestLoad.current;
   setPending(true);setError('');
   try{
-   const response=await fetch('/api/orders?admin=1',{credentials:'same-origin',cache:'no-store'});
-   const data=await response.json() as {orders?:AdminOrder[];error?:string};
+   const response=await fetch('/api/orders?admin=1&offset='+offset+'&q='+encodeURIComponent(search),{credentials:'same-origin',cache:'no-store'});
+   const data=await response.json() as {orders?:AdminOrder[];more:boolean;error?:string};
+   if(version!==latestLoad.current)return;
    if(!response.ok)throw Error(data.error||'Не удалось загрузить заявки.');
-   setOrders(data.orders||[]);
-  }catch(e){setError(e instanceof Error?e.message:'Ошибка загрузки заказов')}finally{setPending(false)}
+   setOrders(data.orders||[]);setMore(data.more);
+  }catch(e){if(version===latestLoad.current)setError(e instanceof Error?e.message:'Ошибка загрузки заказов')}finally{if(version===latestLoad.current)setPending(false)}
  }
- useEffect(()=>{void load()},[]);
+ useEffect(()=>{void load()},[offset,search]);
  async function change(id:string,status:OrderStatus){
   setBusy(id);setError('');
   try{await orderAPI({action:'status',id,status});await load()}
@@ -175,12 +189,14 @@ export function AdminOrders({products=[]}:{products?:Product[]}){
   <div className="skp-admin-orders-header"><div><h2>Заказы <small>/ {orders.length}</small></h2><p>Меняйте этап выполнения. Отменённые и выполненные заказы закрыты для изменений.</p></div>
    <div><select aria-label="Фильтр заказов" value={filter} onChange={e=>setFilter(e.target.value as typeof filter)}><option value="all">Все статусы</option>{Object.entries(ORDER_LABELS).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select><button type="button" className="button outline" onClick={()=>void load()} disabled={pending}><RefreshCw size={15}/> Обновить</button></div>
   </div>
+  <label>Поиск заказа <input type="search" value={search} onChange={e=>{setOffset(0);setSearch(e.target.value)}}/></label>
+  <button disabled={!offset||pending} onClick={()=>setOffset(offset-250)}>Назад</button>
+  <button disabled={!more||pending} onClick={()=>setOffset(offset+250)}>Далее</button>
   <div className="skp-admin-mobile-order-controls">
     <div className="skp-admin-mobile-order-tabs" role="group" aria-label="Фильтр заказов">
      {([['all','Все'],['processing','В процессе'],['assembled','Собраны'],['completed','Выполнены'],['cancelled','Отменены']] as const).map(([value,label])=>
       <button type="button" key={value} aria-pressed={filter===value} className={filter===value?'selected':''} onClick={()=>setFilter(value)}>{label}</button>)}
     </div>
-    <label className="skp-admin-mobile-order-search"><span>Поиск по заказам</span><input type="search" placeholder="Номер, покупатель или телефон" value={search} onChange={e=>setSearch(e.target.value)}/></label>
    </div>
   {error&&<p className="skp-order-error" role="alert">{error}</p>}
   {!filtered.length?<p className="skp-orders-lead">{pending?'Загрузка…':'Заказов с выбранным статусом нет.'}</p>:<div className="skp-admin-orders-list">

@@ -1,4 +1,4 @@
-import {localAdminAccess} from '../../../lib/local-admin-access';
+import {authorized} from '../../../lib/admin-session';
 import {env} from 'cloudflare:workers';
 
 const E=env as unknown as {DB:D1Database;ADMIN_PASSWORD:string};
@@ -16,13 +16,7 @@ async function setup(){
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
  )`).run();
 }
-async function authorized(request:Request){
- if(localAdminAccess(request))return true;
- if(!E.ADMIN_PASSWORD)return false;
- const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));
- const token=Array.from(new Uint8Array(bytes)).map(x=>x.toString(16).padStart(2,'0')).join('');
- return (request.headers.get('cookie')||'').split(';').some(x=>x.trim()==='skp_admin='+token);
-}
+
 const json=(body:object,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
 export async function GET(request:Request){
  try{
@@ -30,8 +24,8 @@ export async function GET(request:Request){
   const url=new URL(request.url);
   if(url.searchParams.get('admin')==='1'){
    if(!await authorized(request))return json({error:'Требуется вход в админ-панель'},401);
-   const result=await E.DB.prepare("SELECT id,product_id,author,rating,body,status,created_at FROM product_reviews ORDER BY created_at DESC LIMIT 250").all<ReviewRow>();
-   return json({reviews:result.results||[]});
+   const result=await E.DB.prepare("SELECT id,product_id,author,rating,body,status,created_at FROM product_reviews ORDER BY rowid DESC LIMIT 251 OFFSET ?").bind(Math.max(0,parseInt(url.searchParams.get('offset')||'0')||0)).all<ReviewRow>();
+   return json({reviews:result.results.slice(0,250),more:result.results.length>250});
   }
   const id=url.searchParams.get('productId')||'';
   if(!/^[a-zA-Z0-9_-]{1,90}$/.test(id))return json({reviews:[]});

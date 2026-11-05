@@ -2036,3 +2036,51 @@ body > main, main:not(.skp-admin-workspace){background-color:#000}
 .config-page .skp-incompatible-grid .skp-card-purchase-actions{flex:0 0 auto}
 @media(max-width:950px){.config-page .skp-incompatible-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:550px){.config-page .skp-incompatible-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Shared storefront palette for the component catalog and ready-made PCs. */
+:root {
+ --catalog-canvas: #000;
+ --catalog-card: radial-gradient(ellipse at 45% 26%, #14212680, transparent 65%), #060c0e;
+ --catalog-card-border: #344147;
+ --catalog-filter: #080c0e;
+ --catalog-control: #101416;
+ --catalog-border: #30383c;
+ --catalog-secondary: #a0a8ac;
+ --catalog-price: #ffe500;
+}
+main.wide-shop:has(> .catalog-page),
+main.wide-shop:has(> .skp-ready-page),
+main.wide-shop > .skp-ready-page { background: var(--catalog-canvas); }
+.catalog-page .catalog-facets,
+.skp-ready-page .ready-filters.skp-ready-filter-drawer,
+.skp-ready-page .ready-bottom {
+ background: var(--catalog-filter);
+ border-color: var(--catalog-border);
+}
+.skp-ready-page .ready-filters .filter-group { border-color: var(--catalog-border); }
+.skp-ready-page .ready-filters .price-inputs input,
+.skp-ready-page .ready-heading select,
+.skp-ready-page .skp-ready-open-filters,
+.skp-ready-page .skp-ready-task-tabs > button {
+ background: var(--catalog-control);
+ border-color: var(--catalog-border);
+ color: #d6dadd;
+}
+.skp-ready-page .skp-ready-task-tabs > button.selected {
+ background: #171b1d;
+ border-color: var(--catalog-price);
+ color: var(--catalog-price);
+}
+.skp-ready-page .skp-ready-cards .skp-ready-card {
+ background: var(--catalog-card);
+ border-color: var(--catalog-card-border);
+}
+.skp-ready-page .skp-ready-card .build-card-art { background: transparent; }
+.skp-ready-page .skp-ready-cards .skp-ready-card .build-badge {
+ background: var(--catalog-control);
+ color: var(--catalog-price);
+}
+.skp-ready-page .skp-ready-card .build-caption,
+.skp-ready-page .ready-heading span,
+.skp-ready-page .ready-bottom p { color: var(--catalog-secondary); }
+.skp-ready-page .skp-ready-card .price-line strong { color: var(--catalog-price); }

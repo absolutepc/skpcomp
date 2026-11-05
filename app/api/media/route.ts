@@ -1,4 +1,4 @@
-import {localAdminAccess} from '../../../lib/local-admin-access';
+import {authorized} from '../../../lib/admin-session';
 import {productMediaFolder,isProductMediaKey} from '../../../lib/product-media-path';
 import {gameProfiles} from '../../../lib/fps-estimate';
 import {env} from 'cloudflare:workers';
@@ -8,13 +8,7 @@ const MEDIA_KEY=/^(?:products|slides|brands)\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}
 const FPS_MEDIA_KEY=/^fps-games\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.(?:webp|png|jpg)$/;
 const MAX_FILE_BYTES=8*1024*1024;
 const json=(data:object,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
-async function authorized(request:Request){
- if(localAdminAccess(request))return true;
- if(!E.ADMIN_PASSWORD)return false;
- const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));
- const token=Array.from(new Uint8Array(bytes)).map(b=>b.toString(16).padStart(2,'0')).join('');
- return (request.headers.get('cookie')||'').split(';').some(c=>c.trim()==='skp_admin='+token);
-}
+
 export async function GET(request:Request){
  if(!E.MEDIA)return json({error:'Хранилище R2 не настроено'},503);
  const key=new URL(request.url).searchParams.get('key')||'';

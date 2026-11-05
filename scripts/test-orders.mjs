@@ -84,7 +84,7 @@ assert.equal(parseOrderKeys('{bad').length,0);
 const route=readFileSync(new URL('../app/api/orders/route.ts',import.meta.url),'utf8');
 assert.match(route,/CREATE TABLE IF NOT EXISTS skp_orders/);
 assert.match(route,/CREATE TABLE IF NOT EXISTS skp_order_events/);
-assert.match(route,/getCatalog\(\)/,'Order item snapshots use current server-side prices');
+assert.match(route,/readCatalog\(\)/,'Order item snapshots use current server-side prices');
 assert.match(route,/id=\? AND access_hash=\?/,'Public order lookup uses secret access key hash');
 assert.match(route,/adminAuth\(request\)/,'Admin endpoint requires authentication');
 assert.match(route,/canTransition\(current\.status,input\.status\)/,'Status transitions are validated server-side');
