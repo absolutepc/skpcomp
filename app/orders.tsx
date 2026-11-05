@@ -28,10 +28,10 @@ function Steps({order}:{order:PublicOrder}){
   {order.status==='cancelled'&&<p className="skp-order-cancelled"><XCircle size={16}/> Заказ отменён — дальнейшая сборка остановлена.</p>}
  </div>;
 }
-function ComponentTable({parts,products}:{parts:{slot:string;label:string;name:string;price:number}[];products?:Product[]}){
+function ComponentTable({parts,products}:{parts:{slot:string;label:string;name:string;price:number;productId?:string;color?:string}[];products?:Product[]}){
  return <div className="skp-order-table-scroll"><table className="skp-order-components-table"><thead><tr><th>Комплектующее</th><th>Наименование</th><th>ID товара</th><th>Цвет</th><th>Цена</th></tr></thead><tbody>{parts.map((part,index)=>{
-  const product=products?.find(p=>p.name===part.name&&p.price===part.price)||products?.find(p=>p.name===part.name);
-  return <tr key={part.slot+'-'+index}><td>{part.label}</td><td>{part.name}</td><td>{product?.id||'—'}</td><td>{product?.colorHex||'—'}</td><td>{money(part.price)}</td></tr>;
+  const product=products?.find(p=>p.id===part.productId)||products?.find(p=>p.name===part.name&&p.price===part.price)||products?.find(p=>p.name===part.name);
+  return <tr key={part.slot+'-'+index}><td>{part.label}</td><td>{part.name}</td><td>{part.productId||product?.id||'—'}</td><td>{part.color||product?.colorHex||'—'}</td><td>{money(part.price)}</td></tr>;
  })}</tbody></table></div>;
 }
 function Lines({order,products}:{order:PublicOrder;products?:Product[]}){
