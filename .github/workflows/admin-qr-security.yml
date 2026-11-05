@@ -1,0 +1,41 @@
+name: Admin QR security checks
+
+on:
+  push:
+    branches:
+      - feature/vercel-admin-qr-passkeys
+    paths:
+      - 'lib/admin-*.ts'
+      - 'lib/vercel-admin-session.ts'
+      - 'db/admin-passkey-schema.sql'
+      - 'scripts/test-admin-*.mjs'
+      - '.github/workflows/admin-qr-security.yml'
+  pull_request:
+    paths:
+      - 'lib/admin-*.ts'
+      - 'lib/vercel-admin-session.ts'
+      - 'db/admin-passkey-schema.sql'
+      - 'scripts/test-admin-*.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  static-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check QR challenge foundations
+        run: node scripts/test-admin-passkey-foundation.mjs
+      - name: Check admin sessions
+        run: node scripts/test-vercel-admin-session-foundation.mjs
+      - name: Check PostgreSQL schema
+        run: node scripts/test-admin-qr-schema.mjs
+      - name: Check QR URL handling
+        run: node scripts/test-admin-qr-url.mjs
+      - name: Check WebAuthn challenge handling
+        run: node scripts/test-admin-webauthn-challenges.mjs
