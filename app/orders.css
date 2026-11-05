@@ -129,3 +129,13 @@
 .skp-orders-page .skp-order-components-table tbody tr:nth-child(even) td{background:#1b2022}
 .skp-orders-page .skp-order-components-table td:last-child{color:#f3f6f7}
 .skp-orders-page .skp-order-os-note{color:#aeb9c1}
+
+/* Admin order cards: black text on the light background in highlighted fields. */
+.skp-admin-orders .skp-order-card .skp-order-card-head>div>strong,
+.skp-admin-orders .skp-order-card .skp-order-step>small,
+.skp-admin-orders .skp-order-card .skp-order-step.current>small,
+.skp-admin-orders .skp-order-card .skp-order-step.reached>small,
+.skp-admin-orders .skp-order-card details>summary,
+.skp-admin-orders .skp-order-card .skp-order-build-details>summary,
+.skp-admin-orders .skp-order-card .skp-order-sum strong,
+.skp-admin-orders .skp-order-card .skp-order-sum strong:last-child{color:#000!important}
