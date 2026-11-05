@@ -87,3 +87,15 @@
  .skp-cart-page .skp-cart-line-price{font-size:16px}
  .skp-cart-page .skp-custom-build-cart .skp-custom-build-art{width:48px;flex-basis:48px}
 }
+
+/* Unified cart summary actions: consistent widths, spacing and hierarchy. */
+.skp-cart-page .summary{display:flex;flex-direction:column;gap:11px}
+.skp-cart-page .summary>h3{margin:0}
+.skp-cart-page .summary>.sum{margin:12px 0 10px}
+.skp-cart-page .summary>a.button{display:flex;width:100%;min-height:50px;margin:0;padding:13px 17px;border-radius:11px;gap:12px;justify-content:center;align-items:center;font-size:12px;font-weight:750;text-align:center;line-height:1.4}
+.skp-cart-page .summary>a.button svg{width:17px;height:17px;flex-shrink:0}
+.skp-cart-page .summary>a.skp-checkout-cart-button{background:#ffe500;color:#101010;border:1px solid #ffe500}
+.skp-cart-page .summary>a.button.outline{background:#171a1c;color:#f1f3f4;border:1px solid #525a60}
+.skp-cart-page .summary>a.installment-cart-button{color:#ffe500;border-color:#b9a600;background:#161714}
+.skp-cart-page .summary>a.button:hover{filter:brightness(1.12)}
+.skp-cart-page .summary>small{margin-top:7px}
