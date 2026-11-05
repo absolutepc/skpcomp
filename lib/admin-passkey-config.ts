@@ -6,7 +6,7 @@ export const ADMIN_QR_TTL_SECONDS=60;
 export function adminWebAuthnConfig(origin:string){
   if(origin===ADMIN_RP_ORIGIN)return {rpID:ADMIN_RP_ID,origin:ADMIN_RP_ORIGIN};
   // Loopback is exclusively for local development, not LAN HTTP.
-  if(origin==='http://localhost:5173'||origin==='http://127.0.0.1:5173')
+  if(process.env.NODE_ENV==='development' && (origin==='http://localhost:5173'||origin==='http://127.0.0.1:5173'))
     return {rpID:new URL(origin).hostname,origin};
   throw new Error('Unsupported WebAuthn origin');
 }
