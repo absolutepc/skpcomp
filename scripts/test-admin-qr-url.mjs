@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../lib/admin-qr-url.ts',import.meta.url),'utf8');
+assert.match(source,/new URL\('\/admin\/qr\/approve',ADMIN_RP_ORIGIN\)/);
+assert.match(source,/searchParams\.set\('request',requestToken\)/);
+assert.match(source,/url\.origin!==ADMIN_RP_ORIGIN/);
+assert.match(source,/url\.pathname!=='\/admin\/qr\/approve'/);
+assert.match(source,/url\.searchParams\.size!==1/);
+assert.match(source,/getAll\('request'\)\.length!==1/);
+assert.match(source,/\^\[0-9a-f\]\{64\}\$/);
+assert.doesNotMatch(source,/adminCookie|Set-Cookie|desktopSecret|ADMIN_PASSWORD/);
+console.log('QR approval URL static checks passed. Runtime and integration tests NOT performed.');
