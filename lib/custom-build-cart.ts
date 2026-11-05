@@ -10,7 +10,7 @@ export const BUILD_OS_OPTIONS=[
 ] as const;
 export type CustomBuildCartItem={type:'custom-build';id:string;selected:Record<string,string>};
 export type CartEntry=string|CustomBuildCartItem;
-export type BuildDetail={slot:string;label:string;name:string;price:number};
+export type BuildDetail={slot:string;label:string;name:string;price:number;productId?:string;color?:string};
 export type CartSummaryRow={
  id:string;name:string;quantity:number;price:number;
  product?:Product;build?:CustomBuildCartItem;details?:BuildDetail[];
@@ -50,12 +50,12 @@ export function summarizeCart(cart:readonly CartEntry[],products:readonly Produc
   for(const slot of BUILD_CORE_SLOTS){
    const p=products.find(item=>item.id===selected[slot]&&item.category===slot);
    if(!p||!Number.isSafeInteger(p.price)||p.price<=0){valid=false;continue}
-   details.push({slot,label:BUILD_SLOT_LABELS[slot],name:p.name,price:p.price});
+   details.push({slot,label:BUILD_SLOT_LABELS[slot],name:p.name,price:p.price,productId:p.id,color:p.colorHex||undefined});
   }
   if(selected.extras){
    const p=products.find(item=>item.id===selected.extras&&isBuildExtra(item));
    if(!p||p.price<=0)valid=false;
-   else details.push({slot:'extras',label:'Дополнительно',name:p.name,price:p.price});
+   else details.push({slot:'extras',label:'Дополнительно',name:p.name,price:p.price,productId:p.id,color:p.colorHex||undefined});
   }
   if(selected.os&&!BUILD_OS_OPTIONS.some(option=>option.id===selected.os))valid=false;
   const price=details.reduce((sum,item)=>sum+item.price,0)+PC_ASSEMBLY_FEE;
