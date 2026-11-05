@@ -74,7 +74,7 @@ export default function ComparePage({
      <a href={'/product/'+left.id} className="skp-cmp-image-link" onClick={e=>{e.preventDefault();openProduct(left.id)}}><ComparisonImage product={left}/></a>
      <div className="skp-cmp-product-bottom"><div className="skp-cmp-product-description">
        <small>{left.brand||comparisonLabel(category)}</small><button type="button" onClick={()=>openProduct(left.id)}><h2>{left.name}</h2></button>
-       <p>{left.description}</p><span className="skp-cmp-availability">{left.stock?'В наличии':'Под заказ'}</span>
+       <p>{left.description}</p>
       </div><div className="skp-cmp-product-buy"><strong>{money(left.price)}</strong><button type="button" className="skp-cmp-cart-button" disabled={!left.price} onClick={()=>onAddCart(left.id)}><ShoppingCart size={17}/>В корзину</button></div></div>
     </article>}
     <ComparisonRadar left={left} right={right} category={category}/>
@@ -83,7 +83,7 @@ export default function ComparePage({
      <a href={'/product/'+right.id} className="skp-cmp-image-link" onClick={e=>{e.preventDefault();openProduct(right.id)}}><ComparisonImage product={right}/></a>
      <div className="skp-cmp-product-bottom"><div className="skp-cmp-product-description">
        <small>{right.brand||comparisonLabel(category)}</small><button type="button" onClick={()=>openProduct(right.id)}><h2>{right.name}</h2></button>
-       <p>{right.description}</p><span className="skp-cmp-availability">{right.stock?'В наличии':'Под заказ'}</span>
+       <p>{right.description}</p>
       </div><div className="skp-cmp-product-buy"><strong>{money(right.price)}</strong><button type="button" className="skp-cmp-cart-button" disabled={!right.price} onClick={()=>onAddCart(right.id)}><ShoppingCart size={17}/>В корзину</button></div></div>
     </article>:<div className="skp-cmp-empty-slot"><GitCompareArrows size={40}/><h3>Добавьте второй товар</h3><p>Выберите модель из категории «{comparisonLabel(category)}».</p><button type="button" onClick={goBack}>Выбрать товар <ArrowRight size={16}/></button></div>}
    </div>
