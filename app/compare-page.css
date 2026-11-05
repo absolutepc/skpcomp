@@ -233,3 +233,10 @@
  .skp-cmp .skp-cmp-note{margin:8px 0 0;line-height:1.35}
  .skp-compare-page.skp-cmp{padding-bottom:8px!important;margin-bottom:0!important;min-height:0!important}
 }
+
+/* Comparison cards: price at the left edge, cart action at the right. */
+@media(min-width:751px){
+ .skp-cmp .skp-cmp-product-buy{width:100%;justify-content:space-between;flex-wrap:nowrap}
+ .skp-cmp .skp-cmp-product-buy strong{margin-right:auto;text-align:left}
+ .skp-cmp .skp-cmp-product-buy .skp-cmp-cart-button{flex-shrink:0}
+}
