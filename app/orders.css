@@ -121,3 +121,11 @@
 .skp-checkout-summary .skp-order-os-note{color:#aeb6b9}
 .skp-admin-orders .skp-admin-mobile-order{background:#fff;color:#20252a}
 .skp-admin-orders .skp-admin-mobile-order strong,.skp-admin-orders .skp-admin-mobile-order p,.skp-admin-orders .skp-admin-mobile-order summary{color:#20252a}
+
+/* Order history uses dark cards: never inherit the light admin table palette. */
+.skp-orders-page .skp-order-components-table{background:#15191b;color:#edf1f3}
+.skp-orders-page .skp-order-components-table th{background:#272e31;color:#f4f6f7;border-bottom:1px solid #424a4d}
+.skp-orders-page .skp-order-components-table td{background:#15191b;color:#e3e8eb;border-bottom:1px solid #343c3f}
+.skp-orders-page .skp-order-components-table tbody tr:nth-child(even) td{background:#1b2022}
+.skp-orders-page .skp-order-components-table td:last-child{color:#f3f6f7}
+.skp-orders-page .skp-order-os-note{color:#aeb9c1}
