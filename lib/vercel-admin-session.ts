@@ -13,7 +13,6 @@ const sessionFromRequest=(r:Request)=>{
 };
 async function database(){
  const {DB}=await storeEnv();
- await DB.prepare('CREATE TABLE IF NOT EXISTS skp_admin_sessions_v2 (token_hash TEXT PRIMARY KEY, expires INTEGER NOT NULL)').run();
  return DB;
 }
 export async function adminAuthorized(request:Request){
