@@ -28,17 +28,23 @@ function Steps({order}:{order:PublicOrder}){
   {order.status==='cancelled'&&<p className="skp-order-cancelled"><XCircle size={16}/> Заказ отменён — дальнейшая сборка остановлена.</p>}
  </div>;
 }
-function Lines({order}:{order:PublicOrder}){
+function ComponentTable({parts,products}:{parts:{slot:string;label:string;name:string;price:number}[];products?:Product[]}){
+ return <div className="skp-order-table-scroll"><table className="skp-order-components-table"><thead><tr><th>Комплектующее</th><th>Наименование</th><th>ID товара</th><th>Цвет</th><th>Цена</th></tr></thead><tbody>{parts.map((part,index)=>{
+  const product=products?.find(p=>p.name===part.name&&p.price===part.price)||products?.find(p=>p.name===part.name);
+  return <tr key={part.slot+'-'+index}><td>{part.label}</td><td>{part.name}</td><td>{product?.id||'—'}</td><td>{product?.colorHex||'—'}</td><td>{money(part.price)}</td></tr>;
+ })}</tbody></table></div>;
+}
+function Lines({order,products}:{order:PublicOrder;products?:Product[]}){
  return <div className="skp-order-lines">{order.items.map(item=>
   <div key={item.productId}><div className="skp-order-item-description">{item.name}<small>{item.quantity} шт. × {money(item.unitPrice)}</small>
- {item.components&&<details className="skp-order-build-details"><summary>Комплектация сборки</summary>{item.components.map(part=><div key={part.slot}>{part.label}: {part.name} — {money(part.price)}</div>)}<div>ОС: {item.os||'Без ОС'} (лицензия отдельно)</div><div>Сборка и проверка: {money(item.assemblyFee||0)}</div></details>}</div><strong>{money(item.subtotal)}</strong></div>
+ {item.components&&<details className="skp-order-build-details"><summary>Комплектация сборки ({item.components.length})</summary><ComponentTable parts={item.components} products={products}/><p className="skp-order-os-note">ОС: {item.os||'Без ОС'} (лицензия отдельно)</p></details>}</div><strong>{money(item.subtotal)}</strong></div>
  )}<div className="skp-order-sum"><strong>Итого</strong><strong>{money(order.total)}</strong></div></div>;
 }
-function OrderCard({order,extra}:{order:PublicOrder;extra?:React.ReactNode}){
+function OrderCard({order,extra,products}:{order:PublicOrder;extra?:React.ReactNode;products?:Product[]}){
  return <article className="skp-order-card">
   <div className="skp-order-card-head"><div><strong>{order.number}</strong><small>Создан: {datetime(order.createdAt)}</small></div><Status status={order.status}/></div>
   <Steps order={order}/>
-  <details><summary>Состав заказа ({order.items.length} поз.)</summary><Lines order={order}/></details>
+  <details><summary>Состав заказа ({order.items.length} поз.)</summary><Lines order={order} products={products}/></details>
   {!!order.events.length&&<details className="skp-order-events"><summary>История изменений</summary><ol>{order.events.map((event,index)=><li key={index}><span>{ORDER_LABELS[event.status]}</span><time>{datetime(event.createdAt)}</time></li>)}</ol></details>}
   {extra}
  </article>;
@@ -90,7 +96,7 @@ export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:CartEntry[
   </div>
   {error&&<p className="skp-order-error" role="alert">{error}</p>}
   <div className="skp-order-buttons"><button className="button light" onClick={()=>nav('/orders')}>Мои заказы <ArrowRight size={16}/></button>
-   {whatsapp&&<a className="button outline" rel="noopener noreferrer" target="_blank" href={'https://wa.me/'+whatsapp+'?text='+encodeURIComponent('Здравствуйте! Оформил заявку '+created.order.number+' на сайте SKP. Прошу подтвердить наличие и условия.')}>Написать менеджеру</a>}
+   {whatsapp&&<a className="button outline" rel="noopener noreferrer" target="_blank" href={'https://wa.me/'+whatsapp+'?text='+encodeURIComponent('Здравствуйте! Оформил заявку '+created.order.number+' на сайте SKP. Ссылка на заказ: '+window.location.origin+'/orders. Прошу подтвердить наличие и условия.')}>Написать менеджеру</a>}
   </div>
  </div></section>;
  return <section className="skp-orders-page">
@@ -109,7 +115,7 @@ export function Checkout({cart,products,whatsapp,onSuccess,nav}:{cart:CartEntry[
     {!canSubmit&&<p className="skp-order-error">Проверьте состав корзины: у каждого товара должна быть указана цена, не более 20 шт. одной позиции.</p>}
    </form>
    <aside className="skp-checkout-summary"><h2>Ваш заказ</h2>{summary.map(item=><div key={item.id}><div className="skp-order-item-description">{item.name}<small>{item.quantity} шт. × {money(item.price)}</small>
- {item.build&&<details className="skp-order-build-details"><summary>Комплектация ПК</summary>{item.details?.map(part=><div key={part.slot}>{part.label}: {part.name} — {money(part.price)}</div>)}<div>ОС: {item.os} (лицензия отдельно)</div><div>Сборка и проверка: {money(item.assemblyFee||0)}</div></details>}</div><strong>{money(item.price*item.quantity)}</strong></div>)}<div className="skp-order-sum"><strong>Итого</strong><strong>{money(total)}</strong></div></aside>
+ {item.build&&<details className="skp-order-build-details" open><summary>Комплектация ПК</summary><ComponentTable parts={item.details||[]} products={products}/><p className="skp-order-os-note">ОС: {item.os} (лицензия отдельно)</p></details>}</div><strong>{money(item.price*item.quantity)}</strong></div>)}<div className="skp-order-sum"><strong>Итого</strong><strong>{money(total)}</strong></div></aside>
   </div>}
  </section>;
 }
@@ -216,16 +222,16 @@ export function AdminOrders({products=[]}:{products?:Product[]}){
       <details className="skp-admin-mobile-order-expand"><summary>Подробнее о заказе</summary>
        <p><b>Покупатель:</b> {order.customerName}</p><p><b>Телефон:</b> <a href={'tel:'+order.phone.replace(/[^\d+]/g,'')}>{order.phone}</a></p>
        {order.comment&&<p><b>Комментарий:</b> {order.comment}</p>}
-       <Lines order={order}/>
+       <Lines order={order} products={products}/>
        <div className="skp-admin-order-actions">{ORDER_TRANSITIONS[order.status].map(status=>
-        <button type="button" key={status} className={'button '+(status==='cancelled'?'outline':'light')} disabled={busy===order.id} onClick={()=>void change(order.id,status)}>
+        <button type="button" key={status} className={'button skp-order-action '+(status==='cancelled'?'skp-order-action-cancel':'skp-order-action-next')} disabled={busy===order.id} onClick={()=>void change(order.id,status)}>
          {status==='cancelled'?'Отменить заказ':'Перевести: '+ORDER_LABELS[status]}</button>
        )}{!ORDER_TRANSITIONS[order.status].length&&<small>Заказ закрыт</small>}</div>
       </details>
     </article>)}
    </div>
    <div className="skp-admin-orders-desktop">{filtered.map(order=>
-   <OrderCard key={order.id} order={order} extra={<div className="skp-admin-order-details">
+   <OrderCard key={order.id} order={order} products={products} extra={<div className="skp-admin-order-details">
     <p><strong>Покупатель:</strong> {order.customerName} · <a href={'tel:'+order.phone.replace(/[^\d+]/g,'')}><Phone size={13}/> {order.phone}</a></p>
     {order.comment&&<p><strong>Комментарий:</strong> {order.comment}</p>}
     <div className="skp-admin-order-actions">{ORDER_TRANSITIONS[order.status].map(status=>
