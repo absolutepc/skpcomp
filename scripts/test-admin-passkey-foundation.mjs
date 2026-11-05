@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const config=readFileSync(new URL('../lib/admin-passkey-config.ts',import.meta.url),'utf8');
+const challenge=readFileSync(new URL('../lib/admin-qr-challenge.ts',import.meta.url),'utf8');
+assert.match(config,/ADMIN_RP_ID='skpcomp\.vercel\.app'/);
+assert.match(config,/ADMIN_RP_ORIGIN='https:\/\/skpcomp\.vercel\.app'/);
+assert.match(config,/Unsupported WebAuthn origin/);
+assert.match(config,/if\(!origin\)return false/);
+assert.match(challenge,/getRandomValues\(new Uint8Array\(32\)\)/);
+assert.match(challenge,/crypto\.subtle\.digest\('SHA-256'/);
+assert.match(challenge,/ADMIN_QR_TTL_SECONDS/);
+assert.doesNotMatch(challenge,/Set-Cookie|adminCookie|ADMIN_PASSWORD/);
+console.log('Passkey foundation static checks passed. End-to-end auth NOT tested.');
