@@ -92,3 +92,32 @@
  .skp-admin-orders{padding:15px}
  .skp-order-events time{float:none;display:block;padding-top:3px}
 }
+
+/* Admin orders: dark ink on white surfaces; keep existing outlines. */
+.skp-admin-orders{background:#f7f8fa;color:#20252a;border-color:#e0e5eb}
+.skp-admin-orders .skp-order-card{background:#fff;color:#20252a;border-color:#dce2e8}
+.skp-admin-orders .skp-order-card-head>div>strong,.skp-admin-orders .skp-order-card summary,.skp-admin-orders .skp-order-lines strong,.skp-admin-orders .skp-order-item-description{color:#20252a}
+.skp-admin-orders .skp-order-card-head small,.skp-admin-orders .skp-order-step,.skp-admin-orders .skp-order-step.reached,.skp-admin-orders .skp-order-events li,.skp-admin-orders .skp-order-events time,.skp-admin-orders .skp-order-lines small,.skp-admin-orders .skp-admin-order-details p,.skp-admin-orders .skp-admin-orders-header p,.skp-admin-orders .skp-admin-orders-header h2 small{color:#515b66}
+.skp-admin-orders .skp-order-step.current>small,.skp-admin-orders .skp-order-card summary:hover{color:#20252a}
+.skp-admin-orders .skp-order-step.reached>span{color:#111}
+.skp-admin-orders .skp-order-card details,.skp-admin-orders .skp-admin-order-details,.skp-admin-orders .skp-order-lines>div:not(.skp-order-sum){border-color:#dce2e8}
+.skp-admin-orders .skp-order-sum strong:last-child,.skp-admin-orders .skp-admin-order-details a{color:#20252a}
+.skp-admin-orders .skp-order-status{color:#20252a;background:#f1f2f4}
+.skp-admin-orders .skp-admin-orders-header select,.skp-admin-orders input[type=search]{background:#fff;color:#20252a;border-color:#dce2e8}
+.skp-admin-orders .skp-order-action{border-radius:9px;color:#fff;font-weight:750}
+.skp-admin-orders .skp-order-action-next{background:#188a4c;border:1px solid #188a4c}
+.skp-admin-orders .skp-order-action-next:hover{background:#11713d}
+.skp-admin-orders .skp-order-action-cancel{background:#c82e38;border:1px solid #c82e38}
+.skp-admin-orders .skp-order-action-cancel:hover{background:#a9212b}
+.skp-order-table-scroll{overflow-x:auto;max-width:100%;margin:10px 0}
+.skp-order-components-table{width:100%;border-collapse:collapse;font-size:11px;min-width:560px;text-align:left}
+.skp-order-components-table th{background:#edf0f3;color:#343a40;font-weight:750;padding:10px 9px}
+.skp-order-components-table td{padding:10px 9px;border-bottom:1px solid #e0e4e8;color:#252a2f;vertical-align:top}
+.skp-order-components-table td:last-child{white-space:nowrap;font-weight:750}
+.skp-order-os-note{font-size:11px;margin:9px 0;color:#56616b}
+.skp-checkout-summary .skp-order-components-table{min-width:490px}
+.skp-checkout-summary .skp-order-components-table th{background:#272d30;color:#e9ecef}
+.skp-checkout-summary .skp-order-components-table td{color:#d4d9dd;border-color:#353b3f}
+.skp-checkout-summary .skp-order-os-note{color:#aeb6b9}
+.skp-admin-orders .skp-admin-mobile-order{background:#fff;color:#20252a}
+.skp-admin-orders .skp-admin-mobile-order strong,.skp-admin-orders .skp-admin-mobile-order p,.skp-admin-orders .skp-admin-mobile-order summary{color:#20252a}
