@@ -167,3 +167,9 @@
  .skp-pdp .skp-pdp-tabs.skp-pdp-tabs-ready{grid-template-columns:repeat(4,minmax(0,1fr))}
  .skp-pdp .skp-pdp-tabs.skp-pdp-tabs-ready button{font-size:9px;white-space:nowrap}
 }
+
+/* Related products: keep the full price and ₽ on one line without moving actions. */
+.skp-pdp-related .skp-neon-purchase{min-width:0;gap:4px}
+.skp-pdp-related .skp-neon-purchase>strong{min-width:0;white-space:nowrap;flex:0 1 auto;font-size:clamp(13px,1.05vw,17px);letter-spacing:-.6px;line-height:1.15}
+.skp-pdp-related .skp-neon-purchase-buttons{flex:0 0 auto;gap:4px;margin-left:auto}
+@media(max-width:700px){.skp-pdp-related .skp-neon-purchase>strong{font-size:clamp(12px,3vw,16px)}}
