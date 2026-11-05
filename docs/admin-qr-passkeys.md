@@ -31,3 +31,10 @@ Status: **development branch only**. No QR sign-in is enabled on production.
 - Enrollment, approval and session issuance must be implemented together; a partial QR endpoint must not be enabled as an alternative login.
 - Use a maintained, audited WebAuthn server verifier (for example `@simplewebauthn/server`) with compatible dependencies and lockfile; do not hand-roll CBOR, COSE, signature, and authenticator-data verification.
 - Do not alter the SKP storefront appearance while developing authentication.
+
+## Implementation checkpoint — Vercel branch
+- Feature branch: `feature/vercel-admin-qr-passkeys`, created directly from `vercel-deploy` (not `main`).
+- Added `lib/vercel-admin-session.ts` with cryptographically random 32-byte cookie tokens, hashed DB persistence and revocation. **Not wired into production handlers yet.**
+- The current Vercel store and orders APIs each implement the legacy password-derived cookie check independently. Before enabling v2 sessions, audit every admin-protected endpoint and migrate all checks together; otherwise some admin actions will fail after login.
+- Confirm whether the deployed Vercel project uses `SKP_DATABASE_PROVIDER=postgres`; `DATABASE_URL` alone does not select the PG adapter.
+- A WebAuthn verifier, persistent challenges, QR approval/consumption, device enrollment, end-to-end tests and actual build validation remain outstanding.
