@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync(new URL('../app/api/admin/qr/decision/route.ts',import.meta.url),'utf8');
+assert.match(src,/isTrustedAdminOrigin\(request\)/);
+assert.match(src,/isPendingQrRequest\(requestToken\)/);
+assert.match(src,/verifyAdminPasskeyAssertion\(/);
+assert.match(src,/markQrApprovedAfterVerification\(requestToken,verified\.credentialId\)/);
+assert.ok(src.indexOf('verifyAdminPasskeyAssertion(')<src.indexOf('markQrApprovedAfterVerification('));
+assert.doesNotMatch(src,/denyPendingQr\(/);
+assert.doesNotMatch(src,/issueAdminSession|Set-Cookie/);
+console.log('QR decision route verification ordering checks passed.');
