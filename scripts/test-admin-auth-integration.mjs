@@ -114,8 +114,9 @@ const priorAdminPassword=process.env.ADMIN_PASSWORD;
 try{
  process.env.SKP_MEDIA_PROVIDER='vercel-blob';
  process.env.BLOB_READ_WRITE_TOKEN='integration-only-not-a-real-blob-token';
- process.env.ADMIN_PASSWORD='';
- assert.equal((await blobUploadPost(post('/api/media/blob-upload',{}))).status,401,'Blob upload requires admin session even without legacy password');
+ // Password login is disabled by SKP_ADMIN_REQUIRE_PASSKEY, but ADMIN_PASSWORD
+ // remains the internal session-hashing secret until a separate secret migration.
+ assert.equal((await blobUploadPost(post('/api/media/blob-upload',{}))).status,401,'Blob upload requires admin session in passkey-only login mode');
  assert.equal((await blobUploadPost(post('/api/media/blob-upload',{}, {cookie:cookie.split(';')[0],origin:'https://evil.example'}))).status,403,'Blob upload rejects cross-origin requests');
  assert.equal((await blobUploadPost(new Request(origin+'/api/media/blob-upload',{method:'POST',headers:{origin,'content-type':'application/json',cookie:cookie.split(';')[0]},body:'{'}))).status,400,'Blob upload rejects malformed JSON after session authorization');
 }finally{
