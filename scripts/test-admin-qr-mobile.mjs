@@ -21,6 +21,11 @@ assert.match(mobile,/finally\{submitting\.current=false;setBusy\(false\)/);
 assert.match(mobile,/setApproved\(true\)/);
 assert.match(mobile,/e instanceof DOMException&&e\.name==='NotAllowedError'/);
 assert.match(mobile,/e instanceof DOMException&&e\.name==='AbortError'/);
+// The API reports unavailable QR requests as 404 and throttling as 429.
+assert.match(mobile,/optionsResponse\.status===404/);
+assert.match(mobile,/optionsResponse\.status===429/);
+assert.match(mobile,/result\.status===404\|\|result\.status===409/);
+assert.match(mobile,/result\.status===429/);
 assert.match(mobile,/disabled=\{busy\|\|approved\|\|/);
 assert.match(mobile,/\/api\/admin\/qr\/options/);
 assert.match(mobile,/\/api\/admin\/qr\/decision/);
