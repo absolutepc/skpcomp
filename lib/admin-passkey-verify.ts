@@ -26,7 +26,8 @@ export async function verifyAdminPasskeyAssertion(input:{
  if(!stored)return null;
  const verification=await verifyAuthenticationResponse({
   response,
-  expectedChallenge:challenge,
+  // Browser serializes the 32 challenge bytes as base64url, not hex.
+  expectedChallenge:Buffer.from(challenge,'hex').toString('base64url'),
   expectedOrigin:config.origin,
   expectedRPID:config.rpID,
   requireUserVerification:true,
