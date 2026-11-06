@@ -20,4 +20,8 @@ assert.match(store,/adminCookie\(r,'',0\)/);
 const sessions=read('lib/vercel-admin-session.ts');
 assert.match(sessions,/DELETE FROM skp_admin_sessions_v2 WHERE token_hash=\?/);
 assert.match(sessions,/return adminCookie\(request,'',0\)/);
+const shop=read('app/shop.tsx');
+assert.doesNotMatch(shop,/await api\(\{action:'logout'\}\);setAuth\(false\)/);
+assert.match(shop,/if\(result\.ok\)setAuth\(false\)/);
+assert.match(shop,/Не удалось завершить сессию/);
 console.log('Shared admin authorization wiring checks passed.');
