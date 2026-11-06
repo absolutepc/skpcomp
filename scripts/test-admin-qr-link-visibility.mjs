@@ -19,6 +19,9 @@ assert.match(source,/setRequest\(null\);setStatus\('pending'\);\s*\/\/ A new QR 
 assert.match(source,/requestGeneration=useRef\(0\)/);
 assert.match(source,/generation===requestGeneration\.current/);
 assert.match(source,/session\.authenticated!==true/);
+assert.match(source,/Date\.now\(\)<nextPollAt/);
+assert.match(source,/consecutiveFailures=0;nextPollAt=0/);
+assert.match(source,/Math\.min\(2000\*2\*\*consecutiveFailures,15000\)/);
 assert.match(source,/response\.status===429\?'Слишком много проверок\. Подождите немного\.'/);
 assert.ok(source.includes('const expiryTimer=setTimeout('));
 assert.ok(source.includes('clearTimeout(expiryTimer)'));
