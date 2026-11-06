@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 
 type QrRequest={requestToken:string;desktopSecret:string;expiresAt:number;approvalUrl:string};
 type Status='pending'|'approved'|'rejected'|'expired'|'consumed'|string;
@@ -8,6 +8,8 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
  const [status,setStatus]=useState<Status>('pending');
  const [error,setError]=useState('');
  const [busy,setBusy]=useState(false);
+ const onAuthenticatedRef=useRef(onAuthenticated);
+ useEffect(()=>{onAuthenticatedRef.current=onAuthenticated;},[onAuthenticated]);
  async function start(){
   setBusy(true);setError('');setRequest(null);setStatus('pending');
   try{
@@ -21,9 +23,9 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
  }
  useEffect(()=>{
   if(!request)return;
-  let active=true,working=false;
+  let active=true,working=false,finished=false;
   const poll=async()=>{
-   if(!active||working)return;
+   if(!active||working||finished)return;
    working=true;
    try{
     const response=await fetch('/api/admin/qr/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:request.requestToken,desktopSecret:request.desktopSecret}),cache:'no-store',credentials:'same-origin'});
@@ -32,17 +34,18 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
     if(!active)return;
     setStatus(result.status);
     if(result.status==='approved'){
+     finished=true;
      const consumed=await fetch('/api/admin/qr/consume',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:request.requestToken,desktopSecret:request.desktopSecret}),cache:'no-store',credentials:'same-origin'});
      if(!consumed.ok)throw Error('Подтверждение получено, но завершить вход не удалось.');
-     if(active){active=false;onAuthenticated();}
+     if(active){active=false;onAuthenticatedRef.current();}
     }
-   }catch(e){if(active)setError(e instanceof Error?e.message:'Ошибка соединения');}
+   }catch(e){if(active){setError(e instanceof Error?e.message:'Ошибка соединения');if(finished)setStatus('error');}}
    finally{working=false;}
   };
   void poll();
-  const timer=setInterval(()=>{if(['pending','approved'].includes(status))void poll();},2500);
+  const timer=setInterval(()=>{void poll();},2500);
   return()=>{active=false;clearInterval(timer);};
- },[request,status,onAuthenticated]);
+ },[request]);
  return <div className="skp-admin-qr-login">
   <h3>Вход с iPhone</h3>
   <p>Подтвердите вход с помощью зарегистрированного Passkey. Пароль по-прежнему доступен.</p>
