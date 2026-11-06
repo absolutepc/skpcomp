@@ -87,6 +87,13 @@ assert.match(loggedIn.headers.get('set-cookie'),/HttpOnly; Secure; SameSite=Stri
 assert.equal((await consumeRoute(post('/api/admin/qr/consume',flow))).status,409);
 const {GET:staffGet,POST:staffPost}=await import('../app/api/admin/staff/route.ts');
 assert.equal((await staffGet(authenticated)).status,403);
+const ownerCookie=await issueAdminSession(request,owner.id);
+const ownerRequest=new Request(origin+'/api/admin/staff',{headers:{cookie:ownerCookie.split(';')[0]}});
+assert.equal(await adminAuthorized(ownerRequest),true,'owner database session authorizes admin APIs');
+assert.equal(await activeSessionOwnerId(ownerRequest),owner.id,'owner privileges require an active owner session');
+assert.equal((await staffGet(ownerRequest)).status,200,'owner can inspect employee management');
+assert.equal((await staffGet(new Request(origin+'/api/admin/staff'))).status,403,'unauthenticated callers cannot inspect employees');
+
 assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Forbidden'},{cookie:cookie.split(';')[0]}))).status,403);
 // Browser-equivalent `fmt:none` WebAuthn attestation through onboarding HTTP routes.
 const {POST:inviteOptions}=await import('../app/api/admin/invite/options/route.ts');
