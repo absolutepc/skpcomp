@@ -1,5 +1,6 @@
 import {activeOwnerSessionBinding} from '../../../../../../lib/vercel-admin-session';
 import {ownerStepUpContext} from '../../../../../../lib/admin-owner-step-up';
+import type {OwnerStepUpAction} from '../../../../../../lib/admin-owner-step-up-grants';
 import {isTrustedAdminOrigin,adminWebAuthnConfig} from '../../../../../../lib/admin-passkey-config';
 import {issueWebAuthnChallenge} from '../../../../../../lib/admin-webauthn-challenges';
 import {allowNewAdminQrRequest} from '../../../../../../lib/admin-qr-rate-limit';
@@ -17,8 +18,11 @@ export async function POST(request:Request){
   if(!binding)return Response.json({error:'Forbidden'},{status:403,headers});
   if(!await allowNewAdminQrRequest())
    return Response.json({error:'Rate limited'},{status:429,headers});
+  const body=await request.json().catch(()=>null) as {action?:unknown}|null;
+  const action=body?.action;
+  if(action!=='owner-passkey-enroll'&&action!=='owner-passkey-revoke')return Response.json({error:'Invalid action'},{status:400,headers});
   const {rpID}=adminWebAuthnConfig(request.headers.get('origin')||'');
-  const {challenge,expiresAt}=await issueWebAuthnChallenge('authenticate',ownerStepUpContext(binding.ownerId,binding.sessionHash));
+  const {challenge,expiresAt}=await issueWebAuthnChallenge('authenticate',ownerStepUpContext(binding.ownerId,binding.sessionHash,action as OwnerStepUpAction));
   return Response.json({challenge,expiresAt,rpID,userVerification:'required'},{headers});
  }catch{return Response.json({error:'Unavailable'},{status:503,headers})}
 }
