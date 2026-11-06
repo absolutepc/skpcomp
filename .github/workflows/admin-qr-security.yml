@@ -41,6 +41,8 @@ jobs:
         run: node scripts/test-admin-qr-schema.mjs
       - name: Check QR URL handling
         run: node scripts/test-admin-qr-url.mjs
+      - name: Check QR creation route
+        run: node scripts/test-admin-qr-create-route.mjs
       - name: Check QR decision persistence
         run: node scripts/test-admin-qr-decision.mjs
       - name: Check QR persistence helpers
