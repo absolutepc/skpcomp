@@ -4,7 +4,9 @@ import type {RegistrationResponseJSON} from '@simplewebauthn/server';
 import {adminWebAuthnConfig} from './admin-passkey-config';
 import {consumeWebAuthnChallenge} from './admin-webauthn-challenges';
 import {adminTransaction,isPostgres,storeEnv} from '../db/platform-store';
-import {activeSessionOwnerId} from './vercel-admin-session';
+import {activeOwnerSessionBinding} from './vercel-admin-session';
+
+export const ownerBackupChallengeContext=(ownerId:string,sessionHash:string)=>ownerBackupChallengeContext(ownerId,binding.sessionHash)+':'+sessionHash;
 
 /** Complete owner backup enrollment only after cryptographic attestation and
  * a fresh owner session check under a database row lock.
@@ -17,8 +19,9 @@ export async function completeOwnerBackupPasskey(input:{
 }):Promise<boolean>{
  if(!isPostgres()||!/^[a-f0-9]{64}$/.test(input.challenge)||
   !input.response||typeof input.response.id!=='string')return false;
- const ownerId=await activeSessionOwnerId(input.request);
- if(!ownerId)return false;
+ const binding=await activeOwnerSessionBinding(input.request);
+ if(!binding)return false;
+ const ownerId=binding.ownerId;
  const config=adminWebAuthnConfig(input.origin);
  const verified=await verifyRegistrationResponse({
   response:input.response,
@@ -37,7 +40,8 @@ export async function completeOwnerBackupPasskey(input:{
   const {DB}=await storeEnv();
   const owner=await DB.prepare("SELECT id FROM skp_admin_users WHERE id=?::uuid AND role='owner' AND status='active' FOR UPDATE")
    .bind(ownerId).first();
-  if(!owner||await activeSessionOwnerId(input.request)!==ownerId)throw new Error('Owner session invalid');
+  const current=await activeOwnerSessionBinding(input.request);
+  if(!owner||!current||current.ownerId!==ownerId||current.sessionHash!==binding.sessionHash)throw new Error('Owner session invalid');
   if(!await consumeSessionOwnerStepUpGrantInTransaction(input.request,'owner-passkey-enroll'))throw new Error('Step-up grant invalid');
   if(!await consumeWebAuthnChallenge(input.challenge,'register','owner-backup:'+ownerId))throw new Error('Challenge invalid');
   const row=await DB.prepare(`WITH registered AS (
