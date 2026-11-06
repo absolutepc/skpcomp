@@ -41,6 +41,8 @@ jobs:
         run: node scripts/test-admin-qr-schema.mjs
       - name: Check QR URL handling
         run: node scripts/test-admin-qr-url.mjs
+      - name: Check QR consume endpoint
+        run: node scripts/test-admin-qr-consume-route.mjs
       - name: Check QR decision endpoint
         run: node scripts/test-admin-qr-decision-route.mjs
       - name: Check QR WebAuthn options route
