@@ -22,16 +22,16 @@ export async function adminAuthorized(request:Request){
  const {ADMIN_PASSWORD}=await storeEnv();
  if(!ADMIN_PASSWORD)return false;
  const DB=await database();
- return !!await DB.prepare('SELECT token_hash FROM skp_admin_sessions_v2 WHERE token_hash=? AND expires>?')
+ return !!await DB.prepare('SELECT s.token_hash FROM skp_admin_sessions_v2 s JOIN skp_admin_users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires>? AND u.status='active'')
    .bind(await hash('skp-admin-v2:'+ADMIN_PASSWORD+':'+token),now()).first();
 }
-export async function issueAdminSession(request:Request){
+export async function issueAdminSession(request:Request,userId:string){
  const {ADMIN_PASSWORD}=await storeEnv();
  if(!ADMIN_PASSWORD)throw new Error('Admin password not configured');
  const DB=await database();
  const token=randomToken();
- await DB.prepare('INSERT INTO skp_admin_sessions_v2 (token_hash,expires) VALUES (?,?)')
-  .bind(await hash('skp-admin-v2:'+ADMIN_PASSWORD+':'+token),now()+SESSION_SECONDS).run();
+ await DB.prepare('INSERT INTO skp_admin_sessions_v2 (token_hash,expires,user_id) SELECT ?,?,id FROM skp_admin_users WHERE id=?::uuid AND status='active'')
+  .bind(await hash('skp-admin-v2:'+ADMIN_PASSWORD+':'+token),now()+SESSION_SECONDS,userId).run();
  return adminCookie(request,token,SESSION_SECONDS);
 }
 export async function revokeAdminSession(request:Request){
