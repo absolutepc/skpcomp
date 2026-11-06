@@ -10,6 +10,9 @@ on:
       - 'app/api/admin/invite/**'
       - 'app/admin/staff/**'
       - 'app/admin/invite/**'
+      - 'app/admin-key/**'
+      - 'public/admin-key.webmanifest'
+      - 'public/admin-key-sw.js'
       - 'app/api/store/route.ts'
       - 'app/admin-qr-login.tsx'
       - 'app/shop.tsx'
@@ -32,6 +35,9 @@ on:
       - 'app/api/admin/invite/**'
       - 'app/admin/staff/**'
       - 'app/admin/invite/**'
+      - 'app/admin-key/**'
+      - 'public/admin-key.webmanifest'
+      - 'public/admin-key-sw.js'
       - 'app/api/store/route.ts'
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
@@ -65,6 +71,8 @@ jobs:
         run: node scripts/test-admin-staff-api.mjs
       - name: Check employee invitations
         run: node scripts/test-admin-employee-invites.mjs
+      - name: Check Admin Key PWA
+        run: node scripts/test-admin-key-pwa.mjs
       - name: Check atomic employee Passkey binding
         run: node scripts/test-admin-employee-passkey-binding.mjs
       - name: Check QR URL handling
