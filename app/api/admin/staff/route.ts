@@ -16,7 +16,13 @@ export async function GET(request:Request){
   const {DB}=await storeEnv();
   const users=await DB.prepare(`SELECT id,display_name,role,status,created_at,blocked_at
    FROM skp_admin_users ORDER BY created_at DESC`).all();
-  return Response.json({users:users.results},{headers});
+  const events=await DB.prepare(`SELECT e.id,e.event_type,e.created_at,e.actor_user_id,e.target_user_id,
+   actor.display_name AS actor_name,target.display_name AS target_name
+   FROM skp_admin_security_events e
+   LEFT JOIN skp_admin_users actor ON actor.id=e.actor_user_id
+   LEFT JOIN skp_admin_users target ON target.id=e.target_user_id
+   ORDER BY e.created_at DESC,e.id DESC LIMIT 100`).all();
+  return Response.json({users:users.results,events:events.results},{headers});
  }catch{return Response.json({error:'Unavailable'},{status:503,headers})}
 }
 
