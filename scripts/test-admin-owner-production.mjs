@@ -37,7 +37,7 @@ function assertion(k,challenge,{uv=true,wrongOrigin=false,badSignature=false}={}
 }
 async function proof(k,action,extra={}){
  const response=await options(post({action,...extra}));assert.equal(response.status,200);const o=await response.json();
- const body={action,challenge:o.challenge,response:assertion(k,o.challenge)};
+ const body={action,...extra,challenge:o.challenge,response:assertion(k,o.challenge)};
  assert.equal((await complete(post(body))).status,200);return body;
 }
 function cbor(value){
@@ -65,6 +65,8 @@ const registration={id:backup.id,rawId:backup.id,type:'public-key',clientExtensi
 assert.equal((await backupComplete(post({challenge:registrationOptions.challenge,response:registration,deviceLabel:'Backup'}))).status,200);
 assert.equal((await inventory(get())).status,200);
 assert.equal((await (await inventory(get())).json()).backupVerified,false,'registration is not proof of backup usability');
+const testOptions=await (await options(post({action:'owner-passkey-test',fingerprint:backup.fingerprint}))).json();
+assert.equal((await complete(post({action:'owner-passkey-test',fingerprint:backup.fingerprint,challenge:testOptions.challenge,response:assertion(primary,testOptions.challenge)}))).status,403,'server enforces the selected key, not just browser allowCredentials');
 await proof(backup,'owner-passkey-test',{fingerprint:backup.fingerprint});
 assert.equal((await (await inventory(get())).json()).backupVerified,true);
 assert.equal((await backupOptions(post())).status,403,'testing a key never authorizes enrollment');
@@ -73,7 +75,8 @@ assert.equal((await revoke(post({fingerprint:primary.fingerprint}))).status,403,
 const selection=await (await options(post({action:'owner-passkey-revoke',fingerprint:primary.fingerprint}))).json();
 assert.deepEqual(selection.allowCredentials.map(k=>k.id),[backup.id]);
 await proof(backup,'owner-passkey-revoke');
-assert.equal((await revoke(post({fingerprint:primary.fingerprint}))).status,200);
+const revocations=await Promise.all([revoke(post({fingerprint:primary.fingerprint})),revoke(post({fingerprint:primary.fingerprint}))]);
+assert.deepEqual(revocations.map(r=>r.status).sort(),[200,403],'concurrent revocation has one winner');
 assert.equal(await adminAuthorized(get()),false,'all existing owner sessions are invalidated');
 assert.equal(await adminAuthorized(new Request(origin,{headers:{cookie:otherCookie}})),false);
 assert.equal((await db.query('SELECT count(*)::int AS n FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1',[owner.id])).rows[0].n,0);
@@ -83,6 +86,9 @@ assert.equal((await revoke(post({fingerprint:backup.fingerprint},remaining))).st
 const {POST:store}=await import('../app/api/store/route.ts');
 assert.equal((await store(post({action:'login',password:process.env.ADMIN_PASSWORD},''))).status,200);
 const legacy='skp_admin='+createHash('sha256').update('skp-session:'+process.env.ADMIN_PASSWORD).digest('hex');
+const {withAdminOperation}=await import('../lib/admin-operation.ts');
+assert.equal((await withAdminOperation(post({},legacy),async()=>Response.json({ok:true}))).status,200,'password administrative operations remain available');
+assert.equal((await withAdminOperation(get(),async()=>Response.json({ok:true}))).status,401,'revoked session cannot perform administrative work');
 assert.equal((await options(post({action:'owner-passkey-enroll'},legacy))).status,403,'shared password must not grant owner management');
 await db.query('DELETE FROM skp_admin_sessions_v2 WHERE user_id=$1',[owner.id]);
 await db.query('DELETE FROM skp_admin_passkeys WHERE user_id=$1',[owner.id]);

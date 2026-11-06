@@ -22,8 +22,9 @@ export async function POST(request:Request){
  try{input=JSON.parse(raw)}catch{return Response.json({error:'Invalid request'},{status:400,headers})}
  if(!input||typeof input!=='object'||Array.isArray(input))
   return Response.json({error:'Invalid request'},{status:400,headers});
- const {challenge,response,action}=input as Record<string,unknown>;
+ const {challenge,response,action,fingerprint}=input as Record<string,unknown>;
  if(action!=='owner-passkey-enroll'&&action!=='owner-passkey-revoke'&&action!=='owner-passkey-test')return Response.json({error:'Invalid action'},{status:400,headers});
+ if((fingerprint!==undefined&&(typeof fingerprint!=='string'||!/^[a-f0-9]{32}$/.test(fingerprint)))||(action==='owner-passkey-test'&&typeof fingerprint!=='string'))return Response.json({error:'Invalid fingerprint'},{status:400,headers});
  if(typeof challenge!=='string'||!/^[a-f0-9]{64}$/.test(challenge)||
   !response||typeof response!=='object'||Array.isArray(response))
   return Response.json({error:'Invalid request'},{status:400,headers});
@@ -32,7 +33,7 @@ export async function POST(request:Request){
    return Response.json({error:'Rate limited'},{status:429,headers});
   const verified=await verifyOwnerStepUp({
    request,challenge,response:response as AuthenticationResponseJSON,
-   origin:request.headers.get('origin')||'',action,
+   origin:request.headers.get('origin')||'',action,fingerprint:fingerprint as string|undefined,
   }).catch(()=>false);
   if(!verified)return Response.json({error:'Verification failed'},{status:403,headers});
   return Response.json({verified:true},{headers});

@@ -28,7 +28,7 @@ export default function OwnerPasskeysPage(){
    const proof=await navigator.credentials.get({publicKey:{challenge:bytes(step.challenge),rpId:step.rpID,allowCredentials:allowed(step),userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
    if(!proof)throw Error('Подтверждение отменено.');
    const a=proof.response as AuthenticatorAssertionResponse;
-   await post('/api/admin/owner/step-up/complete',{action:'owner-passkey-revoke',challenge:step.challenge,response:{id:proof.id,rawId:b64(proof.rawId),type:'public-key',response:{clientDataJSON:b64(a.clientDataJSON),authenticatorData:b64(a.authenticatorData),signature:b64(a.signature),userHandle:a.userHandle?b64(a.userHandle):null},clientExtensionResults:proof.getClientExtensionResults()}});
+   await post('/api/admin/owner/step-up/complete',{action:'owner-passkey-revoke',fingerprint,challenge:step.challenge,response:{id:proof.id,rawId:b64(proof.rawId),type:'public-key',response:{clientDataJSON:b64(a.clientDataJSON),authenticatorData:b64(a.authenticatorData),signature:b64(a.signature),userHandle:a.userHandle?b64(a.userHandle):null},clientExtensionResults:proof.getClientExtensionResults()}});
    const result=await post('/api/admin/owner/passkeys/revoke',{fingerprint}) as {revoked?:boolean};
    if(!result.revoked)throw Error('Сервер не подтвердил отзыв ключа.');
    setItems([]);setError('Сессии владельца завершены. Войдите заново с оставшимся ключом через QR на главной странице.');
@@ -66,7 +66,7 @@ export default function OwnerPasskeysPage(){
    const proof=await navigator.credentials.get({publicKey:{challenge:bytes(step.challenge),rpId:step.rpID,allowCredentials:allowed(step),userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
    if(!proof)throw Error('Проверка отменена.');
    const a=proof.response as AuthenticatorAssertionResponse;
-   await post('/api/admin/owner/step-up/complete',{action:'owner-passkey-test',challenge:step.challenge,response:{id:proof.id,rawId:b64(proof.rawId),type:'public-key',response:{clientDataJSON:b64(a.clientDataJSON),authenticatorData:b64(a.authenticatorData),signature:b64(a.signature),userHandle:a.userHandle?b64(a.userHandle):null},clientExtensionResults:proof.getClientExtensionResults()}});
+   await post('/api/admin/owner/step-up/complete',{action:'owner-passkey-test',fingerprint,challenge:step.challenge,response:{id:proof.id,rawId:b64(proof.rawId),type:'public-key',response:{clientDataJSON:b64(a.clientDataJSON),authenticatorData:b64(a.authenticatorData),signature:b64(a.signature),userHandle:a.userHandle?b64(a.userHandle):null},clientExtensionResults:proof.getClientExtensionResults()}});
    const refreshed=await fetch('/api/admin/owner/passkeys',{credentials:'same-origin',cache:'no-store'});
    if(!refreshed.ok)throw Error('Не удалось обновить результат проверки.');
    const data=await refreshed.json() as {passkeys:Credential[]};setItems(data.passkeys);
