@@ -5,7 +5,11 @@ const hex=(s:string)=>Uint8Array.from(s.match(/.{2}/g)??[],v=>parseInt(v,16));
 export default function ApproveQr(){
  const [busy,setBusy]=useState(false),[message,setMessage]=useState(''),[approved,setApproved]=useState(false);
  const submitting=useRef(false);
- const token=typeof window==='undefined'?'':new URLSearchParams(window.location.search).get('request')||'';
+ const token=typeof window==='undefined'?'':(()=>{
+  const url=new URL(window.location.href);
+  return url.hash===''&&url.searchParams.size===1&&url.searchParams.has('request')
+   ?url.searchParams.get('request')||'':'';
+ })();
  async function approve(){
   if(submitting.current||approved)return;
   submitting.current=true;
