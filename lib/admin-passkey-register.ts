@@ -22,7 +22,8 @@ export async function verifyAndStoreAdminPasskeyRegistration(input:{
  const config=adminWebAuthnConfig(origin);
  const verification=await verifyRegistrationResponse({
   response,
-  expectedChallenge:challenge,
+  // Browser receives the challenge as 32 raw bytes, encoded as base64url in WebAuthn JSON.
+  expectedChallenge:Buffer.from(challenge,'hex').toString('base64url'),
   expectedOrigin:config.origin,
   expectedRPID:config.rpID,
   requireUserVerification:true,
