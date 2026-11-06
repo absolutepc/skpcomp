@@ -5,4 +5,6 @@ assert.match(src,/isTrustedAdminOrigin\(request\)/);
 assert.match(src,/redeemQrSession\(request,requestToken,desktopSecret\)/);
 assert.match(src,/'Set-Cookie':cookie/);
 assert.match(src,/no-store/);
+assert.match(src,/!input\|\|typeof input!=='object'\|\|Array\.isArray\(input\)/);
+assert.match(src,/request\.headers\.get\('content-type'\)\?\.split\(';'\)/);
 console.log('QR consume route ordering checks passed.');
