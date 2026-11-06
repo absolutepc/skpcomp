@@ -63,6 +63,16 @@ const {POST:createRoute}=await import('../app/api/admin/qr/create/route.ts');
 const {POST:optionsRoute}=await import('../app/api/admin/qr/options/route.ts');
 const {POST:decisionRoute}=await import('../app/api/admin/qr/decision/route.ts');
 const {POST:consumeRoute}=await import('../app/api/admin/qr/consume/route.ts');
+const {POST:statusRoute}=await import('../app/api/admin/qr/status/route.ts');
+// Exercise the real HTTP handlers: arrays, malformed media types and malformed JSON
+// must be rejected before any QR state is read or redeemed.
+for(const handler of [statusRoute,consumeRoute]){
+ assert.equal((await handler(new Request(origin+'/api/admin/qr/check',{method:'POST',headers:{origin,'content-type':'application/json'},body:'[]'}))).status,400);
+ assert.equal((await handler(new Request(origin+'/api/admin/qr/check',{method:'POST',headers:{origin,'content-type':'application/json'},body:'{' }))).status,400);
+ assert.equal((await handler(new Request(origin+'/api/admin/qr/check',{method:'POST',headers:{origin,'content-type':'application/json-evil'},body:'{}'}))).status,415);
+ assert.equal((await handler(new Request(origin+'/api/admin/qr/check',{method:'POST',headers:{origin:'https://evil.example','content-type':'application/json'},body:'{}'}))).status,403);
+}
+
 assert.equal((await createRoute(post('/api/admin/qr/create',{}, {origin:'https://evil.example'}))).status,403);
 const created=await createRoute(post('/api/admin/qr/create'));
 assert.equal(created.status,201);
