@@ -13,6 +13,8 @@ assert.match(script,/ROLLBACK/);
 assert.match(script,/COMMIT/);
 assert.match(script,/randomBytes\(32\)/);
 assert.match(script,/15 minutes/);
+assert.ok(script.includes("inviteOrigin!=='https://skpcomp.vercel.app'"));
+assert.ok(script.includes("inviteOrigin+'/admin/invite?token='+token"));
 assert.match(script,/manual_owner_bootstrap/);
 assert.match(invites,/u.role IN/);
 assert.match(binding,/u.role IN/);
