@@ -19,6 +19,7 @@ export default function OwnerPasskeysPage(){
  const activeCount=items.filter(x=>x.status==='active').length;
  async function revoke(fingerprint:string){
   if(busy||activeCount<2)return;
+  if(!window.isSecureContext||!navigator.credentials?.get){setNotice('Для отзыва ключа требуется HTTPS и поддержка Passkey.');return;}
   setBusy(true);setNotice('Подтвердите действующий Passkey для отзыва выбранного ключа.');
   try{
    const step=await post('/api/admin/owner/step-up/options',{action:'owner-passkey-revoke'}) as Challenge;valid(step);
@@ -83,7 +84,7 @@ export default function OwnerPasskeysPage(){
      </div>
      <p style={{color:'#aaa',fontSize:14}}>Создан: {date(item.created_at)}</p>
      <p style={{color:'#aaa',fontSize:14}}>Последний вход: {date(item.last_used_at)}</p>
-     {item.status==='active'&&activeCount>1&&(pendingRevoke===item.fingerprint?<div style={{display:'grid',gap:8}}><p>Отозвать этот ключ? После подтверждения он перестанет работать для новых входов.</p><div style={{display:'flex',gap:8}}><button type='button' disabled={busy} onClick={()=>void revoke(item.fingerprint)} style={{padding:10,border:'1px solid #e56',borderRadius:8,color:'#fff',background:'#722'}}>Подтвердить отзыв</button><button type='button' disabled={busy} onClick={()=>setPendingRevoke(null)} style={{padding:10,border:'1px solid #555',borderRadius:8,color:'#fff',background:'#222'}}>Отмена</button></div></div>:<button type='button' disabled={busy} onClick={()=>setPendingRevoke(item.fingerprint)} style={{padding:10,border:'1px solid #555',borderRadius:8,color:'#fff',background:'#222'}}>Отозвать ключ</button>)}
+     {item.status==='active'&&activeCount>1&&(pendingRevoke===item.fingerprint?<div style={{display:'grid',gap:8}}><p>Отозвать этот ключ? Действие необратимо. Убедитесь, что другой активный ключ уже проверен на отдельном устройстве: наличие ключа в списке не гарантирует возможность восстановления доступа.</p><div style={{display:'flex',gap:8}}><button type='button' disabled={busy} onClick={()=>void revoke(item.fingerprint)} style={{padding:10,border:'1px solid #e56',borderRadius:8,color:'#fff',background:'#722'}}>Подтвердить отзыв</button><button type='button' disabled={busy} onClick={()=>setPendingRevoke(null)} style={{padding:10,border:'1px solid #555',borderRadius:8,color:'#fff',background:'#222'}}>Отмена</button></div></div>:<button type='button' disabled={busy} onClick={()=>setPendingRevoke(item.fingerprint)} style={{padding:10,border:'1px solid #555',borderRadius:8,color:'#fff',background:'#222'}}>Отозвать ключ</button>)}
     </article>)}</div>}
    <section style={{marginTop:28,padding:18,border:'1px solid #333',borderRadius:12,display:'grid',gap:12}}>
     <h2>Добавить резервный ключ</h2>
