@@ -5,7 +5,7 @@ assert.match(src,/isTrustedAdminOrigin\(request\)/);
 assert.match(src,/allowNewAdminQrRequest/);
 assert.match(src,/status:429/);
 assert.match(src,/createPendingQr\(\)/);
-assert.match(src,/adminQrApprovalUrl\(requestToken\)/);
+assert.match(src,/adminQrApprovalUrl\(requestToken,request\.headers\.get\('origin'\)\|\|''\)/);
 assert.match(src,/desktopSecret,expiresAt/);
 assert.match(src,/no-store/);
 assert.doesNotMatch(src,/issueAdminSession|Set-Cookie/);
