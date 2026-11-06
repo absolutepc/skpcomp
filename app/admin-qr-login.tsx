@@ -21,6 +21,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
  const [busy,setBusy]=useState(false);
  const [qrDataUrl,setQrDataUrl]=useState('');
  const [qrError,setQrError]=useState('');
+ const [secondsLeft,setSecondsLeft]=useState(0);
  const onAuthenticatedRef=useRef(onAuthenticated);
  const requestGeneration=useRef(0);
  const creating=useRef(false);
@@ -41,6 +42,13 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   }catch(e){if(generation===requestGeneration.current)setError(e instanceof Error?e.message:'Ошибка соединения');}
   finally{if(generation===requestGeneration.current){creating.current=false;setBusy(false);}}
  }
+ useEffect(()=>{
+  if(!request||status!=='pending'){setSecondsLeft(0);return;}
+  const update=()=>setSecondsLeft(Math.max(0,Math.ceil(request.expiresAt-Date.now()/1000)));
+  update();
+  const interval=setInterval(update,1000);
+  return()=>clearInterval(interval);
+ },[request,status]);
  useEffect(()=>{
   let active=true;
   setQrDataUrl('');
@@ -107,6 +115,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
    </div>}
    {canApprove&&<a href={request.approvalUrl} target="_blank" rel="noopener noreferrer">Открыть страницу подтверждения на iPhone</a>}
    {canApprove&&<button type="button" className="button outline" onClick={()=>{if(request.expiresAt*1000<=Date.now()){setStatus('expired');return;}void navigator.clipboard.writeText(request.approvalUrl).catch(()=>setError('Не удалось скопировать ссылку. Откройте её вручную.'));}}>Скопировать ссылку для iPhone</button>}
+   {canApprove&&<p role="timer" aria-live="off"><small>QR-код действует ещё {secondsLeft} сек.</small></p>}
    {canApprove&&<p><small>Отсканируйте QR-код камерой iPhone и подтвердите вход через Face ID / Passkey. Если сканирование недоступно, откройте ссылку в Safari.</small></p>}
    <button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>Создать новый запрос</button>
   </>}
