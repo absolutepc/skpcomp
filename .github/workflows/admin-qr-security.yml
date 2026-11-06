@@ -45,6 +45,8 @@ jobs:
         run: node scripts/test-admin-qr-schema.mjs
       - name: Check QR URL handling
         run: node scripts/test-admin-qr-url.mjs
+      - name: Check local QR code rendering and link safety
+        run: node scripts/test-admin-qr-link-visibility.mjs
       - name: Check shared admin authorization
         run: node scripts/test-admin-authorization-wiring.mjs
       - name: Check QR consume endpoint
