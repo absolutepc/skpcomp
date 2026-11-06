@@ -16,6 +16,6 @@ const endpoints=[
 ];
 for(const path of endpoints){
  const source=read(path);
- assert.match(source,/skp_admin|adminAuthorized/,path+' must authenticate admin requests');
+ assert.match(source,/skp_admin|adminAuthorized|isAuthorizedAdmin/,path+' must authenticate admin requests');
 }
 console.log('Admin session foundation: static checks passed (NOT integration tests)');
