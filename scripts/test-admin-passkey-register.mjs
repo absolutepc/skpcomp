@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync(new URL('../lib/admin-passkey-register.ts',import.meta.url),'utf8');
+assert.match(src,/verifyRegistrationResponse\(/);
+assert.match(src,/requireUserVerification:true/);
+assert.match(src,/expectedChallenge:challenge/);
+assert.match(src,/expectedOrigin:config\.origin/);
+assert.match(src,/expectedRPID:config\.rpID/);
+assert.match(src,/consumeWebAuthnChallenge\(challenge,'register',contextId\)/);
+assert.match(src,/saveVerifiedAdminPasskey/);
+assert.doesNotMatch(src,/Set-Cookie|issueAdminSession/);
+console.log('WebAuthn registration verifier integration invariants passed.');
