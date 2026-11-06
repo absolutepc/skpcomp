@@ -78,7 +78,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
    working=true;
    try{
     const response=await fetch('/api/admin/qr/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:request.requestToken,desktopSecret:request.desktopSecret}),cache:'no-store',credentials:'same-origin'});
-    if(!response.ok)throw Error('Не удалось проверить подтверждение.');
+    if(!response.ok)throw Error(response.status===429?'Слишком много проверок. Подождите немного.':'Не удалось проверить подтверждение.');
     const result=await response.json() as {status:Status};
     if(!active||terminal)return;
     if(Date.now()>=expiresAtMs){terminal=true;setStatus('expired');return;}
