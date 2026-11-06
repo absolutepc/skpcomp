@@ -24,6 +24,7 @@ export default function ApproveQr(){
    if(credential.type!=='public-key')throw Error('Недействительный тип учётных данных.');
    const response=credential.response as AuthenticatorAssertionResponse;
    const assertion={id:credential.id,rawId:encode(credential.rawId),type:'public-key',response:{clientDataJSON:encode(response.clientDataJSON),authenticatorData:encode(response.authenticatorData),signature:encode(response.signature),userHandle:response.userHandle?encode(response.userHandle):undefined},clientExtensionResults:credential.getClientExtensionResults()};
+   if(options.expiresAt*1000<=Date.now())throw Error('Время подтверждения истекло во время Face ID. Создайте новый QR-запрос на компьютере.');
    // Only submit an assertion after the user has explicitly initiated approval.
    const result=await fetch('/api/admin/qr/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token,challenge:options.challenge,response:assertion,approved:true}),credentials:'same-origin',cache:'no-store'});
    if(!result.ok)throw Error(result.status===404||result.status===409?'QR-код уже подтверждён или больше не действует. Проверьте компьютер и при необходимости создайте новый запрос.':result.status===429?'Слишком много попыток. Подождите минуту перед повтором.':result.status===410?'Срок действия QR-кода истёк. Создайте новый запрос на компьютере.':'Сервер не подтвердил вход.');
