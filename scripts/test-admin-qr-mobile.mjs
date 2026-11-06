@@ -26,6 +26,11 @@ assert.match(desktop,/url\.pathname==='\/admin\/qr\/approve'/);
 assert.match(desktop,/url\.searchParams\.get\('request'\)===requestToken/);
 assert.match(desktop,/url\.searchParams\.size===1/);
 assert.match(desktop,/desktopSecret:request\.desktopSecret/);
+// The desktop must reject unknown server states before rendering them.
+assert.match(desktop,/if\(!\['pending','approved','denied','expired','consumed'\]\.includes\(result\.status\)\)throw Error/);
+assert.match(desktop,/setError\(''\);\s*setStatus\(result\.status\)/);
+// A superseded create request must not parse or install stale QR data.
+assert.match(desktop,/if\(generation!==requestGeneration\.current\)return;\s*const value=await response\.json\(\)/);
 assert.match(verifier,/expectedChallenge:Buffer\.from\(challenge,'hex'\)\.toString\('base64url'\)/);
 assert.match(decision,/verifyAdminPasskeyAssertion/);
 assert.match(decision,/markQrApprovedAfterVerification/);
