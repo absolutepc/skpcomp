@@ -60,6 +60,20 @@ try{
  assert.ok(expired);
  await pool.query("UPDATE skp_admin_owner_step_up_grants SET created_at=now()-interval '5 minutes', expires_at=now()-interval '1 second' WHERE grant_hash IN (SELECT grant_hash FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1 AND consumed_at IS NULL)",[owner.id]);
  assert.equal(await adminTransaction(()=>consumeSessionOwnerStepUpGrantInTransaction(requestA,action)),false,'expired grant must fail');
+ // Revocation is atomic and must never remove the last usable owner credential.
+ const {revokeOwnerPasskey}=await import('../lib/admin-owner-passkey-revocation.ts');
+ const {rows:[keyA]}=await pool.query("INSERT INTO skp_admin_passkeys(credential_id,public_key,user_id,device_label) VALUES ('owner-test-key-a',decode('01020304050607080910111213141516','hex'),$1,'Primary') RETURNING md5(credential_id) AS fingerprint",[owner.id]);
+ const {rows:[keyB]}=await pool.query("INSERT INTO skp_admin_passkeys(credential_id,public_key,user_id,device_label) VALUES ('owner-test-key-b',decode('01020304050607080910111213141516','hex'),$1,'Backup') RETURNING md5(credential_id) AS fingerprint",[owner.id]);
+ assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'revocation requires a fresh action-specific grant');
+ await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,'owner-passkey-revoke');
+ assert.equal(await revokeOwnerPasskey(requestB,keyB.fingerprint),false,'another owner session cannot revoke');
+ assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),true,'verified owner may revoke backup');
+ assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'revocation replay must fail');
+ await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,'owner-passkey-revoke');
+ assert.equal(await revokeOwnerPasskey(requestA,keyA.fingerprint),false,'last active owner key must be protected');
+ const {rows:[state]}=await pool.query("SELECT count(*) FILTER(WHERE revoked_at IS NULL)::int AS active,count(*) FILTER(WHERE revoked_at IS NOT NULL)::int AS revoked FROM skp_admin_passkeys WHERE user_id=$1",[owner.id]);
+ assert.equal(state.active,1);assert.equal(state.revoked,1);
+ await pool.query('DELETE FROM skp_admin_passkeys WHERE user_id=$1',[owner.id]);
  await pool.query('DELETE FROM skp_admin_webauthn_challenges WHERE request_id=$1',[contextA]);
  await pool.query('DELETE FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1',[owner.id]);
  await pool.query('DELETE FROM skp_admin_sessions_v2 WHERE user_id=$1',[owner.id]);
