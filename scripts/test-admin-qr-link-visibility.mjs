@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../app/admin-qr-login.tsx',import.meta.url),'utf8');
+assert.match(source,/const canApprove=Boolean\(request&&status==='pending'&&request\.expiresAt\*1000>Date\.now\(\)\)/);
+assert.match(source,/\{canApprove&&<a href=\{request\.approvalUrl\}/);
+assert.match(source,/\{canApprove&&<button type="button"/);
+assert.match(source,/if\(request\.expiresAt\*1000<=Date\.now\(\)\)/);
+assert.match(source,/\['rejected','expired','consumed'\]\.includes\(result\.status\)/);
+assert.match(source,/isTrustedApprovalUrl\(value\.approvalUrl,value\.requestToken\)/);
+console.log('Admin QR link visibility regression checks passed (static only).');
