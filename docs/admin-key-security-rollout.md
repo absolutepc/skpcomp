@@ -2,7 +2,18 @@
 
 Status: development only. Do not deploy or run either database migration without explicit owner approval.
 
-## Existing code risks that must be resolved before rollout
+## Current implementation audit (6 November 2026)
+
+See [the development report](admin-key-development-report.md) for implemented
+fixes, real PostgreSQL/WebAuthn tests, concurrency guarantees and remaining gates.
+QR scanning no longer depends on BarcodeDetector. Employee invitations and
+transactional employee lockout are implemented. The historical list below records
+the original risks; items 7, 8 and 10 are now covered by code and automated tests,
+with physical iPhone/PWA acceptance still outstanding. Legacy password enrollment
+is disabled at Passkey-only cutover and must not be used for employee onboarding.
+External pre-issued Blob upload capabilities and owner recovery remain launch gates.
+
+## Original rollout risks (historical checklist)
 
 1. `lib/admin-authorization.ts` accepts a shared-password-derived legacy cookie. This bypasses employee-specific revocation for ordinary store APIs. Remove or disable this path only after the owner's new account and recovery access have been verified.
 2. `app/api/store/route.ts` still issues that legacy cookie on password login. Keep production operational during migration, but do not declare the employee system secure while it remains usable.
