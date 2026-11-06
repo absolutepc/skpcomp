@@ -108,6 +108,18 @@ process.env.ADMIN_PASSWORD='';
 await assert.rejects(redeemQrSession(request,retry.requestToken,retry.desktopSecret));
 process.env.ADMIN_PASSWORD='integration-only-not-a-real-secret';
 assert.equal((await db.query('SELECT status FROM skp_admin_qr_requests WHERE request_hash=$1',[await qrChallengeHash(retry.requestToken)])).rows[0].status,'approved');
+ // A failed session insert must leave a usable approval, not merely an approved row.
+ const recoverable=await createPendingQr();
+ assert.equal(await markQrApprovedAfterVerification(recoverable.requestToken,credentialId),true);
+ process.env.ADMIN_PASSWORD='';
+ await assert.rejects(redeemQrSession(request,recoverable.requestToken,recoverable.desktopSecret));
+ process.env.ADMIN_PASSWORD='integration-only-not-a-real-secret';
+ assert.equal((await db.query('SELECT status FROM skp_admin_qr_requests WHERE request_hash=$1',[await qrChallengeHash(recoverable.requestToken)])).rows[0].status,'approved');
+ const recoveredCookie=await redeemQrSession(request,recoverable.requestToken,recoverable.desktopSecret);
+ assert.ok(recoveredCookie,'retry must issue a session after the failed transaction rolls back');
+ assert.equal((await db.query('SELECT status FROM skp_admin_qr_requests WHERE request_hash=$1',[await qrChallengeHash(recoverable.requestToken)])).rows[0].status,'consumed');
+ assert.equal(await redeemQrSession(request,recoverable.requestToken,recoverable.desktopSecret),null,'successful retry remains single-use');
+
 // Deterministic concurrent blocking: hold UPDATE open, start child operations,
 // confirm they wait on the row, then commit the block. No timing-only success.
 const invite=await issueEmployeeInvitation(owner.id,employee.id);
