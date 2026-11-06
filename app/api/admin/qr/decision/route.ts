@@ -1,4 +1,5 @@
 import {isTrustedAdminOrigin} from '../../../../../lib/admin-passkey-config';
+import {allowNewAdminQrRequest} from '../../../../../lib/admin-qr-rate-limit';
 import {isPendingQrRequest} from '../../../../../lib/admin-qr-eligibility';
 import {verifyAdminPasskeyAssertion} from '../../../../../lib/admin-passkey-verify';
 import {markQrApprovedAfterVerification} from '../../../../../lib/admin-qr-decision';
@@ -21,6 +22,8 @@ export async function POST(request:Request){
   typeof approved!=='boolean')
   return Response.json({error:'Invalid request'},{status:400,headers});
  try{
+  if(!await allowNewAdminQrRequest())
+   return Response.json({error:'Too many requests'},{status:429,headers:{...headers,'Retry-After':'60'}});
   if(!await isPendingQrRequest(requestToken))
    return Response.json({error:'QR request unavailable'},{status:404,headers});
   if(typeof challenge!=='string'||!/^[a-f0-9]{64}$/.test(challenge)||
