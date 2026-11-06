@@ -98,7 +98,7 @@ test('owner backup routes stay disabled outside isolated staging',()=>{
  ];
  for(const path of routes){
   const source=readFileSync(new URL('../'+path,import.meta.url),'utf8');
-  assert.match(source,/SKP_ADMIN_OWNER_BACKUP_ENROLLMENT\s*!==\s*'staging'/,path);
+  assert.match(source,/isIsolatedOwnerBackupRequest\(request\)/,path);
   assert.match(source,/status:404/,path);
   assert.match(source,/isTrustedAdminOrigin\(request\)/,path);
  }
@@ -106,4 +106,6 @@ test('owner backup routes stay disabled outside isolated staging',()=>{
  assert.match(config,/SKP_ADMIN_STAGING_DB_ISOLATED\s*!==\s*'confirmed'/);
  assert.match(config,/configured===ADMIN_RP_ORIGIN/);
  assert.match(config,/url\.hostname===ADMIN_RP_ID/);
+ assert.match(config,/if\(!origin\|\|origin===ADMIN_RP_ORIGIN\)return false/);
+ assert.match(config,/new URL\(request.url\).origin===staging.origin/);
 });
