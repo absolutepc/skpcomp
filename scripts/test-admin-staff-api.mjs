@@ -12,6 +12,6 @@ assert.match(staff,/action!=='block'&&action!=='create'/);
 assert.match(staff,/INSERT INTO skp_admin_users/);
 assert.match(staff,/user_created/);
 assert.match(staff,/ownerId===userId/);
-assert.match(staff,/revokeEmployeeAccess\(userId\)/);
+assert.match(staff,/revokeEmployeeAccess\(userId as string\)/);
 assert.match(staff,/Cache-Control':'no-store/);
 console.log('Owner-only staff API static checks passed.');
