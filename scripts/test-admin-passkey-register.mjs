@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 const src=readFileSync(new URL('../lib/admin-passkey-register.ts',import.meta.url),'utf8');
 assert.match(src,/verifyRegistrationResponse\(/);
 assert.match(src,/requireUserVerification:true/);
-assert.match(src,/expectedChallenge:challenge/);
+assert.match(src,/expectedChallenge:Buffer\\.from\\(challenge,'hex'\\)\\.toString\\('base64url'\\)/);
 assert.match(src,/expectedOrigin:config\.origin/);
 assert.match(src,/expectedRPID:config\.rpID/);
 assert.match(src,/consumeWebAuthnChallenge\(challenge,'register',contextId\)/);
