@@ -35,7 +35,7 @@ export async function findValidEmployeeInvitation(token:string):Promise<string|n
  const row=await DB.prepare(`SELECT i.user_id FROM skp_admin_employee_invites i
   JOIN skp_admin_users u ON u.id=i.user_id
   WHERE i.token_hash=? AND i.consumed_at IS NULL AND i.revoked_at IS NULL
-   AND i.expires_at>now() AND u.status='active' AND u.role='admin'`)
+   AND i.expires_at>now() AND u.status='active' AND u.role IN ('owner','admin')`)
   .bind(hash(token)).first<{user_id:string}>();
  return row?.user_id??null;
 }
