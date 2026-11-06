@@ -5,7 +5,7 @@ assert.match(source,/const canApprove=Boolean\(request&&status==='pending'&&requ
 assert.match(source,/\{canApprove&&<a href=\{request\.approvalUrl\}/);
 assert.match(source,/\{canApprove&&<button type="button"/);
 assert.match(source,/if\(request\.expiresAt\*1000<=Date\.now\(\)\)/);
-assert.match(source,/\['rejected','expired','consumed'\]\.includes\(result\.status\)/);
+assert.match(source,/\['denied','expired','consumed'\]\.includes\(result\.status\)/);
 assert.match(source,/isTrustedApprovalUrl\(value\.approvalUrl,value\.requestToken\)/);
 assert.match(source,/import\('qrcode'\)/);
 assert.match(source,/QRCode\.toDataURL\(request\.approvalUrl/);
