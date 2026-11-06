@@ -96,7 +96,7 @@ assert.equal((await staffGet(new Request(origin+'/api/admin/staff'))).status,403
 const ownerHeaders={cookie:ownerCookie.split(';')[0]};
 assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'CSRF blocked'},{...ownerHeaders,origin:'https://evil.example'}))).status,403,'owner session does not bypass CSRF origin protection');
 assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Wrong media type'},{...ownerHeaders,'content-type':'text/plain'}))).status,415);
-assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Array payload'},{...ownerHeaders,'content-type':'application/json'}))).status,400);
+assert.equal((await staffPost(post('/api/admin/staff',[{action:'create',displayName:'Array payload'}],ownerHeaders))).status,400);
 const ownerCreated=await staffPost(post('/api/admin/staff',{action:'create',displayName:'Integration test staff'},ownerHeaders));
 assert.equal(ownerCreated.status,201,'owner can create an employee through the HTTP API');
 const newStaff=(await ownerCreated.json()).user;
