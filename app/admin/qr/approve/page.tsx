@@ -3,9 +3,10 @@ import {useState} from 'react';
 const encode=(b:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const hex=(s:string)=>Uint8Array.from(s.match(/.{2}/g)??[],v=>parseInt(v,16));
 export default function ApproveQr(){
- const [busy,setBusy]=useState(false),[message,setMessage]=useState('');
+ const [busy,setBusy]=useState(false),[message,setMessage]=useState(''),[approved,setApproved]=useState(false);
  const token=typeof window==='undefined'?'':new URLSearchParams(window.location.search).get('request')||'';
  async function approve(){
+  if(busy||approved)return;
   if(!/^[a-f0-9]{64}$/.test(token))return setMessage('Недействительная ссылка.');
   if(typeof PublicKeyCredential==='undefined'||!navigator.credentials)return setMessage('Passkey не поддерживается этим браузером.');
   setBusy(true);setMessage('');
@@ -25,13 +26,14 @@ export default function ApproveQr(){
    if(!result.ok)throw Error('Сервер не подтвердил вход.');
    const decision=await result.json() as {status?:string};
    if(decision.status!=='approved')throw Error('Сервер не подтвердил вход.');
+   setApproved(true);
    setMessage('Вход подтверждён. Вернитесь к компьютеру.');
   }catch(e){setMessage(e instanceof Error?e.message:'Ошибка подтверждения.');}
   finally{setBusy(false);}
  }
  return <main style={{minHeight:'100dvh',background:'#080808',color:'#fff',display:'grid',placeItems:'center',padding:24}}><section style={{maxWidth:420,width:'100%',textAlign:'center'}}>
   <h1>SKP — подтверждение входа</h1><p>Подтверждайте только тот вход, который вы начали на своём компьютере.</p>
-  <button type="button" disabled={busy||!/^[a-f0-9]{64}$/.test(token)} onClick={()=>void approve()} style={{padding:'14px 24px',background:'#ffd22e',color:'#111',border:0,borderRadius:10,fontWeight:700}}>{busy?'Подтверждение…':'Подтвердить через Face ID / Passkey'}</button>
+  <button type="button" disabled={busy||approved||!/^[a-f0-9]{64}$/.test(token)} onClick={()=>void approve()} style={{padding:'14px 24px',background:'#ffd22e',color:'#111',border:0,borderRadius:10,fontWeight:700}}>{approved?'Вход подтверждён':busy?'Подтверждение…':'Подтвердить через Face ID / Passkey'}</button>
   <p role="status" aria-live="polite">{message}</p>
  </section></main>;
 }
