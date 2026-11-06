@@ -1,5 +1,7 @@
 import {isAuthorizedAdmin} from '../../../lib/admin-authorization';
 import {adminCookie} from '../../../lib/admin-cookie';
+import {revokeAdminSession} from '../../../lib/vercel-admin-session';
+import {isPostgres} from '../../../db/platform-store';
 import {storeEnv} from '../../../db/platform-store';
 import {seed} from '../../../lib/seed';
 import {upgradeLogitechGamingMice} from '../../../lib/logitech-mouse-upgrade';
@@ -149,7 +151,15 @@ export async function GET(){
 }
 export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});const b=await r.json() as any;
 if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,await token(),28800)}})}
-if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,'',0)}});
+if(b.action==='logout'){
+ // Revoke database-backed QR sessions before clearing the browser cookie.
+ // Do not report success if revocation fails: the stolen token would remain valid.
+ if(isPostgres()){
+  try{return Response.json({ok:true},{headers:{'Cache-Control':'no-store','Set-Cookie':await revokeAdminSession(r)}})}
+  catch{return Response.json({error:'Не удалось завершить сессию'},{status:503,headers:{'Cache-Control':'no-store'}})}
+ }
+ return Response.json({ok:true},{headers:{'Cache-Control':'no-store','Set-Cookie':adminCookie(r,'',0)}});
+}
 if(!await auth(r))return Response.json({error:'Войдите в административную панель'},{status:401});if(b.action==='check')return Response.json({ok:true});
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
 if(!validateHeroSlides(d.heroSlides))return Response.json({error:'Проверьте настройки слайдов, ссылки и изображения. Максимум 12 слайдов.'},{status:400});
