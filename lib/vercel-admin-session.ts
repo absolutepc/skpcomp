@@ -48,3 +48,21 @@ export async function revokeAdminSession(request:Request){
  }
  return adminCookie(request,'',0);
 }
+
+/** Owner authorization is only available to an explicitly identified,
+ * active owner with a database-backed session. Legacy password cookies
+ * and development bypasses do not grant employee-management privileges.
+ */
+export async function activeSessionOwnerId(request:Request):Promise<string|null>{
+ const token=sessionFromRequest(request);
+ if(!token)return null;
+ const {ADMIN_PASSWORD}=await storeEnv();
+ if(!ADMIN_PASSWORD)return null;
+ const DB=await database();
+ const row=await DB.prepare(`SELECT u.id FROM skp_admin_sessions_v2 s
+  JOIN skp_admin_users u ON u.id=s.user_id
+  WHERE s.token_hash=? AND s.expires>? AND u.status='active' AND u.role='owner'`)
+  .bind(await hash('skp-admin-v2:'+ADMIN_PASSWORD+':'+token),now())
+  .first<{id:string}>();
+ return row?.id??null;
+}
