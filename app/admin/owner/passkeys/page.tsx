@@ -21,7 +21,7 @@ export default function OwnerPasskeysPage(){
   if(busy||activeCount<2)return;
   setBusy(true);setNotice('Подтвердите действующий Passkey для отзыва выбранного ключа.');
   try{
-   const step=await post('/api/admin/owner/step-up/options') as Challenge;valid(step);
+   const step=await post('/api/admin/owner/step-up/options',{action:'owner-passkey-enroll'}) as Challenge;valid(step);
    const proof=await navigator.credentials.get({publicKey:{challenge:bytes(step.challenge),rpId:step.rpID,userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
    if(!proof)throw Error('Подтверждение отменено.');
    const a=proof.response as AuthenticatorAssertionResponse;
@@ -40,11 +40,11 @@ export default function OwnerPasskeysPage(){
   if(!window.isSecureContext||!navigator.credentials?.get||!navigator.credentials?.create){setNotice('Требуется HTTPS и браузер с поддержкой Passkey.');return;}
   setBusy(true);setNotice('Подтвердите действующий Passkey владельца.');
   try{
-   const step=await post('/api/admin/owner/step-up/options') as Challenge;valid(step);
+   const step=await post('/api/admin/owner/step-up/options',{action:'owner-passkey-revoke'}) as Challenge;valid(step);
    const proof=await navigator.credentials.get({publicKey:{challenge:bytes(step.challenge),rpId:step.rpID,userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
    if(!proof)throw Error('Подтверждение отменено.');
    const a=proof.response as AuthenticatorAssertionResponse;
-   await post('/api/admin/owner/step-up/complete',{challenge:step.challenge,response:{id:proof.id,rawId:b64(proof.rawId),type:'public-key',response:{clientDataJSON:b64(a.clientDataJSON),authenticatorData:b64(a.authenticatorData),signature:b64(a.signature),userHandle:a.userHandle?b64(a.userHandle):null},clientExtensionResults:proof.getClientExtensionResults()}});
+   await post('/api/admin/owner/step-up/complete',{action:'owner-passkey-enroll',challenge:step.challenge,response:{id:proof.id,rawId:b64(proof.rawId),type:'public-key',response:{clientDataJSON:b64(a.clientDataJSON),authenticatorData:b64(a.authenticatorData),signature:b64(a.signature),userHandle:a.userHandle?b64(a.userHandle):null},clientExtensionResults:proof.getClientExtensionResults()}});
    setNotice('Теперь подключите резервный USB/NFC-ключ и подтвердите его регистрацию.');
    const options=await post('/api/admin/owner/passkeys/options') as Challenge;valid(options);
    const created=await navigator.credentials.create({publicKey:{challenge:bytes(options.challenge),rp:{id:options.rpID,name:'SKP Admin'},user:{id:bytes(options.challenge),name:'SKP Owner',displayName:'SKP Owner'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{residentKey:'required',userVerification:'required'},attestation:'none',timeout:60000}}) as PublicKeyCredential|null;
