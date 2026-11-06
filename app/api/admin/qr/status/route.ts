@@ -1,5 +1,5 @@
-import {readQrStatus} from '../../../../lib/admin-qr-status';
-import {isTrustedAdminOrigin} from '../../../../lib/admin-passkey-config';
+import {readQrStatus} from '../../../../../lib/admin-qr-status';
+import {isTrustedAdminOrigin} from '../../../../../lib/admin-passkey-config';
 
 export const dynamic='force-dynamic';
 
