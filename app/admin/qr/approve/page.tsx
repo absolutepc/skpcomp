@@ -18,8 +18,11 @@ export default function ApproveQr(){
    if(!credential)throw Error('Подтверждение отменено.');
    const response=credential.response as AuthenticatorAssertionResponse;
    const assertion={id:credential.id,rawId:encode(credential.rawId),type:'public-key',response:{clientDataJSON:encode(response.clientDataJSON),authenticatorData:encode(response.authenticatorData),signature:encode(response.signature),userHandle:response.userHandle?encode(response.userHandle):undefined},clientExtensionResults:credential.getClientExtensionResults()};
+   // Only submit an assertion after the user has explicitly initiated approval.
    const result=await fetch('/api/admin/qr/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token,challenge:options.challenge,response:assertion,approved:true}),credentials:'same-origin',cache:'no-store'});
    if(!result.ok)throw Error('Сервер не подтвердил вход.');
+   const decision=await result.json() as {status?:string};
+   if(decision.status!=='approved')throw Error('Сервер не подтвердил вход.');
    setMessage('Вход подтверждён. Вернитесь к компьютеру.');
   }catch(e){setMessage(e instanceof Error?e.message:'Ошибка подтверждения.');}
   finally{setBusy(false);}
