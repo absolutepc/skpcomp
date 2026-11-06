@@ -119,6 +119,26 @@ assert.equal((await db.query('SELECT status FROM skp_admin_qr_requests WHERE req
  assert.ok(recoveredCookie,'retry must issue a session after the failed transaction rolls back');
  assert.equal((await db.query('SELECT status FROM skp_admin_qr_requests WHERE request_hash=$1',[await qrChallengeHash(recoverable.requestToken)])).rows[0].status,'consumed');
  assert.equal(await redeemQrSession(request,recoverable.requestToken,recoverable.desktopSecret),null,'successful retry remains single-use');
+ // Simulate an actual PostgreSQL INSERT failure inside the shared transaction.
+ // The trigger is installed only in the disposable loopback test database.
+ const insertFailure=await createPendingQr();
+ assert.equal(await markQrApprovedAfterVerification(insertFailure.requestToken,credentialId),true);
+ await db.query(`CREATE FUNCTION skp_test_fail_session_insert() RETURNS trigger
+ LANGUAGE plpgsql AS $ BEGIN RAISE EXCEPTION 'intentional test session insert failure'; END $`);
+ await db.query(`CREATE TRIGGER skp_test_reject_session_insert
+ BEFORE INSERT ON skp_admin_sessions_v2
+ FOR EACH ROW EXECUTE FUNCTION skp_test_fail_session_insert()`);
+ try{
+  await assert.rejects(redeemQrSession(request,insertFailure.requestToken,insertFailure.desktopSecret),/intentional test session insert failure/);
+  assert.equal((await db.query('SELECT status FROM skp_admin_qr_requests WHERE request_hash=$1',[await qrChallengeHash(insertFailure.requestToken)])).rows[0].status,'approved','database insert failure must roll back QR consumption');
+ }finally{
+  await db.query('DROP TRIGGER skp_test_reject_session_insert ON skp_admin_sessions_v2');
+  await db.query('DROP FUNCTION skp_test_fail_session_insert()');
+ }
+ const retryCookie=await redeemQrSession(request,insertFailure.requestToken,insertFailure.desktopSecret);
+ assert.ok(retryCookie,'approval must remain redeemable after an actual PostgreSQL insert failure');
+ assert.equal(await redeemQrSession(request,insertFailure.requestToken,insertFailure.desktopSecret),null);
+
 
 // Deterministic concurrent blocking: hold UPDATE open, start child operations,
 // confirm they wait on the row, then commit the block. No timing-only success.
