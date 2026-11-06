@@ -1,3 +1,4 @@
+import {issueOwnerStepUpGrantAfterVerifiedAssertion} from './admin-owner-step-up-grants';
 import {verifyAuthenticationResponse} from '@simplewebauthn/server';
 import type {AuthenticationResponseJSON} from '@simplewebauthn/server';
 import {adminWebAuthnConfig} from './admin-passkey-config';
@@ -48,6 +49,7 @@ export async function verifyOwnerStepUp(input:{
   if(!owner||!current||current.ownerId!==ownerId||current.sessionHash!==binding.sessionHash)throw new Error('Owner session invalid');
   if(!await consumeWebAuthnChallenge(input.challenge,'authenticate',ownerStepUpContext(ownerId,binding.sessionHash,input.action)))throw new Error('Step-up challenge invalid');
   if(!await advanceVerifiedPasskeyCounter(stored.credential_id,stored.counter,verification.authenticationInfo.newCounter))throw new Error('Passkey counter update failed');
+  if(input.action!=='owner-passkey-test'&&!await issueOwnerStepUpGrantAfterVerifiedAssertion(input.request,input.action,stored.credential_id))throw new Error('Grant issuance failed');
   return true;
  });}catch{return false}
 }

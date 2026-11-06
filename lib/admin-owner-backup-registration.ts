@@ -10,8 +10,8 @@ export const ownerBackupChallengeContext=(ownerId:string,sessionHash:string):str
 
 /** Complete owner backup enrollment only after cryptographic attestation and
  * a fresh owner session check under a database row lock.
- * A valid session alone is NOT sufficient for production-grade step-up:
- * deploy only after independent recent owner reauthentication is added.
+ * A session alone is insufficient: consume a recent grant bound to an active
+ * owner credential in the same transaction as registration.
  */
 export async function completeOwnerBackupPasskey(input:{
  request:Request;challenge:string;response:RegistrationResponseJSON;

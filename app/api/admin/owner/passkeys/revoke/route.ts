@@ -1,11 +1,11 @@
-import {isTrustedAdminOrigin,isIsolatedOwnerBackupRequest} from '../../../../../../lib/admin-passkey-config';
+import {isTrustedAdminOrigin,isOwnerBackupRequest} from '../../../../../../lib/admin-passkey-config';
 import {revokeOwnerPasskey} from '../../../../../../lib/admin-owner-passkey-revocation';
 
 export const dynamic='force-dynamic';
 const headers={'Cache-Control':'no-store, private','X-Content-Type-Options':'nosniff'};
-/** Owner-only staging endpoint. Requires a fresh session-bound WebAuthn step-up grant. */
+/** Owner-only opt-in endpoint. Requires a fresh session-bound WebAuthn step-up grant. */
 export async function POST(request:Request){
- if(!isIsolatedOwnerBackupRequest(request))return Response.json({error:'Not enabled'},{status:404,headers});
+ if(!isOwnerBackupRequest(request))return Response.json({error:'Not enabled'},{status:404,headers});
  if(!isTrustedAdminOrigin(request))return Response.json({error:'Forbidden'},{status:403,headers});
  if(request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')return Response.json({error:'Unsupported content type'},{status:415,headers});
  const raw=await request.text();

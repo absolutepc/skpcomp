@@ -26,7 +26,8 @@ export async function GET(request:Request){
    WHERE user_id=?::uuid
    ORDER BY created_at DESC`)
    .bind(ownerId).all();
-  return Response.json({passkeys:result.results,backupVerified:false},{headers});
+  const verifiedCount=result.results.filter(key=>key.status==='active'&&key.last_used_at!==null).length;
+  return Response.json({passkeys:result.results,backupVerified:verifiedCount>=2},{headers});
  }catch{
   return Response.json({error:'Unavailable'},{status:503,headers});
  }

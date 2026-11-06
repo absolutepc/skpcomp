@@ -1,13 +1,13 @@
 import type {RegistrationResponseJSON} from '@simplewebauthn/server';
-import {isTrustedAdminOrigin,isIsolatedOwnerBackupRequest} from '../../../../../../lib/admin-passkey-config';
+import {isTrustedAdminOrigin,isOwnerBackupRequest} from '../../../../../../lib/admin-passkey-config';
 import {allowNewAdminQrRequest} from '../../../../../../lib/admin-qr-rate-limit';
 import {completeOwnerBackupPasskey} from '../../../../../../lib/admin-owner-backup-registration';
 
 export const dynamic='force-dynamic';
 const headers={'Cache-Control':'no-store, private','X-Content-Type-Options':'nosniff'};
-/** Staging-only until independent step-up reauthentication is implemented. */
+/** Explicit opt-in; requires fresh owner step-up. */
 export async function POST(request:Request){
- if(!isIsolatedOwnerBackupRequest(request))
+ if(!isOwnerBackupRequest(request))
   return Response.json({error:'Not enabled'},{status:404,headers});
  if(!isTrustedAdminOrigin(request))
   return Response.json({error:'Forbidden'},{status:403,headers});

@@ -42,3 +42,16 @@ export function isIsolatedOwnerBackupRequest(request:Request):boolean{
  if(!staging)return false;
  try{return new URL(request.url).origin===staging.origin}catch{return false}
 }
+
+/** Off by default. Production opt-in is restricted to the canonical RP and an
+ * explicitly identified production runtime; it never changes password login.
+ * The existing staging mode remains isolated and cannot enable production.
+ */
+export function isOwnerBackupRequest(request:Request):boolean{
+ if(process.env.SKP_ADMIN_OWNER_BACKUP_ENROLLMENT==='production'){
+  return process.env.SKP_DATABASE_PROVIDER==='postgres'&&
+   process.env.NODE_ENV==='production'&&process.env.VERCEL_ENV==='production'&&
+   request.headers.get('origin')===ADMIN_RP_ORIGIN&&new URL(request.url).origin===ADMIN_RP_ORIGIN;
+ }
+ return isIsolatedOwnerBackupRequest(request);
+}

@@ -2,7 +2,7 @@ import {adminTransaction,isPostgres,storeEnv} from '../db/platform-store';
 import {activeSessionOwnerId} from './vercel-admin-session';
 import {consumeSessionOwnerStepUpGrantInTransaction} from './admin-owner-step-up-grants';
 
-/** Staging-only owner credential revocation. The last active credential is never revoked. */
+/** Owner credential revocation after fresh proof from a different surviving key. The last active credential is never revoked. */
 export async function revokeOwnerPasskey(request:Request,credentialFingerprint:string):Promise<boolean>{
  if(!isPostgres()||!/^[a-f0-9]{32}$/.test(credentialFingerprint))return false;
  const ownerId=await activeSessionOwnerId(request);
@@ -15,10 +15,13 @@ export async function revokeOwnerPasskey(request:Request,credentialFingerprint:s
    const active=await DB.prepare("SELECT credential_id,md5(credential_id) AS fingerprint FROM skp_admin_passkeys WHERE user_id=?::uuid AND revoked_at IS NULL FOR UPDATE").bind(ownerId).all<{credential_id:string;fingerprint:string}>();
    const keys=active.results;
    if(keys.length<2||keys.filter(key=>key.fingerprint===credentialFingerprint).length!==1)throw Error('Cannot revoke last or unknown credential');
-   if(!await consumeSessionOwnerStepUpGrantInTransaction(request,'owner-passkey-revoke'))throw Error('Fresh owner verification required');
+   if(!await consumeSessionOwnerStepUpGrantInTransaction(request,'owner-passkey-revoke',credentialFingerprint))throw Error('Fresh owner verification required');
    const updated=await DB.prepare("UPDATE skp_admin_passkeys SET revoked_at=now() WHERE md5(credential_id)=? AND user_id=?::uuid AND revoked_at IS NULL RETURNING credential_id").bind(credentialFingerprint,ownerId).all();
    if(updated.results.length!==1)throw Error('Credential not revoked uniquely');
    await DB.prepare("INSERT INTO skp_admin_security_events(actor_user_id,target_user_id,event_type,details) VALUES (?::uuid,?::uuid,'passkey_revoked',jsonb_build_object('credential_fingerprint',left(?,12)))").bind(ownerId,ownerId,credentialFingerprint).run();
+   // Sessions are user-bound, not credential-bound: invalidate ALL owner sessions
+   // and cascade-delete their grants so a stolen old cookie cannot outlive revocation.
+   await DB.prepare('DELETE FROM skp_admin_sessions_v2 WHERE user_id=?::uuid').bind(ownerId).run();
    return true;
   });
  }catch{return false}
