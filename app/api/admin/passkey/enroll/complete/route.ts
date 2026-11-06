@@ -1,5 +1,6 @@
 import {isTrustedAdminOrigin} from '../../../../../../lib/admin-passkey-config';
 import {isAuthorizedAdmin} from '../../../../../../lib/admin-authorization';
+import {allowNewAdminQrRequest} from '../../../../../../lib/admin-qr-rate-limit';
 import {enrollmentContextFromRequest} from '../../../../../../lib/admin-passkey-enrollment-context';
 import {verifyAndStoreAdminPasskeyRegistration} from '../../../../../../lib/admin-passkey-register';
 import type {RegistrationResponseJSON} from '@simplewebauthn/server';
@@ -22,6 +23,8 @@ export async function POST(request:Request){
   (deviceLabel!==undefined&&(typeof deviceLabel!=='string'||deviceLabel.length>100)))
   return Response.json({error:'Invalid registration'},{status:400,headers});
  try{
+  if(!await allowNewAdminQrRequest())
+   return Response.json({error:'Too many requests'},{status:429,headers:{...headers,'Retry-After':'60'}});
   if(!await isAuthorizedAdmin(request))return Response.json({error:'Forbidden'},{status:403,headers});
   const contextId=await enrollmentContextFromRequest(request);
   if(!contextId)return Response.json({error:'Forbidden'},{status:403,headers});
