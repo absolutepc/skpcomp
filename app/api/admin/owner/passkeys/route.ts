@@ -10,7 +10,7 @@ const headers={
 };
 
 /** Read-only inventory for the authenticated owner.
- * Never expose public keys, session tokens, challenge material or credential IDs.
+ * Never expose public keys, session tokens, challenge material or raw credential IDs.
  * A backup is not considered verified merely because it is registered.
  */
 export async function GET(request:Request){
@@ -20,7 +20,7 @@ export async function GET(request:Request){
   if(!ownerId)return Response.json({error:'Forbidden'},{status:403,headers});
   const {DB}=await storeEnv();
   const result=await DB.prepare(`SELECT
-   device_label,created_at,last_used_at,
+   md5(credential_id) AS fingerprint,device_label,created_at,last_used_at,
    CASE WHEN revoked_at IS NULL THEN 'active' ELSE 'revoked' END AS status
    FROM skp_admin_passkeys
    WHERE user_id=?::uuid
