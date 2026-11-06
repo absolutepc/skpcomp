@@ -1,3 +1,4 @@
+import {hasRecentOwnerStepUpGrant} from '../../../../../../lib/admin-owner-step-up-grants';
 import {activeSessionOwnerId} from '../../../../../../lib/vercel-admin-session';
 import {isTrustedAdminOrigin,adminWebAuthnConfig} from '../../../../../../lib/admin-passkey-config';
 import {allowNewAdminQrRequest} from '../../../../../../lib/admin-qr-rate-limit';
@@ -15,6 +16,7 @@ export async function POST(request:Request){
  if(process.env.SKP_ADMIN_OWNER_BACKUP_ENROLLMENT!=='staging')return Response.json({error:'Not enabled'},{status:404,headers});
  if(!isTrustedAdminOrigin(request))return Response.json({error:'Forbidden'},{status:403,headers});
  if(!await activeSessionOwnerId(request))return Response.json({error:'Forbidden'},{status:403,headers});
+ if(!await hasRecentOwnerStepUpGrant(request,'owner-passkey-enroll'))return Response.json({error:'Fresh owner verification required'},{status:403,headers});
  if(!await allowNewAdminQrRequest())return Response.json({error:'Rate limited'},{status:429,headers});
  try{
   const ownerId=await activeSessionOwnerId(request);
