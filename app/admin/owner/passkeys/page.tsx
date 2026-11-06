@@ -7,7 +7,7 @@ const b64=(buf:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(buf))).r
 async function post(path:string,body:unknown={}){const r=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw Error(r.status===404?'Регистрация доступна только в тестовой среде.':'Операция отклонена сервером.');return r.json()}
 function valid(o:Challenge){if(o.rpID!==location.hostname||!/^[a-f0-9]{64}$/.test(o.challenge)||o.expiresAt*1000<=Date.now()||o.userVerification!=='required')throw Error('Некорректный запрос подтверждения.');}
 type Credential={fingerprint:string;device_label:string;created_at:string;last_used_at:string|null;status:'active'|'revoked'};
-const date=(value:string|null)=>value?new Date(value).toLocaleString('ru-RU'):'Ещё не использовался';
+const date=(value:string|null)=>value?new Date(value).toLocaleString('ru-RU'):'Нет подтверждённого использования';
 export default function OwnerPasskeysPage(){
  const [items,setItems]=useState<Credential[]>([]);
  const [loading,setLoading]=useState(true);
@@ -83,7 +83,7 @@ export default function OwnerPasskeysPage(){
       <span style={{color:item.status==='active'?'#ffd22e':'#aaa'}}>{item.status==='active'?'Активен':'Отозван'}</span>
      </div>
      <p style={{color:'#aaa',fontSize:14}}>Создан: {date(item.created_at)}</p>
-     <p style={{color:'#aaa',fontSize:14}}>Последний вход: {date(item.last_used_at)}</p>
+     <p style={{color:'#aaa',fontSize:14}}>Последнее использование Passkey: {date(item.last_used_at)}</p>
      {item.status==='active'&&activeCount>1&&(pendingRevoke===item.fingerprint?<div style={{display:'grid',gap:8}}><p>Отозвать этот ключ? Действие необратимо. Убедитесь, что другой активный ключ уже проверен на отдельном устройстве: наличие ключа в списке не гарантирует возможность восстановления доступа.</p><div style={{display:'flex',gap:8}}><button type='button' disabled={busy} onClick={()=>void revoke(item.fingerprint)} style={{padding:10,border:'1px solid #e56',borderRadius:8,color:'#fff',background:'#722'}}>Подтвердить отзыв</button><button type='button' disabled={busy} onClick={()=>setPendingRevoke(null)} style={{padding:10,border:'1px solid #555',borderRadius:8,color:'#fff',background:'#222'}}>Отмена</button></div></div>:<button type='button' disabled={busy} onClick={()=>setPendingRevoke(item.fingerprint)} style={{padding:10,border:'1px solid #555',borderRadius:8,color:'#fff',background:'#222'}}>Отозвать ключ</button>)}
     </article>)}</div>}
    <section style={{marginTop:28,padding:18,border:'1px solid #333',borderRadius:12,display:'grid',gap:12}}>
