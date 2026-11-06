@@ -32,3 +32,13 @@ export function isTrustedAdminOrigin(request:Request):boolean{
   if(!origin)return false;
   try{return adminWebAuthnConfig(origin).origin===new URL(request.url).origin}catch{return false}
 }
+
+/** Defense in depth: staging-only owner backup endpoints must never run on the
+ * production RP origin, even if a staging feature flag is set by mistake. */
+export function isIsolatedOwnerBackupRequest(request:Request):boolean{
+ const origin=request.headers.get('origin');
+ if(!origin||origin===ADMIN_RP_ORIGIN)return false;
+ const staging=isolatedStagingConfig(origin);
+ if(!staging)return false;
+ try{return new URL(request.url).origin===staging.origin}catch{return false}
+}
