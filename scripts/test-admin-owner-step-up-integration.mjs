@@ -33,6 +33,14 @@ try{
  const contextA=ownerStepUpContext(bindingA.ownerId,bindingA.sessionHash,'owner-passkey-enroll');
  const contextB=ownerStepUpContext(bindingB.ownerId,bindingB.sessionHash,'owner-passkey-enroll');
  const contextRevoke=ownerStepUpContext(bindingA.ownerId,bindingA.sessionHash,'owner-passkey-revoke');
+ // Backup registration challenge must also be isolated across owner sessions.
+ const {ownerBackupChallengeContext}=await import('../lib/admin-owner-backup-registration.ts');
+ const backupContextA=ownerBackupChallengeContext(bindingA.ownerId,bindingA.sessionHash);
+ const backupContextB=ownerBackupChallengeContext(bindingB.ownerId,bindingB.sessionHash);
+ const backupChallenge=await issueWebAuthnChallenge('register',backupContextA);
+ assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(backupChallenge.challenge,'register',backupContextB)),false,'backup challenge cannot cross sessions');
+ assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(backupChallenge.challenge,'register',backupContextA)),true,'initiating session can consume backup challenge');
+ assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(backupChallenge.challenge,'register',backupContextA)),false,'backup challenge replay denied');
  const stepUpChallenge=await issueWebAuthnChallenge('authenticate',contextA);
  assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(stepUpChallenge.challenge,'authenticate',contextRevoke)),false,'challenge cannot authorize another action');
  assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(stepUpChallenge.challenge,'authenticate',contextB)),false,'other session cannot consume owner challenge');
@@ -76,7 +84,7 @@ try{
  const {rows:[state]}=await pool.query("SELECT count(*) FILTER(WHERE revoked_at IS NULL)::int AS active,count(*) FILTER(WHERE revoked_at IS NOT NULL)::int AS revoked FROM skp_admin_passkeys WHERE user_id=$1",[owner.id]);
  assert.equal(state.active,1);assert.equal(state.revoked,1);
  await pool.query('DELETE FROM skp_admin_passkeys WHERE user_id=$1',[owner.id]);
- await pool.query('DELETE FROM skp_admin_webauthn_challenges WHERE request_id=$1',[contextA]);
+ await pool.query('DELETE FROM skp_admin_webauthn_challenges WHERE request_id IN ($1,$2)',[contextA,backupContextA]);
  await pool.query('DELETE FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1',[owner.id]);
  await pool.query('DELETE FROM skp_admin_sessions_v2 WHERE user_id=$1',[owner.id]);
  await pool.query('DELETE FROM skp_admin_security_events WHERE actor_user_id=$1 OR target_user_id=$1',[owner.id]);
