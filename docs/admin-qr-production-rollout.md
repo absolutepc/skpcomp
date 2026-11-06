@@ -17,7 +17,7 @@
 
 **Gate B — application:** after separate deployment approval, deploy tested branch to production with `SKP_ADMIN_REQUIRE_PASSKEY` unset/false. Verify existing admin login, catalog, media upload, orders, and logout before proceeding. Keep the previous deployment ready for immediate rollback.
 
-**Gate C — owner enrollment:** use the audited production owner bootstrap process; enroll a real iPhone Passkey, confirm owner permissions and a tested recovery path. Never turn on Passkey-only mode just to test initial enrollment.
+**Gate C — owner enrollment:** after separate explicit owner approval, run `scripts/bootstrap-admin-owner.mjs` manually against the verified production database with `--confirm-owner-bootstrap`, `SKP_OWNER_BOOTSTRAP_APPROVED=YES`, and `SKP_OWNER_DISPLAY_NAME` (never in CI or at startup). The script refuses an existing owner, creates a 15-minute one-time invitation, and prints a sensitive link for the owner phone. Do not store or share the token. Complete iPhone Passkey registration at the production RP origin and verify owner privileges. The backup credential must be independently enrolled and successfully tested before considering cutover. Never turn on Passkey-only mode just to test initial enrollment.
 
 **Gate D — QR smoke test:** test desktop QR, iPhone Face ID approval, one-time redemption, session expiry/revocation, and employee restrictions. Keep password login enabled during this phase.
 
@@ -33,3 +33,9 @@
 ## Evidence to capture
 
 CI run URLs, exact SHA, backup confirmation and restore test, reviewed SQL, Vercel deployment IDs, test device/browser versions, owner recovery outcome, and sign-off per gate.
+
+## Explicitly unresolved before production
+
+- The recovery security contract (`docs/admin-owner-recovery-security.md`) states that offline emergency recovery is **not implemented**. A second independently tested hardware-backed owner Passkey is the recommended first recovery layer; do not claim that a printed QR card alone provides recovery.
+- The manual owner bootstrap invitation is sensitive and expires after 15 minutes. It is **not** a general-purpose reset and cannot be rerun after an owner exists.
+- No production database backup, migration, deployment, or iPhone enrollment has been performed as part of this planning document.
