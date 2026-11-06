@@ -77,7 +77,7 @@ try{
  // This exercises the post-verification QR approval/redemption path with the backup
  // credential. It does NOT simulate or replace a cryptographic WebAuthn assertion.
  const {createPendingQr}=await import('../lib/admin-qr-pending.ts');
- const {markQrApprovedAfterVerification}=await import('../lib/admin-qr-decision.ts');
+ const {markQrApprovedAfterVerification,denyPendingQr}=await import('../lib/admin-qr-decision.ts');
  const {consumeApprovedQr}=await import('../lib/admin-qr-consume.ts');
  // Status polling must require the desktop-only secret, not just the public QR token.
  const {readQrStatus}=await import('../lib/admin-qr-status.ts');
@@ -91,7 +91,6 @@ try{
  assert.equal(await markQrApprovedAfterVerification(statusQr.requestToken,'owner-test-key-b'),false,'consumed QR cannot be approved again');
  assert.equal(await denyPendingQr(statusQr.requestToken),false,'consumed QR cannot be denied after redemption');
  // Explicit denial is terminal: it cannot be approved or redeemed afterward.
- const {denyPendingQr}=await import('../lib/admin-qr-decision.ts');
  const deniedQr=await createPendingQr();
  assert.equal(await denyPendingQr(deniedQr.requestToken),true,'pending QR can be denied');
  assert.equal(await readQrStatus(deniedQr.requestToken,deniedQr.desktopSecret),'denied');
