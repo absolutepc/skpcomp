@@ -18,6 +18,7 @@ on:
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
       - 'db/admin-roles-schema.sql'
+      - 'db/admin-employee-invites-schema.sql'
       - 'scripts/test-admin-*.mjs'
       - '.github/workflows/admin-qr-security.yml'
   pull_request:
@@ -31,6 +32,7 @@ on:
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
       - 'db/admin-roles-schema.sql'
+      - 'db/admin-employee-invites-schema.sql'
       - 'scripts/test-admin-*.mjs'
 
 permissions:
@@ -57,6 +59,8 @@ jobs:
         run: node scripts/test-admin-employee-sessions.mjs
       - name: Check owner-only staff management API
         run: node scripts/test-admin-staff-api.mjs
+      - name: Check employee invitations
+        run: node scripts/test-admin-employee-invites.mjs
       - name: Check QR URL handling
         run: node scripts/test-admin-qr-url.mjs
       - name: Check local QR code rendering and link safety
