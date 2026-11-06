@@ -1,3 +1,4 @@
+import {withActiveAdminUser} from './admin-user-lock';
 import {storeEnv} from '../db/platform-store';
 import {adminCookie} from './admin-cookie';
 import {localAdminAccess} from './local-admin-access';
@@ -27,6 +28,7 @@ export async function adminAuthorized(request:Request){
 }
 export async function issueAdminSession(request:Request,userId:string){
  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId))throw new Error('Invalid user ID');
+ return withActiveAdminUser(userId,async()=>{
  const {ADMIN_PASSWORD}=await storeEnv();
  if(!ADMIN_PASSWORD)throw new Error('Admin password not configured');
  const DB=await database();
@@ -35,6 +37,7 @@ export async function issueAdminSession(request:Request,userId:string){
   .bind(await hash('skp-admin-v2:'+ADMIN_PASSWORD+':'+token),now()+SESSION_SECONDS,userId).first<{token_hash:string}>();
  if(!inserted)throw new Error('Inactive employee');
  return adminCookie(request,token,SESSION_SECONDS);
+ },null).then(cookie=>{if(!cookie)throw new Error('Inactive employee');return cookie});
 }
 export async function revokeAdminSession(request:Request){
  const token=sessionFromRequest(request);

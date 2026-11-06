@@ -1,3 +1,4 @@
+import {withActiveAdminUser} from './admin-user-lock';
 import {createHash} from 'node:crypto';
 import {isPostgres,storeEnv} from '../db/platform-store';
 import type {VerifiedPasskeyRegistration} from './admin-passkey-enrollment-store';
@@ -20,6 +21,10 @@ export async function consumeInvitationForVerifiedPasskey(
   !Array.isArray(transports)||transports.length>8||
   !transports.every(v=>typeof v==='string'&&v.length<=64))return false;
  const {DB}=await storeEnv();
+ const invite=await DB.prepare('SELECT user_id FROM skp_admin_employee_invites WHERE token_hash=?')
+  .bind(inviteHash(token)).first<{user_id:string}>();
+ if(!invite)return false;
+ return withActiveAdminUser(invite.user_id,async()=>{
  const row=await DB.prepare(`WITH eligible AS (
    SELECT i.id,i.user_id FROM skp_admin_employee_invites i
    JOIN skp_admin_users u ON u.id=i.user_id
@@ -43,4 +48,5 @@ export async function consumeInvitationForVerifiedPasskey(
    JSON.stringify(transports),(verified.deviceLabel||'').trim().slice(0,100))
   .first<{credential_id:string;audit_count:number}>();
  return !!row;
+ },false);
 }

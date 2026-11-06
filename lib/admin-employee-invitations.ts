@@ -1,3 +1,4 @@
+import {withActiveAdminUser} from './admin-user-lock';
 import {randomBytes,createHash} from 'node:crypto';
 import {isPostgres,storeEnv} from '../db/platform-store';
 
@@ -12,6 +13,7 @@ const LIFETIME_MINUTES=15;
 export async function issueEmployeeInvitation(ownerId:string,employeeId:string):Promise<string|null>{
  if(!isPostgres())throw new Error('PostgreSQL required');
  if(!uuid.test(ownerId)||!uuid.test(employeeId)||ownerId===employeeId)return null;
+ return withActiveAdminUser(employeeId,async()=>{
  const token=randomBytes(32).toString('hex');
  const {DB}=await storeEnv();
  const inserted=await DB.prepare(`INSERT INTO skp_admin_employee_invites
@@ -24,6 +26,7 @@ export async function issueEmployeeInvitation(ownerId:string,employeeId:string):
   RETURNING id`)
   .bind(hash(token),ownerId,employeeId).first<{id:string}>();
  return inserted?token:null;
+ },null);
 }
 
 /** Checks an invite without consuming it. The final WebAuthn registration

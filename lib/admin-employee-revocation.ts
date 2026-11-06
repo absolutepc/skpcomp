@@ -1,3 +1,4 @@
+import {withActiveAdminUser} from './admin-user-lock';
 import {isPostgres,storeEnv} from '../db/platform-store';
 
 /**
@@ -11,6 +12,7 @@ export async function revokeEmployeeAccess(targetUserId:string,actorOwnerId:stri
  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(actorOwnerId))return false;
  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId))
   return false;
+ return withActiveAdminUser(targetUserId,async()=>{
  const {DB}=await storeEnv();
  const result=await DB.prepare(`
  WITH blocked AS (
@@ -60,4 +62,5 @@ export async function revokeEmployeeAccess(targetUserId:string,actorOwnerId:stri
   (SELECT count(*) FROM audit) AS audit_count
  `).bind(targetUserId,actorOwnerId,actorOwnerId).first<{blocked:boolean}>();
  return result?.blocked===true;
+ },false);
 }

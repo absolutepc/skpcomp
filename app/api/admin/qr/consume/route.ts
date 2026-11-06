@@ -1,6 +1,5 @@
 import {isTrustedAdminOrigin} from '../../../../../lib/admin-passkey-config';
-import {consumeApprovedQr} from '../../../../../lib/admin-qr-consume';
-import {issueAdminSession} from '../../../../../lib/vercel-admin-session';
+import {redeemQrSession} from '../../../../../lib/admin-qr-session';
 
 export const dynamic='force-dynamic';
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
@@ -20,10 +19,9 @@ export async function POST(request:Request){
   typeof desktopSecret!=='string'||!/^[a-f0-9]{64}$/.test(desktopSecret))
   return Response.json({error:'Invalid request'},{status:400,headers});
  try{
-  const employeeId=await consumeApprovedQr(requestToken,desktopSecret);
-  if(!employeeId)
+  const cookie=await redeemQrSession(request,requestToken,desktopSecret);
+  if(!cookie)
    return Response.json({error:'Not approved or already used'},{status:409,headers});
-  const cookie=await issueAdminSession(request,employeeId);
   return Response.json({authenticated:true},{headers:{...headers,'Set-Cookie':cookie}});
  }catch{
   return Response.json({error:'Unavailable'},{status:503,headers});
