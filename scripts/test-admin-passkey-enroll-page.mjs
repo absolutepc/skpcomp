@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../app/admin/passkey/enroll/page.tsx',import.meta.url),'utf8');
+const layout=readFileSync(new URL('../app/admin/passkey/enroll/layout.tsx',import.meta.url),'utf8');
+assert.ok(source.includes("navigator.credentials.create("));
+assert.ok(source.includes("userVerification:'required'"));
+assert.ok(source.includes("residentKey:'required'"));
+assert.ok(source.includes("attestation:'none'"));
+assert.ok(source.includes("'/api/admin/passkey/enroll/options'"));
+assert.ok(source.includes("'/api/admin/passkey/enroll/complete'"));
+assert.ok(source.includes("options.rpID!==window.location.hostname"));
+assert.ok(source.includes("result.registered!==true"));
+assert.ok(source.includes("setPassword('')"));
+assert.ok(source.includes('credentials:\'same-origin\''));
+assert.ok(layout.includes('index:false,follow:false'));
+assert.ok(layout.includes("referrer:'no-referrer'"));
+console.log('Passkey enrollment page invariants passed (static only).');
