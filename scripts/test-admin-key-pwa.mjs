@@ -11,6 +11,8 @@ assert.equal(manifest.display,'standalone');
 assert.match(page,/getUserMedia/);
 assert.match(page,/const generation=useRef\(0\)/);
 assert.match(page,/generation.current!==attempt/);
+assert.match(page,/const DetectorClass=window.BarcodeDetector/);
+assert.match(page,/if\(generation.current===attempt\)\{stop\(\);setMessage/);
 assert.match(page,/document.addEventListener\('visibilitychange',onHidden\)/);
 assert.match(page,/media.getTracks\(\).forEach\(track=>track.stop\(\)\)/);
 assert.match(page,/BarcodeDetector/);
