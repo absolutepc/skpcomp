@@ -39,7 +39,9 @@ export async function findActiveAdminPasskey(credentialId:string):Promise<Stored
 
 /**
  * Counter persistence must occur only after verified authentication.
- * An atomic comparison prevents stale responses from decreasing the counter.
+ * Nonzero counters must increase strictly; zero-to-zero is allowed for
+ * authenticators that do not implement counters. An atomic comparison
+ * prevents stale responses from decreasing or replaying the counter.
  * This function is NOT an authenticator verification function.
  */
 export async function advanceVerifiedPasskeyCounter(
@@ -48,7 +50,9 @@ export async function advanceVerifiedPasskeyCounter(
  if(!isPostgres())throw new Error('PostgreSQL required');
  if(!credentialId||credentialId.length>2048||
   !Number.isSafeInteger(previousCounter)||previousCounter<0||
-  !Number.isSafeInteger(nextCounter)||nextCounter<previousCounter)return false;
+  !Number.isSafeInteger(nextCounter)||
+  (nextCounter!==0 && nextCounter<=previousCounter)||
+  (nextCounter===0 && previousCounter!==0))return false;
  const {DB}=await storeEnv();
  const updated=await DB.prepare(`UPDATE skp_admin_passkeys
  SET counter=?,last_used_at=now()
