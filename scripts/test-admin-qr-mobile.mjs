@@ -10,6 +10,8 @@ const desktop=read('app/admin-qr-login.tsx');
 const verifier=read('lib/admin-passkey-verify.ts');
 const decision=read('app/api/admin/qr/decision/route.ts');
 assert.match(mobile,/navigator\.credentials\.get/);
+assert.match(mobile,/url\.hash===''&&url\.searchParams\.size===1&&url\.searchParams\.has\('request'\)/);
+assert.match(mobile,/url\.searchParams\.get\('request'\)/);
 assert.match(mobile,/userVerification:'required'/);
 assert.match(mobile,/approved:true/);
 assert.match(mobile,/options\.rpID!==window\.location\.hostname/);
