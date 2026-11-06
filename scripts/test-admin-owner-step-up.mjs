@@ -58,3 +58,14 @@ test('backup enrollment challenges are session bound without recursive context c
  assert.match(registration,/current\.sessionHash!==binding\.sessionHash/);
  assert.match(registration,/ownerBackupChallengeContext=\(ownerId:string,sessionHash:string\):string=>'owner-backup:'\+ownerId\+':'\+sessionHash/);
 });
+
+
+test('owner UI requests matching WebAuthn action for each privileged operation',()=>{
+ const page=readFileSync(new URL('../app/admin/owner/passkeys/page.tsx',import.meta.url),'utf8');
+ const revoke=page.slice(page.indexOf('async function revoke('),page.indexOf('async function addBackup('));
+ const enroll=page.slice(page.indexOf('async function addBackup('),page.indexOf('useEffect(()=>'));
+ for(const [source,action] of [[revoke,'owner-passkey-revoke'],[enroll,'owner-passkey-enroll']]){
+  assert.ok(source.includes("post('/api/admin/owner/step-up/options',{action:'"+action+"'})"));
+  assert.ok(source.includes("post('/api/admin/owner/step-up/complete',{action:'"+action+"'"));
+ }
+});
