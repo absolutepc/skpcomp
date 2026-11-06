@@ -105,6 +105,13 @@ assert.equal((await staffGet(ownerRequest)).status,200);
 
 
 assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Forbidden'},{cookie:cookie.split(';')[0]}))).status,403);
+
+const {POST:storePost}=await import('../app/api/store/route.ts');
+assert.equal((await storePost(new Request(origin+'/api/store',{method:'POST',headers:{origin,'content-type':'application/json'},body:'{'}))).status,400,'malformed catalog API JSON must be rejected');
+assert.equal((await storePost(new Request(origin+'/api/store',{method:'POST',headers:{origin,'content-type':'application/json'},body:'[]'}))).status,400,'catalog API must reject array bodies');
+assert.equal((await storePost(post('/api/store',{action:'check'}))).status,401,'anonymous users cannot check admin authorization');
+assert.equal((await storePost(post('/api/store',{action:'check'},{cookie:cookie.split(';')[0]}))).status,200,'Passkey session authorizes catalog admin check');
+assert.equal((await storePost(post('/api/store',{action:'update',data:{}},{cookie:cookie.split(';')[0]}))).status,400,'invalid catalog must not be saved');
 const {GET:ordersGet,POST:ordersPost}=await import('../app/api/orders/route.ts');
 const missingOrder='00000000-0000-4000-8000-000000000000';
 const statusPayload={action:'status',id:missingOrder,status:'completed'};
