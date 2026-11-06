@@ -18,9 +18,10 @@ export async function findActiveAdminPasskey(credentialId:string):Promise<Stored
  if(!isPostgres())throw new Error('PostgreSQL required');
  if(!credentialId||credentialId.length>2048)return null;
  const {DB}=await storeEnv();
- const row=await DB.prepare(`SELECT credential_id,public_key,counter,transports,revoked_at
- FROM skp_admin_passkeys
- WHERE credential_id=? AND revoked_at IS NULL`)
+ const row=await DB.prepare(`SELECT p.credential_id,p.public_key,p.counter,p.transports,p.revoked_at
+ FROM skp_admin_passkeys p
+ JOIN skp_admin_users u ON u.id=p.user_id
+ WHERE p.credential_id=? AND p.revoked_at IS NULL AND u.status='active'`)
   .bind(credentialId).first<{
    credential_id:string;
    public_key:Uint8Array;
@@ -54,9 +55,11 @@ export async function advanceVerifiedPasskeyCounter(
   (nextCounter!==0 && nextCounter<=previousCounter)||
   (nextCounter===0 && previousCounter!==0))return false;
  const {DB}=await storeEnv();
- const updated=await DB.prepare(`UPDATE skp_admin_passkeys
+ const updated=await DB.prepare(`UPDATE skp_admin_passkeys p
  SET counter=?,last_used_at=now()
- WHERE credential_id=? AND counter=? AND revoked_at IS NULL
+ FROM skp_admin_users u
+ WHERE p.credential_id=? AND p.counter=? AND p.revoked_at IS NULL
+ AND u.id=p.user_id AND u.status='active'
  RETURNING credential_id`)
   .bind(nextCounter,credentialId,previousCounter).first<{credential_id:string}>();
  return !!updated;
