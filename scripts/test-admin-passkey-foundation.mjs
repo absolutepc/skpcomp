@@ -5,6 +5,11 @@ const challenge=readFileSync(new URL('../lib/admin-qr-challenge.ts',import.meta.
 assert.match(config,/ADMIN_RP_ID='skpcomp\.vercel\.app'/);
 assert.match(config,/ADMIN_RP_ORIGIN='https:\/\/skpcomp\.vercel\.app'/);
 assert.match(config,/Unsupported WebAuthn origin/);
+assert.match(config,/SKP_ADMIN_OWNER_BACKUP_ENROLLMENT/);
+assert.match(config,/SKP_ADMIN_STAGING_ORIGIN/);
+assert.match(config,/configured!==origin/);
+assert.match(config,/configured===ADMIN_RP_ORIGIN/);
+assert.match(config,/rpID:url\.hostname,origin:configured/);
 assert.match(config,/if\(!origin\)return false/);
 assert.match(challenge,/getRandomValues\(new Uint8Array\(32\)\)/);
 assert.match(challenge,/crypto\.subtle\.digest\('SHA-256'/);
