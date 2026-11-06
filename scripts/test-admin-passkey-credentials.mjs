@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../lib/admin-passkey-credentials.ts',import.meta.url),'utf8');
+assert.match(source,/WHERE credential_id=\? AND revoked_at IS NULL/);
+assert.match(source,/public_key:Uint8Array/);
+assert.match(source,/Number\.isSafeInteger\(counter\)/);
+assert.match(source,/Number\.isSafeInteger\(nextCounter\)/);
+assert.match(source,/nextCounter<previousCounter/);
+assert.match(source,/WHERE credential_id=\? AND counter=\? AND revoked_at IS NULL/);
+assert.match(source,/RETURNING credential_id/);
+assert.doesNotMatch(source,/Set-Cookie|issueAdminSession|adminCookie/);
+console.log('Passkey credential storage static checks passed; signature verification is not implemented.');
