@@ -10,5 +10,14 @@ for(const path of ['app/api/store/route.ts','app/api/reviews/route.ts','app/api/
  assert.match(src,/isAuthorizedAdmin/);
  assert.doesNotMatch(src,/localAdminAccess/);
 }
-assert.match(read('app/api/store/route.ts'),/b\.action==='login'/);
+const store=read('app/api/store/route.ts');
+assert.match(store,/b\.action==='login'/);
+assert.match(store,/b\.action==='logout'/);
+assert.match(store,/await revokeAdminSession\(r\)/);
+assert.match(store,/if\(isPostgres\(\)\)/);
+assert.match(store,/Не удалось завершить сессию/);
+assert.match(store,/adminCookie\(r,'',0\)/);
+const sessions=read('lib/vercel-admin-session.ts');
+assert.match(sessions,/DELETE FROM skp_admin_sessions_v2 WHERE token_hash=\?/);
+assert.match(sessions,/return adminCookie\(request,'',0\)/);
 console.log('Shared admin authorization wiring checks passed.');
