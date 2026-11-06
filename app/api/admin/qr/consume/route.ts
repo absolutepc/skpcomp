@@ -20,9 +20,10 @@ export async function POST(request:Request){
   typeof desktopSecret!=='string'||!/^[a-f0-9]{64}$/.test(desktopSecret))
   return Response.json({error:'Invalid request'},{status:400,headers});
  try{
-  if(!await consumeApprovedQr(requestToken,desktopSecret))
+  const employeeId=await consumeApprovedQr(requestToken,desktopSecret);
+  if(!employeeId)
    return Response.json({error:'Not approved or already used'},{status:409,headers});
-  const cookie=await issueAdminSession(request);
+  const cookie=await issueAdminSession(request,employeeId);
   return Response.json({authenticated:true},{headers:{...headers,'Set-Cookie':cookie}});
  }catch{
   return Response.json({error:'Unavailable'},{status:503,headers});
