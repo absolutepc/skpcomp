@@ -38,3 +38,21 @@ Status: **development branch only**. No QR sign-in is enabled on production.
 - The current Vercel store and orders APIs each implement the legacy password-derived cookie check independently. Before enabling v2 sessions, audit every admin-protected endpoint and migrate all checks together; otherwise some admin actions will fail after login.
 - Confirm whether the deployed Vercel project uses `SKP_DATABASE_PROVIDER=postgres`; `DATABASE_URL` alone does not select the PG adapter.
 - A WebAuthn verifier, persistent challenges, QR approval/consumption, device enrollment, end-to-end tests and actual build validation remain outstanding.
+
+
+## Owner backup key — hardware-test gate (2026-11-06)
+
+The owner management UI and API are implemented only in the feature branch and guarded by `SKP_ADMIN_OWNER_BACKUP_ENROLLMENT=staging`. Passing CI is **not** proof that a physical USB/NFC key can recover an account.
+
+**Blocking deployment constraint:** `lib/admin-passkey-config.ts` intentionally accepts only `https://skpcomp.vercel.app` (RP ID `skpcomp.vercel.app`) or development localhost. An arbitrary Vercel preview hostname cannot run WebAuthn with that RP ID. Do **not** loosen origin validation to accept arbitrary preview domains, and do **not** enable the owner backup feature on production just to test it. Before hardware tests, design an isolated HTTPS staging origin and explicit allowlist/RP policy, with a separate test database and test owner. Credentials created for a staging RP ID will not automatically authenticate on the production RP ID.
+
+Required manual acceptance tests on that isolated environment:
+1. Existing owner Passkey authenticates for an action-scoped step-up; no challenge from a second session or a different action is accepted.
+2. Register the USB/NFC backup authenticator with user verification. Confirm that the new credential is visible in owner inventory, but **not** labelled verified solely because enrollment succeeded.
+3. From a fresh browser session, complete a real owner sign-in using **only** the newly registered key; verify server-side owner role and session issuance, not just a successful WebAuthn prompt.
+4. Sign out, remove the primary device, and repeat the backup-only sign-in. Check session expiry and logout.
+5. Revoke a non-last test key after a fresh action-scoped step-up; confirm revoked key login fails, other key still works, replay fails and audit event exists.
+6. Confirm the last active key cannot be revoked; verify password fallback remains available, and never test destructive lockout on a real production owner.
+7. Verify unsupported origins, mismatched RP IDs, wrong-session challenges, expired challenges, cancellation, and rate limiting.
+
+**Release gate:** no production merge, schema migration, environment toggle or password-login cutover until these tests pass and the owner explicitly approves deployment. A QR printed on a card is not a credential and must never independently grant access.
