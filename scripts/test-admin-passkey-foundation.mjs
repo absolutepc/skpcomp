@@ -7,6 +7,8 @@ assert.match(config,/ADMIN_RP_ORIGIN='https:\/\/skpcomp\.vercel\.app'/);
 assert.match(config,/Unsupported WebAuthn origin/);
 assert.match(config,/SKP_ADMIN_OWNER_BACKUP_ENROLLMENT/);
 assert.match(config,/SKP_ADMIN_STAGING_ORIGIN/);
+assert.match(config,/SKP_ADMIN_STAGING_DB_ISOLATED/);
+assert.match(config,/SKP_DATABASE_PROVIDER/);
 assert.match(config,/configured!==origin/);
 assert.match(config,/configured===ADMIN_RP_ORIGIN/);
 assert.match(config,/rpID:url\.hostname,origin:configured/);
