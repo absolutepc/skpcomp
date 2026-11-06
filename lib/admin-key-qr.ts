@@ -9,4 +9,3 @@ export function trustedQrDestination(value:string,origin:string):string|null{
   return '/admin-key/approve'+url.search;
  }catch{return null}
 }
-
