@@ -79,6 +79,15 @@ try{
  const {createPendingQr}=await import('../lib/admin-qr-pending.ts');
  const {markQrApprovedAfterVerification}=await import('../lib/admin-qr-decision.ts');
  const {consumeApprovedQr}=await import('../lib/admin-qr-consume.ts');
+ // Status polling must require the desktop-only secret, not just the public QR token.
+ const {readQrStatus}=await import('../lib/admin-qr-status.ts');
+ const statusQr=await createPendingQr();
+ assert.equal(await readQrStatus(statusQr.requestToken,statusQr.desktopSecret),'pending');
+ assert.equal(await readQrStatus(statusQr.requestToken,'0'.repeat(64)),'expired','wrong desktop secret reveals no QR status');
+ assert.equal(await markQrApprovedAfterVerification(statusQr.requestToken,'owner-test-key-b'),true);
+ assert.equal(await readQrStatus(statusQr.requestToken,statusQr.desktopSecret),'approved');
+ assert.equal(await consumeApprovedQr(statusQr.requestToken,statusQr.desktopSecret),owner.id);
+ assert.equal(await readQrStatus(statusQr.requestToken,statusQr.desktopSecret),'consumed');
  const backupQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(backupQr.requestToken,'owner-test-key-b'),true,'active backup credential can approve after WebAuthn verification');
  assert.equal(await consumeApprovedQr(backupQr.requestToken,'0'.repeat(64)),null,'wrong desktop secret cannot redeem backup login');
