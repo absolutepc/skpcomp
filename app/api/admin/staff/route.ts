@@ -36,7 +36,7 @@ export async function POST(request:Request){
  if(raw.length>1024)return Response.json({error:'Invalid request'},{status:400,headers});
  let body:unknown;
  try{body=JSON.parse(raw)}catch{return Response.json({error:'Invalid request'},{status:400,headers})}
- if(!body||typeof body!=='object')return Response.json({error:'Invalid request'},{status:400,headers});
+ if(!body||typeof body!=='object'||Array.isArray(body))return Response.json({error:'Invalid request'},{status:400,headers});
  const {action,userId,displayName}=body as Record<string,unknown>;
  if((action==='block'||action==='invite') && (typeof userId!=='string'||!idPattern.test(userId)))
   return Response.json({error:'Invalid request'},{status:400,headers});
