@@ -106,6 +106,23 @@ assert.equal((await staffGet(ownerRequest)).status,200);
 
 assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Forbidden'},{cookie:cookie.split(';')[0]}))).status,403);
 
+
+const {POST:blobUploadPost}=await import('../app/api/media/blob-upload/route.ts');
+const priorMediaProvider=process.env.SKP_MEDIA_PROVIDER;
+const priorBlobToken=process.env.BLOB_READ_WRITE_TOKEN;
+const priorAdminPassword=process.env.ADMIN_PASSWORD;
+try{
+ process.env.SKP_MEDIA_PROVIDER='vercel-blob';
+ process.env.BLOB_READ_WRITE_TOKEN='integration-only-not-a-real-blob-token';
+ process.env.ADMIN_PASSWORD='';
+ assert.equal((await blobUploadPost(post('/api/media/blob-upload',{}))).status,401,'Blob upload requires admin session even without legacy password');
+ assert.equal((await blobUploadPost(post('/api/media/blob-upload',{}, {cookie:cookie.split(';')[0],origin:'https://evil.example'}))).status,403,'Blob upload rejects cross-origin requests');
+ assert.equal((await blobUploadPost(new Request(origin+'/api/media/blob-upload',{method:'POST',headers:{origin,'content-type':'application/json',cookie:cookie.split(';')[0]},body:'{'}))).status,400,'Blob upload rejects malformed JSON after session authorization');
+}finally{
+ if(priorMediaProvider===undefined)delete process.env.SKP_MEDIA_PROVIDER;else process.env.SKP_MEDIA_PROVIDER=priorMediaProvider;
+ if(priorBlobToken===undefined)delete process.env.BLOB_READ_WRITE_TOKEN;else process.env.BLOB_READ_WRITE_TOKEN=priorBlobToken;
+ if(priorAdminPassword===undefined)delete process.env.ADMIN_PASSWORD;else process.env.ADMIN_PASSWORD=priorAdminPassword;
+}
 const {POST:storePost}=await import('../app/api/store/route.ts');
 assert.equal((await storePost(new Request(origin+'/api/store',{method:'POST',headers:{origin,'content-type':'application/json'},body:'{'}))).status,400,'malformed catalog API JSON must be rejected');
 assert.equal((await storePost(new Request(origin+'/api/store',{method:'POST',headers:{origin,'content-type':'application/json'},body:'[]'}))).status,400,'catalog API must reject array bodies');
