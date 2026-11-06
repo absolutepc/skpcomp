@@ -32,13 +32,14 @@ export async function completeOwnerBackupPasskey(input:{
   credential.publicKey.length<16||credential.publicKey.length>4096||
   !Number.isSafeInteger(credential.counter)||credential.counter<0||
   (credential.transports||[]).length>8)return false;
- return adminTransaction(async()=>{
+ try {
+  return await adminTransaction(async()=>{
   const {DB}=await storeEnv();
   const owner=await DB.prepare("SELECT id FROM skp_admin_users WHERE id=?::uuid AND role='owner' AND status='active' FOR UPDATE")
    .bind(ownerId).first();
-  if(!owner||await activeSessionOwnerId(input.request)!==ownerId)return false;
-  if(!await consumeSessionOwnerStepUpGrantInTransaction(input.request,'owner-passkey-enroll'))return false;
-  if(!await consumeWebAuthnChallenge(input.challenge,'register','owner-backup:'+ownerId))return false;
+  if(!owner||await activeSessionOwnerId(input.request)!==ownerId)throw new Error('Owner session invalid');
+  if(!await consumeSessionOwnerStepUpGrantInTransaction(input.request,'owner-passkey-enroll'))throw new Error('Step-up grant invalid');
+  if(!await consumeWebAuthnChallenge(input.challenge,'register','owner-backup:'+ownerId))throw new Error('Challenge invalid');
   const row=await DB.prepare(`WITH registered AS (
    INSERT INTO skp_admin_passkeys
     (credential_id,public_key,counter,transports,device_label,user_id)
@@ -53,6 +54,8 @@ export async function completeOwnerBackupPasskey(input:{
    .bind(credential.id,Uint8Array.from(credential.publicKey),credential.counter,
     JSON.stringify(credential.transports||[]),(input.deviceLabel||'').trim().slice(0,100),ownerId)
    .first<{registered:string|number;audited:string|number}>();
-  return Number(row?.registered)===1&&Number(row?.audited)===1;
- });
+  if(Number(row?.registered)!==1||Number(row?.audited)!==1)throw new Error('Registration incomplete');
+  return true;
+  });
+ } catch { return false; }
 }
