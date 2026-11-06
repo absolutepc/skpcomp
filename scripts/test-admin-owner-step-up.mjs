@@ -44,7 +44,7 @@ test('owner step-up challenges are bound to the current session',()=>{
  const verification=readFileSync(new URL('../lib/admin-owner-step-up.ts',import.meta.url),'utf8');
  assert.match(options,/activeOwnerSessionBinding\(request\)/);
  assert.match(options,/ownerStepUpContext\(binding\.ownerId,binding\.sessionHash,action as OwnerStepUpAction\)/);
- assert.match(verification,/ownerStepUpContext\(ownerId,binding\.sessionHash\)/);
+ assert.match(verification,/ownerStepUpContext\(ownerId,binding\.sessionHash,input\.action\)/);
  assert.match(verification,/current\.sessionHash!==binding\.sessionHash/);
  assert.doesNotMatch(options,/['"]owner-step-up:['"]\+ownerId/);
 });
