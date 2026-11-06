@@ -2,7 +2,7 @@
 import {useEffect,useRef,useState} from 'react';
 
 type QrRequest={requestToken:string;desktopSecret:string;expiresAt:number;approvalUrl:string};
-type Status='pending'|'approved'|'rejected'|'expired'|'consumed'|string;
+type Status='pending'|'approved'|'denied'|'expired'|'consumed'|string;
 function isTrustedApprovalUrl(raw:string,requestToken:string){
  try{
   const url=new URL(raw);
@@ -64,7 +64,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
     const result=await response.json() as {status:Status};
     if(!active)return;
     setStatus(result.status);
-    if(['rejected','expired','consumed'].includes(result.status)){terminal=true;return;}
+    if(['denied','expired','consumed'].includes(result.status)){terminal=true;return;}
     if(result.status!=='pending'&&result.status!=='approved')throw Error('Неизвестное состояние QR-запроса.');
     if(result.status==='approved'){
      finished=true;
@@ -83,7 +83,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   <h3>Вход с iPhone</h3>
   <p>Подтвердите вход с помощью зарегистрированного Passkey. Пароль по-прежнему доступен.</p>
   {!request?<button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>{busy?'Создаём запрос…':'Войти через iPhone'}</button>:<>
-   <p role="status">{status==='pending'?'Ожидание подтверждения на iPhone':status==='approved'?'Завершаем вход…':status==='rejected'?'Запрос отклонён':status==='expired'?'Время запроса истекло':status==='consumed'?'Запрос уже использован':'Статус: '+status}</p>
+   <p role="status">{status==='pending'?'Ожидание подтверждения на iPhone':status==='approved'?'Завершаем вход…':status==='denied'?'Запрос отклонён':status==='expired'?'Время запроса истекло':status==='consumed'?'Запрос уже использован':'Статус: '+status}</p>
    {canApprove&&<div style={{display:'flex',justifyContent:'center',margin:'16px 0'}}>
     {qrDataUrl?<img src={qrDataUrl} alt="QR-код для подтверждения входа в SKP на iPhone" width={264} height={264} style={{display:'block',maxWidth:'100%',borderRadius:12}}/>:
      <p role="status">{qrError||'Создаём QR-код…'}</p>}
