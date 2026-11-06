@@ -1,5 +1,5 @@
-import {isTrustedAdminOrigin} from '../../../../../../../lib/admin-passkey-config';
-import {revokeOwnerPasskey} from '../../../../../../../lib/admin-owner-passkey-revocation';
+import {isTrustedAdminOrigin} from '../../../../../../lib/admin-passkey-config';
+import {revokeOwnerPasskey} from '../../../../../../lib/admin-owner-passkey-revocation';
 
 export const dynamic='force-dynamic';
 const headers={'Cache-Control':'no-store, private','X-Content-Type-Options':'nosniff'};
