@@ -88,6 +88,8 @@ try{
  assert.equal(await readQrStatus(statusQr.requestToken,statusQr.desktopSecret),'approved');
  assert.equal(await consumeApprovedQr(statusQr.requestToken,statusQr.desktopSecret),owner.id);
  assert.equal(await readQrStatus(statusQr.requestToken,statusQr.desktopSecret),'consumed');
+ assert.equal(await markQrApprovedAfterVerification(statusQr.requestToken,'owner-test-key-b'),false,'consumed QR cannot be approved again');
+ assert.equal(await denyPendingQr(statusQr.requestToken),false,'consumed QR cannot be denied after redemption');
  // Explicit denial is terminal: it cannot be approved or redeemed afterward.
  const {denyPendingQr}=await import('../lib/admin-qr-decision.ts');
  const deniedQr=await createPendingQr();
