@@ -151,6 +151,13 @@ try{
  assert.equal(await readQrStatus(expiredQr.requestToken,expiredQr.desktopSecret),'expired','expired QR status is not reported as approved');
  assert.equal(await markQrApprovedAfterVerification(expiredQr.requestToken,'owner-test-key-b'),false,'expired QR cannot be reapproved');
  assert.equal(await denyPendingQr(expiredQr.requestToken),false,'expired QR cannot be denied');
+ // Expired pending requests must never transition to approved or denied.
+ const expiredPendingQr=await createPendingQr();
+ await pool.query("UPDATE skp_admin_qr_requests SET created_at=now()-interval '3 minutes', expires_at=now()-interval '1 second' WHERE request_hash=$1",[await qrChallengeHash(expiredPendingQr.requestToken)]);
+ assert.equal(await readQrStatus(expiredPendingQr.requestToken,expiredPendingQr.desktopSecret),'expired','expired pending QR status is terminal');
+ assert.equal(await markQrApprovedAfterVerification(expiredPendingQr.requestToken,'owner-test-key-b'),false,'expired pending QR cannot be approved');
+ assert.equal(await denyPendingQr(expiredPendingQr.requestToken),false,'expired pending QR cannot be denied');
+ assert.equal(await consumeApprovedQr(expiredPendingQr.requestToken,expiredPendingQr.desktopSecret),null,'expired pending QR cannot be redeemed');
  const revokedQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(revokedQr.requestToken,'owner-test-key-b'),true);
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'revocation requires a fresh action-specific grant');
