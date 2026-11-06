@@ -69,3 +69,21 @@ test('owner UI requests matching WebAuthn action for each privileged operation',
   assert.ok(source.includes("post('/api/admin/owner/step-up/complete',{action:'"+action+"'"));
  }
 });
+
+
+test('owner revocation preserves last credential and rejects ambiguous fingerprints',()=>{
+ const source=readFileSync(new URL('../lib/admin-owner-passkey-revocation.ts',import.meta.url),'utf8');
+ assert.match(source,/keys\.length<2/);
+ assert.match(source,/keys\.filter\(key=>key\.fingerprint===credentialFingerprint\)\.length!==1/);
+ assert.match(source,/updated\.results\.length!==1/);
+ assert.match(source,/await adminTransaction\(async\(\)=>\{/);
+ assert.match(source,/consumeSessionOwnerStepUpGrantInTransaction\(request,'owner-passkey-revoke'\)/);
+});
+
+test('owner step-up challenge API rejects non-JSON and oversized requests',()=>{
+ const source=readFileSync(new URL('../app/api/admin/owner/step-up/options/route.ts',import.meta.url),'utf8');
+ assert.match(source,/request\.headers\.get\('content-type'\)/);
+ assert.match(source,/raw\.length>1024/);
+ assert.match(source,/JSON\.parse\(raw\)/);
+ assert.match(source,/Array\.isArray\(body\)/);
+});
