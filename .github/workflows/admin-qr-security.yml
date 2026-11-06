@@ -45,6 +45,8 @@ jobs:
         run: node scripts/test-admin-qr-decision.mjs
       - name: Check QR persistence helpers
         run: node scripts/test-admin-qr-persistence.mjs
+      - name: Check WebAuthn registration integration
+        run: node scripts/test-admin-passkey-register.mjs
       - name: Check WebAuthn cryptographic verification integration
         run: node scripts/test-admin-passkey-verify.mjs
       - name: Check Passkey management persistence
