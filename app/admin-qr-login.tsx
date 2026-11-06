@@ -32,6 +32,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   try{
    const response=await fetch('/api/admin/qr/create',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',cache:'no-store',credentials:'same-origin'});
    if(!response.ok)throw Error(response.status===429?'Слишком много запросов. Попробуйте позже.':'Не удалось создать запрос входа.');
+   if(generation!==requestGeneration.current)return;
    const value=await response.json() as QrRequest;
    if(!/^[a-f0-9]{64}$/.test(value.requestToken)||!/^[a-f0-9]{64}$/.test(value.desktopSecret)||!Number.isFinite(value.expiresAt)||value.expiresAt*1000<=Date.now()||!isTrustedApprovalUrl(value.approvalUrl,value.requestToken))throw Error('Некорректный ответ сервера.');
    if(generation===requestGeneration.current)setRequest(value);
