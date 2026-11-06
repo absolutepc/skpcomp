@@ -67,13 +67,13 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
  },[request,status]);
  useEffect(()=>{
   if(!request)return;
-  let active=true,working=false,finished=false,terminal=false;
+  let active=true,working=false,finished=false,terminal=false,consecutiveFailures=0,nextPollAt=0;
   // The server uses epoch seconds. Never poll or consume after expiry.
   const expiresAtMs=request.expiresAt*1000;
   // Expire the QR locally even if the status endpoint hangs or the network drops.
   const expiryTimer=setTimeout(()=>{if(active){terminal=true;setStatus('expired');}},Math.max(0,expiresAtMs-Date.now()));
   const poll=async()=>{
-   if(!active||working||finished||terminal)return;
+   if(!active||working||finished||terminal||Date.now()<nextPollAt)return;
    if(Date.now()>=expiresAtMs){terminal=true;setStatus('expired');return;}
    working=true;
    try{
@@ -84,7 +84,8 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
     if(Date.now()>=expiresAtMs){terminal=true;setStatus('expired');return;}
     // Reject malformed server states before updating the visible QR status.
     if(!['pending','approved','denied','expired','consumed'].includes(result.status))throw Error('Неизвестное состояние QR-запроса.');
-    // A recovered connection should clear an earlier transient polling error.
+    // Reset the retry backoff after the connection recovers.
+    consecutiveFailures=0;nextPollAt=0;
     setError('');
     setStatus(result.status);
     if(['denied','expired','consumed'].includes(result.status)){terminal=true;return;}
@@ -99,7 +100,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
      if(session.authenticated!==true)throw Error('Сервер не подтвердил создание сессии.');
      if(active){active=false;onAuthenticatedRef.current();}
     }
-   }catch(e){if(active){setError(e instanceof Error?e.message:'Ошибка соединения');if(finished){terminal=true;setStatus('error');}}}
+   }catch(e){if(active){setError(e instanceof Error?e.message:'Ошибка соединения');if(finished){terminal=true;setStatus('error');}else{consecutiveFailures=Math.min(consecutiveFailures+1,4);nextPollAt=Date.now()+Math.min(2000*2**consecutiveFailures,15000);}}}
    finally{working=false;}
   };
   void poll();
