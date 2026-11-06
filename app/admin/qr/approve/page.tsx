@@ -30,7 +30,11 @@ export default function ApproveQr(){
    if(decision.status!=='approved')throw Error('Сервер не подтвердил вход.');
    setApproved(true);
    setMessage('Вход подтверждён. Вернитесь к компьютеру.');
-  }catch(e){setMessage(e instanceof Error?e.message:'Ошибка подтверждения.');}
+  }catch(e){
+   if(e instanceof DOMException&&e.name==='NotAllowedError')setMessage('Подтверждение отменено или не разрешено. Попробуйте ещё раз, если QR-код действует.');
+   else if(e instanceof DOMException&&e.name==='AbortError')setMessage('Подтверждение прервано. Попробуйте ещё раз, если QR-код действует.');
+   else setMessage(e instanceof Error?e.message:'Ошибка подтверждения.');
+  }
   finally{submitting.current=false;setBusy(false);}
  }
  return <main style={{minHeight:'100dvh',background:'#080808',color:'#fff',display:'grid',placeItems:'center',padding:24}}><section style={{maxWidth:420,width:'100%',textAlign:'center'}}>
