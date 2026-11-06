@@ -12,4 +12,7 @@ assert.match(source,/QRCode\.toDataURL\(request\.approvalUrl/);
 assert.match(source,/\{canApprove&&<div/);
 assert.match(source,/qrDataUrl\?<img src=\{qrDataUrl\}/);
 assert.doesNotMatch(source,/api\.qrserver\.com|chart\.googleapis\.com/);
+const statusSource=readFileSync(new URL('../lib/admin-qr-status.ts',import.meta.url),'utf8');
+assert.match(statusSource,/case 'denied'/);
+assert.match(source,/status==='denied'\?'Запрос отклонён'/);
 console.log('Admin QR link visibility regression checks passed (static only).');
