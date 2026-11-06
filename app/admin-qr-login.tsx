@@ -67,13 +67,15 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
     const response=await fetch('/api/admin/qr/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:request.requestToken,desktopSecret:request.desktopSecret}),cache:'no-store',credentials:'same-origin'});
     if(!response.ok)throw Error('Не удалось проверить подтверждение.');
     const result=await response.json() as {status:Status};
-    if(!active)return;
+    if(!active||terminal)return;
+    if(Date.now()>=expiresAtMs){terminal=true;setStatus('expired');return;}
     setStatus(result.status);
     if(['denied','expired','consumed'].includes(result.status)){terminal=true;return;}
     if(result.status!=='pending'&&result.status!=='approved')throw Error('Неизвестное состояние QR-запроса.');
     if(result.status==='approved'){
      finished=true;
      const consumed=await fetch('/api/admin/qr/consume',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:request.requestToken,desktopSecret:request.desktopSecret}),cache:'no-store',credentials:'same-origin'});
+     if(!active||terminal)return;
      if(!consumed.ok)throw Error('Подтверждение получено, но завершить вход не удалось.');
      const session=await consumed.json() as {authenticated?:boolean};
      if(session.authenticated!==true)throw Error('Сервер не подтвердил создание сессии.');
