@@ -10,6 +10,7 @@ on:
       - 'vendor/jsqr-*'
       - 'app/api/admin/qr/**'
       - 'scripts/admin-test-loader.mjs'
+      - 'scripts/admin-schema-preflight.mjs'
       - 'app/api/admin/staff/**'
       - 'app/api/admin/invite/**'
       - 'app/admin/staff/**'
@@ -27,6 +28,9 @@ on:
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
       - 'db/admin-roles-schema.sql'
+      - 'db/admin-owner-*.sql'
+      - 'app/api/admin/owner/**'
+      - 'app/admin/owner/**'
       - 'db/admin-employee-invites-schema.sql'
       - 'scripts/test-admin-*.mjs'
       - 'scripts/bootstrap-admin-owner.mjs'
@@ -40,6 +44,7 @@ on:
       - 'vendor/jsqr-*'
       - 'app/api/admin/qr/**'
       - 'scripts/admin-test-loader.mjs'
+      - 'scripts/admin-schema-preflight.mjs'
       - 'app/api/admin/staff/**'
       - 'app/api/admin/invite/**'
       - 'app/admin/staff/**'
@@ -51,6 +56,9 @@ on:
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
       - 'db/admin-roles-schema.sql'
+      - 'db/admin-owner-*.sql'
+      - 'app/api/admin/owner/**'
+      - 'app/admin/owner/**'
       - 'db/admin-employee-invites-schema.sql'
       - 'scripts/test-admin-*.mjs'
 
@@ -207,7 +215,15 @@ jobs:
         env:
           TEST_DATABASE_URL: postgres://skp_test:local_test_only@127.0.0.1:5432/skp_admin_test
         run: node --loader ./scripts/admin-test-loader.mjs scripts/test-admin-owner-step-up-integration.mjs
+      - name: Production owner backup cryptographic routes
+        env:
+          TEST_DATABASE_URL: postgres://skp_test:local_test_only@127.0.0.1:5432/skp_admin_test
+        run: node --loader ./scripts/admin-test-loader.mjs scripts/test-admin-owner-production.mjs
       - name: PostgreSQL authentication and concurrency integration
         env:
           TEST_DATABASE_URL: postgres://skp_test:local_test_only@127.0.0.1:5432/skp_admin_test
         run: node --loader ./scripts/admin-test-loader.mjs scripts/test-admin-auth-integration.mjs
+      - name: Additive migrations and readonly schema drift checks
+        env:
+          TEST_DATABASE_URL: postgres://skp_test:local_test_only@127.0.0.1:5432/skp_admin_test
+        run: node scripts/test-admin-migrations.mjs
