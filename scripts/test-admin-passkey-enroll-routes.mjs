@@ -10,6 +10,9 @@ for(const source of [options,complete]){
 assert.ok(options.includes('beginAdminPasskeyEnrollment(request,password)'));
 assert.ok(options.includes("userVerification:'required'"));
 assert.ok(complete.includes('isAuthorizedAdmin(request)'));
+assert.ok(complete.includes('allowNewAdminQrRequest()'));
+assert.ok(complete.includes("'Retry-After':'60'"));
+assert.ok(complete.indexOf('allowNewAdminQrRequest()')<complete.indexOf('verifyAndStoreAdminPasskeyRegistration({'));
 assert.ok(complete.includes('enrollmentContextFromRequest(request)'));
 assert.ok(complete.includes('verifyAndStoreAdminPasskeyRegistration('));
 assert.ok(!complete.includes('issueAdminSession('));
