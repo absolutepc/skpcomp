@@ -81,3 +81,20 @@ export async function sessionAdminUserId(request:Request):Promise<string|null>{
   .bind(await hash('skp-admin-v2:'+ADMIN_PASSWORD+':'+token),now()).first<{user_id:string|null}>();
  return row?.user_id??null;
 }
+
+/** Resolve the current database-backed owner session for action-bound step-up.
+ * Never returns the cookie token; the hash is only used server-side.
+ */
+export async function activeOwnerSessionBinding(request:Request):Promise<{ownerId:string;sessionHash:string}|null>{
+ const token=sessionFromRequest(request);
+ if(!token)return null;
+ const {ADMIN_PASSWORD}=await storeEnv();
+ if(!ADMIN_PASSWORD)return null;
+ const sessionHash=await hash('skp-admin-v2:'+ADMIN_PASSWORD+':'+token);
+ const DB=await database();
+ const row=await DB.prepare(`SELECT u.id AS owner_id FROM skp_admin_sessions_v2 s
+ JOIN skp_admin_users u ON u.id=s.user_id
+ WHERE s.token_hash=? AND s.expires>? AND u.status='active' AND u.role='owner'`)
+ .bind(sessionHash,now()).first<{owner_id:string}>();
+ return row?{ownerId:row.owner_id,sessionHash}:null;
+}
