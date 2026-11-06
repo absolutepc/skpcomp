@@ -70,7 +70,7 @@ export default function AdminKeyScanner(){
    setMessage('Камера доступна только через HTTPS в поддерживаемом браузере.');return;
   }
   if(!window.BarcodeDetector){
-   setMessage('В этом браузере встроенный QR-сканер недоступен. Отсканируйте QR обычной камерой телефона или вставьте ссылку ниже.');return;
+   setMessage('Встроенное распознавание QR недоступно. Откройте камеру телефона и наведите её на QR-код компьютера либо вставьте ссылку ниже.');return;
   }
   try{
    const media=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'}}});
@@ -81,7 +81,9 @@ export default function AdminKeyScanner(){
    setScanning(true);
    await video.current.play();
    if(generation.current!==attempt){media.getTracks().forEach(track=>track.stop());return}
-   const detector=new window.BarcodeDetector({formats:['qr_code']});
+   const DetectorClass=window.BarcodeDetector;
+   if(!DetectorClass){stop();setMessage('QR-сканер недоступен.');return}
+   const detector=new DetectorClass({formats:['qr_code']});
    active.current=true;
    let checking=false;
    const scan=async()=>{
@@ -92,7 +94,7 @@ export default function AdminKeyScanner(){
       const codes=await detector.detect(video.current);
       if(generation.current!==attempt)return;
       for(const code of codes){if(navigate(code.rawValue))return}
-     }catch{setMessage('Не удалось распознать код. Попробуйте обычную камеру телефона.');stop();return}
+     }catch{if(generation.current===attempt){stop();setMessage('Не удалось распознать код. Попробуйте обычную камеру телефона.')}return}
      finally{checking=false}
     }
     if(active.current&&generation.current===attempt)frame.current=requestAnimationFrame(()=>{void scan()});
