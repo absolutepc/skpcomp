@@ -15,6 +15,7 @@ on:
       - 'pnpm-lock.yaml'
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
+      - 'db/admin-roles-schema.sql'
       - 'scripts/test-admin-*.mjs'
       - '.github/workflows/admin-qr-security.yml'
   pull_request:
@@ -25,6 +26,7 @@ on:
       - 'app/api/store/route.ts'
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
+      - 'db/admin-roles-schema.sql'
       - 'scripts/test-admin-*.mjs'
 
 permissions:
@@ -45,6 +47,8 @@ jobs:
         run: node scripts/test-vercel-admin-session-foundation.mjs
       - name: Check PostgreSQL schema
         run: node scripts/test-admin-qr-schema.mjs
+      - name: Check employee roles and revocation schema
+        run: node scripts/test-admin-roles-schema.mjs
       - name: Check QR URL handling
         run: node scripts/test-admin-qr-url.mjs
       - name: Check local QR code rendering and link safety
