@@ -1,5 +1,6 @@
--- Staging-only migration for owner step-up authorization.
--- NOT approved for production. Apply after existing admin identity migrations.
+-- Owner step-up authorization schema; additive production candidate.
+-- Apply to production ONLY after explicit approval and backup/schema review.
+-- Requires existing admin identity migrations; follow with the proof migration.
 BEGIN;
 CREATE TABLE IF NOT EXISTS skp_admin_owner_step_up_grants (
   grant_hash TEXT PRIMARY KEY,

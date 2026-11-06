@@ -1,5 +1,7 @@
 # SKP QR / Passkey: production rollout with password fallback
 
+> Обновлено 6 ноября 2026: текущий production-mode, миграции, доказательство оставшегося ключа и внедрение на основном сайте с сохранённым паролем описаны в [актуальном плане](admin-owner-production-readiness.md). Ниже — исторический план; требования отдельного staging и утверждения о неготовой реализации заменены актуальным документом. Emergency recovery всех потерянных ключей по-прежнему не реализован.
+
 **Planning document only.** Do not merge, deploy, change Vercel environment variables, or run SQL against production without separate explicit approval. Draft PR #28 targets `vercel-deploy`, not `main`.
 
 ## Preconditions

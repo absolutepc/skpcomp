@@ -1,5 +1,7 @@
 # SKP owner backup Passkey — step-up implementation contract
 
+> Обновлено 6 ноября 2026: текущий production-mode, миграции, доказательство оставшегося ключа и внедрение на основном сайте с сохранённым паролем описаны в [актуальном плане](admin-owner-production-readiness.md). Ниже — исторический план; требования отдельного staging и утверждения о неготовой реализации заменены актуальным документом. Emergency recovery всех потерянных ключей по-прежнему не реализован.
+
 Status: design and acceptance contract only. **Do not enable backup enrollment, merge PR #28, deploy, migrate production, or switch off legacy login.**
 
 ## Current finding (2026-11-06)
