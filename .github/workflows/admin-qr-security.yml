@@ -69,6 +69,8 @@ jobs:
         run: node scripts/test-admin-passkey-management.mjs
       - name: Check Passkey enrollment persistence
         run: node scripts/test-admin-passkey-enrollment-store.mjs
+      - name: Check Passkey enrollment password reauthentication
+        run: node scripts/test-admin-passkey-reauth.mjs
       - name: Check Passkey credential storage
         run: node scripts/test-admin-passkey-credentials.mjs
       - name: Check WebAuthn challenge handling
