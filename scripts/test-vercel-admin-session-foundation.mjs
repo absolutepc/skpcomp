@@ -7,6 +7,9 @@ const schema=read('db/admin-passkey-schema.sql');
 assert.match(schema,/token_hash TEXT PRIMARY KEY/);
 assert.match(session,/expires>\?/);
 assert.match(session,/DELETE FROM skp_admin_sessions_v2/);
+assert.match(session,/JOIN skp_admin_users u ON u.id=s.user_id/);
+assert.match(session,/u.status='active'/);
+assert.match(session,/if\(!inserted\)/);
 assert.match(session,/adminCookie\(request,token,SESSION_SECONDS\)/);
 const endpoints=[
  'app/api/store/route.ts',
