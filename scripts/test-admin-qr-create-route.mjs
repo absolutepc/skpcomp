@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync(new URL('../app/api/admin/qr/create/route.ts',import.meta.url),'utf8');
+assert.match(src,/isTrustedAdminOrigin\(request\)/);
+assert.match(src,/createPendingQr\(\)/);
+assert.match(src,/adminQrApprovalUrl\(requestToken\)/);
+assert.match(src,/desktopSecret,expiresAt/);
+assert.match(src,/no-store/);
+assert.doesNotMatch(src,/issueAdminSession|Set-Cookie/);
+console.log('QR create route static checks passed; rate limiting and end-to-end tests still required.');
