@@ -1,4 +1,4 @@
-import {localAdminAccess} from '../../../lib/local-admin-access';
+import {isAuthorizedAdmin} from '../../../lib/admin-authorization';
 import {storeEnv,isPostgres} from '../../../db/platform-store';
 import {seed,type Store} from '../../../lib/seed';
 import {normalizeOrderItems,validateContact,orderTotal,isOrderStatus,canTransition,OrderValidationError,type OrderItem,type OrderStatus,type PublicOrder,type AdminOrder,type OrderEvent} from '../../../lib/orders';
@@ -12,12 +12,7 @@ const digest=async(value:string)=>{
  const bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)));
  return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
 };
-const adminAuth=async(request:Request)=>{
- if(localAdminAccess(request))return true;
- if(!E.ADMIN_PASSWORD)return false;
- const token=await digest('skp-session:'+E.ADMIN_PASSWORD);
- return (request.headers.get('cookie')||'').split(';').some(part=>part.trim()==='skp_admin='+token);
-};
+const adminAuth=isAuthorizedAdmin;
 const originMatches=(request:Request)=>request.headers.get('origin')===new URL(request.url).origin;
 async function ensureOrders(){
  if(isPostgres())return; // PostgreSQL tables are provisioned by db/postgres-schema.sql
