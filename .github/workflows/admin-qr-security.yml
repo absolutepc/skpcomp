@@ -6,9 +6,13 @@ on:
       - feature/vercel-admin-qr-passkeys
     paths:
       - 'lib/admin-*.ts'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
       - 'scripts/test-admin-*.mjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
       - '.github/workflows/admin-qr-security.yml'
   pull_request:
     paths:
@@ -43,3 +47,21 @@ jobs:
         run: node scripts/test-admin-passkey-credentials.mjs
       - name: Check WebAuthn challenge handling
         run: node scripts/test-admin-webauthn-challenges.mjs
+
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Install exact dependencies
+        run: pnpm install --frozen-lockfile
+      - name: TypeScript check
+        run: pnpm exec tsc --noEmit
