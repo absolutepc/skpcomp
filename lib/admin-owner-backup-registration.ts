@@ -1,3 +1,4 @@
+import {consumeSessionOwnerStepUpGrantInTransaction} from './admin-owner-step-up-grants';
 import {verifyRegistrationResponse} from '@simplewebauthn/server';
 import type {RegistrationResponseJSON} from '@simplewebauthn/server';
 import {adminWebAuthnConfig} from './admin-passkey-config';
@@ -36,6 +37,7 @@ export async function completeOwnerBackupPasskey(input:{
   const owner=await DB.prepare("SELECT id FROM skp_admin_users WHERE id=?::uuid AND role='owner' AND status='active' FOR UPDATE")
    .bind(ownerId).first();
   if(!owner||await activeSessionOwnerId(input.request)!==ownerId)return false;
+  if(!await consumeSessionOwnerStepUpGrantInTransaction(input.request,'owner-passkey-enroll'))return false;
   if(!await consumeWebAuthnChallenge(input.challenge,'register','owner-backup:'+ownerId))return false;
   const row=await DB.prepare(`WITH registered AS (
    INSERT INTO skp_admin_passkeys
