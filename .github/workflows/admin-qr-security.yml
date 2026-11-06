@@ -6,6 +6,10 @@ on:
       - feature/vercel-admin-qr-passkeys
     paths:
       - 'lib/admin-*.ts'
+      - 'db/platform-store.ts'
+      - 'vendor/jsqr-*'
+      - 'app/api/admin/qr/**'
+      - 'scripts/admin-test-loader.mjs'
       - 'app/api/admin/staff/**'
       - 'app/api/admin/invite/**'
       - 'app/admin/staff/**'
@@ -32,6 +36,10 @@ on:
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'lib/admin-*.ts'
+      - 'db/platform-store.ts'
+      - 'vendor/jsqr-*'
+      - 'app/api/admin/qr/**'
+      - 'scripts/admin-test-loader.mjs'
       - 'app/api/admin/staff/**'
       - 'app/api/admin/invite/**'
       - 'app/admin/staff/**'
@@ -156,3 +164,36 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Verify Vercel production build (no deployment)
         run: pnpm build:vercel
+
+  auth-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: skp_test
+          POSTGRES_PASSWORD: local_test_only
+          POSTGRES_DB: skp_admin_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U skp_test -d skp_admin_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Decode actual QR pixels without BarcodeDetector
+        run: node --loader ./scripts/admin-test-loader.mjs scripts/test-admin-key-runtime.mjs
+      - name: PostgreSQL authentication and concurrency integration
+        env:
+          TEST_DATABASE_URL: postgres://skp_test:local_test_only@127.0.0.1:5432/skp_admin_test
+        run: node --loader ./scripts/admin-test-loader.mjs scripts/test-admin-auth-integration.mjs
