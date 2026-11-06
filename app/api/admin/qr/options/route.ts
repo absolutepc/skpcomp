@@ -1,4 +1,5 @@
 import {isTrustedAdminOrigin,adminWebAuthnConfig} from '../../../../../lib/admin-passkey-config';
+import {allowNewAdminQrRequest} from '../../../../../lib/admin-qr-rate-limit';
 import {isPendingQrRequest} from '../../../../../lib/admin-qr-eligibility';
 import {issueWebAuthnChallenge} from '../../../../../lib/admin-webauthn-challenges';
 
@@ -18,6 +19,8 @@ export async function POST(request:Request){
  try{
   if(!await isPendingQrRequest(token))
    return Response.json({error:'QR request unavailable'},{status:404,headers});
+  if(!await allowNewAdminQrRequest())
+   return Response.json({error:'Too many requests'},{status:429,headers:{...headers,'Retry-After':'60'}});
   const {challenge,expiresAt}=await issueWebAuthnChallenge('authenticate',token);
   const {rpID}=adminWebAuthnConfig(request.headers.get('origin')||'');
   return Response.json({challenge,rpID,userVerification:'required',expiresAt},{headers});
