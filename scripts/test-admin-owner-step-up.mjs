@@ -48,3 +48,13 @@ test('owner step-up challenges are bound to the current session',()=>{
  assert.match(verification,/current\.sessionHash!==binding\.sessionHash/);
  assert.doesNotMatch(options,/['"]owner-step-up:['"]\+ownerId/);
 });
+
+
+test('backup enrollment challenges are session bound without recursive context construction',()=>{
+ const options=readFileSync(new URL('../app/api/admin/owner/passkeys/options/route.ts',import.meta.url),'utf8');
+ assert.match(options,/ownerBackupChallengeContext\(binding\.ownerId,binding\.sessionHash\)/);
+ assert.match(registration,/ownerBackupChallengeContext\(ownerId,binding\.sessionHash\)/);
+ assert.match(registration,/const current=await activeOwnerSessionBinding\(input\.request\)/);
+ assert.match(registration,/current\.sessionHash!==binding\.sessionHash/);
+ assert.match(registration,/ownerBackupChallengeContext=\(ownerId:string,sessionHash:string\):string=>'owner-backup:'\+ownerId\+':'\+sessionHash/);
+});
