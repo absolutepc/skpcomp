@@ -15,4 +15,8 @@ assert.match(revoke,/DELETE FROM skp_admin_sessions_v2/);
 assert.match(revoke,/UPDATE skp_admin_qr_requests/);
 assert.match(revoke,/INSERT INTO skp_admin_security_events/);
 assert.match(revoke,/WITH blocked AS/);
+assert.ok(revoke.includes('actorOwnerId:string'));
+assert.ok(revoke.includes("owner.role='owner' AND owner.status='active'"));
+assert.ok(revoke.includes('actor_user_id,target_user_id,event_type'));
+assert.ok(revoke.includes('.bind(targetUserId,actorOwnerId,actorOwnerId)'));
 console.log('Admin role schema and atomic employee revocation static checks passed.');
