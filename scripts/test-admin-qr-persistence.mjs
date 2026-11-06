@@ -17,5 +17,7 @@ assert.match(status,/expires_at>now\(\)/);
 assert.match(consume,/status='approved' AND expires_at>now\(\)/);
 assert.match(consume,/status='consumed',consumed_at=now\(\)/);
 assert.match(consume,/revoked_at IS NULL/);
-assert.match(consume,/RETURNING request_hash/);
+assert.match(consume,/RETURNING approved_user_id/);
+assert.match(consume,/approved_user_id IS NOT NULL/);
+assert.match(consume,/u.status='active'/);
 console.log('QR persistence static checks passed. No database race/integration test performed.');
