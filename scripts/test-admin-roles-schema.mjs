@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
+const schema=read('db/admin-roles-schema.sql');
+const revoke=read('lib/admin-employee-revocation.ts');
+assert.match(schema,/role IN \('owner','admin'\)/);
+assert.match(schema,/status IN \('active','blocked'\)/);
+assert.match(schema,/skp_admin_one_owner_idx/);
+assert.match(schema,/ALTER TABLE skp_admin_passkeys ADD COLUMN IF NOT EXISTS user_id/);
+assert.match(schema,/ALTER TABLE skp_admin_sessions_v2 ADD COLUMN IF NOT EXISTS user_id/);
+assert.match(schema,/CREATE TABLE IF NOT EXISTS skp_admin_security_events/);
+assert.match(revoke,/role='admin' AND status='active'/);
+assert.match(revoke,/UPDATE skp_admin_passkeys/);
+assert.match(revoke,/DELETE FROM skp_admin_sessions_v2/);
+assert.match(revoke,/UPDATE skp_admin_qr_requests/);
+assert.match(revoke,/INSERT INTO skp_admin_security_events/);
+assert.match(revoke,/WITH blocked AS/);
+console.log('Admin role schema and atomic employee revocation static checks passed.');
