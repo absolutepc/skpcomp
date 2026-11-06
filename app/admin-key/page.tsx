@@ -1,22 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 
-type DetectedBarcode={rawValue:string};
-type Detector={detect:(source:HTMLVideoElement)=>Promise<DetectedBarcode[]>};
-type DetectorCtor=new(options:{formats:string[]})=>Detector;
-declare global {interface Window {BarcodeDetector?:DetectorCtor}}
-
-function trustedQrDestination(value:string):string|null{
- try{
-  const url=new URL(value);
-  if(url.origin!==window.location.origin||url.pathname!=='/admin/qr/approve'||
-   url.searchParams.size!==1||url.searchParams.getAll('request').length!==1||
-   !/^[a-f0-9]{64}$/.test(url.searchParams.get('request')||'')||
-   url.hash||url.username||url.password)return null;
-  // Open the same request in the installed PWA, without broadening accepted QR origins.
-  return '/admin-key/approve'+url.search;
- }catch{return null}
-}
+import {trustedQrDestination} from '../../lib/admin-key-qr';
 
 export default function AdminKeyScanner(){
  const video=useRef<HTMLVideoElement|null>(null);
@@ -58,43 +43,44 @@ export default function AdminKeyScanner(){
   return()=>{document.removeEventListener('visibilitychange',onHidden);generation.current++;active.current=false;stream.current?.getTracks().forEach(track=>track.stop());if(frame.current!==null)cancelAnimationFrame(frame.current);manifest.remove();theme.remove()};
  },[]);
  const navigate=(raw:string)=>{
-  const destination=trustedQrDestination(raw.trim());
+  const destination=trustedQrDestination(raw.trim(),window.location.origin);
   if(!destination){setMessage('QR-код не принадлежит системе входа SKP.');return false}
   stop();window.location.assign(destination);return true;
  };
  async function start(){
-  if(scanning)return;
+  if(active.current)return;
   const attempt=++generation.current;
   setMessage('');
   if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){
    setMessage('Камера доступна только через HTTPS в поддерживаемом браузере.');return;
   }
-  if(!window.BarcodeDetector){
-   setMessage('Встроенное распознавание QR недоступно. Откройте камеру телефона и наведите её на QR-код компьютера либо вставьте ссылку ниже.');return;
-  }
+  active.current=true;
+  setScanning(true);
   try{
    const media=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'}}});
    if(generation.current!==attempt){media.getTracks().forEach(track=>track.stop());return}
    stream.current=media;
-   if(!video.current){media.getTracks().forEach(track=>track.stop());stream.current=null;return}
+   if(!video.current){media.getTracks().forEach(track=>track.stop());stream.current=null;stop();return}
    video.current.srcObject=media;
    setScanning(true);
    await video.current.play();
    if(generation.current!==attempt){media.getTracks().forEach(track=>track.stop());return}
-   const DetectorClass=window.BarcodeDetector;
-   if(!DetectorClass){stop();setMessage('QR-сканер недоступен.');return}
-   const detector=new DetectorClass({formats:['qr_code']});
+   const {createQrVideoDecoder}=await import('../../lib/admin-key-decoder');
+   if(generation.current!==attempt)return;
+   const decode=createQrVideoDecoder();
+   let lastScan=0;
    active.current=true;
    let checking=false;
    const scan=async()=>{
     if(!active.current||generation.current!==attempt||!video.current)return;
-    if(!checking&&video.current.readyState>=2){
+    if(!checking&&video.current.readyState>=2&&performance.now()-lastScan>=150){
+     lastScan=performance.now();
      checking=true;
      try{
-      const codes=await detector.detect(video.current);
+      const raw=decode(video.current);
       if(generation.current!==attempt)return;
-      for(const code of codes){if(navigate(code.rawValue))return}
-     }catch{if(generation.current===attempt){stop();setMessage('Не удалось распознать код. Попробуйте обычную камеру телефона.')}return}
+      if(raw&&navigate(raw))return;
+     }catch{if(generation.current===attempt){stop();setMessage('Не удалось распознать код. Остановите и снова запустите камеру либо вставьте ссылку ниже.')}return}
      finally{checking=false}
     }
     if(active.current&&generation.current===attempt)frame.current=requestAnimationFrame(()=>{void scan()});
