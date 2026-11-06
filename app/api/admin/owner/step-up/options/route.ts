@@ -1,4 +1,5 @@
-import {activeSessionOwnerId} from '../../../../../../lib/vercel-admin-session';
+import {activeOwnerSessionBinding} from '../../../../../../lib/vercel-admin-session';
+import {ownerStepUpContext} from '../../../../../../lib/admin-owner-step-up';
 import {isTrustedAdminOrigin,adminWebAuthnConfig} from '../../../../../../lib/admin-passkey-config';
 import {issueWebAuthnChallenge} from '../../../../../../lib/admin-webauthn-challenges';
 import {allowNewAdminQrRequest} from '../../../../../../lib/admin-qr-rate-limit';
@@ -12,12 +13,12 @@ export async function POST(request:Request){
  if(!isTrustedAdminOrigin(request))
   return Response.json({error:'Forbidden'},{status:403,headers});
  try{
-  const ownerId=await activeSessionOwnerId(request);
-  if(!ownerId)return Response.json({error:'Forbidden'},{status:403,headers});
+  const binding=await activeOwnerSessionBinding(request);
+  if(!binding)return Response.json({error:'Forbidden'},{status:403,headers});
   if(!await allowNewAdminQrRequest())
    return Response.json({error:'Rate limited'},{status:429,headers});
   const {rpID}=adminWebAuthnConfig(request.headers.get('origin')||'');
-  const {challenge,expiresAt}=await issueWebAuthnChallenge('authenticate','owner-step-up:'+ownerId);
+  const {challenge,expiresAt}=await issueWebAuthnChallenge('authenticate',ownerStepUpContext(binding.ownerId,binding.sessionHash));
   return Response.json({challenge,expiresAt,rpID,userVerification:'required'},{headers});
  }catch{return Response.json({error:'Unavailable'},{status:503,headers})}
 }
