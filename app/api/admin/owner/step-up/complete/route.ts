@@ -24,7 +24,7 @@ export async function POST(request:Request){
  if(!input||typeof input!=='object'||Array.isArray(input))
   return Response.json({error:'Invalid request'},{status:400,headers});
  const {challenge,response,action}=input as Record<string,unknown>;
- if(action!==undefined&&action!=='owner-passkey-enroll'&&action!=='owner-passkey-revoke')return Response.json({error:'Invalid action'},{status:400,headers});
+ if(action!=='owner-passkey-enroll'&&action!=='owner-passkey-revoke')return Response.json({error:'Invalid action'},{status:400,headers});
  if(typeof challenge!=='string'||!/^[a-f0-9]{64}$/.test(challenge)||
   !response||typeof response!=='object'||Array.isArray(response))
   return Response.json({error:'Invalid request'},{status:400,headers});
@@ -33,10 +33,10 @@ export async function POST(request:Request){
    return Response.json({error:'Rate limited'},{status:429,headers});
   const verified=await verifyOwnerStepUp({
    request,challenge,response:response as AuthenticationResponseJSON,
-   origin:request.headers.get('origin')||'',
+   origin:request.headers.get('origin')||'',action,
   });
   if(!verified)return Response.json({error:'Verification failed'},{status:403,headers});
-  const grant=await issueOwnerStepUpGrantAfterVerifiedAssertion(request,action==='owner-passkey-revoke'?'owner-passkey-revoke':'owner-passkey-enroll');
+  const grant=await issueOwnerStepUpGrantAfterVerifiedAssertion(request,action);
   if(!grant)return Response.json({error:'Unavailable'},{status:503,headers});
   return Response.json({verified:true},{headers});
  }catch{return Response.json({error:'Unavailable'},{status:503,headers})}
