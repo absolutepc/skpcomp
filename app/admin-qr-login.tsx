@@ -20,6 +20,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
  const [error,setError]=useState('');
  const [busy,setBusy]=useState(false);
  const onAuthenticatedRef=useRef(onAuthenticated);
+ const canApprove=Boolean(request&&status==='pending'&&request.expiresAt*1000>Date.now());
  useEffect(()=>{onAuthenticatedRef.current=onAuthenticated;},[onAuthenticated]);
  async function start(){
   setBusy(true);setError('');setRequest(null);setStatus('pending');
@@ -67,9 +68,9 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   <p>Подтвердите вход с помощью зарегистрированного Passkey. Пароль по-прежнему доступен.</p>
   {!request?<button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>{busy?'Создаём запрос…':'Войти через iPhone'}</button>:<>
    <p role="status">{status==='pending'?'Ожидание подтверждения на iPhone':status==='approved'?'Завершаем вход…':status==='rejected'?'Запрос отклонён':status==='expired'?'Время запроса истекло':status==='consumed'?'Запрос уже использован':'Статус: '+status}</p>
-   <a href={request.approvalUrl} target="_blank" rel="noopener noreferrer">Открыть страницу подтверждения на iPhone</a>
-   <button type="button" className="button outline" onClick={()=>void navigator.clipboard.writeText(request.approvalUrl).catch(()=>setError('Не удалось скопировать ссылку. Откройте её вручную.'))}>Скопировать ссылку для iPhone</button>
-   <p><small>Скопируйте ссылку и откройте её в Safari на iPhone. QR-код пока не реализован.</small></p>
+   {canApprove&&<a href={request.approvalUrl} target="_blank" rel="noopener noreferrer">Открыть страницу подтверждения на iPhone</a>}
+   {canApprove&&<button type="button" className="button outline" onClick={()=>{if(request.expiresAt*1000<=Date.now()){setStatus('expired');return;}void navigator.clipboard.writeText(request.approvalUrl).catch(()=>setError('Не удалось скопировать ссылку. Откройте её вручную.'));}}>Скопировать ссылку для iPhone</button>}
+   {canApprove&&<p><small>Скопируйте ссылку и откройте её в Safari на iPhone. QR-код пока не реализован.</small></p>}
    <button type="button" className="button outline" onClick={()=>void start()}>Создать новый запрос</button>
   </>}
   {error&&<p role="alert">{error}</p>}
