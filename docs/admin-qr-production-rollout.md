@@ -39,3 +39,9 @@ CI run URLs, exact SHA, backup confirmation and restore test, reviewed SQL, Verc
 - The recovery security contract (`docs/admin-owner-recovery-security.md`) states that offline emergency recovery is **not implemented**. A second independently tested hardware-backed owner Passkey is the recommended first recovery layer; do not claim that a printed QR card alone provides recovery.
 - The manual owner bootstrap invitation is sensitive and expires after 15 minutes. It is **not** a general-purpose reset and cannot be rerun after an owner exists.
 - No production database backup, migration, deployment, or iPhone enrollment has been performed as part of this planning document.
+
+## Owner backup Passkey: production blocker found in code review
+
+The owner backup enrollment and revocation API routes currently return HTTP 404 unless `SKP_ADMIN_OWNER_BACKUP_ENROLLMENT=staging`. The staging configuration also has a distinct origin/isolation guard. **Do not set this staging flag on production to bypass the restriction.** Before claiming backup recovery works on production, implement and test a separately reviewed production feature gate, independent owner step-up verification, session-bound challenge, origin checks, last-credential protection, revocation, and real-device verification. Keep the legacy password login available during initial QR rollout. The emergency offline recovery mechanism is not implemented.
+
+This is a release blocker for **Passkey-only cutover**, and an explicit risk to disclose before enabling any production QR feature; a successful CI run does not remove the real-device acceptance requirements.
