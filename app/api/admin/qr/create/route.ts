@@ -1,3 +1,4 @@
+import {allowNewAdminQrRequest} from '../../../../../lib/admin-qr-rate-limit';
 import {createPendingQr} from '../../../../../lib/admin-qr-pending';
 import {adminQrApprovalUrl} from '../../../../../lib/admin-qr-url';
 import {isTrustedAdminOrigin} from '../../../../../lib/admin-passkey-config';
@@ -14,6 +15,8 @@ export async function POST(request:Request){
  if(request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')
   return Response.json({error:'Unsupported content type'},{status:415,headers});
  try{
+  if(!await allowNewAdminQrRequest())
+   return Response.json({error:'Too many requests'},{status:429,headers:{...headers,'Retry-After':'60'}});
   const {requestToken,desktopSecret,expiresAt}=await createPendingQr();
   return Response.json({
    requestToken,desktopSecret,expiresAt,
