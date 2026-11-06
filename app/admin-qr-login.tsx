@@ -23,10 +23,12 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
  const [qrError,setQrError]=useState('');
  const onAuthenticatedRef=useRef(onAuthenticated);
  const requestGeneration=useRef(0);
+ const creating=useRef(false);
  const canApprove=Boolean(request&&status==='pending'&&request.expiresAt*1000>Date.now());
  useEffect(()=>{onAuthenticatedRef.current=onAuthenticated;},[onAuthenticated]);
  async function start(){
-  if(busy)return;
+  if(creating.current)return;
+  creating.current=true;
   const generation=++requestGeneration.current;
   setBusy(true);setError('');setRequest(null);setStatus('pending');
   try{
@@ -37,7 +39,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
    if(!/^[a-f0-9]{64}$/.test(value.requestToken)||!/^[a-f0-9]{64}$/.test(value.desktopSecret)||!Number.isFinite(value.expiresAt)||value.expiresAt*1000<=Date.now()||!isTrustedApprovalUrl(value.approvalUrl,value.requestToken))throw Error('Некорректный ответ сервера.');
    if(generation===requestGeneration.current)setRequest(value);
   }catch(e){if(generation===requestGeneration.current)setError(e instanceof Error?e.message:'Ошибка соединения');}
-  finally{if(generation===requestGeneration.current)setBusy(false);}
+  finally{if(generation===requestGeneration.current){creating.current=false;setBusy(false);}}
  }
  useEffect(()=>{
   let active=true;
