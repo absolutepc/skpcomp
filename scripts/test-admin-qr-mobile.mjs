@@ -15,6 +15,8 @@ assert.match(mobile,/approved:true/);
 assert.match(mobile,/options\.rpID!==window\.location\.hostname/);
 assert.match(mobile,/Number\.isFinite\(options\.expiresAt\)/);
 assert.match(mobile,/options\.expiresAt\*1000<=Date\.now\(\)/);
+assert.match(mobile,/options\.expiresAt\*1000<=Date\.now\(\)[\s\S]*\/\/ Only submit an assertion after/);
+assert.match(mobile,/Время подтверждения истекло во время Face ID/);
 assert.match(mobile,/credential\.type!=='public-key'/);
 assert.match(mobile,/decision\.status!=='approved'/);
 assert.match(mobile,/if\(submitting\.current\|\|approved\)return/);
