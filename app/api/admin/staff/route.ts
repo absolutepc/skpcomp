@@ -30,12 +30,28 @@ export async function POST(request:Request){
  let body:unknown;
  try{body=JSON.parse(raw)}catch{return Response.json({error:'Invalid request'},{status:400,headers})}
  if(!body||typeof body!=='object')return Response.json({error:'Invalid request'},{status:400,headers});
- const {action,userId}=body as Record<string,unknown>;
- if(action!=='block'||typeof userId!=='string'||!idPattern.test(userId))
+ const {action,userId,displayName}=body as Record<string,unknown>;
+ if(action==='block' && (typeof userId!=='string'||!idPattern.test(userId)))
+  return Response.json({error:'Invalid request'},{status:400,headers});
+ if(action==='create' && (typeof displayName!=='string'||displayName.trim().length<1||displayName.trim().length>120))
+  return Response.json({error:'Invalid request'},{status:400,headers});
+ if(action!=='block'&&action!=='create')
   return Response.json({error:'Invalid request'},{status:400,headers});
  try{
   const ownerId=await activeSessionOwnerId(request);
   if(!ownerId)return Response.json({error:'Forbidden'},{status:403,headers});
+  if(action==='create'){
+   const {DB}=await storeEnv();
+   const created=await DB.prepare(`WITH new_user AS (
+    INSERT INTO skp_admin_users(display_name,role,status)
+    VALUES (?,'admin','active') RETURNING id,display_name,role,status
+   ), audit AS (
+    INSERT INTO skp_admin_security_events(actor_user_id,target_user_id,event_type)
+    SELECT ?::uuid,id,'user_created' FROM new_user RETURNING id
+   ) SELECT id,display_name,role,status FROM new_user`)
+    .bind((displayName as string).trim(),ownerId).first();
+   return Response.json({user:created},{status:201,headers});
+  }
   if(ownerId===userId)return Response.json({error:'Cannot block owner'},{status:403,headers});
   const blocked=await revokeEmployeeAccess(userId);
   return Response.json({blocked},{status:blocked?200:409,headers});
