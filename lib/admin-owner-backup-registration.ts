@@ -43,7 +43,7 @@ export async function completeOwnerBackupPasskey(input:{
   const current=await activeOwnerSessionBinding(input.request);
   if(!owner||!current||current.ownerId!==ownerId||current.sessionHash!==binding.sessionHash)throw new Error('Owner session invalid');
   if(!await consumeSessionOwnerStepUpGrantInTransaction(input.request,'owner-passkey-enroll'))throw new Error('Step-up grant invalid');
-  if(!await consumeWebAuthnChallenge(input.challenge,'register','owner-backup:'+ownerId))throw new Error('Challenge invalid');
+  if(!await consumeWebAuthnChallenge(input.challenge,'register',ownerBackupChallengeContext(ownerId,binding.sessionHash)))throw new Error('Challenge invalid');
   const row=await DB.prepare(`WITH registered AS (
    INSERT INTO skp_admin_passkeys
     (credential_id,public_key,counter,transports,device_label,user_id)
