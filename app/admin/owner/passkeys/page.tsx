@@ -1,12 +1,42 @@
 'use client';
 import {useEffect,useState} from 'react';
 
+type Challenge={challenge:string;rpID:string;expiresAt:number;userVerification:string};
+const bytes=(hex:string)=>Uint8Array.from(hex.match(/.{2}/g)||[],v=>parseInt(v,16));
+const b64=(buf:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+async function post(path:string,body:unknown={}){const r=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw Error(r.status===404?'Регистрация доступна только в тестовой среде.':'Операция отклонена сервером.');return r.json()}
+function valid(o:Challenge){if(o.rpID!==location.hostname||!/^[a-f0-9]{64}$/.test(o.challenge)||o.expiresAt*1000<=Date.now()||o.userVerification!=='required')throw Error('Некорректный запрос подтверждения.');}
 type Credential={device_label:string;created_at:string;last_used_at:string|null;status:'active'|'revoked'};
 const date=(value:string|null)=>value?new Date(value).toLocaleString('ru-RU'):'Ещё не использовался';
 export default function OwnerPasskeysPage(){
  const [items,setItems]=useState<Credential[]>([]);
  const [loading,setLoading]=useState(true);
  const [error,setError]=useState('');
+ const [busy,setBusy]=useState(false);
+ const [label,setLabel]=useState('Резервный USB/NFC-ключ');
+ const [notice,setNotice]=useState('');
+ async function addBackup(){
+  if(busy)return;
+  if(!window.isSecureContext||!navigator.credentials?.get||!navigator.credentials?.create){setNotice('Требуется HTTPS и браузер с поддержкой Passkey.');return;}
+  setBusy(true);setNotice('Подтвердите действующий Passkey владельца.');
+  try{
+   const step=await post('/api/admin/owner/step-up/options') as Challenge;valid(step);
+   const proof=await navigator.credentials.get({publicKey:{challenge:bytes(step.challenge),rpId:step.rpID,userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
+   if(!proof)throw Error('Подтверждение отменено.');
+   const a=proof.response as AuthenticatorAssertionResponse;
+   await post('/api/admin/owner/step-up/complete',{challenge:step.challenge,response:{id:proof.id,rawId:b64(proof.rawId),type:'public-key',response:{clientDataJSON:b64(a.clientDataJSON),authenticatorData:b64(a.authenticatorData),signature:b64(a.signature),userHandle:a.userHandle?b64(a.userHandle):null},clientExtensionResults:proof.getClientExtensionResults()}});
+   setNotice('Теперь подключите резервный USB/NFC-ключ и подтвердите его регистрацию.');
+   const options=await post('/api/admin/owner/passkeys/options') as Challenge;valid(options);
+   const created=await navigator.credentials.create({publicKey:{challenge:bytes(options.challenge),rp:{id:options.rpID,name:'SKP Admin'},user:{id:bytes(options.challenge),name:'SKP Owner',displayName:'SKP Owner'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{residentKey:'required',userVerification:'required'},attestation:'none',timeout:60000}}) as PublicKeyCredential|null;
+   if(!created)throw Error('Регистрация отменена.');
+   const a2=created.response as AuthenticatorAttestationResponse;
+   const result=await post('/api/admin/owner/passkeys/complete',{challenge:options.challenge,deviceLabel:label.trim().slice(0,100),response:{id:created.id,rawId:b64(created.rawId),type:'public-key',response:{clientDataJSON:b64(a2.clientDataJSON),attestationObject:b64(a2.attestationObject),transports:a2.getTransports?.()||[]},clientExtensionResults:created.getClientExtensionResults()}}) as {registered?:boolean};
+   if(!result.registered)throw Error('Сервер не подтвердил регистрацию.');
+   setNotice('Ключ зарегистрирован. Для статуса резервного необходимо отдельно проверить вход именно с ним.');
+   const refreshed=await fetch('/api/admin/owner/passkeys',{credentials:'same-origin',cache:'no-store'});if(refreshed.ok){const data=await refreshed.json() as {passkeys:Credential[]};setItems(data.passkeys)}
+  }catch(e){setNotice(e instanceof Error?e.message:'Не удалось добавить ключ.')}finally{setBusy(false)}
+ }
+
  useEffect(()=>{
   const controller=new AbortController();
   fetch('/api/admin/owner/passkeys',{credentials:'same-origin',cache:'no-store',signal:controller.signal})
@@ -34,7 +64,14 @@ export default function OwnerPasskeysPage(){
      <p style={{color:'#aaa',fontSize:14}}>Создан: {date(item.created_at)}</p>
      <p style={{color:'#aaa',fontSize:14}}>Последний вход: {date(item.last_used_at)}</p>
     </article>)}</div>}
-   <p style={{color:'#aaa',marginTop:28,fontSize:14}}>Добавление и отзыв резервных ключей появятся после проверки защищённой процедуры регистрации. Пока изменения ключей с этой страницы недоступны.</p>
+   <section style={{marginTop:28,padding:18,border:'1px solid #333',borderRadius:12,display:'grid',gap:12}}>
+    <h2>Добавить резервный ключ</h2>
+    <p style={{color:'#aaa'}}>Только для тестовой среды. Сначала подтвердите действующий Passkey, затем подключите новый USB/NFC-ключ. Основной ключ не удаляется.</p>
+    <label>Название ключа <input value={label} onChange={e=>setLabel(e.target.value)} maxLength={100} style={{display:'block',marginTop:8,padding:12,background:'#202020',color:'#fff',border:'1px solid #555',borderRadius:8,width:'100%'}}/></label>
+    <button type='button' disabled={busy} onClick={()=>void addBackup()} style={{padding:14,background:'#ffd22e',color:'#111',border:0,borderRadius:10,fontWeight:700,opacity:busy?.6:1}}>{busy?'Ожидаем подтверждения…':'Добавить резервный Passkey'}</button>
+    <p role='status' aria-live='polite'>{notice}</p>
+    <p style={{color:'#aaa',fontSize:13}}>После регистрации ключ ещё не считается проверенным резервным средством. Отзыв ключей пока недоступен.</p>
+   </section>
   </section>
  </main>;
 }
