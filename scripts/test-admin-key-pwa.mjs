@@ -27,3 +27,12 @@ assert.match(qr,/return '\/admin-key\/approve'/);
 assert.match(approve,/admin\/qr\/approve\/page/);
 assert.doesNotMatch(worker,/caches\.open|cache\.put|respondWith/);
 console.log('SKP Admin Key PWA security checks passed.');
+
+const hosting=JSON.parse(read('vercel.json'));
+assert.equal(hosting.git.deploymentEnabled['feature/vercel-admin-qr-passkeys'],false);
+for(const source of ['/admin-key/:path*','/admin/invite/:path*','/admin/qr/:path*','/api/admin/:path*']){
+ const headers=hosting.headers.find(rule=>rule.source===source)?.headers;
+ assert.ok(headers?.some(h=>h.key==='Referrer-Policy'&&h.value==='no-referrer'));
+ assert.ok(headers?.some(h=>h.key==='Cache-Control'&&h.value==='no-store'));
+ assert.ok(headers?.some(h=>h.key==='Content-Security-Policy'&&h.value==="frame-ancestors 'none'"));
+}
