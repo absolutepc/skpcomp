@@ -25,6 +25,7 @@ on:
       - 'db/admin-roles-schema.sql'
       - 'db/admin-employee-invites-schema.sql'
       - 'scripts/test-admin-*.mjs'
+      - 'scripts/bootstrap-admin-owner.mjs'
       - '.github/workflows/admin-qr-security.yml'
   pull_request:
     paths:
@@ -71,6 +72,8 @@ jobs:
         run: node scripts/test-admin-staff-api.mjs
       - name: Check employee invitations
         run: node scripts/test-admin-employee-invites.mjs
+      - name: Check manual owner bootstrap
+        run: node scripts/test-admin-owner-bootstrap.mjs
       - name: Check Admin Key PWA
         run: node scripts/test-admin-key-pwa.mjs
       - name: Check atomic employee Passkey binding
