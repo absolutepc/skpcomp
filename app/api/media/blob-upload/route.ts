@@ -12,8 +12,17 @@ export async function POST(request: Request) {
   if (process.env.SKP_MEDIA_PROVIDER !== "vercel-blob") {
     return Response.json({ error: "Blob uploads disabled" }, { status: 503 });
   }
-  if (!process.env.BLOB_READ_WRITE_TOKEN || !process.env.ADMIN_PASSWORD) {
-    return Response.json({ error: "Blob storage or admin auth not configured" }, { status: 503 });
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return Response.json({ error: "Blob storage not configured" }, { status: 503 });
+  }
+  if (process.env.SKP_ADMIN_REQUIRE_PASSKEY !== "true" && !process.env.ADMIN_PASSWORD) {
+    return Response.json({ error: "Admin auth not configured" }, { status: 503 });
+  }
+  if (request.headers.get("origin") !== new URL(request.url).origin) {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+  if (!(await isAuthorizedAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
     const body = await request.json() as HandleUploadBody;
