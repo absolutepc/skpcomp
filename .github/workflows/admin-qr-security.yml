@@ -45,6 +45,8 @@ jobs:
         run: node scripts/test-admin-qr-decision.mjs
       - name: Check QR persistence helpers
         run: node scripts/test-admin-qr-persistence.mjs
+      - name: Check Passkey management persistence
+        run: node scripts/test-admin-passkey-management.mjs
       - name: Check Passkey enrollment persistence
         run: node scripts/test-admin-passkey-enrollment-store.mjs
       - name: Check Passkey credential storage
