@@ -33,7 +33,6 @@ export async function consumeInvitationForVerifiedPasskey(
    INSERT INTO skp_admin_passkeys
     (credential_id,public_key,counter,transports,device_label,user_id)
    SELECT ?,?,?,?::jsonb,?,c.user_id FROM consumed c
-   ON CONFLICT (credential_id) DO NOTHING
    RETURNING credential_id,user_id
  ), audit AS (
    INSERT INTO skp_admin_security_events(target_user_id,event_type)
