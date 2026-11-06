@@ -93,6 +93,16 @@ assert.equal(await adminAuthorized(ownerRequest),true,'owner database session au
 assert.equal(await activeSessionOwnerId(ownerRequest),owner.id,'owner privileges require an active owner session');
 assert.equal((await staffGet(ownerRequest)).status,200,'owner can inspect employee management');
 assert.equal((await staffGet(new Request(origin+'/api/admin/staff'))).status,403,'unauthenticated callers cannot inspect employees');
+const ownerHeaders={cookie:ownerCookie.split(';')[0]};
+assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'CSRF blocked'},{...ownerHeaders,origin:'https://evil.example'}))).status,403,'owner session does not bypass CSRF origin protection');
+assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Wrong media type'},{...ownerHeaders,'content-type':'text/plain'}))).status,415);
+assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Array payload'},{...ownerHeaders,'content-type':'application/json'}))).status,400);
+const ownerCreated=await staffPost(post('/api/admin/staff',{action:'create',displayName:'Integration test staff'},ownerHeaders));
+assert.equal(ownerCreated.status,201,'owner can create an employee through the HTTP API');
+const newStaff=(await ownerCreated.json()).user;
+assert.equal(newStaff.role,'admin','owner cannot create another owner via staff API');
+assert.equal((await staffGet(ownerRequest)).status,200);
+
 
 assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Forbidden'},{cookie:cookie.split(';')[0]}))).status,403);
 // Browser-equivalent `fmt:none` WebAuthn attestation through onboarding HTTP routes.
