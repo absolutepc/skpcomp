@@ -88,6 +88,14 @@ try{
  assert.equal(await readQrStatus(statusQr.requestToken,statusQr.desktopSecret),'approved');
  assert.equal(await consumeApprovedQr(statusQr.requestToken,statusQr.desktopSecret),owner.id);
  assert.equal(await readQrStatus(statusQr.requestToken,statusQr.desktopSecret),'consumed');
+ // Explicit denial is terminal: it cannot be approved or redeemed afterward.
+ const {denyPendingQr}=await import('../lib/admin-qr-decision.ts');
+ const deniedQr=await createPendingQr();
+ assert.equal(await denyPendingQr(deniedQr.requestToken),true,'pending QR can be denied');
+ assert.equal(await readQrStatus(deniedQr.requestToken,deniedQr.desktopSecret),'denied');
+ assert.equal(await denyPendingQr(deniedQr.requestToken),false,'denial cannot be repeated');
+ assert.equal(await markQrApprovedAfterVerification(deniedQr.requestToken,'owner-test-key-b'),false,'denied QR cannot be approved');
+ assert.equal(await consumeApprovedQr(deniedQr.requestToken,deniedQr.desktopSecret),null,'denied QR cannot be redeemed');
  const backupQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(backupQr.requestToken,'owner-test-key-b'),true,'active backup credential can approve after WebAuthn verification');
  assert.equal(await consumeApprovedQr(backupQr.requestToken,'0'.repeat(64)),null,'wrong desktop secret cannot redeem backup login');
