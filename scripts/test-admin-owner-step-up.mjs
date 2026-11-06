@@ -87,3 +87,23 @@ test('owner step-up challenge API rejects non-JSON and oversized requests',()=>{
  assert.match(source,/JSON\.parse\(raw\)/);
  assert.match(source,/Array\.isArray\(body\)/);
 });
+
+test('owner backup routes stay disabled outside isolated staging',()=>{
+ const routes=[
+  'app/api/admin/owner/step-up/options/route.ts',
+  'app/api/admin/owner/step-up/complete/route.ts',
+  'app/api/admin/owner/passkeys/options/route.ts',
+  'app/api/admin/owner/passkeys/complete/route.ts',
+  'app/api/admin/owner/passkeys/revoke/route.ts',
+ ];
+ for(const path of routes){
+  const source=readFileSync(new URL('../'+path,import.meta.url),'utf8');
+  assert.match(source,/SKP_ADMIN_OWNER_BACKUP_ENROLLMENT\s*!==\s*'staging'/,path);
+  assert.match(source,/status:404/,path);
+  assert.match(source,/isTrustedAdminOrigin\(request\)/,path);
+ }
+ const config=readFileSync(new URL('../lib/admin-passkey-config.ts',import.meta.url),'utf8');
+ assert.match(config,/SKP_ADMIN_STAGING_DB_ISOLATED\s*!==\s*'confirmed'/);
+ assert.match(config,/configured===ADMIN_RP_ORIGIN/);
+ assert.match(config,/url\.hostname===ADMIN_RP_ID/);
+});
