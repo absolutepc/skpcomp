@@ -23,7 +23,8 @@ export async function POST(request:Request){
  try{input=JSON.parse(raw)}catch{return Response.json({error:'Invalid request'},{status:400,headers})}
  if(!input||typeof input!=='object'||Array.isArray(input))
   return Response.json({error:'Invalid request'},{status:400,headers});
- const {challenge,response}=input as Record<string,unknown>;
+ const {challenge,response,action}=input as Record<string,unknown>;
+ if(action!==undefined&&action!=='owner-passkey-enroll'&&action!=='owner-passkey-revoke')return Response.json({error:'Invalid action'},{status:400,headers});
  if(typeof challenge!=='string'||!/^[a-f0-9]{64}$/.test(challenge)||
   !response||typeof response!=='object'||Array.isArray(response))
   return Response.json({error:'Invalid request'},{status:400,headers});
@@ -35,7 +36,7 @@ export async function POST(request:Request){
    origin:request.headers.get('origin')||'',
   });
   if(!verified)return Response.json({error:'Verification failed'},{status:403,headers});
-  const grant=await issueOwnerStepUpGrantAfterVerifiedAssertion(request,'owner-passkey-enroll');
+  const grant=await issueOwnerStepUpGrantAfterVerifiedAssertion(request,action==='owner-passkey-revoke'?'owner-passkey-revoke':'owner-passkey-enroll');
   if(!grant)return Response.json({error:'Unavailable'},{status:503,headers});
   return Response.json({verified:true},{headers});
  }catch{return Response.json({error:'Unavailable'},{status:503,headers})}
