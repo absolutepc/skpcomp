@@ -15,7 +15,8 @@ export default function ApproveQr(){
   try{
    const optionsResponse=await fetch('/api/admin/qr/options',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token}),credentials:'same-origin',cache:'no-store'});
    if(!optionsResponse.ok)throw Error(optionsResponse.status===404?'QR-код недоступен, уже использован или срок его действия истёк. Создайте новый запрос на компьютере.':optionsResponse.status===429?'Слишком много попыток. Подождите минуту перед повтором.':optionsResponse.status===410?'Срок действия QR-кода истёк. Создайте новый запрос на компьютере.':'Не удалось получить запрос подтверждения.');
-   const options=await optionsResponse.json() as {challenge:string;rpID:string};
+   const options=await optionsResponse.json() as {challenge:string;rpID:string;expiresAt:number};
+   if(!Number.isFinite(options.expiresAt)||options.expiresAt*1000<=Date.now())throw Error('Время подтверждения истекло. Создайте новый QR-запрос на компьютере.');
    if(options.rpID!==window.location.hostname)throw Error('Недоверенный домен Passkey.');
    if(!/^[a-f0-9]{64}$/.test(options.challenge))throw Error('Некорректный challenge.');
    const credential=await navigator.credentials.get({publicKey:{challenge:hex(options.challenge),rpId:options.rpID,userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
