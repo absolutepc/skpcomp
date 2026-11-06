@@ -57,6 +57,31 @@ assert.equal(await adminAuthorized(authenticated),true);
 assert.equal(await activeSessionOwnerId(authenticated),null,'admin cannot manage employees');
 assert.equal(await issueEmployeeInvitation(employee.id,owner.id),null);
 assert.equal(await revokeEmployeeAccess(owner.id,employee.id),false);
+// Exercise real HTTP route handlers, including browser binding and CSRF rejection.
+const post=(path,body={},extra={})=>new Request(origin+path,{method:'POST',headers:{origin,'content-type':'application/json',...extra},body:JSON.stringify(body)});
+const {POST:createRoute}=await import('../app/api/admin/qr/create/route.ts');
+const {POST:optionsRoute}=await import('../app/api/admin/qr/options/route.ts');
+const {POST:decisionRoute}=await import('../app/api/admin/qr/decision/route.ts');
+const {POST:consumeRoute}=await import('../app/api/admin/qr/consume/route.ts');
+assert.equal((await createRoute(post('/api/admin/qr/create',{}, {origin:'https://evil.example'}))).status,403);
+const created=await createRoute(post('/api/admin/qr/create'));
+assert.equal(created.status,201);
+const flow=await created.json();
+assert.ok(!flow.approvalUrl.includes(flow.desktopSecret));
+assert.equal((await consumeRoute(post('/api/admin/qr/consume',flow))).status,409);
+const options=await (await optionsRoute(post('/api/admin/qr/options',flow))).json();
+assert.equal((await decisionRoute(post('/api/admin/qr/decision',{requestToken:flow.requestToken,challenge:options.challenge,response:assertion(options.challenge),approved:true}))).status,200);
+const loggedIn=await consumeRoute(post('/api/admin/qr/consume',flow));
+assert.equal(loggedIn.status,200);
+assert.match(loggedIn.headers.get('set-cookie'),/HttpOnly; Secure; SameSite=Strict/);
+assert.equal((await consumeRoute(post('/api/admin/qr/consume',flow))).status,409);
+const {GET:staffGet,POST:staffPost}=await import('../app/api/admin/staff/route.ts');
+assert.equal((await staffGet(authenticated)).status,403);
+assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Forbidden'},{cookie:cookie.split(';')[0]}))).status,403);
+// A valid invitation can bind exactly one credential, even with simultaneous completions.
+const {rows:[onboard]}=await db.query("INSERT INTO skp_admin_users(display_name,role) VALUES ('Onboarding','admin') RETURNING id");
+const onboardingInvite=await issueEmployeeInvitation(owner.id,onboard.id);
+assert.deepEqual((await Promise.all(['first','second'].map(id=>consumeInvitationForVerifiedPasskey(onboardingInvite,{credentialId:'onboard-'+id,publicKey:cose,counter:0,transports:[]})))).sort(),[false,true]);
 // Failure after consumption must roll back the QR status as well.
 const retry=await createPendingQr();
 await markQrApprovedAfterVerification(retry.requestToken,credentialId);
@@ -95,5 +120,36 @@ assert.equal((await db.query('SELECT count(*)::int AS n FROM skp_admin_sessions_
 assert.equal((await db.query('SELECT count(*)::int AS n FROM skp_admin_passkeys WHERE user_id=$1 AND revoked_at IS NULL',[employee.id])).rows[0].n,0);
 assert.equal(await consumeInvitationForVerifiedPasskey(invite,{credentialId:'blocked',publicKey:cose,counter:0,transports:[]}),false);
 assert.equal(await adminAuthorized(authenticated),false);
+// An operation already holding the employee lock finishes before block succeeds.
+const {withAdminOperation}=await import('../lib/admin-operation.ts');
+const {storeEnv}=await import('../db/platform-store.ts');
+const onboardCookie=await issueAdminSession(request,onboard.id);
+const onboardRequest=new Request(origin,{headers:{cookie:onboardCookie.split(';')[0]}});
+let releaseWork,notifyStarted;
+const gate=new Promise(resolve=>{releaseWork=resolve});
+const started=new Promise(resolve=>{notifyStarted=resolve});
+const operation=withAdminOperation(onboardRequest,async()=>{
+ notifyStarted();await gate;
+ const {DB}=await storeEnv();
+ await DB.prepare("INSERT INTO skp_admin_security_events(target_user_id,event_type) VALUES (?::uuid,'login_approved')").bind(onboard.id).run();
+ return Response.json({ok:true});
+});
+await started;
+const block=revokeEmployeeAccess(onboard.id,owner.id);
+let blockWaiting=false;
+for(let attempt=0;attempt<100;attempt++){
+ const result=await db.query("SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock'");
+ if(result.rows[0].n){blockWaiting=true;break}
+ await new Promise(resolve=>setTimeout(resolve,20));
+}
+assert.equal(blockWaiting,true,'blocking must wait for privileged operation');
+releaseWork();
+assert.equal((await operation).status,200);
+assert.equal(await block,true);
+let ran=false;
+assert.equal((await withAdminOperation(onboardRequest,async()=>{ran=true;return Response.json({ok:true})})).status,401);
+assert.equal(ran,false,'no privileged work starts after blocking');
+const events=await db.query("SELECT event_type FROM skp_admin_security_events WHERE target_user_id=$1 AND event_type IN ('login_approved','user_blocked') ORDER BY id",[onboard.id]);
+assert.deepEqual(events.rows.map(r=>r.event_type),['login_approved','user_blocked']);
 await db.end();
 console.log('Real PostgreSQL + signed WebAuthn: QR→assertion→desktop session, replay, UV/origin/signature, rollback, roles, concurrent blocking and cleanup passed.');

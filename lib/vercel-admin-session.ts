@@ -69,3 +69,15 @@ export async function activeSessionOwnerId(request:Request):Promise<string|null>
   .first<{id:string}>();
  return row?.id??null;
 }
+
+/** Resolve identity only; callers must lock and revalidate before privileged work. */
+export async function sessionAdminUserId(request:Request):Promise<string|null>{
+ const token=sessionFromRequest(request);
+ if(!token)return null;
+ const {ADMIN_PASSWORD}=await storeEnv();
+ if(!ADMIN_PASSWORD)return null;
+ const DB=await database();
+ const row=await DB.prepare('SELECT user_id FROM skp_admin_sessions_v2 WHERE token_hash=? AND expires>?')
+  .bind(await hash('skp-admin-v2:'+ADMIN_PASSWORD+':'+token),now()).first<{user_id:string|null}>();
+ return row?.user_id??null;
+}

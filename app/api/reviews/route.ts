@@ -1,3 +1,4 @@
+import {withAdminOperation} from '../../../lib/admin-operation';
 import {isAuthorizedAdmin} from '../../../lib/admin-authorization';
 import {storeEnv,isPostgres} from '../../../db/platform-store';
 
@@ -24,8 +25,10 @@ export async function GET(request:Request){
   const url=new URL(request.url);
   if(url.searchParams.get('admin')==='1'){
    if(!await isAuthorizedAdmin(request))return json({error:'Требуется вход в админ-панель'},401);
+   return withAdminOperation(request,async()=>{
    const result=await E.DB.prepare("SELECT id,product_id,author,rating,body,status,created_at FROM product_reviews ORDER BY created_at DESC LIMIT 250").all<ReviewRow>();
    return json({reviews:result.results||[]});
+   });
   }
   const id=url.searchParams.get('productId')||'';
   if(!/^[a-zA-Z0-9_-]{1,90}$/.test(id))return json({reviews:[]});
@@ -43,9 +46,11 @@ export async function POST(request:Request){
   await setup();
   if(data.action==='moderate'){
    if(!await isAuthorizedAdmin(request))return json({error:'Требуется вход в админ-панель'},401);
+   return withAdminOperation(request,async()=>{
    if(typeof data.id!=='string'||!/^[0-9a-f-]{36}$/.test(data.id)||!['approved','rejected'].includes(data.status))return json({error:'Неверные данные'},400);
    await E.DB.prepare("UPDATE product_reviews SET status=? WHERE id=?").bind(data.status,data.id).run();
    return json({ok:true});
+   });
   }
   if(data.action!=='submit')return json({error:'Неизвестное действие'},400);
   if(data.website)return json({ok:true,pending:true});

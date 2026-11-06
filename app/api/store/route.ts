@@ -1,3 +1,4 @@
+import {withAdminOperation} from '../../../lib/admin-operation';
 import {isAuthorizedAdmin} from '../../../lib/admin-authorization';
 import {adminCookie} from '../../../lib/admin-cookie';
 import {revokeAdminSession} from '../../../lib/vercel-admin-session';
@@ -185,5 +186,6 @@ if(d.products.some((p:any)=>p.buildExtras!==undefined&&(
 )))return Response.json({error:'Проверьте дополнительные комплектующие'},{status:400});
 if(d.products.some((p:any)=>(p.variantGroup!==undefined&&(typeof p.variantGroup!=='string'||p.variantGroup.length>80))||(p.colorHex!==undefined&&(typeof p.colorHex!=='string'||!/^#[0-9a-fA-F]{6}$/.test(p.colorHex)))))return Response.json({error:'Проверьте группу вариантов и HEX-код цвета'},{status:400});
 if(d.instagram&&!/^https:\/\/(www\.)?instagram\.com\//.test(d.instagram))return Response.json({error:'Введите ссылку Instagram'},{status:400});if(d.whatsapp&&!/^\d{10,15}$/.test(d.whatsapp))return Response.json({error:'Номер WhatsApp: 10–15 цифр без плюса'},{status:400});
+return withAdminOperation(r,async()=>{
 await ensureShop();
-await E.DB.prepare('INSERT INTO shop (id,value) VALUES (?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value').bind('catalog',JSON.stringify(d)).run();return Response.json({ok:true});}
+await E.DB.prepare('INSERT INTO shop (id,value) VALUES (?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value').bind('catalog',JSON.stringify(d)).run();return Response.json({ok:true});});}

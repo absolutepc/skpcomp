@@ -1,3 +1,4 @@
+import {withAdminOperation} from '../../../lib/admin-operation';
 import {isAuthorizedAdmin} from '../../../lib/admin-authorization';
 import {storeEnv,isPostgres} from '../../../db/platform-store';
 import {seed,type Store} from '../../../lib/seed';
@@ -55,6 +56,7 @@ async function fromRequest(request:Request):Promise<Record<string,unknown>>{
 }
 export async function GET(request:Request){
  if(!await adminAuth(request))return json({error:'Требуется авторизация администратора.'},401);
+ return withAdminOperation(request,async()=>{
  try{
   await ensureOrders();
   if(new URL(request.url).searchParams.get('summary')==='1'){
@@ -64,6 +66,7 @@ export async function GET(request:Request){
   const rows=await E.DB.prepare('SELECT * FROM skp_orders ORDER BY created_at DESC,id DESC LIMIT 250').all<OrderRow>();
   return json({orders:(rows.results||[]).map(row=>toOrder(row))});
  }catch{return json({error:'Не удалось загрузить заказы.'},503)}
+ });
 }
 export async function POST(request:Request){
  if(!originMatches(request))return json({error:'Запрос с другого сайта запрещён.'},403);
@@ -112,6 +115,7 @@ export async function POST(request:Request){
   }
   if(input.action==='status'){
    if(!await adminAuth(request))return json({error:'Доступ только для администратора.'},401);
+   return withAdminOperation(request,async()=>{
    if(typeof input.id!=='string'||!/^[a-f0-9-]{36}$/i.test(input.id)||!isOrderStatus(input.status))
     return json({error:'Некорректный заказ или статус.'},400);
    const current=await E.DB.prepare('SELECT status FROM skp_orders WHERE id=?').bind(input.id).first<{status:string}>();
@@ -125,6 +129,7 @@ export async function POST(request:Request){
    await E.DB.prepare('INSERT INTO skp_order_events(id,order_id,status) VALUES(?,?,?)')
     .bind(crypto.randomUUID(),input.id,input.status).run();
    return json({ok:true,status:input.status});
+   });
   }
   return json({error:'Неизвестное действие.'},400);
  }catch(error){
