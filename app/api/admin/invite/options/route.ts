@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import {isTrustedAdminOrigin,adminWebAuthnConfig} from '../../../../../lib/admin-passkey-config';
 import {findValidEmployeeInvitation} from '../../../../../lib/admin-employee-invitations';
 import {issueWebAuthnChallenge} from '../../../../../lib/admin-webauthn-challenges';
@@ -18,7 +19,7 @@ export async function POST(request:Request){
  try{
   if(!await allowNewAdminQrRequest())return Response.json({error:'Rate limited'},{status:429,headers});
   if(!await findValidEmployeeInvitation(token))return Response.json({error:'Invitation invalid'},{status:403,headers});
-  const challenge=await issueWebAuthnChallenge('register','invite:'+token);
+  const challenge=await issueWebAuthnChallenge('register','invite:'+createHash('sha256').update('skp-invite-challenge:').update(token).digest('hex'));
   const {rpID}=adminWebAuthnConfig(request.headers.get('origin')||'');
   return Response.json({...challenge,rpID,userVerification:'required'},{headers});
  }catch{return Response.json({error:'Unavailable'},{status:503,headers})}
