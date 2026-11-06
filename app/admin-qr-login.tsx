@@ -19,6 +19,8 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
  const [status,setStatus]=useState<Status>('pending');
  const [error,setError]=useState('');
  const [busy,setBusy]=useState(false);
+ const [qrDataUrl,setQrDataUrl]=useState('');
+ const [qrError,setQrError]=useState('');
  const onAuthenticatedRef=useRef(onAuthenticated);
  const canApprove=Boolean(request&&status==='pending'&&request.expiresAt*1000>Date.now());
  useEffect(()=>{onAuthenticatedRef.current=onAuthenticated;},[onAuthenticated]);
@@ -33,6 +35,20 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   }catch(e){setError(e instanceof Error?e.message:'Ошибка соединения');}
   finally{setBusy(false);}
  }
+ useEffect(()=>{
+  let active=true;
+  setQrDataUrl('');
+  setQrError('');
+  if(!request||status!=='pending'||request.expiresAt*1000<=Date.now())return()=>{active=false;};
+  // Encode the approval URL entirely in the browser: never send it to an external QR API.
+  import('qrcode').then(({default:QRCode})=>QRCode.toDataURL(request.approvalUrl,{
+   errorCorrectionLevel:'M',margin:3,width:264,
+   color:{dark:'#101010',light:'#ffffff'},
+  })).then(url=>{if(active)setQrDataUrl(url);}).catch(()=>{
+   if(active)setQrError('Не удалось показать QR-код. Используйте ссылку ниже.');
+  });
+  return()=>{active=false;};
+ },[request,status]);
  useEffect(()=>{
   if(!request)return;
   let active=true,working=false,finished=false,terminal=false;
@@ -68,9 +84,13 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   <p>Подтвердите вход с помощью зарегистрированного Passkey. Пароль по-прежнему доступен.</p>
   {!request?<button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>{busy?'Создаём запрос…':'Войти через iPhone'}</button>:<>
    <p role="status">{status==='pending'?'Ожидание подтверждения на iPhone':status==='approved'?'Завершаем вход…':status==='rejected'?'Запрос отклонён':status==='expired'?'Время запроса истекло':status==='consumed'?'Запрос уже использован':'Статус: '+status}</p>
+   {canApprove&&<div style={{display:'flex',justifyContent:'center',margin:'16px 0'}}>
+    {qrDataUrl?<img src={qrDataUrl} alt="QR-код для подтверждения входа в SKP на iPhone" width={264} height={264} style={{display:'block',maxWidth:'100%',borderRadius:12}}/>:
+     <p role="status">{qrError||'Создаём QR-код…'}</p>}
+   </div>}
    {canApprove&&<a href={request.approvalUrl} target="_blank" rel="noopener noreferrer">Открыть страницу подтверждения на iPhone</a>}
    {canApprove&&<button type="button" className="button outline" onClick={()=>{if(request.expiresAt*1000<=Date.now()){setStatus('expired');return;}void navigator.clipboard.writeText(request.approvalUrl).catch(()=>setError('Не удалось скопировать ссылку. Откройте её вручную.'));}}>Скопировать ссылку для iPhone</button>}
-   {canApprove&&<p><small>Скопируйте ссылку и откройте её в Safari на iPhone. QR-код пока не реализован.</small></p>}
+   {canApprove&&<p><small>Отсканируйте QR-код камерой iPhone и подтвердите вход через Face ID / Passkey. Если сканирование недоступно, откройте ссылку в Safari.</small></p>}
    <button type="button" className="button outline" onClick={()=>void start()}>Создать новый запрос</button>
   </>}
   {error&&<p role="alert">{error}</p>}
