@@ -8,8 +8,9 @@
 2. Identify the current production Vercel deployment and immutable rollback deployment; record the release SHA.
 3. Create and verify a restorable backup/snapshot of production Neon. Test the restoration procedure separately where possible. A code rollback **does not** restore database state.
 4. Review all SQL against the current production schema and data. `db/admin-passkey-schema.sql` creates new admin tables; `db/admin-roles-schema.sql` alters those new admin tables and adds roles/audit tables; `db/admin-employee-invites-schema.sql` adds invitation tables. These scripts do not intentionally modify `shop`, `skp_orders`, or `product_reviews`. Do not assume they are risk-free without schema inspection.
-5. Review the owner bootstrap and recovery procedure. No owner is auto-created by these migrations; never enable mandatory Passkey until an owner Passkey is enrolled and a recovery method verified.
-6. Preserve existing `ADMIN_PASSWORD` unchanged. Current session hashes depend on it even when password login is disabled.
+5. **Additional migration dependency:** `db/admin-owner-step-up-schema.sql` defines `skp_admin_owner_step_up_grants`, required by owner backup Passkey enrollment/revocation. It is currently labeled staging-only and is **not approved for production**. Review it and its application order before enabling owner backup APIs; do not assume the first three migration scripts are sufficient.
+6. Review the owner bootstrap and recovery procedure. No owner is auto-created by these migrations; never enable mandatory Passkey until an owner Passkey is enrolled and a recovery method verified.
+7. Preserve existing `ADMIN_PASSWORD` unchanged. Current session hashes depend on it even when password login is disabled.
 
 ## Controlled rollout (separate approvals)
 
