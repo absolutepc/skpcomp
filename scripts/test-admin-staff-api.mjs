@@ -13,7 +13,7 @@ assert.match(staff,/action!=='block'&&action!=='create'&&action!=='invite'/);
 assert.match(staff,/INSERT INTO skp_admin_users/);
 assert.match(staff,/user_created/);
 assert.match(staff,/ownerId===userId/);
-assert.match(staff,/revokeEmployeeAccess\(userId as string\)/);
+assert.ok(staff.includes('revokeEmployeeAccess(userId as string,ownerId)'));
 assert.match(staff,/Cache-Control':'no-store/);
 assert.match(staff,/FROM skp_admin_security_events e/);
 assert.match(staff,/LIMIT 100/);
