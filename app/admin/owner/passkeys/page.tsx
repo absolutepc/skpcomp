@@ -3,7 +3,7 @@ import {useEffect,useState} from 'react';
 
 type Challenge={challenge:string;rpID:string;expiresAt:number;userVerification:string};
 const bytes=(hex:string)=>Uint8Array.from(hex.match(/.{2}/g)||[],v=>parseInt(v,16));
-const b64=(buf:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+const b64=(buf:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(buf))).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
 async function post(path:string,body:unknown={}){const r=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw Error(r.status===404?'Регистрация доступна только в тестовой среде.':'Операция отклонена сервером.');return r.json()}
 function valid(o:Challenge){if(o.rpID!==location.hostname||!/^[a-f0-9]{64}$/.test(o.challenge)||o.expiresAt*1000<=Date.now()||o.userVerification!=='required')throw Error('Некорректный запрос подтверждения.');}
 type Credential={device_label:string;created_at:string;last_used_at:string|null;status:'active'|'revoked'};
