@@ -20,7 +20,7 @@ export async function POST(request:Request){
   const {requestToken,desktopSecret,expiresAt}=await createPendingQr();
   return Response.json({
    requestToken,desktopSecret,expiresAt,
-   approvalUrl:adminQrApprovalUrl(requestToken),
+   approvalUrl:adminQrApprovalUrl(requestToken,request.headers.get('origin')||''),
   },{status:201,headers});
  }catch{
   return Response.json({error:'Unavailable'},{status:503,headers});
