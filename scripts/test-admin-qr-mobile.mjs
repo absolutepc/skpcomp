@@ -8,6 +8,7 @@ const decision=read('app/api/admin/qr/decision/route.ts');
 assert.match(mobile,/navigator\.credentials\.get/);
 assert.match(mobile,/userVerification:'required'/);
 assert.match(mobile,/approved:true/);
+assert.match(mobile,/decision\.status!=='approved'/);
 assert.match(mobile,/\/api\/admin\/qr\/options/);
 assert.match(mobile,/\/api\/admin\/qr\/decision/);
 assert.match(mobile,/Подтверждайте только тот вход/);
