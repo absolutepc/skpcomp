@@ -150,7 +150,9 @@ export async function GET(){
   computerHeroImageVersion:COMPUTER_HERO_IMAGE_VERSION,
   heroSlideOrderVersion:HERO_SLIDE_ORDER_VERSION},{headers:{'Cache-Control':'no-store'}});
 }
-export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});const b=await r.json() as any;
+export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});let b:any;
+try{b=await r.json()}catch{return Response.json({error:'Некорректный JSON'},{status:400})}
+if(!b||typeof b!=='object'||Array.isArray(b))return Response.json({error:'Некорректный запрос'},{status:400});
 if(b.action==='login'){
  if(process.env.SKP_ADMIN_REQUIRE_PASSKEY==='true')return Response.json({error:'Вход по паролю отключён. Используйте SKP Admin Key.'},{status:403,headers:{'Cache-Control':'no-store'}});
  if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,await token(),28800)}})}
