@@ -1,7 +1,7 @@
 # jsQR 1.4.0
 
-`dist/jsQR.js` from https://github.com/cozmo/jsQR at commit
-`8e6a036beafa7053dd44b1b76ac578d22b1b3311`, with only the UMD wrapper replaced by an ESM default export. The decoding algorithm is unchanged.
+Unmodified `dist/jsQR.js` from https://github.com/cozmo/jsQR at commit
+`8e6a036beafa7053dd44b1b76ac578d22b1b3311`, renamed `.cjs` so Vinext delegates CommonJS handling to the bundler. The decoding algorithm is unchanged.
 Apache-2.0 license accompanies it. The minimal local declaration describes only
 our used API. No CDN or camera-frame upload. Lazy-loaded only by Admin Key.
 

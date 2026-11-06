@@ -1,5 +1,13 @@
-// jsQR 1.4.0 — Apache-2.0. UMD wrapper adapted to ESM; algorithm unchanged.
-const jsQR = (function() {
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["jsQR"] = factory();
+	else
+		root["jsQR"] = factory();
+})(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -10089,5 +10097,4 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 
 /***/ })
 /******/ ])["default"];
-})();
-export default jsQR;
+});

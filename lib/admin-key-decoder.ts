@@ -1,4 +1,4 @@
-import jsQR from '../vendor/jsqr-1.4.0.js';
+import jsQR from '../vendor/jsqr-1.4.0.cjs';
 
 /** Local CPU decoding works in Safari without BarcodeDetector or image uploads. */
 export function decodeQrPixels(data:Uint8ClampedArray,width:number,height:number):string|null{
