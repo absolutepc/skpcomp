@@ -14,14 +14,17 @@ export async function markQrApprovedAfterVerification(
  const requestHash=await qrChallengeHash(requestToken);
  const {DB}=await storeEnv();
  const updated=await DB.prepare(`UPDATE skp_admin_qr_requests
- SET status='approved',approved_credential_id=?,approved_at=now()
+ SET status='approved',approved_credential_id=?,
+ approved_user_id=(SELECT user_id FROM skp_admin_passkeys WHERE credential_id=?),
+ approved_at=now()
  WHERE request_hash=? AND status='pending' AND expires_at>now()
  AND EXISTS (
-  SELECT 1 FROM skp_admin_passkeys
-  WHERE credential_id=? AND revoked_at IS NULL
+  SELECT 1 FROM skp_admin_passkeys p
+  JOIN skp_admin_users u ON u.id=p.user_id
+  WHERE p.credential_id=? AND p.revoked_at IS NULL AND u.status='active'
  )
  RETURNING request_hash`)
-  .bind(credentialId,requestHash,credentialId).first<{request_hash:string}>();
+  .bind(credentialId,credentialId,requestHash,credentialId).first<{request_hash:string}>();
  return !!updated;
 }
 
