@@ -62,4 +62,5 @@ assert.match(decision,/verifyAdminPasskeyAssertion/);
 assert.match(decision,/markQrApprovedAfterVerification/);
 assert.match(statusRoute,/request\.headers\.get\('content-type'\)\?\.split\(';'\)/);
 assert.doesNotMatch(statusRoute,/startsWith\('application\/json'\)/);
+assert.match(statusRoute,/!body\|\|typeof body!=='object'\|\|Array\.isArray\(body\)/);
 console.log('Mobile QR Passkey approval security wiring passed.');
