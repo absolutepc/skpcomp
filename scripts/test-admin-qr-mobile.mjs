@@ -19,6 +19,8 @@ assert.match(mobile,/if\(submitting\.current\|\|approved\)return/);
 assert.match(mobile,/submitting\.current=true/);
 assert.match(mobile,/finally\{submitting\.current=false;setBusy\(false\)/);
 assert.match(mobile,/setApproved\(true\)/);
+assert.match(mobile,/e instanceof DOMException&&e\.name==='NotAllowedError'/);
+assert.match(mobile,/e instanceof DOMException&&e\.name==='AbortError'/);
 assert.match(mobile,/disabled=\{busy\|\|approved\|\|/);
 assert.match(mobile,/\/api\/admin\/qr\/options/);
 assert.match(mobile,/\/api\/admin\/qr\/decision/);
