@@ -1,5 +1,5 @@
 import type {AuthenticationResponseJSON} from '@simplewebauthn/server';
-import {isTrustedAdminOrigin} from '../../../../../../lib/admin-passkey-config';
+import {isTrustedAdminOrigin,isIsolatedOwnerBackupRequest} from '../../../../../../lib/admin-passkey-config';
 import {allowNewAdminQrRequest} from '../../../../../../lib/admin-qr-rate-limit';
 import {verifyOwnerStepUp} from '../../../../../../lib/admin-owner-step-up';
 import {issueOwnerStepUpGrantAfterVerifiedAssertion} from '../../../../../../lib/admin-owner-step-up-grants';
@@ -11,7 +11,7 @@ const headers={'Cache-Control':'no-store, private','X-Content-Type-Options':'nos
  * The resulting grant is retained server-side, scoped to the existing session.
  */
 export async function POST(request:Request){
- if(process.env.SKP_ADMIN_OWNER_BACKUP_ENROLLMENT!=='staging')
+ if(!isIsolatedOwnerBackupRequest(request))
   return Response.json({error:'Not enabled'},{status:404,headers});
  if(!isTrustedAdminOrigin(request))
   return Response.json({error:'Forbidden'},{status:403,headers});
