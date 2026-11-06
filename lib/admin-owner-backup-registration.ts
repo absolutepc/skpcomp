@@ -6,7 +6,7 @@ import {consumeWebAuthnChallenge} from './admin-webauthn-challenges';
 import {adminTransaction,isPostgres,storeEnv} from '../db/platform-store';
 import {activeOwnerSessionBinding} from './vercel-admin-session';
 
-export const ownerBackupChallengeContext=(ownerId:string,sessionHash:string)=>ownerBackupChallengeContext(ownerId,binding.sessionHash)+':'+sessionHash;
+export const ownerBackupChallengeContext=(ownerId:string,sessionHash:string):string=>'owner-backup:'+ownerId+':'+sessionHash;
 
 /** Complete owner backup enrollment only after cryptographic attestation and
  * a fresh owner session check under a database row lock.
