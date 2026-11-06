@@ -53,7 +53,7 @@ export async function POST(request:Request){
    return Response.json({user:created},{status:201,headers});
   }
   if(ownerId===userId)return Response.json({error:'Cannot block owner'},{status:403,headers});
-  const blocked=await revokeEmployeeAccess(userId);
+  const blocked=await revokeEmployeeAccess(userId as string);
   return Response.json({blocked},{status:blocked?200:409,headers});
  }catch{return Response.json({error:'Unavailable'},{status:503,headers})}
 }
