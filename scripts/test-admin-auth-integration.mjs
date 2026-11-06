@@ -134,7 +134,7 @@ assert.equal((await db.query('SELECT status FROM skp_admin_qr_requests WHERE req
  const insertFailure=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(insertFailure.requestToken,credentialId),true);
  await db.query(`CREATE FUNCTION skp_test_fail_session_insert() RETURNS trigger
- LANGUAGE plpgsql AS $ BEGIN RAISE EXCEPTION 'intentional test session insert failure'; END $`);
+ LANGUAGE plpgsql AS 'BEGIN RAISE EXCEPTION ''intentional test session insert failure''; END'`);
  await db.query(`CREATE TRIGGER skp_test_reject_session_insert
  BEFORE INSERT ON skp_admin_sessions_v2
  FOR EACH ROW EXECUTE FUNCTION skp_test_fail_session_insert()`);
