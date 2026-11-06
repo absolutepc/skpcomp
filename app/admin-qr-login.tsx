@@ -32,6 +32,8 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   creating.current=true;
   const generation=++requestGeneration.current;
   setBusy(true);setError('');setRequest(null);setStatus('pending');
+  // A new QR request must never show the previous request's image or link.
+  setQrDataUrl('');setQrError('');
   try{
    const response=await fetch('/api/admin/qr/create',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',cache:'no-store',credentials:'same-origin'});
    if(!response.ok)throw Error(response.status===429?'Слишком много запросов. Попробуйте позже.':'Не удалось создать запрос входа.');
