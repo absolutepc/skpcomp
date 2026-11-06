@@ -21,7 +21,7 @@ assert.match(mobile,/Подтверждайте только тот вход/);
 assert.doesNotMatch(mobile,/desktopSecret/);
 assert.match(desktop,/\/api\/admin\/qr\/consume/);
 assert.match(desktop,/Date\.now\(\)>=expiresAtMs/);
-assert.match(desktop,/url\.origin==='https:\/\/skpcomp\.vercel\.app'/);
+assert.match(desktop,/url\.origin===window\.location\.origin/);
 assert.match(desktop,/url\.pathname==='\/admin\/qr\/approve'/);
 assert.match(desktop,/url\.searchParams\.get\('request'\)===requestToken/);
 assert.match(desktop,/url\.searchParams\.size===1/);
