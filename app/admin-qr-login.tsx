@@ -69,6 +69,8 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
     const result=await response.json() as {status:Status};
     if(!active||terminal)return;
     if(Date.now()>=expiresAtMs){terminal=true;setStatus('expired');return;}
+    // A recovered connection should clear an earlier transient polling error.
+    setError('');
     setStatus(result.status);
     if(['denied','expired','consumed'].includes(result.status)){terminal=true;return;}
     if(result.status!=='pending'&&result.status!=='approved')throw Error('Неизвестное состояние QR-запроса.');
