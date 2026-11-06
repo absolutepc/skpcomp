@@ -14,6 +14,10 @@ if(process.argv.length!==3||process.argv[2]!=='--confirm-owner-bootstrap'||
  process.exit(1);
 }
 const name=process.env.SKP_OWNER_DISPLAY_NAME.trim();
+// Never silently create an invitation pointing to a different relying-party origin.
+const inviteOrigin=process.env.SKP_OWNER_INVITE_ORIGIN||'https://skpcomp.vercel.app';
+if(inviteOrigin!=='https://skpcomp.vercel.app')
+ throw new Error('Owner bootstrap only supports the reviewed production WebAuthn origin');
 if(name.length>120)throw new Error('Owner display name is too long');
 const token=randomBytes(32).toString('hex');
 const digest=createHash('sha256').update('skp-employee-invite-v1:').update(token).digest('hex');
@@ -34,7 +38,7 @@ try{
  VALUES ($1,$1,'user_created','{"method":"manual_owner_bootstrap"}'::jsonb)`,[ownerId]);
  await client.query('COMMIT');
  console.log('Owner created. Open the following one-time link on the owner phone within 15 minutes:');
- console.log('https://skpcomp.vercel.app/admin/invite?token='+token);
+ console.log(inviteOrigin+'/admin/invite?token='+token);
  console.log('Do not share, log, or store this link. Register the Passkey before enabling the cutover.');
 }catch(error){
  await client.query('ROLLBACK');
