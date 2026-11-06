@@ -19,7 +19,7 @@ export async function POST(request:Request){
  if(raw.length>1024)return Response.json({error:'Invalid request'},{status:400,headers});
  let body:unknown;
  try{body=JSON.parse(raw)}catch{return Response.json({error:'Invalid request'},{status:400,headers})}
- if(!body||typeof body!=='object')return Response.json({error:'Invalid request'},{status:400,headers});
+ if(!body||typeof body!=='object'||Array.isArray(body))return Response.json({error:'Invalid request'},{status:400,headers});
  const {requestToken,desktopSecret}=body as Record<string,unknown>;
  if(typeof requestToken!=='string'||!/^[a-f0-9]{64}$/.test(requestToken)||
   typeof desktopSecret!=='string'||!/^[a-f0-9]{64}$/.test(desktopSecret))
