@@ -1,7 +1,7 @@
-import {activeSessionOwnerId} from '../../../../../lib/vercel-admin-session';
-import {revokeEmployeeAccess} from '../../../../../lib/admin-employee-revocation';
-import {isPostgres,storeEnv} from '../../../../../db/platform-store';
-import {isTrustedAdminOrigin} from '../../../../../lib/admin-passkey-config';
+import {activeSessionOwnerId} from '../../../../lib/vercel-admin-session';
+import {revokeEmployeeAccess} from '../../../../lib/admin-employee-revocation';
+import {isPostgres,storeEnv} from '../../../../db/platform-store';
+import {isTrustedAdminOrigin} from '../../../../lib/admin-passkey-config';
 
 export const dynamic='force-dynamic';
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
