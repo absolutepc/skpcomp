@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync(new URL('../app/api/admin/owner/passkeys/route.ts',import.meta.url),'utf8');
+assert.match(src,/activeSessionOwnerId\(request\)/);
+assert.match(src,/if\(!ownerId\).*status:403/);
+assert.match(src,/WHERE user_id=\?::uuid/);
+assert.match(src,/device_label,created_at,last_used_at/);
+assert.match(src,/backupVerified:false/);
+assert.match(src,/Cache-Control':'no-store, private/);
+assert.doesNotMatch(src,/SELECT[^\x60]*public_key/);
+assert.doesNotMatch(src,/SELECT[^\x60]*credential_id/);
+assert.doesNotMatch(src,/export async function POST/);
+console.log('Owner-only read-only Passkey inventory security checks passed.');
