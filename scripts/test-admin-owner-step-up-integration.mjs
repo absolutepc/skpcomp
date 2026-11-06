@@ -106,6 +106,12 @@ try{
  ]);
  assert.equal(racing.filter(Boolean).length,1,'concurrent QR redemption issues only one session');
 
+ // An approved QR must expire before a fresh session can be issued.
+ const expiredQr=await createPendingQr();
+ assert.equal(await markQrApprovedAfterVerification(expiredQr.requestToken,'owner-test-key-b'),true);
+ const {qrChallengeHash}=await import('../lib/admin-qr-challenge.ts');
+ await pool.query("UPDATE skp_admin_qr_requests SET expires_at=now()-interval '1 second' WHERE request_hash=$1",[await qrChallengeHash(expiredQr.requestToken)]);
+ assert.equal(await redeemQrSession(freshDesktop,expiredQr.requestToken,expiredQr.desktopSecret),null,'expired approved QR cannot create a session');
  const revokedQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(revokedQr.requestToken,'owner-test-key-b'),true);
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'revocation requires a fresh action-specific grant');
