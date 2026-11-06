@@ -6,6 +6,7 @@ on:
       - feature/vercel-admin-qr-passkeys
     paths:
       - 'lib/admin-*.ts'
+      - 'app/api/admin/staff/**'
       - 'app/api/store/route.ts'
       - 'app/admin-qr-login.tsx'
       - 'app/shop.tsx'
@@ -23,6 +24,7 @@ on:
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'lib/admin-*.ts'
+      - 'app/api/admin/staff/**'
       - 'app/api/store/route.ts'
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
@@ -51,6 +53,8 @@ jobs:
         run: node scripts/test-admin-roles-schema.mjs
       - name: Check employee-bound sessions
         run: node scripts/test-admin-employee-sessions.mjs
+      - name: Check owner-only staff management API
+        run: node scripts/test-admin-staff-api.mjs
       - name: Check QR URL handling
         run: node scripts/test-admin-qr-url.mjs
       - name: Check local QR code rendering and link safety
