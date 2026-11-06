@@ -128,6 +128,8 @@ jobs:
         run: node scripts/test-admin-passkey-credentials.mjs
       - name: Check WebAuthn challenge handling
         run: node scripts/test-admin-webauthn-challenges.mjs
+      - name: Check owner backup step-up transaction safeguards
+        run: node --test scripts/test-admin-owner-step-up.mjs
 
   typecheck:
     runs-on: ubuntu-latest
