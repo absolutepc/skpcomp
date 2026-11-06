@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import {verifyRegistrationResponse} from '@simplewebauthn/server';
 import type {RegistrationResponseJSON} from '@simplewebauthn/server';
 import {adminWebAuthnConfig} from './admin-passkey-config';
@@ -22,7 +23,7 @@ export async function completeEmployeePasskeyInvitation(input:{
   requireUserVerification:true,
  });
  if(!verified.verified||!verified.registrationInfo)return false;
- const context='invite:'+inviteToken;
+ const context='invite:'+createHash('sha256').update('skp-invite-challenge:').update(inviteToken).digest('hex');
  if(!await consumeWebAuthnChallenge(challenge,'register',context))return false;
  const {credential}=verified.registrationInfo;
  return consumeInvitationForVerifiedPasskey(inviteToken,{
