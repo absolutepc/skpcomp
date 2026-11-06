@@ -75,7 +75,9 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
     if(result.status==='approved'){
      finished=true;
      const consumed=await fetch('/api/admin/qr/consume',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:request.requestToken,desktopSecret:request.desktopSecret}),cache:'no-store',credentials:'same-origin'});
-     if(!active||terminal)return;
+     // A successful consume may finish after the local QR deadline; the server
+     // has already enforced expiry atomically, so its session result wins.
+     if(!active)return;
      if(!consumed.ok)throw Error('Подтверждение получено, но завершить вход не удалось.');
      const session=await consumed.json() as {authenticated?:boolean};
      if(session.authenticated!==true)throw Error('Сервер не подтвердил создание сессии.');
