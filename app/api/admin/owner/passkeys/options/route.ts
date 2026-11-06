@@ -12,6 +12,7 @@ const headers={'Cache-Control':'no-store, private','X-Content-Type-Options':'nos
  * WebAuthn attestation and consume this challenge atomically.
  */
 export async function POST(request:Request){
+ if(process.env.SKP_ADMIN_OWNER_BACKUP_ENROLLMENT!=='staging')return Response.json({error:'Not enabled'},{status:404,headers});
  if(!isTrustedAdminOrigin(request))return Response.json({error:'Forbidden'},{status:403,headers});
  if(!await activeSessionOwnerId(request))return Response.json({error:'Forbidden'},{status:403,headers});
  if(!await allowNewAdminQrRequest())return Response.json({error:'Rate limited'},{status:429,headers});
