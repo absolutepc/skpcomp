@@ -13,3 +13,5 @@ assert.match(sessions,/u.status='active'/);
 assert.match(store,/if\(process\.env\.SKP_ADMIN_REQUIRE_PASSKEY==='true'\)return Response.json/);
 assert.match(store,/Вход по паролю отключён/);
 console.log('Passkey-only cutover gate checks passed.');
+
+for(const file of ['app/api/media/cloudflare-handler.ts','lib/admin-passkey-reauth.ts'])assert.match(read(file),/if\(process\.env\.SKP_ADMIN_REQUIRE_PASSKEY==='true'\)return false/);

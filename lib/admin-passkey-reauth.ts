@@ -9,6 +9,7 @@ import {allowNewAdminQrRequest} from './admin-qr-rate-limit';
  * The global DB limiter is checked before any password comparison.
  */
 export async function verifyRecentAdminPassword(request:Request,password:unknown):Promise<boolean>{
+ if(process.env.SKP_ADMIN_REQUIRE_PASSKEY==='true')return false;
  if(!isPostgres()||typeof password!=='string'||password.length<1||password.length>1024)return false;
  if(!await allowNewAdminQrRequest())return false;
  if(!await isAuthorizedAdmin(request))return false;
