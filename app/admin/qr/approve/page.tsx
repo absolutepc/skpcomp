@@ -13,9 +13,11 @@ export default function ApproveQr(){
    const optionsResponse=await fetch('/api/admin/qr/options',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token}),credentials:'same-origin',cache:'no-store'});
    if(!optionsResponse.ok)throw Error('Не удалось получить запрос подтверждения.');
    const options=await optionsResponse.json() as {challenge:string;rpID:string};
+   if(options.rpID!==window.location.hostname)throw Error('Недоверенный домен Passkey.');
    if(!/^[a-f0-9]{64}$/.test(options.challenge))throw Error('Некорректный challenge.');
    const credential=await navigator.credentials.get({publicKey:{challenge:hex(options.challenge),rpId:options.rpID,userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
    if(!credential)throw Error('Подтверждение отменено.');
+   if(credential.type!=='public-key')throw Error('Недействительный тип учётных данных.');
    const response=credential.response as AuthenticatorAssertionResponse;
    const assertion={id:credential.id,rawId:encode(credential.rawId),type:'public-key',response:{clientDataJSON:encode(response.clientDataJSON),authenticatorData:encode(response.authenticatorData),signature:encode(response.signature),userHandle:response.userHandle?encode(response.userHandle):undefined},clientExtensionResults:credential.getClientExtensionResults()};
    // Only submit an assertion after the user has explicitly initiated approval.
