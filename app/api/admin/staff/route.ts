@@ -1,5 +1,6 @@
 import {activeSessionOwnerId} from '../../../../lib/vercel-admin-session';
 import {revokeEmployeeAccess} from '../../../../lib/admin-employee-revocation';
+import {issueEmployeeInvitation} from '../../../../lib/admin-employee-invitations';
 import {isPostgres,storeEnv} from '../../../../db/platform-store';
 import {isTrustedAdminOrigin} from '../../../../lib/admin-passkey-config';
 
@@ -31,11 +32,11 @@ export async function POST(request:Request){
  try{body=JSON.parse(raw)}catch{return Response.json({error:'Invalid request'},{status:400,headers})}
  if(!body||typeof body!=='object')return Response.json({error:'Invalid request'},{status:400,headers});
  const {action,userId,displayName}=body as Record<string,unknown>;
- if(action==='block' && (typeof userId!=='string'||!idPattern.test(userId)))
+ if((action==='block'||action==='invite') && (typeof userId!=='string'||!idPattern.test(userId)))
   return Response.json({error:'Invalid request'},{status:400,headers});
  if(action==='create' && (typeof displayName!=='string'||displayName.trim().length<1||displayName.trim().length>120))
   return Response.json({error:'Invalid request'},{status:400,headers});
- if(action!=='block'&&action!=='create')
+ if(action!=='block'&&action!=='create'&&action!=='invite')
   return Response.json({error:'Invalid request'},{status:400,headers});
  try{
   const ownerId=await activeSessionOwnerId(request);
@@ -51,6 +52,11 @@ export async function POST(request:Request){
    ) SELECT id,display_name,role,status FROM new_user`)
     .bind((displayName as string).trim(),ownerId).first();
    return Response.json({user:created},{status:201,headers});
+  }
+  if(action==='invite'){
+   const token=await issueEmployeeInvitation(ownerId,userId as string);
+   return token?Response.json({inviteToken:token,expiresInSeconds:900},{headers}):
+    Response.json({error:'Employee unavailable'},{status:409,headers});
   }
   if(ownerId===userId)return Response.json({error:'Cannot block owner'},{status:403,headers});
   const blocked=await revokeEmployeeAccess(userId as string);
