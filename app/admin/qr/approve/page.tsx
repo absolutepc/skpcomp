@@ -14,7 +14,7 @@ export default function ApproveQr(){
   setBusy(true);setMessage('');
   try{
    const optionsResponse=await fetch('/api/admin/qr/options',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token}),credentials:'same-origin',cache:'no-store'});
-   if(!optionsResponse.ok)throw Error(optionsResponse.status===409?'QR-код уже использован или больше не ожидает подтверждения. Создайте новый запрос на компьютере.':optionsResponse.status===410?'Срок действия QR-кода истёк. Создайте новый запрос на компьютере.':'Не удалось получить запрос подтверждения.');
+   if(!optionsResponse.ok)throw Error(optionsResponse.status===404?'QR-код недоступен, уже использован или срок его действия истёк. Создайте новый запрос на компьютере.':optionsResponse.status===429?'Слишком много попыток. Подождите минуту перед повтором.':optionsResponse.status===410?'Срок действия QR-кода истёк. Создайте новый запрос на компьютере.':'Не удалось получить запрос подтверждения.');
    const options=await optionsResponse.json() as {challenge:string;rpID:string};
    if(options.rpID!==window.location.hostname)throw Error('Недоверенный домен Passkey.');
    if(!/^[a-f0-9]{64}$/.test(options.challenge))throw Error('Некорректный challenge.');
@@ -25,7 +25,7 @@ export default function ApproveQr(){
    const assertion={id:credential.id,rawId:encode(credential.rawId),type:'public-key',response:{clientDataJSON:encode(response.clientDataJSON),authenticatorData:encode(response.authenticatorData),signature:encode(response.signature),userHandle:response.userHandle?encode(response.userHandle):undefined},clientExtensionResults:credential.getClientExtensionResults()};
    // Only submit an assertion after the user has explicitly initiated approval.
    const result=await fetch('/api/admin/qr/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token,challenge:options.challenge,response:assertion,approved:true}),credentials:'same-origin',cache:'no-store'});
-   if(!result.ok)throw Error(result.status===409?'QR-код уже подтверждён или больше не действует. Проверьте компьютер и при необходимости создайте новый запрос.':result.status===410?'Срок действия QR-кода истёк. Создайте новый запрос на компьютере.':'Сервер не подтвердил вход.');
+   if(!result.ok)throw Error(result.status===404||result.status===409?'QR-код уже подтверждён или больше не действует. Проверьте компьютер и при необходимости создайте новый запрос.':result.status===429?'Слишком много попыток. Подождите минуту перед повтором.':result.status===410?'Срок действия QR-кода истёк. Создайте новый запрос на компьютере.':'Сервер не подтвердил вход.');
    const decision=await result.json() as {status?:string};
    if(decision.status!=='approved')throw Error('Сервер не подтвердил вход.');
    setApproved(true);
