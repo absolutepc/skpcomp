@@ -9,7 +9,7 @@ const canvas=readFileSync(new URL('../app/hero-canvas-layers.tsx',import.meta.ur
 const exactPreview=readFileSync(new URL('../app/scaled-hero-preview.tsx',import.meta.url),'utf8');
 const shop=readFileSync(new URL('../app/shop.tsx',import.meta.url),'utf8');
 const route=readFileSync(new URL('../app/api/store/route.ts',import.meta.url),'utf8');
-const media=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf8');
+const media=readFileSync(new URL('../app/api/media/cloudflare-handler.ts',import.meta.url),'utf8');
 const css=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
 for(const [name,source] of [['hero',hero],['admin editor',editor],['layer renderer',canvas],['scaled preview',exactPreview]]){
  const result=ts.transpileModule(source,{

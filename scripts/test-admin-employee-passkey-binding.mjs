@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync(new URL('../lib/admin-employee-passkey-binding.ts',import.meta.url),'utf8');
+assert.match(src,/consumeInvitationForVerifiedPasskey/);
+assert.match(src,/createHash\('sha256'\)/);
+assert.match(src,/i.consumed_at IS NULL AND i.revoked_at IS NULL/);
+assert.match(src,/i.expires_at>now\(\)/);
+assert.match(src,/u.role IN/);
+assert.match(src,/UPDATE skp_admin_employee_invites/);
+assert.match(src,/INSERT INTO skp_admin_passkeys/);
+assert.match(src,/user_id\)/);
+assert.doesNotMatch(src,/ON CONFLICT \(credential_id\) DO NOTHING/);
+assert.match(src,/passkey_registered/);
+assert.doesNotMatch(src,/INSERT INTO skp_admin_sessions_v2/);
+console.log('Atomic employee Passkey binding source invariants passed.');

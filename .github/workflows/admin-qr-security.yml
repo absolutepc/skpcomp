@@ -1,0 +1,229 @@
+name: Admin QR security checks
+
+on:
+  push:
+    branches:
+      - feature/vercel-admin-qr-passkeys
+    paths:
+      - 'lib/admin-*.ts'
+      - 'db/platform-store.ts'
+      - 'vendor/jsqr-*'
+      - 'app/api/admin/qr/**'
+      - 'scripts/admin-test-loader.mjs'
+      - 'scripts/admin-schema-preflight.mjs'
+      - 'app/api/admin/staff/**'
+      - 'app/api/admin/invite/**'
+      - 'app/admin/staff/**'
+      - 'app/admin/invite/**'
+      - 'app/admin-key/**'
+      - 'public/admin-key.webmanifest'
+      - 'public/admin-key-sw.js'
+      - 'app/api/store/route.ts'
+      - 'app/admin-qr-login.tsx'
+      - 'app/shop.tsx'
+      - 'app/admin/qr/approve/page.tsx'
+      - 'app/admin/passkey/enroll/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'lib/vercel-admin-session.ts'
+      - 'db/admin-passkey-schema.sql'
+      - 'db/admin-roles-schema.sql'
+      - 'db/admin-owner-*.sql'
+      - 'app/api/admin/owner/**'
+      - 'app/admin/owner/**'
+      - 'db/admin-employee-invites-schema.sql'
+      - 'scripts/test-admin-*.mjs'
+      - 'scripts/bootstrap-admin-owner.mjs'
+      - '.github/workflows/admin-qr-security.yml'
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'lib/admin-*.ts'
+      - 'db/platform-store.ts'
+      - 'vendor/jsqr-*'
+      - 'app/api/admin/qr/**'
+      - 'scripts/admin-test-loader.mjs'
+      - 'scripts/admin-schema-preflight.mjs'
+      - 'app/api/admin/staff/**'
+      - 'app/api/admin/invite/**'
+      - 'app/admin/staff/**'
+      - 'app/admin/invite/**'
+      - 'app/admin-key/**'
+      - 'public/admin-key.webmanifest'
+      - 'public/admin-key-sw.js'
+      - 'app/api/store/route.ts'
+      - 'lib/vercel-admin-session.ts'
+      - 'db/admin-passkey-schema.sql'
+      - 'db/admin-roles-schema.sql'
+      - 'db/admin-owner-*.sql'
+      - 'app/api/admin/owner/**'
+      - 'app/admin/owner/**'
+      - 'db/admin-employee-invites-schema.sql'
+      - 'scripts/test-admin-*.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  static-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check QR challenge foundations
+        run: node scripts/test-admin-passkey-foundation.mjs
+      - name: Check admin sessions
+        run: node scripts/test-vercel-admin-session-foundation.mjs
+      - name: Check PostgreSQL schema
+        run: node scripts/test-admin-qr-schema.mjs
+      - name: Check employee roles and revocation schema
+        run: node scripts/test-admin-roles-schema.mjs
+      - name: Check employee-bound sessions
+        run: node scripts/test-admin-employee-sessions.mjs
+      - name: Check owner-only staff management API
+        run: node scripts/test-admin-staff-api.mjs
+      - name: Check employee invitations
+        run: node scripts/test-admin-employee-invites.mjs
+      - name: Check manual owner bootstrap
+        run: node scripts/test-admin-owner-bootstrap.mjs
+      - name: Check Admin Key PWA
+        run: node scripts/test-admin-key-pwa.mjs
+      - name: Check atomic employee Passkey binding
+        run: node scripts/test-admin-employee-passkey-binding.mjs
+      - name: Check QR URL handling
+        run: node scripts/test-admin-qr-url.mjs
+      - name: Check local QR code rendering and link safety
+        run: node scripts/test-admin-qr-link-visibility.mjs
+      - name: Check shared admin authorization
+        run: node scripts/test-admin-authorization-wiring.mjs
+      - name: Check Passkey-only cutover gate
+        run: node scripts/test-admin-passkey-cutover.mjs
+      - name: Check QR consume endpoint
+        run: node scripts/test-admin-qr-consume-route.mjs
+      - name: Check QR decision endpoint
+        run: node scripts/test-admin-qr-decision-route.mjs
+      - name: Check QR WebAuthn options route
+        run: node scripts/test-admin-qr-options-route.mjs
+      - name: Check QR creation route
+        run: node scripts/test-admin-qr-create-route.mjs
+      - name: Check QR decision persistence
+        run: node scripts/test-admin-qr-decision.mjs
+      - name: Check QR persistence helpers
+        run: node scripts/test-admin-qr-persistence.mjs
+      - name: Check WebAuthn registration integration
+        run: node scripts/test-admin-passkey-register.mjs
+      - name: Check WebAuthn cryptographic verification integration
+        run: node scripts/test-admin-passkey-verify.mjs
+      - name: Check Passkey management persistence
+        run: node scripts/test-admin-passkey-management.mjs
+      - name: Check Passkey enrollment persistence
+        run: node scripts/test-admin-passkey-enrollment-store.mjs
+      - name: Check Passkey enrollment password reauthentication
+        run: node scripts/test-admin-passkey-reauth.mjs
+      - name: Check session-bound Passkey enrollment challenge
+        run: node scripts/test-admin-passkey-enrollment-context.mjs
+      - name: Check Passkey enrollment API routes
+        run: node scripts/test-admin-passkey-enroll-routes.mjs
+      - name: Check iPhone Passkey enrollment page
+        run: node scripts/test-admin-passkey-enroll-page.mjs
+      - name: Check admin Passkey enrollment navigation
+        run: node scripts/test-admin-passkey-enroll-navigation.mjs
+      - name: Check Passkey credential storage
+        run: node scripts/test-admin-passkey-credentials.mjs
+      - name: Check WebAuthn challenge handling
+        run: node scripts/test-admin-webauthn-challenges.mjs
+      - name: Check owner backup step-up transaction safeguards
+        run: node --test scripts/test-admin-owner-step-up.mjs
+
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Install exact dependencies
+        run: pnpm install --frozen-lockfile
+      - name: TypeScript check
+        run: pnpm exec tsc --noEmit
+      - name: Store regression checks
+        run: |
+          pnpm test:configurator
+          pnpm test:fps
+          pnpm test:gallery
+          pnpm test:hero
+          pnpm test:orders
+          node scripts/test-local-admin.mjs
+
+  vercel-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Install exact dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify Vercel production build (no deployment)
+        run: pnpm build:vercel
+
+  auth-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: skp_test
+          POSTGRES_PASSWORD: local_test_only
+          POSTGRES_DB: skp_admin_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U skp_test -d skp_admin_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Decode actual QR pixels without BarcodeDetector
+        run: node --loader ./scripts/admin-test-loader.mjs scripts/test-admin-key-runtime.mjs
+      - name: Owner step-up PostgreSQL grant isolation and rollback
+        env:
+          TEST_DATABASE_URL: postgres://skp_test:local_test_only@127.0.0.1:5432/skp_admin_test
+        run: node --loader ./scripts/admin-test-loader.mjs scripts/test-admin-owner-step-up-integration.mjs
+      - name: Production owner backup cryptographic routes
+        env:
+          TEST_DATABASE_URL: postgres://skp_test:local_test_only@127.0.0.1:5432/skp_admin_test
+        run: node --loader ./scripts/admin-test-loader.mjs scripts/test-admin-owner-production.mjs
+      - name: PostgreSQL authentication and concurrency integration
+        env:
+          TEST_DATABASE_URL: postgres://skp_test:local_test_only@127.0.0.1:5432/skp_admin_test
+        run: node --loader ./scripts/admin-test-loader.mjs scripts/test-admin-auth-integration.mjs
+      - name: Additive migrations and readonly schema drift checks
+        env:
+          TEST_DATABASE_URL: postgres://skp_test:local_test_only@127.0.0.1:5432/skp_admin_test
+        run: node scripts/test-admin-migrations.mjs

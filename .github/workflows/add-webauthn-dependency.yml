@@ -1,0 +1,44 @@
+name: Add audited WebAuthn dependency to feature branch
+
+# One-shot dependency lockfile generation. This workflow never deploys.
+# Runs only when this workflow is first committed to the feature branch.
+on:
+  push:
+    branches:
+      - feature/vercel-admin-qr-passkeys
+    paths:
+      - '.github/workflows/add-webauthn-dependency.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  add-dependency:
+    if: github.repository == 'absolutepc/skpcomp'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Install existing dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Add maintained WebAuthn verifier and update lockfile
+        run: pnpm add --save-exact '@simplewebauthn/server@13.2.2'
+      - name: Validate lockfile
+        run: pnpm install --frozen-lockfile
+      - name: Commit dependency files to feature branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json pnpm-lock.yaml
+          git diff --cached --quiet || git commit -m 'Add pinned SimpleWebAuthn server dependency'
+          git push origin HEAD:feature/vercel-admin-qr-passkeys

@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const page=read('app/admin-key/page.tsx');
+const qr=read('lib/admin-key-qr.ts');
+const manifest=JSON.parse(read('public/admin-key.webmanifest'));
+const worker=read('public/admin-key-sw.js');
+const approve=read('app/admin-key/approve/page.tsx');
+assert.equal(manifest.name,'SKP Admin Key');
+assert.equal(manifest.scope,'/admin-key/');
+assert.equal(manifest.display,'standalone');
+assert.match(page,/getUserMedia/);
+assert.match(page,/const generation=useRef\(0\)/);
+assert.match(page,/generation.current!==attempt/);
+assert.match(page,/createQrVideoDecoder/);
+assert.match(page,/if\(generation.current===attempt\)\{stop\(\);setMessage/);
+assert.match(page,/document.addEventListener\('visibilitychange',onHidden\)/);
+assert.match(page,/media.getTracks\(\).forEach\(track=>track.stop\(\)\)/);
+assert.doesNotMatch(page,/window.BarcodeDetector/);
+assert.match(page,/getTracks\(\)\.forEach\(track=>track.stop\(\)\)/);
+assert.match(qr,/url.origin!==origin/);
+assert.match(qr,/url.pathname!=='\/admin\/qr\/approve'/);
+assert.match(qr,/url.searchParams.size!==1/);
+assert.match(qr,/\^\[a-f0-9\]\{64\}\$/);
+assert.match(page,/window.location.assign\(destination\)/);
+assert.match(qr,/return '\/admin-key\/approve'/);
+assert.match(approve,/admin\/qr\/approve\/page/);
+assert.doesNotMatch(worker,/caches\.open|cache\.put|respondWith/);
+console.log('SKP Admin Key PWA security checks passed.');
+
+const hosting=JSON.parse(read('vercel.json'));
+assert.equal(hosting.git.deploymentEnabled['feature/vercel-admin-qr-passkeys'],false);
+for(const source of ['/admin-key/:path*','/admin/invite/:path*','/admin/qr/:path*','/api/admin/:path*']){
+ const headers=hosting.headers.find(rule=>rule.source===source)?.headers;
+ assert.ok(headers?.some(h=>h.key==='Referrer-Policy'&&h.value==='no-referrer'));
+ assert.ok(headers?.some(h=>h.key==='Cache-Control'&&h.value==='no-store'));
+ assert.ok(headers?.some(h=>h.key==='Content-Security-Policy'&&h.value==="frame-ancestors 'none'"));
+}

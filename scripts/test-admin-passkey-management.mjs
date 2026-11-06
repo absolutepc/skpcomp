@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync(new URL('../lib/admin-passkey-management.ts',import.meta.url),'utf8');
+assert.match(src,/revokeAdminPasskeyAfterReauthentication/);
+assert.match(src,/revoked_at=now\(\)/);
+assert.match(src,/credential_id=\? AND revoked_at IS NULL/);
+assert.match(src,/listActiveAdminPasskeys/);
+assert.match(src,/SELECT credential_id,device_label,created_at,last_used_at/);
+assert.doesNotMatch(src,/SELECT \*|public_key|issueAdminSession|Set-Cookie/);
+console.log('Passkey management persistence checks passed.');

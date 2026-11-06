@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync(new URL('../lib/admin-passkey-enrollment-store.ts',import.meta.url),'utf8');
+assert.match(src,/saveVerifiedAdminPasskey/);
+assert.match(src,/publicKey instanceof Uint8Array/);
+assert.match(src,/Number\.isSafeInteger\(counter\)/);
+assert.match(src,/ON CONFLICT \(credential_id\) DO NOTHING/);
+assert.match(src,/RETURNING credential_id/);
+assert.match(src,/JSON\.stringify\(transports\)/);
+assert.doesNotMatch(src,/adminCookie|issueAdminSession|Set-Cookie/);
+console.log('Passkey registration persistence static checks passed; no WebAuthn verification performed.');

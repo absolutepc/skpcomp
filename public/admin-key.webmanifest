@@ -1,0 +1,13 @@
+{
+ "id":"/admin-key/",
+ "name":"SKP Admin Key",
+ "short_name":"SKP Key",
+ "description":"Безопасное подтверждение входа в админ-панель SKP",
+ "start_url":"/admin-key/",
+ "scope":"/admin-key/",
+ "display":"standalone",
+ "background_color":"#080808",
+ "theme_color":"#080808",
+ "lang":"ru",
+ "icons":[{"src":"/images/skp-logo.jpg","sizes":"any","type":"image/jpeg","purpose":"any"}]
+}

@@ -9,5 +9,7 @@ for(const mode of ['development','production','test',undefined]){
   assert.equal(exports.localAdminAccess(new Request('http://'+host+':5173/api/store')),mode==='development'&&['localhost','127.0.0.1','[::1]'].includes(host));
  }
 }
-for(const name of ['store','orders','reviews','media'])assert(fs.readFileSync('app/api/'+name+'/route.ts','utf8').includes('if(localAdminAccess('));
+for(const name of ['store','orders','reviews'])assert(fs.readFileSync('app/api/'+name+'/route.ts','utf8').includes('isAuthorizedAdmin'));
+assert(fs.readFileSync('lib/admin-authorization.ts','utf8').includes('if(localAdminAccess('));
+assert(fs.readFileSync('app/api/media/cloudflare-handler.ts','utf8').includes('SKP_ADMIN_REQUIRE_PASSKEY'));
 console.log('Local admin: development loopback access allowed; production and external hosts protected.');

@@ -1,3 +1,4 @@
+import {AsyncLocalStorage} from 'node:async_hooks';
 /** Runtime storage facade for existing D1-shaped SKP API queries.
  * Vercel: PostgreSQL; local Cloudflare: D1. Never falls back to seed on PG errors.
  */
@@ -32,23 +33,49 @@ function pgSql(input:string):string{
  sql=sql.replace(/\?/g,()=>'$'+(++i));
  return sql;
 }
+const transactionClient=new AsyncLocalStorage<import('pg').PoolClient>();
+async function queryClient(){return transactionClient.getStore()??await pool()}
+
+/** Auth-only transactions: every storeEnv query in the callback uses one connection. */
+export async function adminTransaction<T>(work:()=>Promise<T>):Promise<T>{
+ if(!isPostgres())throw new Error('PostgreSQL required');
+ if(transactionClient.getStore())return work();
+ const client=await (await pool()).connect();
+ try{
+  await client.query('BEGIN');
+  await client.query("SET LOCAL lock_timeout='5s'");
+  const result=await transactionClient.run(client,work);
+  await client.query('COMMIT');
+  return result;
+ }catch(error){await client.query('ROLLBACK');throw error}
+ finally{client.release()}
+}
+
 function postgresDatabase():Database{
  return {prepare(query:string):Statement{
   const sql=pgSql(query);
   const statement=(params:unknown[]):Statement=>({
    bind(...args){return statement(args)},
    async all<T extends Row>():Promise<Result<T>>{
-    const db=await pool();const response=await db.query(sql,params);return {results:response.rows as T[]};
+    const db=await queryClient();const response=await db.query(sql,params);return {results:response.rows as T[]};
    },
    async first<T extends Row>():Promise<T|null>{
-    const db=await pool();const response=await db.query(sql,params);return (response.rows[0] as T|undefined)??null;
+    const db=await queryClient();const response=await db.query(sql,params);return (response.rows[0] as T|undefined)??null;
    },
-   async run(){const db=await pool();const result=await db.query(sql,params);return {meta:{changes:result.rowCount??0}}},
+   async run(){const db=await queryClient();const result=await db.query(sql,params);return {meta:{changes:result.rowCount??0}}},
    _sql:sql,_params:params
   });
   return statement([]);
  },
  async batch(statements){
+  const current=transactionClient.getStore();
+  if(current){
+   for(const stmt of statements){
+    if(!stmt._sql)throw Error('Unsupported batch statement');
+    await current.query(stmt._sql,stmt._params||[]);
+   }
+   return;
+  }
   const db=await pool();const client=await db.connect();
   try{
    await client.query("BEGIN");

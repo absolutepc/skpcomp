@@ -1,4 +1,5 @@
 'use client';
+import AdminQrLogin from './admin-qr-login';
 import {useState,useEffect} from 'react';
 import {brandsForCategory,selectedBrand,seriesForBrand,selectedSeries,gpuChipBrand,gpuChipBrands,gpuBrandsForChip} from '../lib/product-brands';
 import {popularProducts} from '../lib/popular-products';
@@ -130,14 +131,15 @@ return <>
  <div className="skp-cart-line-actions"><strong className="skp-cart-line-price">{money(row.price)}</strong><button type="button" aria-label="Удалить сборку" onClick={()=>remove(row.id)}><Trash2 size={18}/></button></div>
  </article>:<div className="cart-item" key={row.id}><div>{row.product?img(row.product):<ShoppingBag size={27}/>}</div><div>{row.product?link('/product/'+row.product.id,<h3>{row.name}</h3>):<h3>{row.name}</h3>}<p>{row.quantity} шт.{row.quantity>1?' × '+money(row.price):''}</p></div><div className="skp-cart-line-actions"><strong className="skp-cart-line-price">{money(row.price*row.quantity)}</strong><button type="button" aria-label={'Удалить '+row.name} onClick={()=>remove(row.id)}><Trash2 size={18}/></button></div></div>)}</div><aside className="summary"><h3>Твой заказ</h3><div className="sum skp-cart-order-total">{money(cartTotal)}</div>{link('/checkout',<>Оформить заказ <ArrowRight size={18}/></>,'button light skp-checkout-cart-button')}{data.whatsapp?<a className="button outline" target="_blank" rel="noreferrer" href={'https://wa.me/'+data.whatsapp+'?text='+encodeURIComponent('Здравствуйте! Хочу заказать в SKP:\n'+cartRows.map(row=>row.name+' × '+row.quantity+' — '+money(row.price)+(row.build?'\n'+row.details?.map(p=>p.label+': '+p.name).join('\n')+'\nОС: '+row.os+'\nСборка и проверка: '+money(row.assemblyFee||0):'')).join('\n\n'))}>Обсудить заказ <MessageCircle size={20}/></a>:<p className="note">Магазин ещё не указал номер WhatsApp для заказов. Добавьте его в админской панели.</p>}{link('/installments',<>Оплата частями <ArrowRight size={18}/></>,'button outline installment-cart-button')}<small>Статус заказа можно отслеживать в разделе «Мои заказы». Наличие и оплату подтверждает менеджер.</small></aside></div>:<div className="empty"><ShoppingBag size={44}/><h2>Пока ничего нет</h2>{link('/catalog/all','Перейти в каталог','button light')}</div>}</section>:path==='/contacts'?<StoreLocation/>:path==='/admin'?<section className="skp-admin-page">
 <div className="section-head skp-admin-old-title"><div><span className="eyebrow">SKP / УПРАВЛЕНИЕ</span><h1>Административная панель</h1></div>
-{auth&&<button onClick={async()=>{await api({action:'logout'});setAuth(false)}}><LogOut/> Выйти</button>}</div>
-{!auth?<form className="login" onSubmit={async e=>{e.preventDefault();const r=await api({action:'login',password});if(r.ok){setAuth(true);setPassword('')}else notify('Неверный пароль')}}><h2>Вход для владельца</h2><label>Пароль<input type="password" required autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}/></label><button className="button light">Войти <ArrowRight size={18}/></button></form>:
+{auth&&<button onClick={async()=>{const result=await api({action:'logout'});if(result.ok)setAuth(false);else notify('Не удалось завершить сессию. Повторите попытку.')}}><LogOut/> Выйти</button>}</div>
+{!auth?<form className="login" onSubmit={async e=>{e.preventDefault();const r=await api({action:'login',password});if(r.ok){setAuth(true);setPassword('')}else notify('Неверный пароль')}}><h2>Вход для владельца</h2><label>Пароль<input type="password" required autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}/></label><button className="button light">Войти <ArrowRight size={18}/></button><AdminQrLogin onAuthenticated={()=>setAuth(true)}/></form>:
 <AdminSidebar active={adminSection} onChange={chooseAdminSection}
  search={adminSearch} onSearch={setAdminSearch}
- onLogout={async()=>{await api({action:'logout'});setAuth(false);setEditing(null)}}
+ onLogout={async()=>{const result=await api({action:'logout'});if(result.ok)setAuth(false);else notify('Не удалось завершить сессию. Повторите попытку.');setEditing(null)}}
  productsCount={data.products.filter(p=>inAdminProductSection(p,'products')).length}
  laptopsCount={data.products.filter(p=>inAdminProductSection(p,'laptops')).length}
  pcsCount={data.products.filter(p=>inAdminProductSection(p,'pcs')).length}>
+ <div style={{display:'flex',justifyContent:'flex-end',padding:'8px 16px'}}><a href="/admin/passkey/enroll" style={{color:'#ffd22e',fontSize:13}}>Привязать iPhone / Passkey</a></div>
  {adminSection==='dashboard'&&<AdminDashboard products={data.products} search={adminSearch} onOrders={()=>chooseAdminSection('orders')}
   onAdd={()=>setEditing({id:'product-'+Date.now(),name:'',category:'cpu',price:0,art:'cpu',description:'',image:'',stock:true,brand:'',socket:'',memory:'',watts:0})}
   onEdit={product=>setEditing(normalizeProduct(product))}
