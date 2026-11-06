@@ -9,6 +9,7 @@ assert.match(approvalLayout,/referrer:'no-referrer'/);
 const desktop=read('app/admin-qr-login.tsx');
 const verifier=read('lib/admin-passkey-verify.ts');
 const decision=read('app/api/admin/qr/decision/route.ts');
+const statusRoute=read('app/api/admin/qr/status/route.ts');
 assert.match(mobile,/navigator\.credentials\.get/);
 assert.match(mobile,/url\.hash===''&&url\.searchParams\.size===1&&url\.searchParams\.has\('request'\)/);
 assert.match(mobile,/url\.searchParams\.get\('request'\)/);
@@ -59,4 +60,6 @@ assert.match(desktop,/if\(generation!==requestGeneration\.current\)return;\s*con
 assert.match(verifier,/expectedChallenge:Buffer\.from\(challenge,'hex'\)\.toString\('base64url'\)/);
 assert.match(decision,/verifyAdminPasskeyAssertion/);
 assert.match(decision,/markQrApprovedAfterVerification/);
+assert.match(statusRoute,/request\.headers\.get\('content-type'\)\?\.split\(';'\)/);
+assert.doesNotMatch(statusRoute,/startsWith\('application\/json'\)/);
 console.log('Mobile QR Passkey approval security wiring passed.');
