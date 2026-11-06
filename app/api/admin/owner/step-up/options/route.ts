@@ -1,7 +1,7 @@
 import {activeOwnerSessionBinding} from '../../../../../../lib/vercel-admin-session';
 import {ownerStepUpContext} from '../../../../../../lib/admin-owner-step-up';
 import type {OwnerStepUpAction} from '../../../../../../lib/admin-owner-step-up-grants';
-import {isTrustedAdminOrigin,adminWebAuthnConfig} from '../../../../../../lib/admin-passkey-config';
+import {isTrustedAdminOrigin,isIsolatedOwnerBackupRequest,adminWebAuthnConfig} from '../../../../../../lib/admin-passkey-config';
 import {issueWebAuthnChallenge} from '../../../../../../lib/admin-webauthn-challenges';
 import {allowNewAdminQrRequest} from '../../../../../../lib/admin-qr-rate-limit';
 
@@ -9,7 +9,7 @@ export const dynamic='force-dynamic';
 const headers={'Cache-Control':'no-store, private','X-Content-Type-Options':'nosniff'};
 /** Owner step-up challenge only. Never grants enrollment or a session. */
 export async function POST(request:Request){
- if(process.env.SKP_ADMIN_OWNER_BACKUP_ENROLLMENT!=='staging')
+ if(!isIsolatedOwnerBackupRequest(request))
   return Response.json({error:'Not enabled'},{status:404,headers});
  if(!isTrustedAdminOrigin(request))
   return Response.json({error:'Forbidden'},{status:403,headers});
