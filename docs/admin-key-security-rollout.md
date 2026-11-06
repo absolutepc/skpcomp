@@ -24,3 +24,7 @@ Status: development only. Do not deploy or run either database migration without
 - Legacy shared-password login cannot bypass revocation after cutover.
 - Owner remains able to access and recover the account; owner cannot be blocked by staff API.
 - Production migration has backup, rollback procedure, monitoring and explicit approval.
+
+## Passkey-only cutover switch (not enabled)
+
+`SKP_ADMIN_REQUIRE_PASSKEY=true` disables legacy shared-password cookies, local development authorization bypasses and the password login endpoint. It retains database-backed, employee-linked sessions only. Do **not** enable this switch until owner bootstrap, employee enrollment, production database migrations, and real-device QR/Passkey tests have been completed and explicitly approved. If the database is unavailable, authorization fails closed. The `ADMIN_PASSWORD` secret remains required for session token hashing during this transition; removing it would invalidate all QR sessions. Never enable this setting as part of the draft PR or automatically deploy it.
