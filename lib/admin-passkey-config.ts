@@ -5,7 +5,9 @@ export const ADMIN_QR_TTL_SECONDS=60;
 
 /** Explicit isolated staging origin. Never accept wildcard preview hosts or request Host headers. */
 function isolatedStagingConfig(origin:string){
- if(process.env.SKP_ADMIN_OWNER_BACKUP_ENROLLMENT!=='staging')return null;
+ if(process.env.SKP_ADMIN_OWNER_BACKUP_ENROLLMENT!=='staging'||
+  process.env.SKP_ADMIN_STAGING_DB_ISOLATED!=='confirmed'||
+  process.env.SKP_DATABASE_PROVIDER!=='postgres')return null;
  const configured=process.env.SKP_ADMIN_STAGING_ORIGIN;
  if(!configured||configured===ADMIN_RP_ORIGIN||!/^https:\/\/[^/]+$/.test(configured)||configured!==origin)return null;
  try{
