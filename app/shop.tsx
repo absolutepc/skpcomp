@@ -1,5 +1,5 @@
-import AdminQrLogin from './admin-qr-login';
 'use client';
+import AdminQrLogin from './admin-qr-login';
 import {useState,useEffect} from 'react';
 import {brandsForCategory,selectedBrand,seriesForBrand,selectedSeries,gpuChipBrand,gpuChipBrands,gpuBrandsForChip} from '../lib/product-brands';
 import {popularProducts} from '../lib/popular-products';
@@ -139,6 +139,7 @@ return <>
  productsCount={data.products.filter(p=>inAdminProductSection(p,'products')).length}
  laptopsCount={data.products.filter(p=>inAdminProductSection(p,'laptops')).length}
  pcsCount={data.products.filter(p=>inAdminProductSection(p,'pcs')).length}>
+ <div style={{display:'flex',justifyContent:'flex-end',padding:'8px 16px'}}><a href="/admin/passkey/enroll" style={{color:'#ffd22e',fontSize:13}}>Привязать iPhone / Passkey</a></div>
  {adminSection==='dashboard'&&<AdminDashboard products={data.products} search={adminSearch} onOrders={()=>chooseAdminSection('orders')}
   onAdd={()=>setEditing({id:'product-'+Date.now(),name:'',category:'cpu',price:0,art:'cpu',description:'',image:'',stock:true,brand:'',socket:'',memory:'',watts:0})}
   onEdit={product=>setEditing(normalizeProduct(product))}
