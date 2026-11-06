@@ -42,7 +42,16 @@ export default function AdminKeyScanner(){
   if('serviceWorker' in navigator&&window.isSecureContext){
    void navigator.serviceWorker.register('/admin-key-sw.js',{scope:'/admin-key/'}).catch(()=>{});
   }
-  return()=>{active.current=false;stream.current?.getTracks().forEach(track=>track.stop());if(frame.current!==null)cancelAnimationFrame(frame.current);manifest.remove();theme.remove()};
+  const onHidden=()=>{if(document.visibilityState==='hidden'){
+   active.current=false;
+   if(frame.current!==null)cancelAnimationFrame(frame.current);
+   stream.current?.getTracks().forEach(track=>track.stop());
+   stream.current=null;
+   if(video.current)video.current.srcObject=null;
+   setScanning(false);
+  }};
+  document.addEventListener('visibilitychange',onHidden);
+  return()=>{document.removeEventListener('visibilitychange',onHidden);active.current=false;stream.current?.getTracks().forEach(track=>track.stop());if(frame.current!==null)cancelAnimationFrame(frame.current);manifest.remove();theme.remove()};
  },[]);
  const navigate=(raw:string)=>{
   const destination=trustedQrDestination(raw.trim());
@@ -63,9 +72,10 @@ export default function AdminKeyScanner(){
    stream.current=media;
    if(!video.current){media.getTracks().forEach(track=>track.stop());return}
    video.current.srcObject=media;
+   setScanning(true);
    await video.current.play();
    const detector=new window.BarcodeDetector({formats:['qr_code']});
-   active.current=true;setScanning(true);
+   active.current=true;
    let checking=false;
    const scan=async()=>{
     if(!active.current||!video.current)return;
