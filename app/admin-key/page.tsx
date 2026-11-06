@@ -23,10 +23,12 @@ export default function AdminKeyScanner(){
  const stream=useRef<MediaStream|null>(null);
  const frame=useRef<number|null>(null);
  const active=useRef(false);
+ const generation=useRef(0);
  const [scanning,setScanning]=useState(false);
  const [message,setMessage]=useState('');
  const [manual,setManual]=useState('');
  const stop=()=>{
+  generation.current++;
   active.current=false;
   if(frame.current!==null){cancelAnimationFrame(frame.current);frame.current=null}
   stream.current?.getTracks().forEach(track=>track.stop());
@@ -44,6 +46,7 @@ export default function AdminKeyScanner(){
    void navigator.serviceWorker.register('/admin-key-sw.js',{scope:'/admin-key/'}).catch(()=>{});
   }
   const onHidden=()=>{if(document.visibilityState==='hidden'){
+   generation.current++;
    active.current=false;
    if(frame.current!==null)cancelAnimationFrame(frame.current);
    stream.current?.getTracks().forEach(track=>track.stop());
@@ -52,7 +55,7 @@ export default function AdminKeyScanner(){
    setScanning(false);
   }};
   document.addEventListener('visibilitychange',onHidden);
-  return()=>{document.removeEventListener('visibilitychange',onHidden);active.current=false;stream.current?.getTracks().forEach(track=>track.stop());if(frame.current!==null)cancelAnimationFrame(frame.current);manifest.remove();theme.remove()};
+  return()=>{document.removeEventListener('visibilitychange',onHidden);generation.current++;active.current=false;stream.current?.getTracks().forEach(track=>track.stop());if(frame.current!==null)cancelAnimationFrame(frame.current);manifest.remove();theme.remove()};
  },[]);
  const navigate=(raw:string)=>{
   const destination=trustedQrDestination(raw.trim());
@@ -61,6 +64,7 @@ export default function AdminKeyScanner(){
  };
  async function start(){
   if(scanning)return;
+  const attempt=++generation.current;
   setMessage('');
   if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){
    setMessage('Камера доступна только через HTTPS в поддерживаемом браузере.');return;
@@ -70,28 +74,31 @@ export default function AdminKeyScanner(){
   }
   try{
    const media=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'}}});
+   if(generation.current!==attempt){media.getTracks().forEach(track=>track.stop());return}
    stream.current=media;
-   if(!video.current){media.getTracks().forEach(track=>track.stop());return}
+   if(!video.current){media.getTracks().forEach(track=>track.stop());stream.current=null;return}
    video.current.srcObject=media;
    setScanning(true);
    await video.current.play();
+   if(generation.current!==attempt){media.getTracks().forEach(track=>track.stop());return}
    const detector=new window.BarcodeDetector({formats:['qr_code']});
    active.current=true;
    let checking=false;
    const scan=async()=>{
-    if(!active.current||!video.current)return;
+    if(!active.current||generation.current!==attempt||!video.current)return;
     if(!checking&&video.current.readyState>=2){
      checking=true;
      try{
       const codes=await detector.detect(video.current);
+      if(generation.current!==attempt)return;
       for(const code of codes){if(navigate(code.rawValue))return}
      }catch{setMessage('Не удалось распознать код. Попробуйте обычную камеру телефона.');stop();return}
      finally{checking=false}
     }
-    if(active.current)frame.current=requestAnimationFrame(()=>{void scan()});
+    if(active.current&&generation.current===attempt)frame.current=requestAnimationFrame(()=>{void scan()});
    };
    void scan();
-  }catch{stop();setMessage('Нет доступа к камере. Проверьте разрешения браузера.')}
+  }catch{if(generation.current===attempt){stop();setMessage('Нет доступа к камере. Проверьте разрешения браузера.')}}
  }
  return <main style={{minHeight:'100dvh',background:'#080808',color:'#fff',display:'grid',placeItems:'center',padding:22}}>
   <section style={{maxWidth:440,width:'100%',display:'grid',gap:18}}>
