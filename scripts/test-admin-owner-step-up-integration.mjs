@@ -74,10 +74,23 @@ try{
  const {revokeOwnerPasskey}=await import('../lib/admin-owner-passkey-revocation.ts');
  const {rows:[keyA]}=await pool.query("INSERT INTO skp_admin_passkeys(credential_id,public_key,user_id,device_label) VALUES ('owner-test-key-a',decode('01020304050607080910111213141516','hex'),$1,'Primary') RETURNING md5(credential_id) AS fingerprint",[owner.id]);
  const {rows:[keyB]}=await pool.query("INSERT INTO skp_admin_passkeys(credential_id,public_key,user_id,device_label) VALUES ('owner-test-key-b',decode('01020304050607080910111213141516','hex'),$1,'Backup') RETURNING md5(credential_id) AS fingerprint",[owner.id]);
+ // This exercises the post-verification QR approval/redemption path with the backup
+ // credential. It does NOT simulate or replace a cryptographic WebAuthn assertion.
+ const {createPendingQr}=await import('../lib/admin-qr-pending.ts');
+ const {markQrApprovedAfterVerification}=await import('../lib/admin-qr-decision.ts');
+ const {consumeApprovedQr}=await import('../lib/admin-qr-consume.ts');
+ const backupQr=await createPendingQr();
+ assert.equal(await markQrApprovedAfterVerification(backupQr.requestToken,'owner-test-key-b'),true,'active backup credential can approve after WebAuthn verification');
+ assert.equal(await consumeApprovedQr(backupQr.requestToken,'0'.repeat(64)),null,'wrong desktop secret cannot redeem backup login');
+ assert.equal(await consumeApprovedQr(backupQr.requestToken,backupQr.desktopSecret),owner.id,'approved backup credential redeems for owner');
+ assert.equal(await consumeApprovedQr(backupQr.requestToken,backupQr.desktopSecret),null,'backup QR redemption is single-use');
+ const revokedQr=await createPendingQr();
+ assert.equal(await markQrApprovedAfterVerification(revokedQr.requestToken,'owner-test-key-b'),true);
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'revocation requires a fresh action-specific grant');
  await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,'owner-passkey-revoke');
  assert.equal(await revokeOwnerPasskey(requestB,keyB.fingerprint),false,'another owner session cannot revoke');
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),true,'verified owner may revoke backup');
+ assert.equal(await consumeApprovedQr(revokedQr.requestToken,revokedQr.desktopSecret),null,'revoked backup credential cannot redeem even previously approved QR');
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'revocation replay must fail');
  await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,'owner-passkey-revoke');
  assert.equal(await revokeOwnerPasskey(requestA,keyA.fingerprint),false,'last active owner key must be protected');
