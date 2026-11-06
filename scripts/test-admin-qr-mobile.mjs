@@ -12,6 +12,8 @@ const decision=read('app/api/admin/qr/decision/route.ts');
 assert.match(mobile,/navigator\.credentials\.get/);
 assert.match(mobile,/userVerification:'required'/);
 assert.match(mobile,/approved:true/);
+assert.match(mobile,/options\.rpID!==window\.location\.hostname/);
+assert.match(mobile,/credential\.type!=='public-key'/);
 assert.match(mobile,/decision\.status!=='approved'/);
 assert.match(mobile,/\/api\/admin\/qr\/options/);
 assert.match(mobile,/\/api\/admin\/qr\/decision/);
