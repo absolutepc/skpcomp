@@ -6,8 +6,9 @@ import {isPostgres,storeEnv} from '../db/platform-store';
  * One PostgreSQL statement atomically blocks the account, revokes passkeys,
  * removes sessions, revokes pending invitations and denies QR requests approved by this user.
  */
-export async function revokeEmployeeAccess(targetUserId:string):Promise<boolean>{
+export async function revokeEmployeeAccess(targetUserId:string,actorOwnerId:string):Promise<boolean>{
  if(!isPostgres())throw new Error('PostgreSQL required');
+ if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(actorOwnerId))return false;
  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId))
   return false;
  const {DB}=await storeEnv();
@@ -16,6 +17,8 @@ export async function revokeEmployeeAccess(targetUserId:string):Promise<boolean>
   UPDATE skp_admin_users
   SET status='blocked',blocked_at=now(),updated_at=now()
   WHERE id=?::uuid AND role='admin' AND status='active'
+   AND EXISTS (SELECT 1 FROM skp_admin_users owner
+    WHERE owner.id=?::uuid AND owner.role='owner' AND owner.status='active')
   RETURNING id
  ),
  revoked AS (
@@ -45,8 +48,8 @@ export async function revokeEmployeeAccess(targetUserId:string):Promise<boolean>
   RETURNING request_hash
  ),
  audit AS (
-  INSERT INTO skp_admin_security_events(target_user_id,event_type,details)
-  SELECT id,'user_blocked','{}'::jsonb FROM blocked
+  INSERT INTO skp_admin_security_events(actor_user_id,target_user_id,event_type,details)
+  SELECT ?::uuid,id,'user_blocked','{}'::jsonb FROM blocked
   RETURNING id
  )
  SELECT EXISTS(SELECT 1 FROM blocked) AS blocked,
@@ -55,6 +58,6 @@ export async function revokeEmployeeAccess(targetUserId:string):Promise<boolean>
   (SELECT count(*) FROM revoked_invites) AS invite_count,
   (SELECT count(*) FROM denied_qr) AS qr_count,
   (SELECT count(*) FROM audit) AS audit_count
- `).bind(targetUserId).first<{blocked:boolean}>();
+ `).bind(targetUserId,actorOwnerId,actorOwnerId).first<{blocked:boolean}>();
  return result?.blocked===true;
 }
