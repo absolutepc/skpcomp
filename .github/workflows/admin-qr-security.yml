@@ -8,6 +8,7 @@ on:
       - 'lib/admin-*.ts'
       - 'app/api/store/route.ts'
       - 'app/admin-qr-login.tsx'
+      - 'app/shop.tsx'
       - 'app/admin/qr/approve/page.tsx'
       - 'app/admin/passkey/enroll/**'
       - 'package.json'
@@ -78,6 +79,8 @@ jobs:
         run: node scripts/test-admin-passkey-enroll-routes.mjs
       - name: Check iPhone Passkey enrollment page
         run: node scripts/test-admin-passkey-enroll-page.mjs
+      - name: Check admin Passkey enrollment navigation
+        run: node scripts/test-admin-passkey-enroll-navigation.mjs
       - name: Check Passkey credential storage
         run: node scripts/test-admin-passkey-credentials.mjs
       - name: Check WebAuthn challenge handling
