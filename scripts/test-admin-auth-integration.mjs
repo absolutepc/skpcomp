@@ -105,6 +105,15 @@ assert.equal((await staffGet(ownerRequest)).status,200);
 
 
 assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Forbidden'},{cookie:cookie.split(';')[0]}))).status,403);
+const {GET:ordersGet,POST:ordersPost}=await import('../app/api/orders/route.ts');
+const missingOrder='00000000-0000-4000-8000-000000000000';
+const statusPayload={action:'status',id:missingOrder,status:'completed'};
+assert.equal((await ordersGet(new Request(origin+'/api/orders'))).status,401,'anonymous users cannot list orders');
+assert.equal((await ordersPost(post('/api/orders',statusPayload))).status,401,'anonymous users cannot change order status');
+assert.equal((await ordersPost(post('/api/orders',statusPayload,{cookie:cookie.split(';')[0],origin:'https://evil.example'}))).status,403,'valid admin session cannot bypass order CSRF protection');
+assert.equal((await ordersGet(new Request(origin+'/api/orders',{headers:{cookie:cookie.split(';')[0]}}))).status,200,'Passkey admin session can list orders');
+assert.equal((await ordersPost(post('/api/orders',statusPayload,{cookie:cookie.split(';')[0]}))).status,404,'authenticated status changes still require an existing order');
+
 // Browser-equivalent `fmt:none` WebAuthn attestation through onboarding HTTP routes.
 const {POST:inviteOptions}=await import('../app/api/admin/invite/options/route.ts');
 const {POST:inviteComplete}=await import('../app/api/admin/invite/complete/route.ts');
