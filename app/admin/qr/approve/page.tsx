@@ -1,0 +1,33 @@
+'use client';
+import {useState} from 'react';
+const decode=(s:string)=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0));
+const encode=(b:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const hex=(s:string)=>Uint8Array.from(s.match(/.{2}/g)??[],v=>parseInt(v,16));
+export default function ApproveQr(){
+ const [busy,setBusy]=useState(false),[message,setMessage]=useState('');
+ const token=typeof window==='undefined'?'':new URLSearchParams(window.location.search).get('request')||'';
+ async function approve(){
+  if(!/^[a-f0-9]{64}$/.test(token))return setMessage('Недействительная ссылка.');
+  if(!window.PublicKeyCredential||!navigator.credentials)return setMessage('Passkey не поддерживается этим браузером.');
+  setBusy(true);setMessage('');
+  try{
+   const optionsResponse=await fetch('/api/admin/qr/options',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token}),credentials:'same-origin',cache:'no-store'});
+   if(!optionsResponse.ok)throw Error('Не удалось получить запрос подтверждения.');
+   const options=await optionsResponse.json() as {challenge:string;rpID:string};
+   if(!/^[a-f0-9]{64}$/.test(options.challenge))throw Error('Некорректный challenge.');
+   const credential=await navigator.credentials.get({publicKey:{challenge:hex(options.challenge),rpId:options.rpID,userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
+   if(!credential)throw Error('Подтверждение отменено.');
+   const response=credential.response as AuthenticatorAssertionResponse;
+   const assertion={id:credential.id,rawId:encode(credential.rawId),type:'public-key',response:{clientDataJSON:encode(response.clientDataJSON),authenticatorData:encode(response.authenticatorData),signature:encode(response.signature),userHandle:response.userHandle?encode(response.userHandle):undefined},clientExtensionResults:credential.getClientExtensionResults()};
+   const result=await fetch('/api/admin/qr/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token,challenge:options.challenge,response:assertion,approved:true}),credentials:'same-origin',cache:'no-store'});
+   if(!result.ok)throw Error('Сервер не подтвердил вход.');
+   setMessage('Вход подтверждён. Вернитесь к компьютеру.');
+  }catch(e){setMessage(e instanceof Error?e.message:'Ошибка подтверждения.');}
+  finally{setBusy(false);}
+ }
+ return <main style={{minHeight:'100dvh',background:'#080808',color:'#fff',display:'grid',placeItems:'center',padding:24}}><section style={{maxWidth:420,width:'100%',textAlign:'center'}}>
+  <h1>SKP — подтверждение входа</h1><p>Подтверждайте только тот вход, который вы начали на своём компьютере.</p>
+  <button type="button" disabled={busy||!/^[a-f0-9]{64}$/.test(token)} onClick={()=>void approve()} style={{padding:'14px 24px',background:'#ffd22e',color:'#111',border:0,borderRadius:10,fontWeight:700}}>{busy?'Подтверждение…':'Подтвердить через Face ID / Passkey'}</button>
+  <p role="status" aria-live="polite">{message}</p>
+ </section></main>;
+}
