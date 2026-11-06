@@ -40,4 +40,10 @@ CREATE TABLE IF NOT EXISTS skp_admin_qr_requests (
   CHECK (expires_at > created_at)
 );
 CREATE INDEX IF NOT EXISTS skp_admin_qr_requests_expiry_idx ON skp_admin_qr_requests(expires_at);
+-- Global, atomic request creation throttle. Protects against QR request floods.
+CREATE TABLE IF NOT EXISTS skp_admin_qr_rate_limits (
+  bucket BIGINT PRIMARY KEY,
+  requests INTEGER NOT NULL CHECK (requests >= 0),
+  CHECK (requests <= 120)
+);
 COMMIT;
