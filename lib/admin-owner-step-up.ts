@@ -36,11 +36,12 @@ export async function verifyOwnerStepUp(input:{
    counter:stored.counter,transports:stored.transports as ('usb'|'nfc'|'ble'|'internal'|'hybrid')[]},
  });
  if(!verification.verified)return false;
- return adminTransaction(async()=>{
+ try{return await adminTransaction(async()=>{
   const owner=await DB.prepare("SELECT id FROM skp_admin_users WHERE id=?::uuid AND role='owner' AND status='active' FOR UPDATE")
    .bind(ownerId).first();
-  if(!owner||await activeSessionOwnerId(input.request)!==ownerId)return false;
-  if(!await consumeWebAuthnChallenge(input.challenge,'authenticate','owner-step-up:'+ownerId))return false;
-  return advanceVerifiedPasskeyCounter(stored.credential_id,stored.counter,verification.authenticationInfo.newCounter);
- });
+  if(!owner||await activeSessionOwnerId(input.request)!==ownerId)throw new Error('Owner session invalid');
+  if(!await consumeWebAuthnChallenge(input.challenge,'authenticate','owner-step-up:'+ownerId))throw new Error('Step-up challenge invalid');
+  if(!await advanceVerifiedPasskeyCounter(stored.credential_id,stored.counter,verification.authenticationInfo.newCounter))throw new Error('Passkey counter update failed');
+  return true;
+ });}catch{return false}
 }
