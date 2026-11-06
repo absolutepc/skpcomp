@@ -61,6 +61,8 @@ jobs:
         run: node scripts/test-admin-staff-api.mjs
       - name: Check employee invitations
         run: node scripts/test-admin-employee-invites.mjs
+      - name: Check atomic employee Passkey binding
+        run: node scripts/test-admin-employee-passkey-binding.mjs
       - name: Check QR URL handling
         run: node scripts/test-admin-qr-url.mjs
       - name: Check local QR code rendering and link safety
