@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const session=read('lib/vercel-admin-session.ts');
+const staff=read('app/api/admin/staff/route.ts');
+assert.match(session,/activeSessionOwnerId/);
+assert.match(session,/u.status='active' AND u.role='owner'/);
+assert.doesNotMatch(session.slice(session.indexOf('export async function activeSessionOwnerId')),/localAdminAccess/);
+assert.match(staff,/activeSessionOwnerId\(request\)/);
+assert.match(staff,/isTrustedAdminOrigin\(request\)/);
+assert.match(staff,/action!=='block'/);
+assert.match(staff,/ownerId===userId/);
+assert.match(staff,/revokeEmployeeAccess\(userId\)/);
+assert.match(staff,/Cache-Control':'no-store/);
+console.log('Owner-only staff API static checks passed.');
