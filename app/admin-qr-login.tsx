@@ -3,6 +3,17 @@ import {useEffect,useRef,useState} from 'react';
 
 type QrRequest={requestToken:string;desktopSecret:string;expiresAt:number;approvalUrl:string};
 type Status='pending'|'approved'|'rejected'|'expired'|'consumed'|string;
+function isTrustedApprovalUrl(raw:string,requestToken:string){
+ try{
+  const url=new URL(raw);
+  return url.origin==='https://skpcomp.vercel.app'
+   &&url.pathname==='/admin/qr/approve'
+   &&url.searchParams.size===1
+   &&url.searchParams.getAll('request').length===1
+   &&url.searchParams.get('request')===requestToken
+   &&!url.hash&&!url.username&&!url.password;
+ }catch{return false;}
+}
 export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void}){
  const [request,setRequest]=useState<QrRequest|null>(null);
  const [status,setStatus]=useState<Status>('pending');
@@ -16,7 +27,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
    const response=await fetch('/api/admin/qr/create',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',cache:'no-store',credentials:'same-origin'});
    if(!response.ok)throw Error(response.status===429?'Слишком много запросов. Попробуйте позже.':'Не удалось создать запрос входа.');
    const value=await response.json() as QrRequest;
-   if(!/^[a-f0-9]{64}$/.test(value.requestToken)||!/^[a-f0-9]{64}$/.test(value.desktopSecret)||!Number.isFinite(value.expiresAt)||value.expiresAt*1000<=Date.now()||!value.approvalUrl.startsWith('https://skpcomp.vercel.app/admin/qr/approve?'))throw Error('Некорректный ответ сервера.');
+   if(!/^[a-f0-9]{64}$/.test(value.requestToken)||!/^[a-f0-9]{64}$/.test(value.desktopSecret)||!Number.isFinite(value.expiresAt)||value.expiresAt*1000<=Date.now()||!isTrustedApprovalUrl(value.approvalUrl,value.requestToken))throw Error('Некорректный ответ сервера.');
    setRequest(value);
   }catch(e){setError(e instanceof Error?e.message:'Ошибка соединения');}
   finally{setBusy(false);}
