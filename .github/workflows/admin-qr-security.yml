@@ -49,6 +49,8 @@ jobs:
         run: node scripts/test-admin-qr-schema.mjs
       - name: Check employee roles and revocation schema
         run: node scripts/test-admin-roles-schema.mjs
+      - name: Check employee-bound sessions
+        run: node scripts/test-admin-employee-sessions.mjs
       - name: Check QR URL handling
         run: node scripts/test-admin-qr-url.mjs
       - name: Check local QR code rendering and link safety
