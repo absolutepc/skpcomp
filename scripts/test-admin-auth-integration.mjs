@@ -10,7 +10,7 @@ process.env.SKP_DATABASE_PROVIDER='postgres';
 process.env.SKP_ADMIN_REQUIRE_PASSKEY='true';
 process.env.ADMIN_PASSWORD='integration-only-not-a-real-secret';
 const db=new pg.Pool({connectionString:testUrl.href});
-for(const file of ['admin-passkey-schema.sql','admin-roles-schema.sql','admin-employee-invites-schema.sql'])await db.query(readFileSync(new URL('../db/'+file,import.meta.url),'utf8'));
+for(const file of ['postgres-schema.sql','admin-passkey-schema.sql','admin-roles-schema.sql','admin-employee-invites-schema.sql'])await db.query(readFileSync(new URL('../db/'+file,import.meta.url),'utf8'));
 const {createPendingQr}=await import('../lib/admin-qr-pending.ts');
 const {issueWebAuthnChallenge}=await import('../lib/admin-webauthn-challenges.ts');
 const {verifyAdminPasskeyAssertion}=await import('../lib/admin-passkey-verify.ts');
