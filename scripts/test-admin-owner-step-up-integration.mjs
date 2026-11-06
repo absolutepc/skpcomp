@@ -77,6 +77,7 @@ try{
  await pool.query('DELETE FROM skp_admin_webauthn_challenges WHERE request_id=$1',[contextA]);
  await pool.query('DELETE FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1',[owner.id]);
  await pool.query('DELETE FROM skp_admin_sessions_v2 WHERE user_id=$1',[owner.id]);
+ await pool.query('DELETE FROM skp_admin_security_events WHERE actor_user_id=$1 OR target_user_id=$1',[owner.id]);
  await pool.query('DELETE FROM skp_admin_users WHERE id=$1',[owner.id]);
  console.log('Owner step-up PostgreSQL: session/action scope, atomic concurrency, replay, rollback and expiry passed.');
 }finally{await pool.end()}
