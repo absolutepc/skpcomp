@@ -6,7 +6,7 @@ type Status='pending'|'approved'|'denied'|'expired'|'consumed'|string;
 function isTrustedApprovalUrl(raw:string,requestToken:string){
  try{
   const url=new URL(raw);
-  return url.origin==='https://skpcomp.vercel.app'
+  return url.origin===window.location.origin
    &&url.pathname==='/admin/qr/approve'
    &&url.searchParams.size===1
    &&url.searchParams.getAll('request').length===1
