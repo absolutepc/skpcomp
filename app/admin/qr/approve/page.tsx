@@ -1,14 +1,16 @@
 'use client';
-import {useState} from 'react';
+import {useRef,useState} from 'react';
 const encode=(b:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const hex=(s:string)=>Uint8Array.from(s.match(/.{2}/g)??[],v=>parseInt(v,16));
 export default function ApproveQr(){
  const [busy,setBusy]=useState(false),[message,setMessage]=useState(''),[approved,setApproved]=useState(false);
+ const submitting=useRef(false);
  const token=typeof window==='undefined'?'':new URLSearchParams(window.location.search).get('request')||'';
  async function approve(){
-  if(busy||approved)return;
-  if(!/^[a-f0-9]{64}$/.test(token))return setMessage('Недействительная ссылка.');
-  if(typeof PublicKeyCredential==='undefined'||!navigator.credentials)return setMessage('Passkey не поддерживается этим браузером.');
+  if(submitting.current||approved)return;
+  submitting.current=true;
+  if(!/^[a-f0-9]{64}$/.test(token)){submitting.current=false;return setMessage('Недействительная ссылка.');}
+  if(typeof PublicKeyCredential==='undefined'||!navigator.credentials){submitting.current=false;return setMessage('Passkey не поддерживается этим браузером.');}
   setBusy(true);setMessage('');
   try{
    const optionsResponse=await fetch('/api/admin/qr/options',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token}),credentials:'same-origin',cache:'no-store'});
@@ -29,7 +31,7 @@ export default function ApproveQr(){
    setApproved(true);
    setMessage('Вход подтверждён. Вернитесь к компьютеру.');
   }catch(e){setMessage(e instanceof Error?e.message:'Ошибка подтверждения.');}
-  finally{setBusy(false);}
+  finally{submitting.current=false;setBusy(false);}
  }
  return <main style={{minHeight:'100dvh',background:'#080808',color:'#fff',display:'grid',placeItems:'center',padding:24}}><section style={{maxWidth:420,width:'100%',textAlign:'center'}}>
   <h1>SKP — подтверждение входа</h1><p>Подтверждайте только тот вход, который вы начали на своём компьютере.</p>
