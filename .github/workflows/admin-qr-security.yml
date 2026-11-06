@@ -73,6 +73,8 @@ jobs:
         run: node scripts/test-admin-passkey-reauth.mjs
       - name: Check session-bound Passkey enrollment challenge
         run: node scripts/test-admin-passkey-enrollment-context.mjs
+      - name: Check Passkey enrollment API routes
+        run: node scripts/test-admin-passkey-enroll-routes.mjs
       - name: Check Passkey credential storage
         run: node scripts/test-admin-passkey-credentials.mjs
       - name: Check WebAuthn challenge handling
