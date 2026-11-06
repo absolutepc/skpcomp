@@ -32,7 +32,7 @@ export async function verifyOwnerStepUp(input:{
   expectedChallenge:Buffer.from(input.challenge,'hex').toString('base64url'),
   expectedOrigin:config.origin,expectedRPID:config.rpID,
   requireUserVerification:true,
-  credential:{id:stored.credential_id,publicKey:stored.public_key,
+  credential:{id:stored.credential_id,publicKey:Uint8Array.from(stored.public_key),
    counter:stored.counter,transports:stored.transports as ('usb'|'nfc'|'ble'|'internal'|'hybrid')[]},
  });
  if(!verification.verified)return false;
