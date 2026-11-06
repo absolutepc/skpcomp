@@ -13,6 +13,8 @@ assert.match(mobile,/\/api\/admin\/qr\/decision/);
 assert.match(mobile,/Подтверждайте только тот вход/);
 assert.doesNotMatch(mobile,/desktopSecret/);
 assert.match(desktop,/\/api\/admin\/qr\/consume/);
+assert.match(desktop,/Date\.now\(\)>=expiresAtMs/);
+assert.match(desktop,/skpcomp\\.vercel\\.app\\/admin\\/qr\\/approve/);
 assert.match(desktop,/desktopSecret:request\.desktopSecret/);
 assert.match(verifier,/expectedChallenge:Buffer\.from\(challenge,'hex'\)\.toString\('base64url'\)/);
 assert.match(decision,/verifyAdminPasskeyAssertion/);
