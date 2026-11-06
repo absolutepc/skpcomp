@@ -7,6 +7,8 @@ on:
     paths:
       - 'lib/admin-*.ts'
       - 'app/api/store/route.ts'
+      - 'app/admin-qr-login.tsx'
+      - 'app/admin/qr/approve/page.tsx'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'lib/vercel-admin-session.ts'
