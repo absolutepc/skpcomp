@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../lib/admin-passkey-enrollment-context.ts',import.meta.url),'utf8');
+const register=readFileSync(new URL('../lib/admin-passkey-register.ts',import.meta.url),'utf8');
+assert.match(source,/skp_admin=\(\[a-f0-9\]\{64\}\)/);
+assert.match(source,/if\(!isPostgres\(\)\)return null/);
+assert.match(source,/if\(!ADMIN_PASSWORD\)return null/);
+assert.match(source,/createHash\('sha256'\)/);
+assert.match(source,/verifyRecentAdminPassword\(request,password\)/);
+assert.match(source,/issueWebAuthnChallenge\('register',contextId\)/);
+assert.ok(source.indexOf('verifyRecentAdminPassword(request,password)')<source.indexOf("issueWebAuthnChallenge('register',contextId)"));
+assert.match(register,/expectedChallenge:Buffer\.from\(challenge,'hex'\)\.toString\('base64url'\)/);
+console.log('Passkey enrollment context checks passed (static only).');
