@@ -81,6 +81,8 @@ jobs:
         run: node scripts/test-admin-qr-link-visibility.mjs
       - name: Check shared admin authorization
         run: node scripts/test-admin-authorization-wiring.mjs
+      - name: Check Passkey-only cutover gate
+        run: node scripts/test-admin-passkey-cutover.mjs
       - name: Check QR consume endpoint
         run: node scripts/test-admin-qr-consume-route.mjs
       - name: Check QR decision endpoint
