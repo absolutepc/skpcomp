@@ -69,11 +69,12 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
     const result=await response.json() as {status:Status};
     if(!active||terminal)return;
     if(Date.now()>=expiresAtMs){terminal=true;setStatus('expired');return;}
+    // Reject malformed server states before updating the visible QR status.
+    if(!['pending','approved','denied','expired','consumed'].includes(result.status))throw Error('Неизвестное состояние QR-запроса.');
     // A recovered connection should clear an earlier transient polling error.
     setError('');
     setStatus(result.status);
     if(['denied','expired','consumed'].includes(result.status)){terminal=true;return;}
-    if(result.status!=='pending'&&result.status!=='approved')throw Error('Неизвестное состояние QR-запроса.');
     if(result.status==='approved'){
      finished=true;
      const consumed=await fetch('/api/admin/qr/consume',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:request.requestToken,desktopSecret:request.desktopSecret}),cache:'no-store',credentials:'same-origin'});
