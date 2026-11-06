@@ -16,7 +16,7 @@ async function database(){
  return DB;
 }
 export async function adminAuthorized(request:Request){
- if(localAdminAccess(request))return true;
+ if(process.env.SKP_ADMIN_REQUIRE_PASSKEY!=='true'&&localAdminAccess(request))return true;
  const token=sessionFromRequest(request);
  if(!token)return false;
  const {ADMIN_PASSWORD}=await storeEnv();
