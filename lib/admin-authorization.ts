@@ -7,6 +7,11 @@ import {storeEnv,isPostgres} from '../db/platform-store';
  * when the database is unavailable.
  */
 export async function isAuthorizedAdmin(request:Request):Promise<boolean>{
+ // Opt-in cutover: once enabled, no shared-password or local bypass may authorize.
+ if(process.env.SKP_ADMIN_REQUIRE_PASSKEY==='true'){
+  if(!isPostgres())return false;
+  try{return await adminAuthorized(request)}catch{return false}
+ }
  if(localAdminAccess(request))return true;
  const {ADMIN_PASSWORD}=await storeEnv();
  if(!ADMIN_PASSWORD)return false;
