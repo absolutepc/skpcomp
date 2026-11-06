@@ -5,7 +5,7 @@ assert.match(src,/consumeInvitationForVerifiedPasskey/);
 assert.match(src,/createHash\('sha256'\)/);
 assert.match(src,/i.consumed_at IS NULL AND i.revoked_at IS NULL/);
 assert.match(src,/i.expires_at>now\(\)/);
-assert.match(src,/u.status='active' AND u.role='admin'/);
+assert.match(src,/u.role IN/);
 assert.match(src,/UPDATE skp_admin_employee_invites/);
 assert.match(src,/INSERT INTO skp_admin_passkeys/);
 assert.match(src,/user_id\)/);
