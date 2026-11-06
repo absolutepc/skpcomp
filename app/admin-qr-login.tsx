@@ -57,6 +57,8 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   let active=true,working=false,finished=false,terminal=false;
   // The server uses epoch seconds. Never poll or consume after expiry.
   const expiresAtMs=request.expiresAt*1000;
+  // Expire the QR locally even if the status endpoint hangs or the network drops.
+  const expiryTimer=setTimeout(()=>{if(active){terminal=true;setStatus('expired');}},Math.max(0,expiresAtMs-Date.now()));
   const poll=async()=>{
    if(!active||working||finished||terminal)return;
    if(Date.now()>=expiresAtMs){terminal=true;setStatus('expired');return;}
@@ -82,7 +84,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   };
   void poll();
   const timer=setInterval(()=>{void poll();},2500);
-  return()=>{active=false;clearInterval(timer);};
+  return()=>{active=false;clearInterval(timer);clearTimeout(expiryTimer);};
  },[request]);
  return <div className="skp-admin-qr-login">
   <h3>Вход с iPhone</h3>
