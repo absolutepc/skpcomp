@@ -121,6 +121,18 @@ try{
  assert.ok(logoutCookie.includes('skp_admin='),'logout clears the admin cookie');
  assert.equal(await adminAuthorized(freshAuthenticated),false,'logout revokes the QR-issued session server-side');
  assert.equal(await activeSessionOwnerId(freshAuthenticated),null,'logged-out QR session has no owner privileges');
+ // An expired QR-issued session must be rejected even if its cookie remains present.
+ const expirySessionQr=await createPendingQr();
+ assert.equal(await markQrApprovedAfterVerification(expirySessionQr.requestToken,'owner-test-key-b'),true);
+ const expiryCookie=await redeemQrSession(freshDesktop,expirySessionQr.requestToken,expirySessionQr.desktopSecret);
+ assert.ok(expiryCookie?.includes('skp_admin='));
+ const expiryRequest=new Request(origin,{headers:{cookie:expiryCookie.split(';')[0]}});
+ assert.equal(await adminAuthorized(expiryRequest),true);
+ const expiryBinding=await activeOwnerSessionBinding(expiryRequest);
+ assert.ok(expiryBinding);
+ await pool.query('UPDATE skp_admin_sessions_v2 SET expires=0 WHERE token_hash=$1',[expiryBinding.sessionHash]);
+ assert.equal(await adminAuthorized(expiryRequest),false,'expired QR-issued session cannot authorize admin');
+ assert.equal(await activeSessionOwnerId(expiryRequest),null,'expired QR-issued session cannot authorize owner');
  // Concurrent redemption from independent desktop requests must yield exactly one session.
  const racingQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(racingQr.requestToken,'owner-test-key-b'),true);
