@@ -8,7 +8,7 @@ assert.match(session,/u.status='active' AND u.role='owner'/);
 assert.doesNotMatch(session.slice(session.indexOf('export async function activeSessionOwnerId')),/localAdminAccess/);
 assert.match(staff,/activeSessionOwnerId\(request\)/);
 assert.match(staff,/isTrustedAdminOrigin\(request\)/);
-assert.match(staff,/action!=='block'&&action!=='create'/);
+assert.match(staff,/action!=='block'&&action!=='create'&&action!=='invite'/);
 assert.match(staff,/INSERT INTO skp_admin_users/);
 assert.match(staff,/user_created/);
 assert.match(staff,/ownerId===userId/);
