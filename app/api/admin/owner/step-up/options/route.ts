@@ -18,8 +18,14 @@ export async function POST(request:Request){
   if(!binding)return Response.json({error:'Forbidden'},{status:403,headers});
   if(!await allowNewAdminQrRequest())
    return Response.json({error:'Rate limited'},{status:429,headers});
-  const body=await request.json().catch(()=>null) as {action?:unknown}|null;
-  const action=body?.action;
+  if(request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')
+   return Response.json({error:'Unsupported content type'},{status:415,headers});
+  const raw=await request.text();
+  if(raw.length>1024)return Response.json({error:'Invalid request'},{status:400,headers});
+  let body:unknown;
+  try{body=JSON.parse(raw)}catch{return Response.json({error:'Invalid request'},{status:400,headers})}
+  if(!body||typeof body!=='object'||Array.isArray(body))return Response.json({error:'Invalid request'},{status:400,headers});
+  const {action} = body as Record<string,unknown>;
   if(action!=='owner-passkey-enroll'&&action!=='owner-passkey-revoke')return Response.json({error:'Invalid action'},{status:400,headers});
   const {rpID}=adminWebAuthnConfig(request.headers.get('origin')||'');
   const {challenge,expiresAt}=await issueWebAuthnChallenge('authenticate',ownerStepUpContext(binding.ownerId,binding.sessionHash,action as OwnerStepUpAction));
