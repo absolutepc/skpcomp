@@ -24,7 +24,7 @@ export async function consumeInvitationForVerifiedPasskey(
    SELECT i.id,i.user_id FROM skp_admin_employee_invites i
    JOIN skp_admin_users u ON u.id=i.user_id
    WHERE i.token_hash=? AND i.consumed_at IS NULL AND i.revoked_at IS NULL
-    AND i.expires_at>now() AND u.status='active' AND u.role='admin'
+    AND i.expires_at>now() AND u.status='active' AND u.role IN ('owner','admin')
  ), consumed AS (
    UPDATE skp_admin_employee_invites i SET consumed_at=now()
    FROM eligible e WHERE i.id=e.id AND i.consumed_at IS NULL
