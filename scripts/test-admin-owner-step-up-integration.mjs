@@ -47,5 +47,8 @@ try{
  assert.ok(expired);
  await pool.query("UPDATE skp_admin_owner_step_up_grants SET expires_at=now()-interval '1 second' WHERE grant_hash IN (SELECT grant_hash FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1 AND consumed_at IS NULL)",[owner.id]);
  assert.equal(await adminTransaction(()=>consumeSessionOwnerStepUpGrantInTransaction(requestA,action)),false,'expired grant must fail');
+ await pool.query('DELETE FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1',[owner.id]);
+ await pool.query('DELETE FROM skp_admin_sessions_v2 WHERE user_id=$1',[owner.id]);
+ await pool.query('DELETE FROM skp_admin_users WHERE id=$1',[owner.id]);
  console.log('Owner step-up PostgreSQL: session/action scope, atomic concurrency, replay, rollback and expiry passed.');
 }finally{await pool.end()}
