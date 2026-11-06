@@ -5,7 +5,7 @@ const auth=read('lib/admin-authorization.ts');
 assert.match(auth,/adminAuthorized\(request\)/);
 assert.match(auth,/skp-session:/);
 assert.match(auth,/isPostgres\(\)/);
-for(const path of ['app/api/store/route.ts','app/api/reviews/route.ts']){
+for(const path of ['app/api/store/route.ts','app/api/reviews/route.ts','app/api/orders/route.ts','app/api/media/blob-upload/route.ts']){
  const src=read(path);
  assert.match(src,/isAuthorizedAdmin/);
  assert.doesNotMatch(src,/localAdminAccess/);
