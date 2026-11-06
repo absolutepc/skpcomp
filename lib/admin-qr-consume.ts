@@ -16,8 +16,13 @@ export async function consumeApprovedQr(requestToken:string,desktopSecret:string
  SET status='consumed',consumed_at=now()
  WHERE request_hash=? AND desktop_secret_hash=?
  AND status='approved' AND expires_at>now()
- AND approved_credential_id IN (
-   SELECT credential_id FROM skp_admin_passkeys WHERE revoked_at IS NULL
+ AND approved_user_id IS NOT NULL
+ AND EXISTS (
+   SELECT 1 FROM skp_admin_passkeys p
+   JOIN skp_admin_users u ON u.id=p.user_id
+   WHERE p.credential_id=skp_admin_qr_requests.approved_credential_id
+    AND u.id=skp_admin_qr_requests.approved_user_id
+    AND p.revoked_at IS NULL AND u.status='active'
  )
  RETURNING request_hash`)
   .bind(requestHash,secretHash).first<{request_hash:string}>();
