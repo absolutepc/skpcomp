@@ -1,5 +1,6 @@
 import {hasRecentOwnerStepUpGrant} from '../../../../../../lib/admin-owner-step-up-grants';
-import {activeSessionOwnerId} from '../../../../../../lib/vercel-admin-session';
+import {activeOwnerSessionBinding} from '../../../../../../lib/vercel-admin-session';
+import {ownerBackupChallengeContext} from '../../../../../../lib/admin-owner-backup-registration';
 import {isTrustedAdminOrigin,adminWebAuthnConfig} from '../../../../../../lib/admin-passkey-config';
 import {allowNewAdminQrRequest} from '../../../../../../lib/admin-qr-rate-limit';
 import {issueWebAuthnChallenge} from '../../../../../../lib/admin-webauthn-challenges';
@@ -15,14 +16,13 @@ const headers={'Cache-Control':'no-store, private','X-Content-Type-Options':'nos
 export async function POST(request:Request){
  if(process.env.SKP_ADMIN_OWNER_BACKUP_ENROLLMENT!=='staging')return Response.json({error:'Not enabled'},{status:404,headers});
  if(!isTrustedAdminOrigin(request))return Response.json({error:'Forbidden'},{status:403,headers});
- if(!await activeSessionOwnerId(request))return Response.json({error:'Forbidden'},{status:403,headers});
+ const binding=await activeOwnerSessionBinding(request);
+ if(!binding)return Response.json({error:'Forbidden'},{status:403,headers});
  if(!await hasRecentOwnerStepUpGrant(request,'owner-passkey-enroll'))return Response.json({error:'Fresh owner verification required'},{status:403,headers});
  if(!await allowNewAdminQrRequest())return Response.json({error:'Rate limited'},{status:429,headers});
  try{
-  const ownerId=await activeSessionOwnerId(request);
-  if(!ownerId)return Response.json({error:'Forbidden'},{status:403,headers});
   const {rpID}=adminWebAuthnConfig(request.headers.get('origin')||'');
-  const {challenge,expiresAt}=await issueWebAuthnChallenge('register','owner-backup:'+ownerId);
+  const {challenge,expiresAt}=await issueWebAuthnChallenge('register',ownerBackupChallengeContext(binding.ownerId,binding.sessionHash));
   return Response.json({challenge,expiresAt,rpID,userVerification:'required'},{headers});
  }catch{return Response.json({error:'Unavailable'},{status:503,headers})}
 }
