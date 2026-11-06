@@ -32,7 +32,7 @@ export async function verifyAdminPasskeyAssertion(input:{
   requireUserVerification:true,
   credential:{
    id:stored.credential_id,
-   publicKey:stored.public_key,
+   publicKey:Uint8Array.from(stored.public_key),
    counter:stored.counter,
    transports:stored.transports as ('usb'|'nfc'|'ble'|'internal'|'hybrid')[],
   },
