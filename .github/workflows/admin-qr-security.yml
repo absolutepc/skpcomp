@@ -7,6 +7,7 @@ on:
     paths:
       - 'lib/admin-*.ts'
       - 'app/api/admin/staff/**'
+      - 'app/admin/staff/**'
       - 'app/api/store/route.ts'
       - 'app/admin-qr-login.tsx'
       - 'app/shop.tsx'
@@ -25,6 +26,7 @@ on:
       - 'pnpm-lock.yaml'
       - 'lib/admin-*.ts'
       - 'app/api/admin/staff/**'
+      - 'app/admin/staff/**'
       - 'app/api/store/route.ts'
       - 'lib/vercel-admin-session.ts'
       - 'db/admin-passkey-schema.sql'
