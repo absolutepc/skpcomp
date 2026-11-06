@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../lib/admin-passkey-credentials.ts',import.meta.url),'utf8');
-assert.match(source,/WHERE credential_id=\? AND revoked_at IS NULL/);
+assert.match(source,/WHERE p.credential_id=\? AND p.revoked_at IS NULL AND u.status='active'/);
+assert.match(source,/JOIN skp_admin_users u ON u.id=p.user_id/);
 assert.match(source,/public_key:Uint8Array/);
 assert.match(source,/Number\.isSafeInteger\(counter\)/);
 assert.match(source,/Number\.isSafeInteger\(nextCounter\)/);
 assert.match(source,/nextCounter<=previousCounter/);
 assert.match(source,/nextCounter===0 && previousCounter!==0/);
-assert.match(source,/WHERE credential_id=\? AND counter=\? AND revoked_at IS NULL/);
+assert.match(source,/WHERE p.credential_id=\? AND p.counter=\? AND p.revoked_at IS NULL/);
+assert.match(source,/u.id=p.user_id AND u.status='active'/);
 assert.match(source,/RETURNING credential_id/);
 assert.doesNotMatch(source,/Set-Cookie|issueAdminSession|adminCookie/);
-console.log('Passkey credential storage static checks passed; signature verification is not implemented.');
+console.log('Passkey credential storage static checks passed; blocked and unassigned credentials are rejected.');
