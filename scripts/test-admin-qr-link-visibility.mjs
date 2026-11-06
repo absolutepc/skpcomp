@@ -15,6 +15,7 @@ assert.doesNotMatch(source,/api\.qrserver\.com|chart\.googleapis\.com/);
 assert.match(source,/if\(creating\.current\)return/);
 assert.match(source,/creating\.current=true/);
 assert.match(source,/creating\.current=false;setBusy\(false\)/);
+assert.match(source,/setRequest\(null\);setStatus\('pending'\);\s*\/\/ A new QR request must never show the previous request's image or link\.\s*setQrDataUrl\(''\);setQrError\(''\);/);
 assert.match(source,/requestGeneration=useRef\(0\)/);
 assert.match(source,/generation===requestGeneration\.current/);
 assert.match(source,/session\.authenticated!==true/);
