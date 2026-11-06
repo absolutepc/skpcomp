@@ -30,14 +30,16 @@ assert.equal(getProductImages(updateProductGallery(first,Array.from({length:40},
 // Exercise the browser conversion helper with mock canvas codecs. Safari can
 // silently encode PNG even when image/webp was requested.
 const uploadSource=readFileSync(new URL('../app/admin-product-media.tsx',import.meta.url),'utf8');
+const transportSource=readFileSync(new URL('../lib/upload-skp-image.ts',import.meta.url),'utf8');
+assert.match(uploadSource,/uploadSkpImage/);
 // Safari multipart requests must never include the original non-ASCII filename.
-assert.match(uploadSource,/data\.append\('file',image,'skp-product-image\.'\+extension\)/,
+assert.match(transportSource,/data\.append\('file',image,'skp-image\.'\+extension\)/,
  'Uploads use an ASCII-only filename; original filenames can contain Cyrillic or ™');
-assert.doesNotMatch(uploadSource,/data\.append\('file',image,file\.name/,
+assert.doesNotMatch(transportSource,/data\.append\('file',image,file\.name/,
  'Original non-ASCII names must not be passed into multipart FormData');
-assert.match(uploadSource,/contentType\.includes\('application\/json'\)/,
+assert.match(transportSource,/contentType\.includes\('application\/json'\)/,
  'Parse an API response as JSON only when its MIME type is JSON');
-assert.match(uploadSource,/response\.status===404/,
+assert.match(transportSource,/response\.status/,
  'Show real HTTP upload errors instead of the generic Safari SyntaxError');
 const prepareStart=uploadSource.indexOf('async function transparentImage(');
 const prepareEnd=uploadSource.indexOf('export default function AdminProductMedia',prepareStart);
@@ -66,7 +68,7 @@ await assert.rejects(
  ()=>testCanvas(()=>({type:'image/png',size:1000}),255)({type:'image/png',size:1024}),
  /непрозрачный фон/,'Opaque product photos are still rejected'
 );
-const mediaRoute=readFileSync(new URL('../app/api/media/route.ts',import.meta.url),'utf8');
+const mediaRoute=readFileSync(new URL('../app/api/media/cloudflare-handler.ts',import.meta.url),'utf8');
 assert.match(mediaRoute,/\(\?:webp\|png\)/,'Media API allows both PNG and WebP keys');
 assert.match(mediaRoute,/file\.type!==mime/,'Media API checks MIME against PNG or WebP magic bytes');
 assert.match(mediaRoute,/key\.endsWith\('\.png'\)/,'PNG response carries the right MIME');

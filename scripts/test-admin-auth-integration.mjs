@@ -78,6 +78,25 @@ assert.equal((await consumeRoute(post('/api/admin/qr/consume',flow))).status,409
 const {GET:staffGet,POST:staffPost}=await import('../app/api/admin/staff/route.ts');
 assert.equal((await staffGet(authenticated)).status,403);
 assert.equal((await staffPost(post('/api/admin/staff',{action:'create',displayName:'Forbidden'},{cookie:cookie.split(';')[0]}))).status,403);
+// Browser-equivalent `fmt:none` WebAuthn attestation through onboarding HTTP routes.
+const {POST:inviteOptions}=await import('../app/api/admin/invite/options/route.ts');
+const {POST:inviteComplete}=await import('../app/api/admin/invite/complete/route.ts');
+const {rows:[registrationUser]}=await db.query("INSERT INTO skp_admin_users(display_name,role) VALUES ('Registered','admin') RETURNING id");
+const registrationInvite=await issueEmployeeInvitation(owner.id,registrationUser.id);
+const registrationOptions=await (await inviteOptions(post('/api/admin/invite/options',{inviteToken:registrationInvite}))).json();
+function cbor(value){
+ const head=(major,length)=>length<24?Buffer.from([major*32+length]):length<256?Buffer.from([major*32+24,length]):Buffer.from([major*32+25,length>>8,length&255]);
+ if(Buffer.isBuffer(value))return Buffer.concat([head(2,value.length),value]);
+ if(typeof value==='string'){const bytes=Buffer.from(value);return Buffer.concat([head(3,bytes.length),bytes])}
+ const entries=Object.entries(value);return Buffer.concat([head(5,entries.length),...entries.flatMap(([k,v])=>[cbor(k),cbor(v)])]);
+}
+const registrationId=randomBytes(32);
+const registrationAuth=Buffer.concat([createHash('sha256').update('skpcomp.vercel.app').digest(),Buffer.from([0x45,0,0,0,0]),Buffer.alloc(16),Buffer.from([0,32]),registrationId,cose]);
+const registration={id:registrationId.toString('base64url'),rawId:registrationId.toString('base64url'),type:'public-key',clientExtensionResults:{},response:{clientDataJSON:Buffer.from(JSON.stringify({type:'webauthn.create',challenge:Buffer.from(registrationOptions.challenge,'hex').toString('base64url'),origin})).toString('base64url'),attestationObject:cbor({fmt:'none',attStmt:{},authData:registrationAuth}).toString('base64url'),transports:['internal']}};
+const registrationBody={inviteToken:registrationInvite,challenge:registrationOptions.challenge,response:registration,deviceLabel:'Test authenticator'};
+assert.equal((await inviteComplete(post('/api/admin/invite/complete',registrationBody))).status,200);
+assert.equal((await inviteComplete(post('/api/admin/invite/complete',registrationBody))).status,403);
+assert.equal((await db.query('SELECT user_id FROM skp_admin_passkeys WHERE credential_id=$1',[registration.id])).rows[0].user_id,registrationUser.id);
 // A valid invitation can bind exactly one credential, even with simultaneous completions.
 const {rows:[onboard]}=await db.query("INSERT INTO skp_admin_users(display_name,role) VALUES ('Onboarding','admin') RETURNING id");
 const onboardingInvite=await issueEmployeeInvitation(owner.id,onboard.id);

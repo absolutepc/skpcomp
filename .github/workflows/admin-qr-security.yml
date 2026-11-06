@@ -146,6 +146,14 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: TypeScript check
         run: pnpm exec tsc --noEmit
+      - name: Store regression checks
+        run: |
+          pnpm test:configurator
+          pnpm test:fps
+          pnpm test:gallery
+          pnpm test:hero
+          pnpm test:orders
+          node scripts/test-local-admin.mjs
 
   vercel-build:
     runs-on: ubuntu-latest
