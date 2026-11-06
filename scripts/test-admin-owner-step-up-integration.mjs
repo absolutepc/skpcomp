@@ -11,13 +11,14 @@ process.env.SKP_DATABASE_PROVIDER='postgres';
 process.env.ADMIN_PASSWORD='owner-step-up-integration-only';
 const pool=new pg.Pool({connectionString:url.href});
 try{
- for(const file of ['admin-passkey-schema.sql','admin-roles-schema.sql','admin-owner-step-up-schema.sql'])
+ for(const file of ['admin-passkey-schema.sql','admin-roles-schema.sql','admin-owner-step-up-schema.sql','admin-owner-step-up-proof-schema.sql'])
   await pool.query(readFileSync(new URL('../db/'+file,import.meta.url),'utf8'));
  const {issueAdminSession}=await import('../lib/vercel-admin-session.ts');
  const {adminTransaction}=await import('../db/platform-store.ts');
  const {issueOwnerStepUpGrantAfterVerifiedAssertion,consumeSessionOwnerStepUpGrantInTransaction}=await import('../lib/admin-owner-step-up-grants.ts');
  const origin='https://skpcomp.vercel.app';
  const {rows:[owner]}=await pool.query("INSERT INTO skp_admin_users(display_name,role) VALUES ('Owner step-up integration','owner') RETURNING id");
+ await pool.query("INSERT INTO skp_admin_passkeys(credential_id,public_key,user_id) VALUES ('owner-test-key-a',decode('01020304050607080910111213141516','hex'),$1)",[owner.id]);
  const base=new Request(origin);
  const cookieA=await issueAdminSession(base,owner.id);
  const cookieB=await issueAdminSession(base,owner.id);
@@ -47,7 +48,7 @@ try{
  assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(stepUpChallenge.challenge,'authenticate',contextA)),true,'original session can consume owner challenge');
  assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(stepUpChallenge.challenge,'authenticate',contextA)),false,'owner challenge replay denied');
  const action='owner-passkey-enroll';
- const grant=await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,action);
+ const grant=await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,action,'owner-test-key-a');
  assert.match(grant,/^[a-f0-9]{64}$/);
  assert.equal(await adminTransaction(()=>consumeSessionOwnerStepUpGrantInTransaction(requestB,action)),false,'grant must not cross sessions');
  assert.equal(await adminTransaction(()=>consumeSessionOwnerStepUpGrantInTransaction(requestA,'owner-passkey-revoke')),false,'grant must not cross actions');
@@ -59,20 +60,20 @@ try{
  assert.deepEqual(concurrent.sort(),[false,true],'single-use grant must be atomic');
  assert.equal(await adminTransaction(()=>consumeSessionOwnerStepUpGrantInTransaction(requestA,action)),false,'replay must fail');
  // Failed privileged mutation must restore the grant through rollback.
- const rollbackGrant=await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,action);
+ const rollbackGrant=await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,action,'owner-test-key-a');
  assert.ok(rollbackGrant);
  await assert.rejects(adminTransaction(async()=>{
   assert.equal(await consumeSessionOwnerStepUpGrantInTransaction(requestA,action),true);
   throw new Error('simulate failed credential insertion');
  }),/simulate failed credential insertion/);
  assert.equal(await adminTransaction(()=>consumeSessionOwnerStepUpGrantInTransaction(requestA,action)),true,'rollback restores grant');
- const expired=await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,action);
+ const expired=await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,action,'owner-test-key-a');
  assert.ok(expired);
  await pool.query("UPDATE skp_admin_owner_step_up_grants SET created_at=now()-interval '5 minutes', expires_at=now()-interval '1 second' WHERE grant_hash IN (SELECT grant_hash FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1 AND consumed_at IS NULL)",[owner.id]);
  assert.equal(await adminTransaction(()=>consumeSessionOwnerStepUpGrantInTransaction(requestA,action)),false,'expired grant must fail');
  // Revocation is atomic and must never remove the last usable owner credential.
  const {revokeOwnerPasskey}=await import('../lib/admin-owner-passkey-revocation.ts');
- const {rows:[keyA]}=await pool.query("INSERT INTO skp_admin_passkeys(credential_id,public_key,user_id,device_label) VALUES ('owner-test-key-a',decode('01020304050607080910111213141516','hex'),$1,'Primary') RETURNING md5(credential_id) AS fingerprint",[owner.id]);
+ const {rows:[keyA]}=await pool.query("INSERT INTO skp_admin_passkeys(credential_id,public_key,user_id,device_label) VALUES ('owner-test-key-a',decode('01020304050607080910111213141516','hex'),$1,'Primary') ON CONFLICT (credential_id) DO UPDATE SET device_label=excluded.device_label RETURNING md5(credential_id) AS fingerprint",[owner.id]);
  const {rows:[keyB]}=await pool.query("INSERT INTO skp_admin_passkeys(credential_id,public_key,user_id,device_label) VALUES ('owner-test-key-b',decode('01020304050607080910111213141516','hex'),$1,'Backup') RETURNING md5(credential_id) AS fingerprint",[owner.id]);
  // This exercises the post-verification QR approval/redemption path with the backup
  // credential. It does NOT simulate or replace a cryptographic WebAuthn assertion.
@@ -161,20 +162,27 @@ try{
  const revokedQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(revokedQr.requestToken,'owner-test-key-b'),true);
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'revocation requires a fresh action-specific grant');
- await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,'owner-passkey-revoke');
+ await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,'owner-passkey-revoke','owner-test-key-b');
+ assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'must prove a different surviving key');
+ await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,'owner-passkey-revoke','owner-test-key-a');
  assert.equal(await revokeOwnerPasskey(requestB,keyB.fingerprint),false,'another owner session cannot revoke');
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),true,'verified owner may revoke backup');
+ assert.equal(await adminAuthorized(requestA),false,'revocation invalidates the current owner session');
+ assert.equal(await adminAuthorized(requestB),false,'revocation invalidates other owner sessions');
  assert.equal(await consumeApprovedQr(revokedQr.requestToken,revokedQr.desktopSecret),null,'revoked backup credential cannot redeem even previously approved QR');
  assert.equal(await redeemQrSession(freshDesktop,revokedQr.requestToken,revokedQr.desktopSecret),null,'revoked backup credential cannot issue a desktop session from a previously approved QR');
  const afterRevokeQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(afterRevokeQr.requestToken,'owner-test-key-b'),false,'revoked backup credential cannot approve a new QR');
  assert.equal(await consumeApprovedQr(afterRevokeQr.requestToken,afterRevokeQr.desktopSecret),null,'unapproved QR cannot create a session');
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'revocation replay must fail');
- await issueOwnerStepUpGrantAfterVerifiedAssertion(requestA,'owner-passkey-revoke');
- assert.equal(await revokeOwnerPasskey(requestA,keyA.fingerprint),false,'last active owner key must be protected');
+ const remainingCookie=await issueAdminSession(base,owner.id);
+ const remainingRequest=new Request(origin,{headers:{cookie:remainingCookie.split(';')[0]}});
+ await issueOwnerStepUpGrantAfterVerifiedAssertion(remainingRequest,'owner-passkey-revoke','owner-test-key-a');
+ assert.equal(await revokeOwnerPasskey(remainingRequest,keyA.fingerprint),false,'last active owner key must be protected');
  const {rows:[state]}=await pool.query("SELECT count(*) FILTER(WHERE revoked_at IS NULL)::int AS active,count(*) FILTER(WHERE revoked_at IS NOT NULL)::int AS revoked FROM skp_admin_passkeys WHERE user_id=$1",[owner.id]);
  assert.equal(state.active,1);assert.equal(state.revoked,1);
  await pool.query("DELETE FROM skp_admin_qr_requests WHERE approved_credential_id IN ('owner-test-key-a','owner-test-key-b')");
+ await pool.query('DELETE FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1',[owner.id]);
  await pool.query('DELETE FROM skp_admin_passkeys WHERE user_id=$1',[owner.id]);
  await pool.query('DELETE FROM skp_admin_webauthn_challenges WHERE request_id IN ($1,$2)',[contextA,backupContextA]);
  await pool.query('DELETE FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1',[owner.id]);

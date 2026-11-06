@@ -65,7 +65,7 @@ test('owner UI requests matching WebAuthn action for each privileged operation',
  const revoke=page.slice(page.indexOf('async function revoke('),page.indexOf('async function addBackup('));
  const enroll=page.slice(page.indexOf('async function addBackup('),page.indexOf('useEffect(()=>'));
  for(const [source,action] of [[revoke,'owner-passkey-revoke'],[enroll,'owner-passkey-enroll']]){
-  assert.ok(source.includes("post('/api/admin/owner/step-up/options',{action:'"+action+"'})"));
+  assert.ok(source.includes("post('/api/admin/owner/step-up/options',{action:'"+action+"'"));
   assert.ok(source.includes("post('/api/admin/owner/step-up/complete',{action:'"+action+"'"));
  }
 });
@@ -77,7 +77,7 @@ test('owner revocation preserves last credential and rejects ambiguous fingerpri
  assert.match(source,/keys\.filter\(key=>key\.fingerprint===credentialFingerprint\)\.length!==1/);
  assert.match(source,/updated\.results\.length!==1/);
  assert.match(source,/await adminTransaction\(async\(\)=>\{/);
- assert.match(source,/consumeSessionOwnerStepUpGrantInTransaction\(request,'owner-passkey-revoke'\)/);
+ assert.match(source,/consumeSessionOwnerStepUpGrantInTransaction\(request,'owner-passkey-revoke',credentialFingerprint\)/);
 });
 
 test('owner step-up challenge API rejects non-JSON and oversized requests',()=>{
@@ -88,7 +88,7 @@ test('owner step-up challenge API rejects non-JSON and oversized requests',()=>{
  assert.match(source,/Array\.isArray\(body\)/);
 });
 
-test('owner backup routes stay disabled outside isolated staging',()=>{
+test('owner backup routes require an explicit origin-specific mode',()=>{
  const routes=[
   'app/api/admin/owner/step-up/options/route.ts',
   'app/api/admin/owner/step-up/complete/route.ts',
@@ -98,7 +98,7 @@ test('owner backup routes stay disabled outside isolated staging',()=>{
  ];
  for(const path of routes){
   const source=readFileSync(new URL('../'+path,import.meta.url),'utf8');
-  assert.match(source,/isIsolatedOwnerBackupRequest\(request\)/,path);
+  assert.match(source,/isOwnerBackupRequest\(request\)/,path);
   assert.match(source,/status:404/,path);
   assert.match(source,/isTrustedAdminOrigin\(request\)/,path);
  }
