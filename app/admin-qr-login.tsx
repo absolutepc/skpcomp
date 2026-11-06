@@ -16,7 +16,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
    const response=await fetch('/api/admin/qr/create',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',cache:'no-store',credentials:'same-origin'});
    if(!response.ok)throw Error(response.status===429?'Слишком много запросов. Попробуйте позже.':'Не удалось создать запрос входа.');
    const value=await response.json() as QrRequest;
-   if(!/^[a-f0-9]{64}$/.test(value.requestToken)||!/^[a-f0-9]{64}$/.test(value.desktopSecret)||!value.approvalUrl.startsWith('https://'))throw Error('Некорректный ответ сервера.');
+   if(!/^[a-f0-9]{64}$/.test(value.requestToken)||!/^[a-f0-9]{64}$/.test(value.desktopSecret)||!Number.isFinite(value.expiresAt)||value.expiresAt*1000<=Date.now()||!value.approvalUrl.startsWith('https://skpcomp.vercel.app/admin/qr/approve?'))throw Error('Некорректный ответ сервера.');
    setRequest(value);
   }catch(e){setError(e instanceof Error?e.message:'Ошибка соединения');}
   finally{setBusy(false);}
@@ -24,8 +24,11 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
  useEffect(()=>{
   if(!request)return;
   let active=true,working=false,finished=false,terminal=false;
+  // The server uses epoch seconds. Never poll or consume after expiry.
+  const expiresAtMs=request.expiresAt*1000;
   const poll=async()=>{
    if(!active||working||finished||terminal)return;
+   if(Date.now()>=expiresAtMs){terminal=true;setStatus('expired');return;}
    working=true;
    try{
     const response=await fetch('/api/admin/qr/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:request.requestToken,desktopSecret:request.desktopSecret}),cache:'no-store',credentials:'same-origin'});
