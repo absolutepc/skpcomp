@@ -9,6 +9,7 @@ on:
       - 'app/api/store/route.ts'
       - 'app/admin-qr-login.tsx'
       - 'app/admin/qr/approve/page.tsx'
+      - 'app/admin/passkey/enroll/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'lib/vercel-admin-session.ts'
@@ -75,6 +76,8 @@ jobs:
         run: node scripts/test-admin-passkey-enrollment-context.mjs
       - name: Check Passkey enrollment API routes
         run: node scripts/test-admin-passkey-enroll-routes.mjs
+      - name: Check iPhone Passkey enrollment page
+        run: node scripts/test-admin-passkey-enroll-page.mjs
       - name: Check Passkey credential storage
         run: node scripts/test-admin-passkey-credentials.mjs
       - name: Check WebAuthn challenge handling
