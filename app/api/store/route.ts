@@ -150,7 +150,9 @@ export async function GET(){
   heroSlideOrderVersion:HERO_SLIDE_ORDER_VERSION},{headers:{'Cache-Control':'no-store'}});
 }
 export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});const b=await r.json() as any;
-if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,await token(),28800)}})}
+if(b.action==='login'){
+ if(process.env.SKP_ADMIN_REQUIRE_PASSKEY==='true')return Response.json({error:'Вход по паролю отключён. Используйте SKP Admin Key.'},{status:403,headers:{'Cache-Control':'no-store'}});
+ if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,await token(),28800)}})}
 if(b.action==='logout'){
  // Revoke database-backed QR sessions before clearing the browser cookie.
  // Do not report success if revocation fails: the stolen token would remain valid.
