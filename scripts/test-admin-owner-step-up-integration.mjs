@@ -115,6 +115,12 @@ try{
  assert.equal(await adminAuthorized(freshAuthenticated),true,'new session is authorized without existing owner cookie');
  assert.equal(await activeSessionOwnerId(freshAuthenticated),owner.id,'new QR session resolves to correct owner');
  assert.equal(await redeemQrSession(freshDesktop,loginQr.requestToken,loginQr.desktopSecret),null,'QR cannot issue a second session');
+ // Signing out invalidates the freshly issued QR session in the database.
+ const {revokeAdminSession}=await import('../lib/vercel-admin-session.ts');
+ const logoutCookie=await revokeAdminSession(freshAuthenticated);
+ assert.ok(logoutCookie.includes('skp_admin='),'logout clears the admin cookie');
+ assert.equal(await adminAuthorized(freshAuthenticated),false,'logout revokes the QR-issued session server-side');
+ assert.equal(await activeSessionOwnerId(freshAuthenticated),null,'logged-out QR session has no owner privileges');
  // Concurrent redemption from independent desktop requests must yield exactly one session.
  const racingQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(racingQr.requestToken,'owner-test-key-b'),true);
