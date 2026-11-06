@@ -55,3 +55,43 @@ export async function consumeOwnerStepUpGrantInTransaction(
  .first<{grant_hash:string}>();
  return !!row;
 }
+
+/** The grant is a server-side authorization record, not a browser bearer token.
+ * Only a currently authenticated owner in the SAME session can use it.
+ */
+export async function hasRecentOwnerStepUpGrant(request:Request,action:OwnerStepUpAction):Promise<boolean>{
+ if(!isPostgres()||!actions.includes(action))return false;
+ const binding=await activeOwnerSessionBinding(request);
+ if(!binding)return false;
+ const {DB}=await storeEnv();
+ const row=await DB.prepare(`SELECT 1 AS valid FROM skp_admin_owner_step_up_grants
+ WHERE owner_user_id=?::uuid AND session_token_hash=? AND action=?
+ AND consumed_at IS NULL AND expires_at>now() LIMIT 1`)
+ .bind(binding.ownerId,binding.sessionHash,action).first();
+ return !!row;
+}
+
+/** Must be invoked within the transaction that inserts or revokes a key.
+ * Consume exactly one grant; concurrent attempts cannot reuse the same row.
+ */
+export async function consumeSessionOwnerStepUpGrantInTransaction(
+ request:Request,action:OwnerStepUpAction
+):Promise<boolean>{
+ if(!isPostgres()||!actions.includes(action))return false;
+ const binding=await activeOwnerSessionBinding(request);
+ if(!binding)return false;
+ const {DB}=await storeEnv();
+ const row=await DB.prepare(`UPDATE skp_admin_owner_step_up_grants
+ SET consumed_at=now()
+ WHERE grant_hash=(
+  SELECT grant_hash FROM skp_admin_owner_step_up_grants
+  WHERE owner_user_id=?::uuid AND session_token_hash=? AND action=?
+   AND consumed_at IS NULL AND expires_at>now()
+  ORDER BY created_at DESC,grant_hash DESC LIMIT 1 FOR UPDATE
+ )
+ AND consumed_at IS NULL AND expires_at>now()
+ RETURNING grant_hash`)
+ .bind(binding.ownerId,binding.sessionHash,action)
+ .first<{grant_hash:string}>();
+ return !!row;
+}
