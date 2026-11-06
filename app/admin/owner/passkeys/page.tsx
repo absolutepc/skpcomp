@@ -21,7 +21,7 @@ export default function OwnerPasskeysPage(){
   if(busy||activeCount<2)return;
   setBusy(true);setNotice('Подтвердите действующий Passkey для отзыва выбранного ключа.');
   try{
-   const step=await post('/api/admin/owner/step-up/options',{action:'owner-passkey-enroll'}) as Challenge;valid(step);
+   const step=await post('/api/admin/owner/step-up/options',{action:'owner-passkey-revoke'}) as Challenge;valid(step);
    const proof=await navigator.credentials.get({publicKey:{challenge:bytes(step.challenge),rpId:step.rpID,userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
    if(!proof)throw Error('Подтверждение отменено.');
    const a=proof.response as AuthenticatorAssertionResponse;
@@ -40,7 +40,7 @@ export default function OwnerPasskeysPage(){
   if(!window.isSecureContext||!navigator.credentials?.get||!navigator.credentials?.create){setNotice('Требуется HTTPS и браузер с поддержкой Passkey.');return;}
   setBusy(true);setNotice('Подтвердите действующий Passkey владельца.');
   try{
-   const step=await post('/api/admin/owner/step-up/options',{action:'owner-passkey-revoke'}) as Challenge;valid(step);
+   const step=await post('/api/admin/owner/step-up/options',{action:'owner-passkey-enroll'}) as Challenge;valid(step);
    const proof=await navigator.credentials.get({publicKey:{challenge:bytes(step.challenge),rpId:step.rpID,userVerification:'required',timeout:60000}}) as PublicKeyCredential|null;
    if(!proof)throw Error('Подтверждение отменено.');
    const a=proof.response as AuthenticatorAssertionResponse;
