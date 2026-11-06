@@ -7,7 +7,7 @@ import {qrChallengeHash} from './admin-qr-challenge';
  * the QR request has been explicitly approved.
  * A successful result is NOT itself an admin session.
  */
-export async function consumeApprovedQr(requestToken:string,desktopSecret:string):Promise<boolean>{
+export async function consumeApprovedQr(requestToken:string,desktopSecret:string):Promise<string|null>{
  if(!isPostgres())throw new Error('PostgreSQL required');
  const requestHash=await qrChallengeHash(requestToken);
  const secretHash=await qrChallengeHash(desktopSecret);
@@ -26,5 +26,5 @@ export async function consumeApprovedQr(requestToken:string,desktopSecret:string
  )
  RETURNING approved_user_id`)
   .bind(requestHash,secretHash).first<{approved_user_id:string}>();
- return !!consumed;
+ return consumed?.approved_user_id??null;
 }
