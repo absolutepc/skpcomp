@@ -140,6 +140,7 @@ try{
  assert.equal(await revokeOwnerPasskey(requestB,keyB.fingerprint),false,'another owner session cannot revoke');
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),true,'verified owner may revoke backup');
  assert.equal(await consumeApprovedQr(revokedQr.requestToken,revokedQr.desktopSecret),null,'revoked backup credential cannot redeem even previously approved QR');
+ assert.equal(await redeemQrSession(freshDesktop,revokedQr.requestToken,revokedQr.desktopSecret),null,'revoked backup credential cannot issue a desktop session from a previously approved QR');
  const afterRevokeQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(afterRevokeQr.requestToken,'owner-test-key-b'),false,'revoked backup credential cannot approve a new QR');
  assert.equal(await consumeApprovedQr(afterRevokeQr.requestToken,afterRevokeQr.desktopSecret),null,'unapproved QR cannot create a session');
