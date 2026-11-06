@@ -96,6 +96,7 @@ try{
  assert.equal(await revokeOwnerPasskey(requestA,keyA.fingerprint),false,'last active owner key must be protected');
  const {rows:[state]}=await pool.query("SELECT count(*) FILTER(WHERE revoked_at IS NULL)::int AS active,count(*) FILTER(WHERE revoked_at IS NOT NULL)::int AS revoked FROM skp_admin_passkeys WHERE user_id=$1",[owner.id]);
  assert.equal(state.active,1);assert.equal(state.revoked,1);
+ await pool.query("DELETE FROM skp_admin_qr_requests WHERE approved_credential_id IN ('owner-test-key-a','owner-test-key-b')");
  await pool.query('DELETE FROM skp_admin_passkeys WHERE user_id=$1',[owner.id]);
  await pool.query('DELETE FROM skp_admin_webauthn_challenges WHERE request_id IN ($1,$2)',[contextA,backupContextA]);
  await pool.query('DELETE FROM skp_admin_owner_step_up_grants WHERE owner_user_id=$1',[owner.id]);
