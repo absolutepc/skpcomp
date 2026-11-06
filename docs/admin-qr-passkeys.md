@@ -56,3 +56,8 @@ Required manual acceptance tests on that isolated environment:
 7. Verify unsupported origins, mismatched RP IDs, wrong-session challenges, expired challenges, cancellation, and rate limiting.
 
 **Release gate:** no production merge, schema migration, environment toggle or password-login cutover until these tests pass and the owner explicitly approves deployment. A QR printed on a card is not a credential and must never independently grant access.
+
+
+### Staging environment acknowledgement
+
+The staging WebAuthn origin is enabled only when **all** of the following are set in the isolated deployment: `SKP_ADMIN_OWNER_BACKUP_ENROLLMENT=staging`, `SKP_ADMIN_STAGING_ORIGIN=https://<dedicated-host>`, `SKP_DATABASE_PROVIDER=postgres`, and `SKP_ADMIN_STAGING_DB_ISOLATED=confirmed`. The last setting is an explicit operator acknowledgement, **not** an automatic database-isolation check. Before setting it, verify that `DATABASE_URL` targets a dedicated test database and does not point to production Neon. Never copy production secrets or owner accounts into staging. Do not set these variables in the production Vercel environment.
