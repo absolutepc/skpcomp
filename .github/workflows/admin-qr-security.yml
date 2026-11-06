@@ -39,5 +39,7 @@ jobs:
         run: node scripts/test-admin-qr-url.mjs
       - name: Check QR persistence helpers
         run: node scripts/test-admin-qr-persistence.mjs
+      - name: Check Passkey credential storage
+        run: node scripts/test-admin-passkey-credentials.mjs
       - name: Check WebAuthn challenge handling
         run: node scripts/test-admin-webauthn-challenges.mjs
