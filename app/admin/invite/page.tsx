@@ -68,7 +68,7 @@ export default function InvitePage(){
      style={{padding:14,borderRadius:10,background:'#1c1c1c',border:'1px solid #555',color:'#fff'}}/>
    </label>
    <button type="button" disabled={busy||done} onClick={()=>void enroll()}
-    style={{background:'#ffd22e',color:'#111',padding:16,border:0,borderRadius:10,fontWeight:700,opacity:busy||done?.6:1}}>
+    style={{background:'#ffd22e',color:'#111',padding:16,border:0,borderRadius:10,fontWeight:700,opacity:(busy||done)?0.6:1}}>
     {done?'Устройство подключено':busy?'Подтверждаем…':'Создать Passkey'}
    </button>
    <p role="status" aria-live="polite">{message}</p>
