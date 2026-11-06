@@ -4,7 +4,10 @@ import {adminWebAuthnConfig} from './admin-passkey-config';
 import {consumeWebAuthnChallenge} from './admin-webauthn-challenges';
 import {findActiveAdminPasskey,advanceVerifiedPasskeyCounter} from './admin-passkey-credentials';
 import {adminTransaction,storeEnv} from '../db/platform-store';
-import {activeSessionOwnerId} from './vercel-admin-session';
+import {activeOwnerSessionBinding} from './vercel-admin-session';
+
+/** Bind each authentication challenge to the exact owner browser session. */
+export const ownerStepUpContext=(ownerId:string,sessionHash:string)=>'owner-step-up:'+ownerId+':'+sessionHash;
 
 /** Step-up proof must use an already registered credential owned by this
  * active owner. The one-time challenge is bound to the owner identity.
@@ -15,8 +18,9 @@ export async function verifyOwnerStepUp(input:{
 }):Promise<boolean>{
  if(!/^[a-f0-9]{64}$/.test(input.challenge)||!input.response||
   typeof input.response.id!=='string')return false;
- const ownerId=await activeSessionOwnerId(input.request);
- if(!ownerId)return false;
+ const binding=await activeOwnerSessionBinding(input.request);
+ if(!binding)return false;
+ const ownerId=binding.ownerId;
  const config=adminWebAuthnConfig(input.origin);
  const stored=await findActiveAdminPasskey(input.response.id);
  if(!stored)return false;
@@ -39,8 +43,9 @@ export async function verifyOwnerStepUp(input:{
  try{return await adminTransaction(async()=>{
   const owner=await DB.prepare("SELECT id FROM skp_admin_users WHERE id=?::uuid AND role='owner' AND status='active' FOR UPDATE")
    .bind(ownerId).first();
-  if(!owner||await activeSessionOwnerId(input.request)!==ownerId)throw new Error('Owner session invalid');
-  if(!await consumeWebAuthnChallenge(input.challenge,'authenticate','owner-step-up:'+ownerId))throw new Error('Step-up challenge invalid');
+  const current=await activeOwnerSessionBinding(input.request);
+  if(!owner||!current||current.ownerId!==ownerId||current.sessionHash!==binding.sessionHash)throw new Error('Owner session invalid');
+  if(!await consumeWebAuthnChallenge(input.challenge,'authenticate',ownerStepUpContext(ownerId,binding.sessionHash)))throw new Error('Step-up challenge invalid');
   if(!await advanceVerifiedPasskeyCounter(stored.credential_id,stored.counter,verification.authenticationInfo.newCounter))throw new Error('Passkey counter update failed');
   return true;
  });}catch{return false}
