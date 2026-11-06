@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const src=readFileSync(new URL('../app/api/admin/qr/create/route.ts',import.meta.url),'utf8');
 assert.match(src,/isTrustedAdminOrigin\(request\)/);
+assert.match(src,/allowNewAdminQrRequest/);
+assert.match(src,/status:429/);
 assert.match(src,/createPendingQr\(\)/);
 assert.match(src,/adminQrApprovalUrl\(requestToken\)/);
 assert.match(src,/desktopSecret,expiresAt/);
