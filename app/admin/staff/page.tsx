@@ -1,9 +1,11 @@
 'use client';
 import {useCallback,useEffect,useState} from 'react';
 
+type SecurityEvent={id:number;event_type:string;created_at:string;actor_name:string|null;target_name:string|null};
 type Employee={id:string;display_name:string;role:'owner'|'admin';status:'active'|'blocked';created_at:string};
 export default function StaffPage(){
  const [users,setUsers]=useState<Employee[]>([]);
+ const [events,setEvents]=useState<SecurityEvent[]>([]);
  const [name,setName]=useState('');
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState('');
@@ -12,8 +14,8 @@ export default function StaffPage(){
  const load=useCallback(async()=>{
   const response=await fetch('/api/admin/staff',{cache:'no-store',credentials:'same-origin'});
   if(!response.ok)throw new Error(response.status===403?'Доступ только для владельца.':'Не удалось получить список сотрудников.');
-  const data=await response.json() as {users:Employee[]};
-  setUsers(data.users);setReady(true);
+  const data=await response.json() as {users:Employee[];events:SecurityEvent[]};
+  setUsers(data.users);setEvents(data.events||[]);setReady(true);
  },[]);
  useEffect(()=>{void load().catch(e=>{setError(e instanceof Error?e.message:'Ошибка загрузки');setReady(true)})},[load]);
  async function act(payload:Record<string,string>){
@@ -59,6 +61,14 @@ export default function StaffPage(){
       onClick={()=>{if(window.confirm('Заблокировать сотрудника и отозвать все его сессии и Passkey?'))void act({action:'block',userId:user.id})}}
       style={{background:'transparent',color:'#ffaaaa',border:'1px solid #854444',borderRadius:8,padding:'10px 16px'}}>Заблокировать</button></div>}
     </article>)}
+   </section>
+   <section aria-label="Журнал безопасности" style={{marginTop:44}}>
+    <h2 style={{fontSize:24}}>Журнал безопасности</h2>
+    <p style={{color:'#aaa'}}>Последние 100 событий. Просмотр доступен только владельцу.</p>
+    <div style={{display:'grid',gap:8}}>{events.map(event=><div key={event.id} style={{border:'1px solid #292929',borderRadius:10,padding:14,display:'flex',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}>
+     <div><strong>{event.event_type}</strong><div style={{color:'#aaa',fontSize:13,marginTop:5}}>{event.actor_name||'Система'} → {event.target_name||'—'}</div></div>
+     <time style={{color:'#999',fontSize:13}} dateTime={event.created_at}>{new Date(event.created_at).toLocaleString('ru-RU')}</time>
+    </div>)}</div>
    </section>
   </div>
  </main>;
