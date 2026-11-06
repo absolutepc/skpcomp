@@ -30,9 +30,11 @@ try{
  const bindingA=await activeOwnerSessionBinding(requestA);
  const bindingB=await activeOwnerSessionBinding(requestB);
  assert.ok(bindingA&&bindingB&&bindingA.sessionHash!==bindingB.sessionHash);
- const contextA=ownerStepUpContext(bindingA.ownerId,bindingA.sessionHash);
- const contextB=ownerStepUpContext(bindingB.ownerId,bindingB.sessionHash);
+ const contextA=ownerStepUpContext(bindingA.ownerId,bindingA.sessionHash,'owner-passkey-enroll');
+ const contextB=ownerStepUpContext(bindingB.ownerId,bindingB.sessionHash,'owner-passkey-enroll');
+ const contextRevoke=ownerStepUpContext(bindingA.ownerId,bindingA.sessionHash,'owner-passkey-revoke');
  const stepUpChallenge=await issueWebAuthnChallenge('authenticate',contextA);
+ assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(stepUpChallenge.challenge,'authenticate',contextRevoke)),false,'challenge cannot authorize another action');
  assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(stepUpChallenge.challenge,'authenticate',contextB)),false,'other session cannot consume owner challenge');
  assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(stepUpChallenge.challenge,'authenticate',contextA)),true,'original session can consume owner challenge');
  assert.equal(await adminTransaction(()=>consumeWebAuthnChallenge(stepUpChallenge.challenge,'authenticate',contextA)),false,'owner challenge replay denied');
