@@ -84,6 +84,19 @@ try{
  assert.equal(await consumeApprovedQr(backupQr.requestToken,'0'.repeat(64)),null,'wrong desktop secret cannot redeem backup login');
  assert.equal(await consumeApprovedQr(backupQr.requestToken,backupQr.desktopSecret),owner.id,'approved backup credential redeems for owner');
  assert.equal(await consumeApprovedQr(backupQr.requestToken,backupQr.desktopSecret),null,'backup QR redemption is single-use');
+ // Full desktop redemption issues a fresh database-backed session, not merely a user ID.
+ const {redeemQrSession}=await import('../lib/admin-qr-session.ts');
+ const {adminAuthorized,activeSessionOwnerId}=await import('../lib/vercel-admin-session.ts');
+ const loginQr=await createPendingQr();
+ assert.equal(await markQrApprovedAfterVerification(loginQr.requestToken,'owner-test-key-b'),true);
+ const freshDesktop=new Request(origin,{headers:{origin}});
+ assert.equal(await redeemQrSession(freshDesktop,loginQr.requestToken,'0'.repeat(64)),null,'invalid desktop secret cannot create session');
+ const loginCookie=await redeemQrSession(freshDesktop,loginQr.requestToken,loginQr.desktopSecret);
+ assert.ok(loginCookie?.includes('skp_admin='),'successful backup QR redemption issues a cookie');
+ const freshAuthenticated=new Request(origin,{headers:{cookie:loginCookie.split(';')[0]}});
+ assert.equal(await adminAuthorized(freshAuthenticated),true,'new session is authorized without existing owner cookie');
+ assert.equal(await activeSessionOwnerId(freshAuthenticated),owner.id,'new QR session resolves to correct owner');
+ assert.equal(await redeemQrSession(freshDesktop,loginQr.requestToken,loginQr.desktopSecret),null,'QR cannot issue a second session');
  const revokedQr=await createPendingQr();
  assert.equal(await markQrApprovedAfterVerification(revokedQr.requestToken,'owner-test-key-b'),true);
  assert.equal(await revokeOwnerPasskey(requestA,keyB.fingerprint),false,'revocation requires a fresh action-specific grant');
