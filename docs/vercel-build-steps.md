@@ -8,7 +8,7 @@ Official Vinext instructions: https://github.com/cloudflare/vinext
 - Framework preset: Other
 - Root directory: ./
 - Build command (once the migration guard passes): `pnpm build:vercel`
-- Output directory: `.output`
+- Nitro writes Build Output API v3 to `.vercel/output`. Leave the static Output Directory override unset. The repository config sets the Other preset and runs `pnpm build:vercel`; that command checks the generated server function and Admin Key assets.
 - Install command: `pnpm install --frozen-lockfile`
 - Node version: 22 or newer, matching package.json
 - Configure preview builds from `vercel-deploy` before changing production branch.
