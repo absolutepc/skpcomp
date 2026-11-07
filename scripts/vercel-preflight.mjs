@@ -5,6 +5,7 @@
  * administration and lost or inaccessible product photos.
  * Run from the repository root: node scripts/vercel-preflight.mjs
  */
+import './admin-preview-db-guard.mjs';
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 

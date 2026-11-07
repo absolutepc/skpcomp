@@ -33,6 +33,8 @@ on:
       - 'app/admin/owner/**'
       - 'db/admin-employee-invites-schema.sql'
       - 'scripts/test-admin-*.mjs'
+      - 'scripts/admin-preview-db-guard.mjs'
+      - 'scripts/vercel-preflight.mjs'
       - 'scripts/bootstrap-admin-owner.mjs'
       - '.github/workflows/admin-qr-security.yml'
   pull_request:
@@ -61,6 +63,8 @@ on:
       - 'app/admin/owner/**'
       - 'db/admin-employee-invites-schema.sql'
       - 'scripts/test-admin-*.mjs'
+      - 'scripts/admin-preview-db-guard.mjs'
+      - 'scripts/vercel-preflight.mjs'
 
 permissions:
   contents: read
@@ -74,6 +78,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check Preview database endpoint before building
+        run: node --test scripts/test-admin-preview-db.mjs
       - name: Check QR challenge foundations
         run: node scripts/test-admin-passkey-foundation.mjs
       - name: Check admin sessions
