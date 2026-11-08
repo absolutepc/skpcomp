@@ -38,7 +38,11 @@ export default function ApproveQr(){
    if(options.expiresAt*1000<=Date.now())throw Error('Время подтверждения истекло во время Face ID. Создайте новый QR-запрос на компьютере.');
    // Only submit an assertion after the user has explicitly initiated approval.
    const result=await fetch('/api/admin/qr/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token,challenge:options.challenge,response:assertion,approved:true}),credentials:'same-origin',cache:'no-store'});
-   if(!result.ok)throw Error(result.status===404||result.status===409?'QR-код уже подтверждён или больше не действует. Проверьте компьютер и при необходимости создайте новый запрос.':result.status===429?'Слишком много попыток. Подождите минуту перед повтором.':result.status===410?'Срок действия QR-кода истёк. Создайте новый запрос на компьютере.':'Сервер не подтвердил вход.');
+   if(!result.ok){
+    const payload=await result.json().catch(()=>null) as {error?:string}|null;
+    const detail=payload?.error;
+    throw Error(result.status===403?'Passkey не прошёл серверную проверку. Проверьте, что он зарегистрирован в этой тестовой версии SKP.':result.status===404||result.status===409?'QR-код уже подтверждён, истёк или больше не действует. Создайте новый запрос на Mac.':result.status===429?'Слишком много попыток. Подождите минуту перед повтором.':result.status===410?'Срок действия QR-кода истёк. Создайте новый запрос на компьютере.':result.status===503?'Сервер временно недоступен при проверке Passkey.':result.status===400?'Сервер отклонил формат подтверждения Passkey.':'Сервер не подтвердил вход (HTTP '+result.status+(detail==='Forbidden'?', проверка адреса':'')+').');
+   }
    const decision=await result.json() as {status?:string};
    if(decision.status!=='approved')throw Error('Сервер не подтвердил вход.');
    setApproved(true);
