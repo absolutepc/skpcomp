@@ -117,11 +117,11 @@ export default function AdminQrLogin({onAuthenticated,autoStart=false}:{onAuthen
     {qrDataUrl?<img src={qrDataUrl} alt="QR-код для подтверждения входа в SKP" width={244} height={244} style={{display:'block',maxWidth:'100%',borderRadius:5}}/>:
      <p role="status">{qrError||'Создаём QR-код…'}</p>}
    </div>}
-   {canApprove&&<a href={request.approvalUrl} target="_blank" rel="noopener noreferrer">Открыть страницу подтверждения</a>}
+
    {canApprove&&<button type="button" className="button outline" onClick={()=>{if(request.expiresAt*1000<=Date.now()){setStatus('expired');return;}void navigator.clipboard.writeText(request.approvalUrl).catch(()=>setError('Не удалось скопировать ссылку. Откройте её вручную.'));}}>Скопировать ссылку для подтверждения</button>}
    {canApprove&&<p role="timer" aria-live="off"><small>QR-код действует ещё {secondsLeft} сек.</small></p>}
-   {canApprove&&<p><small>Отсканируйте QR-код камерой телефона и подтвердите вход зарегистрированным Passkey. Доступный способ проверки зависит от устройства: Face ID, отпечаток пальца, PIN-код или аппаратный ключ. Если камера не распознаёт QR-код, откройте ссылку в браузере.</small></p>}
-   <button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>Создать новый запрос</button>
+
+   <button type="button" className="button outline skp-auth-refresh" disabled={busy} onClick={()=>void start()}>Обновить QR-код</button>
   </>}
   {error&&<p role="alert">{error}</p>}
  </div>;
