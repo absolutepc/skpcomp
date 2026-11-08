@@ -1,11 +1,11 @@
 'use client';
 import {useState,type FormEvent} from 'react';
+import {ScanFace,Fingerprint,KeyRound,ShieldCheck,LockKeyhole,ArrowRight,Smartphone} from 'lucide-react';
 import AdminQrLogin from './admin-qr-login';
 import './skp-admin-login.css';
 
 type Props={password:string;setPassword:(value:string)=>void;onPasswordLogin:()=>Promise<void>;onAuthenticated:()=>void};
 export default function SkpAdminLogin({password,setPassword,onPasswordLogin,onAuthenticated}:Props){
- const [mode,setMode]=useState<'qr'|'password'>('qr');
  const [submitting,setSubmitting]=useState(false);
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();if(submitting)return;
@@ -19,25 +19,33 @@ export default function SkpAdminLogin({password,setPassword,onPasswordLogin,onAu
     <div className="skp-auth-brand" aria-label="SKP">SKP<span>/</span></div>
     <div className="skp-auth-tagline">КОМПЬЮТЕРЫ · КОМПЛЕКТУЮЩИЕ · ПЕРИФЕРИЯ</div>
     <h1>Вход для владельца</h1>
-    <p>Выберите удобный способ авторизации в админ-панель</p>
+    <p>Выберите пароль или подтвердите вход по QR-коду</p>
    </header>
-   <div className="skp-auth-tabs" role="tablist" aria-label="Способ входа">
-    <button type="button" role="tab" aria-selected={mode==='qr'} className={mode==='qr'?'active':''} onClick={()=>setMode('qr')}><span aria-hidden="true">▦</span> Войти по QR-коду</button>
-    <button type="button" role="tab" aria-selected={mode==='password'} className={mode==='password'?'active':''} onClick={()=>setMode('password')}><span aria-hidden="true">♙</span> Вход по паролю</button>
-   </div>
-   {mode==='qr'?<div className="skp-auth-qr-layout" role="tabpanel">
-    <div className="skp-auth-qr-frame"><AdminQrLogin onAuthenticated={onAuthenticated} autoStart/></div>
+   <div className="skp-auth-unified">
+    <form className="skp-auth-password skp-auth-password-inline" onSubmit={e=>void submit(e)}>
+     <div className="skp-auth-section-icon"><LockKeyhole size={19}/></div>
+     <h2>Вход по паролю</h2>
+     <p>Используйте пароль владельца для доступа к панели управления.</p>
+     <label htmlFor="skp-owner-password">Пароль</label>
+     <input id="skp-owner-password" type="password" required autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Введите пароль"/>
+     <button type="submit" disabled={submitting}>{submitting?'Проверяем…':'Войти'} <ArrowRight size={17}/></button>
+    </form>
+    <div className="skp-auth-qr-frame">
+     <h2>Войти по QR-коду</h2>
+     <AdminQrLogin onAuthenticated={onAuthenticated} autoStart/>
+    </div>
     <div className="skp-auth-info">
      <h2>Быстрый и безопасный вход</h2>
      <p>Отсканируйте QR-код устройством с зарегистрированным Passkey и подтвердите вход.</p>
-     <div className="skp-auth-methods"><span>◎<small>Face ID</small></span><span>◉<small>Отпечаток</small></span><span>▣<small>Android</small></span><span>⚿<small>Ключ</small></span></div>
+     <div className="skp-auth-methods">
+      <span><ScanFace aria-hidden="true" size={25}/><small>Face ID</small></span>
+      <span><Fingerprint aria-hidden="true" size={25}/><small>Отпечаток</small></span>
+      <span><Smartphone aria-hidden="true" size={25}/><small>Android</small></span>
+      <span><KeyRound aria-hidden="true" size={25}/><small>Ключ</small></span>
+     </div>
     </div>
-   </div>:<form className="skp-auth-password" role="tabpanel" onSubmit={e=>void submit(e)}>
-    <label htmlFor="skp-owner-password">Пароль владельца</label>
-    <input id="skp-owner-password" type="password" required autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Введите пароль"/>
-    <button type="submit" disabled={submitting}>{submitting?'Проверяем…':'Войти в админ-панель'} <span aria-hidden="true">→</span></button>
-   </form>}
-   <footer className="skp-auth-footer"><span aria-hidden="true">⬡</span> Защищено Passkey (WebAuthn)</footer>
+   </div>
+   <footer className="skp-auth-footer"><ShieldCheck size={15} aria-hidden="true"/> Защищено Passkey (WebAuthn)</footer>
   </section>
  </div>;
 }
