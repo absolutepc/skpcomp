@@ -10,6 +10,14 @@ export default function ApproveQr(){
   return url.hash===''&&url.searchParams.size===1&&url.searchParams.has('request')
    ?url.searchParams.get('request')||'':'';
  })();
+ const linkError=typeof window==='undefined'?'':(()=>{
+  const url=new URL(window.location.href);
+  if(url.hash)return 'В ссылке есть лишний фрагмент после #. Откройте исходную QR-ссылку.';
+  if(!url.searchParams.has('request'))return 'В адресе отсутствует параметр request. Откройте полную ссылку из QR-кода, а не страницу подтверждения вручную.';
+  if(url.searchParams.size!==1||url.searchParams.getAll('request').length!==1)return 'Ссылка содержит лишние или повторяющиеся параметры.';
+  if(!/^[a-f0-9]{64}$/.test(token))return 'Параметр request повреждён или обрезан. Скопируйте новую ссылку целиком.';
+  return '';
+ })();
  async function approve(){
   if(submitting.current||approved)return;
   submitting.current=true;
@@ -46,6 +54,6 @@ export default function ApproveQr(){
  return <main style={{minHeight:'100dvh',background:'#080808',color:'#fff',display:'grid',placeItems:'center',padding:24}}><section style={{maxWidth:420,width:'100%',textAlign:'center'}}>
   <h1>SKP — подтверждение входа</h1><p>Подтверждайте только тот вход, который вы начали на своём компьютере.</p>
   <button type="button" disabled={busy||approved||!/^[a-f0-9]{64}$/.test(token)} onClick={()=>void approve()} style={{padding:'14px 24px',background:'#ffd22e',color:'#111',border:0,borderRadius:10,fontWeight:700}}>{approved?'Вход подтверждён':busy?'Подтверждение…':'Подтвердить через Face ID / Passkey'}</button>
-  <p role="status" aria-live="polite">{message}</p>
+  <p role="status" aria-live="polite">{message||linkError}</p>
  </section></main>;
 }
