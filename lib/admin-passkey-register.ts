@@ -15,6 +15,7 @@ export async function verifyAndStoreAdminPasskeyRegistration(input:{
  contextId:string;
  origin:string;
  deviceLabel?:string;
+ ownerId:string;
 }):Promise<boolean>{
  const {response,challenge,contextId,origin}=input;
  if(!/^[a-f0-9]{64}$/.test(challenge)||!contextId||contextId.length>256||
@@ -38,5 +39,6 @@ export async function verifyAndStoreAdminPasskeyRegistration(input:{
   counter:credential.counter,
   transports:credential.transports||[],
   deviceLabel:input.deviceLabel,
+  ownerId:input.ownerId,
  });
 }
