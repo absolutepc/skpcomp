@@ -1,6 +1,6 @@
 import type {AuthenticationResponseJSON} from '@simplewebauthn/server';
-import {isOwnerBackupRequest,isTrustedAdminOrigin} from '../../../../../../../lib/admin-passkey-config';
-import {completeOwnerQrCheck} from '../../../../../../../lib/admin-owner-qr-check';
+import {isOwnerBackupRequest,isTrustedAdminOrigin} from '../../../../../../lib/admin-passkey-config';
+import {completeOwnerQrCheck} from '../../../../../../lib/admin-owner-qr-check';
 export const dynamic='force-dynamic';
 export async function POST(request:Request){
  const headers={'Cache-Control':'no-store'};
