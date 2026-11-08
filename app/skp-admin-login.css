@@ -123,3 +123,25 @@ body:has(.skp-auth-stage),html:has(.skp-auth-stage){background:#050607!important
 .skp-auth-footer{margin-top:15px!important;padding-top:12px!important;color:#b3b5b7!important}
 @media(max-width:950px){.skp-auth-unified{grid-template-columns:minmax(185px,1fr) 235px!important}.skp-auth-unified>.skp-auth-info{grid-column:1/-1!important;padding:12px 0 0!important;border-left:0!important;border-top:1px solid #3c3f41!important}.skp-auth-panel{max-width:680px!important}}
 @media(max-width:610px){.skp-auth-stage{padding:12px 8px!important}.skp-auth-panel{width:100%!important;padding:20px 15px!important}.skp-auth-unified{grid-template-columns:1fr!important;gap:15px!important}.skp-auth-unified>form{padding:0 0 14px!important;border-right:0!important;border-bottom:1px solid #3c3f41!important}.skp-auth-unified>.skp-auth-info{grid-column:auto!important}.skp-auth-qr-frame{width:100%!important}}
+
+
+/* No layout shift between QR loading and QR ready. */
+.skp-auth-qr{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important}
+.skp-auth-qr .skp-auth-status{height:20px!important;min-height:20px!important;max-height:20px!important;display:flex;align-items:center;justify-content:center;margin:0 0 6px!important;font-size:10px!important;white-space:nowrap;color:#ffe000!important}
+.skp-auth-qr .skp-auth-qr-visual{height:188px!important;min-height:188px!important;max-height:188px!important;display:grid!important;place-items:center!important;margin:0!important}
+.skp-auth-qr .skp-auth-qr-visual>img,.skp-auth-qr .skp-auth-qr-placeholder{display:block;width:180px!important;height:180px!important;min-width:180px!important;min-height:180px!important;max-width:180px!important;max-height:180px!important;box-sizing:border-box!important;border-radius:8px!important}
+.skp-auth-qr .skp-auth-qr-placeholder{display:grid!important;place-items:center!important;background:#17191b!important;border:1px solid #45484a!important}
+.skp-auth-qr-idle{font-size:27px;font-weight:800;color:#616568}
+.skp-auth-qr .skp-auth-qr-actions{width:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin:8px 0 0!important}
+.skp-auth-qr .skp-auth-qr-actions button{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;min-width:0!important;width:100%!important;min-height:39px!important;padding:7px 5px!important;margin:0!important;border:1px solid #4b4e52!important;border-radius:9px!important;background:#191b1d!important;color:#f1f2f3!important;font-size:11px!important;font-weight:650!important;white-space:nowrap!important;cursor:pointer}
+.skp-auth-qr .skp-auth-qr-actions button:hover:not(:disabled){border-color:#ffe000!important;color:#ffe000!important}
+.skp-auth-qr .skp-auth-qr-actions button:disabled{opacity:.5;cursor:not-allowed}
+.skp-auth-qr .skp-auth-qr-actions button svg{width:16px;height:16px;flex-shrink:0}
+.skp-auth-qr .skp-auth-qr-timer{height:18px!important;min-height:18px!important;max-height:18px!important;display:flex!important;align-items:center!important;justify-content:center!important;margin:6px 0 0!important;color:#d7bb1b!important;font-size:10px!important;white-space:nowrap!important}
+.skp-auth-password-inline{display:grid!important;grid-template-columns:38px minmax(0,1fr)!important;column-gap:10px!important;row-gap:9px!important;align-items:center!important}
+.skp-auth-password-inline>.skp-auth-section-icon{grid-column:1!important;grid-row:1!important;margin:0!important}
+.skp-auth-password-inline>h2{grid-column:2!important;grid-row:1!important;margin:0!important}
+.skp-auth-password-inline>p,.skp-auth-password-inline>label,.skp-auth-password-inline>input,.skp-auth-password-inline>button{grid-column:1/-1!important;margin-top:0!important}
+.skp-auth-password-inline>p{margin-bottom:0!important}
+.skp-auth-password-inline>label{margin-top:3px!important}
+.skp-auth-unified{align-items:center!important}
