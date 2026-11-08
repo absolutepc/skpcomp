@@ -100,7 +100,7 @@ export default function AdminSecurityPage(){
    <Link href="/admin" style={{display:'inline-flex',gap:8,alignItems:'center',color:'#e8dc54',textDecoration:'none'}}><ArrowLeft size={18}/> В админ-панель</Link>
    <header style={{margin:'34px 0 28px'}}>
     <div style={{display:'flex',alignItems:'center',gap:12}}><ShieldCheck color="#e8dc54"/><h1 style={{fontSize:30,margin:0}}>Безопасность владельца</h1></div>
-    <p style={{color:'#a7a9ae',lineHeight:1.6}}>Управление резервными Passkey. Основной ключ и пароль не меняются при добавлении нового.</p>
+    <p style={{color:'#a7a9ae',lineHeight:1.6}}>Проверка ключей и безопасная смена телефона. Пароль владельца остаётся доступным.</p>
    </header>
    <section style={{border:'1px solid #35383c',borderRadius:18,padding:24,background:'#141619'}}>
     <h2 style={{fontSize:19,margin:'0 0 8px'}}>Зарегистрированные ключи</h2>
@@ -113,19 +113,15 @@ export default function AdminSecurityPage(){
    </section>
    {qr&&<section style={{marginTop:18,border:'1px solid #e8dc54',borderRadius:18,padding:24,background:'#141619',textAlign:'center'}}><h2>Подтверждение с iPhone</h2><p style={{color:'#aaa'}}>Откройте камеру iPhone, отсканируйте QR-код, затем нажмите «Подтвердить через Face ID» на открывшейся странице SKP.</p><img src={qr.image} alt="QR-код проверки Passkey владельца" width={260} height={260} style={{display:'block',margin:'16px auto',borderRadius:10}}/><p style={{color:'#aaa',fontSize:13}}>QR-код действует до {new Date(qr.expiresAt*1000).toLocaleTimeString('ru-RU')}. Статус обновляется автоматически.</p><button onClick={()=>setQr(null)} style={{background:'#24272b',border:'1px solid #555',color:'#fff',padding:'10px 16px',borderRadius:9}}>Отмена</button></section>}
    <section style={{border:'1px solid #35383c',borderRadius:18,padding:24,background:'#141619',marginTop:18}}>
-    <h2 style={{fontSize:19,margin:'0 0 10px'}}>Добавить резервный Passkey</h2>
-    <p style={{color:'#a7a9ae',fontSize:14,lineHeight:1.6}}>Сначала подтвердите действующий ключ владельца. Затем выберите другое устройство или аппаратный ключ. Не регистрируйте резервный ключ на том же единственном устройстве.</p>
-    <label htmlFor="backup-name" style={{display:'block',marginBottom:8}}>Название ключа</label>
-    <input id="backup-name" value={label} maxLength={100} onChange={e=>setLabel(e.target.value)} placeholder="Например, запасной ключ USB/NFC" style={{boxSizing:'border-box',width:'100%',padding:13,border:'1px solid #555',borderRadius:9,background:'#0b0c0e',color:'#fff'}}/>
-    <button disabled={busy||!data||!label.trim()} onClick={()=>void perform(async()=>{
-      await stepUp('owner-passkey-enroll');
-      const options=await post<Challenge>('/api/admin/owner/passkeys/options',{});
-      const response=await register(options);
-      const result=await post<{registered:boolean}>('/api/admin/owner/passkeys/complete',{challenge:options.challenge,response,deviceLabel:label.trim()});
-      if(!result.registered)throw Error('Регистрация не подтверждена сервером');
-      setMessage('Резервный ключ зарегистрирован. Теперь проверьте его отдельной кнопкой.');
-      setLabel('');
-    })} style={{marginTop:16,padding:'13px 20px',border:0,borderRadius:9,background:'#e8dc54',color:'#111',fontWeight:700,cursor:'pointer',opacity:busy||!label.trim()?0.5:1}}>{busy?'Выполняется…':'Добавить ключ'}</button>
+    <h2 style={{fontSize:19,margin:'0 0 10px'}}>Смена телефона владельца</h2>
+    <p style={{color:'#a7a9ae',fontSize:14,lineHeight:1.6}}>Перед продажей старого телефона убедитесь, что новый телефон может войти в SKP. При синхронизации через iCloud один Passkey может работать на обоих устройствах — его отзыв в SKP отключит оба.</p>
+    <ol style={{color:'#d0d1d4',lineHeight:1.9,paddingLeft:22}}>
+     <li>Настройте новый телефон и синхронизацию Passkey.</li>
+     <li>На новом телефоне подтвердите QR-вход SKP с другого браузера или компьютера.</li>
+     <li>Убедитесь, что админ-панель открылась и пароль владельца доступен.</li>
+     <li>Только после проверки выйдите из Apple Account на старом телефоне и сотрите его данные перед продажей.</li>
+    </ol>
+    <p style={{color:'#e8dc54',fontSize:14,lineHeight:1.6}}>Добавление отдельного ключа для нового устройства и отзыв старого пока не включены. Не удаляйте единственный действующий Passkey.</p>
    </section>
    {error&&<p role="alert" style={{color:'#ff8b8b',marginTop:20}}>{error}</p>}
    {message&&<p role="status" style={{color:'#e8dc54',marginTop:20}}>{message}</p>}
