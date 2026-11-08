@@ -151,3 +151,6 @@ body:has(.skp-auth-stage),html:has(.skp-auth-stage){background:#050607!important
 
 /* Lower compositing cost on Safari without changing the glass aesthetic. */
 .skp-auth-panel{backdrop-filter:blur(6px) saturate(105%)!important;-webkit-backdrop-filter:blur(6px) saturate(105%)!important}
+
+/* Make the user-approved neon artwork visibly pass through the login glass. */
+.skp-auth-panel{background:linear-gradient(145deg,rgba(18,20,22,.49),rgba(5,6,8,.56) 80%)!important;backdrop-filter:blur(3px) saturate(110%)!important;-webkit-backdrop-filter:blur(3px) saturate(110%)!important}
