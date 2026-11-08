@@ -39,3 +39,9 @@
 .skp-auth-info p{font-size:13px;line-height:1.55;margin-bottom:18px}
 .skp-auth-footer{margin-top:15px;padding-top:14px}
 @media(max-width:700px){.skp-auth-stage{padding:16px 10px}.skp-auth-panel{padding:22px 17px;border-radius:24px}.skp-auth-qr-layout{grid-template-columns:1fr;gap:12px}.skp-auth-qr-frame{max-width:290px;margin:auto}.skp-auth-info{padding:14px 0 0;border-left:0;border-top:1px solid #35383a}.skp-auth-header p{margin-bottom:14px}.skp-auth-tabs{margin-bottom:14px}.skp-auth-info h2{font-size:16px}.skp-auth-info p{margin-bottom:12px}.skp-auth-footer{margin-top:14px}}
+
+
+/* Auth screen must cover the entire viewport, including the area below the card. */
+.skp-admin-page:has(.skp-auth-stage){min-height:100dvh!important;background:#050607!important}
+.skp-admin-page:has(.skp-auth-stage) .skp-auth-stage{min-height:100dvh!important;min-height:100svh!important}
+body:has(.skp-auth-stage),html:has(.skp-auth-stage){background:#050607!important}
