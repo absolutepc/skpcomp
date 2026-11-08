@@ -6,7 +6,6 @@ export type VerifiedPasskeyRegistration={
  counter:number;
  transports:string[];
  deviceLabel?:string;
- ownerId:string;
 };
 
 /**
@@ -16,7 +15,7 @@ export type VerifiedPasskeyRegistration={
  * Existing or revoked credential IDs are never silently overwritten.
  */
 export async function saveVerifiedAdminPasskey(
- verified:VerifiedPasskeyRegistration
+ verified:VerifiedPasskeyRegistration & {ownerId:string}
 ):Promise<boolean>{
  if(!isPostgres())throw new Error('PostgreSQL required');
  const {credentialId,publicKey,counter,transports,ownerId}=verified;
