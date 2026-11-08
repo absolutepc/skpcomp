@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
+import QRCode from 'qrcode';
 import Link from 'next/link';
 import {ArrowLeft,KeyRound,ShieldCheck,RefreshCw} from 'lucide-react';
 
@@ -49,6 +50,31 @@ export default function AdminSecurityPage(){
  const [error,setError]=useState('');
  const [message,setMessage]=useState('');
  const [label,setLabel]=useState('');
+ const [qr,setQr]=useState<{requestToken:string;desktopSecret:string;expiresAt:number;approvalUrl:string;image:string}|null>(null);
+ useEffect(()=>{
+  if(!qr)return;
+  let active=true;
+  const poll=async()=>{
+   if(Date.now()>qr.expiresAt*1000){if(active){setError('Время действия QR-кода истекло. Создайте новый.');setQr(null);}return;}
+   try{
+    const result=await post<{status:string}>('/api/admin/owner/qr-check/status',{requestToken:qr.requestToken,desktopSecret:qr.desktopSecret});
+    if(active&&result.status==='approved'){setQr(null);setMessage('Passkey владельца успешно проверен через iPhone.');void refresh();}
+    else if(active&&result.status==='expired'){setQr(null);setError('Время действия QR-кода истекло.');}
+   }catch{if(active){setQr(null);setError('Не удалось проверить статус QR-кода.');}}
+  };
+  const timer=setInterval(()=>void poll(),2000);
+  return ()=>{active=false;clearInterval(timer);};
+ },[qr]);
+ async function beginQrCheck(fingerprint:string){
+  if(busy)return;
+  setBusy(true);setError('');setMessage('');setQr(null);
+  try{
+   const result=await post<{requestToken:string;desktopSecret:string;expiresAt:number;approvalUrl:string}>('/api/admin/owner/qr-check/create',{fingerprint});
+   const image=await QRCode.toDataURL(result.approvalUrl,{width:260,margin:2,color:{dark:'#08090b',light:'#ffffff'}});
+   setQr({...result,image});
+  }catch(e){setError(e instanceof Error?e.message:'Не удалось создать QR-код');}
+  finally{setBusy(false);}
+ }
  async function refresh(){
   const res=await fetch('/api/admin/owner/passkeys',{credentials:'same-origin',cache:'no-store'});
   if(!res.ok)throw Error(res.status===403?'Войдите в админ-панель как владелец.':'Не удалось получить список ключей');
@@ -82,9 +108,10 @@ export default function AdminSecurityPage(){
     {data?.passkeys.map(k=><div key={k.fingerprint} style={{borderTop:'1px solid #33363a',padding:'17px 0',display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}>
      <div><div style={{display:'flex',alignItems:'center',gap:9}}><KeyRound size={18} color="#e8dc54"/><strong>{k.device_label||'Passkey владельца'}</strong></div>
       <div style={{color:'#a7a9ae',fontSize:13,marginTop:6}}>{k.status==='revoked'?'Отозван':k.last_used_at?'Использовался':'Ещё не проверен'} · {new Date(k.created_at).toLocaleDateString('ru-RU')}</div></div>
-     {k.status==='active'&&<button disabled={busy} onClick={()=>void perform(async()=>{await stepUp('owner-passkey-test',k.fingerprint);setMessage('Подтверждение ключа прошло успешно.');})} style={{padding:'10px 14px',borderRadius:9,border:'1px solid #555',background:'#24272b',color:'#fff',cursor:'pointer'}}>Проверить ключ</button>}
+     {k.status==='active'&&<button disabled={busy} onClick={()=>void beginQrCheck(k.fingerprint)} style={{padding:'10px 14px',borderRadius:9,border:'1px solid #555',background:'#24272b',color:'#fff',cursor:'pointer'}}>Проверить ключ</button>}
     </div>)}
    </section>
+   {qr&&<section style={{marginTop:18,border:'1px solid #e8dc54',borderRadius:18,padding:24,background:'#141619',textAlign:'center'}}><h2>Подтверждение с iPhone</h2><p style={{color:'#aaa'}}>Откройте камеру iPhone, отсканируйте QR-код, затем нажмите «Подтвердить через Face ID» на открывшейся странице SKP.</p><img src={qr.image} alt="QR-код проверки Passkey владельца" width={260} height={260} style={{display:'block',margin:'16px auto',borderRadius:10}}/><p style={{color:'#aaa',fontSize:13}}>QR-код действует до {new Date(qr.expiresAt*1000).toLocaleTimeString('ru-RU')}. Статус обновляется автоматически.</p><button onClick={()=>setQr(null)} style={{background:'#24272b',border:'1px solid #555',color:'#fff',padding:'10px 16px',borderRadius:9}}>Отмена</button></section>}
    <section style={{border:'1px solid #35383c',borderRadius:18,padding:24,background:'#141619',marginTop:18}}>
     <h2 style={{fontSize:19,margin:'0 0 10px'}}>Добавить резервный Passkey</h2>
     <p style={{color:'#a7a9ae',fontSize:14,lineHeight:1.6}}>Сначала подтвердите действующий ключ владельца. Затем выберите другое устройство или аппаратный ключ. Не регистрируйте резервный ключ на том же единственном устройстве.</p>
