@@ -108,18 +108,18 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   return()=>{active=false;clearInterval(timer);clearTimeout(expiryTimer);};
  },[request]);
  return <div className="skp-admin-qr-login">
-  <h3>Вход с iPhone</h3>
-  <p>Подтвердите вход с помощью зарегистрированного Passkey. Пароль по-прежнему доступен.</p>
-  {!request?<button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>{busy?'Создаём запрос…':'Войти через iPhone'}</button>:<>
-   <p role="status">{status==='pending'?'Ожидание подтверждения на iPhone':status==='approved'?'Завершаем вход…':status==='denied'?'Запрос отклонён':status==='expired'?'Время запроса истекло':status==='consumed'?'Запрос уже использован':status==='error'?'Не удалось завершить вход. Создайте новый запрос.':'Статус: '+status}</p>
+  <h3>Войти по QR-коду</h3>
+  <p>Отсканируйте QR-код устройством с зарегистрированным Passkey. Пароль по-прежнему доступен.</p>
+  {!request?<button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>{busy?'Создаём запрос…':'Войти по QR-коду'}</button>:<>
+   <p role="status">{status==='pending'?'Ожидание подтверждения на устройстве':status==='approved'?'Завершаем вход…':status==='denied'?'Запрос отклонён':status==='expired'?'Время запроса истекло':status==='consumed'?'Запрос уже использован':status==='error'?'Не удалось завершить вход. Создайте новый запрос.':'Статус: '+status}</p>
    {canApprove&&<div style={{display:'flex',justifyContent:'center',margin:'16px 0'}}>
-    {qrDataUrl?<img src={qrDataUrl} alt="QR-код для подтверждения входа в SKP на iPhone" width={264} height={264} style={{display:'block',maxWidth:'100%',borderRadius:12}}/>:
+    {qrDataUrl?<img src={qrDataUrl} alt="QR-код для подтверждения входа в SKP" width={264} height={264} style={{display:'block',maxWidth:'100%',borderRadius:12}}/>:
      <p role="status">{qrError||'Создаём QR-код…'}</p>}
    </div>}
-   {canApprove&&<a href={request.approvalUrl} target="_blank" rel="noopener noreferrer">Открыть страницу подтверждения на iPhone</a>}
-   {canApprove&&<button type="button" className="button outline" onClick={()=>{if(request.expiresAt*1000<=Date.now()){setStatus('expired');return;}void navigator.clipboard.writeText(request.approvalUrl).catch(()=>setError('Не удалось скопировать ссылку. Откройте её вручную.'));}}>Скопировать ссылку для iPhone</button>}
+   {canApprove&&<a href={request.approvalUrl} target="_blank" rel="noopener noreferrer">Открыть страницу подтверждения</a>}
+   {canApprove&&<button type="button" className="button outline" onClick={()=>{if(request.expiresAt*1000<=Date.now()){setStatus('expired');return;}void navigator.clipboard.writeText(request.approvalUrl).catch(()=>setError('Не удалось скопировать ссылку. Откройте её вручную.'));}}>Скопировать ссылку для подтверждения</button>}
    {canApprove&&<p role="timer" aria-live="off"><small>QR-код действует ещё {secondsLeft} сек.</small></p>}
-   {canApprove&&<p><small>Отсканируйте QR-код камерой iPhone и подтвердите вход через Face ID / Passkey. Если сканирование недоступно, откройте ссылку в Safari.</small></p>}
+   {canApprove&&<p><small>Отсканируйте QR-код камерой телефона и подтвердите вход зарегистрированным Passkey. Доступный способ проверки зависит от устройства: Face ID, отпечаток пальца, PIN-код или аппаратный ключ. Если камера не распознаёт QR-код, откройте ссылку в браузере.</small></p>}
    <button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>Создать новый запрос</button>
   </>}
   {error&&<p role="alert">{error}</p>}
