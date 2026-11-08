@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync(new URL('../app/api/admin/qr/options/route.ts',import.meta.url),'utf8');
+assert.match(src,/isTrustedAdminOrigin\(request\)/);
+assert.match(src,/isPendingQrRequest\(token\)/);
+assert.match(src,/allowNewAdminQrRequest\(\)/);
+assert.match(src,/issueWebAuthnChallenge\('authenticate',token\)/);
+assert.match(src,/userVerification:'required'/);
+assert.match(src,/no-store/);
+assert.doesNotMatch(src,/issueAdminSession|Set-Cookie/);
+console.log('QR WebAuthn challenge route static checks passed.');

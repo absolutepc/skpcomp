@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const session=read('lib/vercel-admin-session.ts');
+const consume=read('lib/admin-qr-consume.ts');
+const route=read('app/api/admin/qr/consume/route.ts');
+assert.match(consume,/approved_user_id IS NOT NULL/);
+assert.match(consume,/u.status='active'/);
+assert.match(consume,/RETURNING approved_user_id/);
+assert.match(consume,/return consumed\?\.approved_user_id\?\?null/);
+assert.match(route,/redeemQrSession\(request,requestToken,desktopSecret\)/);
+assert.match(route,/if\(!cookie\)/);
+assert.match(session,/issueAdminSession\(request:Request,userId:string\)/);
+assert.match(session,/INSERT INTO skp_admin_sessions_v2 \(token_hash,expires,user_id\)/);
+assert.match(session,/if\(!inserted\)throw/);
+assert.match(session,/JOIN skp_admin_users u ON u.id=s.user_id/);
+assert.match(session,/u.status='active'/);
+console.log('Employee-bound session invariants passed.');

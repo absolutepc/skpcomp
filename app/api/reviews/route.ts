@@ -1,4 +1,5 @@
-import {localAdminAccess} from '../../../lib/local-admin-access';
+import {withAdminOperation} from '../../../lib/admin-operation';
+import {isAuthorizedAdmin} from '../../../lib/admin-authorization';
 import {storeEnv,isPostgres} from '../../../db/platform-store';
 
 const E=await storeEnv();
@@ -17,22 +18,17 @@ async function setup(){
   created_at TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
  )`).run();
 }
-async function authorized(request:Request){
- if(localAdminAccess(request))return true;
- if(!E.ADMIN_PASSWORD)return false;
- const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));
- const token=Array.from(new Uint8Array(bytes)).map(x=>x.toString(16).padStart(2,'0')).join('');
- return (request.headers.get('cookie')||'').split(';').some(x=>x.trim()==='skp_admin='+token);
-}
 const json=(body:object,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
 export async function GET(request:Request){
  try{
   await setup();
   const url=new URL(request.url);
   if(url.searchParams.get('admin')==='1'){
-   if(!await authorized(request))return json({error:'Требуется вход в админ-панель'},401);
+   if(!await isAuthorizedAdmin(request))return json({error:'Требуется вход в админ-панель'},401);
+   return withAdminOperation(request,async()=>{
    const result=await E.DB.prepare("SELECT id,product_id,author,rating,body,status,created_at FROM product_reviews ORDER BY created_at DESC LIMIT 250").all<ReviewRow>();
    return json({reviews:result.results||[]});
+   });
   }
   const id=url.searchParams.get('productId')||'';
   if(!/^[a-zA-Z0-9_-]{1,90}$/.test(id))return json({reviews:[]});
@@ -49,10 +45,12 @@ export async function POST(request:Request){
   const data=JSON.parse(raw);
   await setup();
   if(data.action==='moderate'){
-   if(!await authorized(request))return json({error:'Требуется вход в админ-панель'},401);
+   if(!await isAuthorizedAdmin(request))return json({error:'Требуется вход в админ-панель'},401);
+   return withAdminOperation(request,async()=>{
    if(typeof data.id!=='string'||!/^[0-9a-f-]{36}$/.test(data.id)||!['approved','rejected'].includes(data.status))return json({error:'Неверные данные'},400);
    await E.DB.prepare("UPDATE product_reviews SET status=? WHERE id=?").bind(data.status,data.id).run();
    return json({ok:true});
+   });
   }
   if(data.action!=='submit')return json({error:'Неизвестное действие'},400);
   if(data.website)return json({ok:true,pending:true});

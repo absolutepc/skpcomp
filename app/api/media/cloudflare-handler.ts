@@ -6,6 +6,8 @@ const MEDIA_KEY=/^(?:products|slides)\/[a-zA-Z0-9_-]{1,90}\/[0-9a-f-]{36}\.(?:we
 const MAX_FILE_BYTES=8*1024*1024;
 const json=(data:object,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 async function authorized(request:Request){
+ // R2 legacy credentials must never bypass the explicit Passkey-only cutover.
+ if(process.env.SKP_ADMIN_REQUIRE_PASSKEY==='true')return false;
  if(localAdminAccess(request))return true;
  if(!E.ADMIN_PASSWORD)return false;
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));

@@ -1,0 +1,24 @@
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const session=read('lib/vercel-admin-session.ts');
+assert.match(session,/crypto\.getRandomValues\(new Uint8Array\(32\)\)/);
+const schema=read('db/admin-passkey-schema.sql');
+assert.match(schema,/token_hash TEXT PRIMARY KEY/);
+assert.match(session,/expires>\?/);
+assert.match(session,/DELETE FROM skp_admin_sessions_v2/);
+assert.match(session,/JOIN skp_admin_users u ON u.id=s.user_id/);
+assert.match(session,/u.status='active'/);
+assert.match(session,/if\(!inserted\)/);
+assert.match(session,/adminCookie\(request,token,SESSION_SECONDS\)/);
+const endpoints=[
+ 'app/api/store/route.ts',
+ 'app/api/orders/route.ts',
+ 'app/api/reviews/route.ts',
+ 'app/api/media/blob-upload/route.ts'
+];
+for(const path of endpoints){
+ const source=read(path);
+ assert.match(source,/skp_admin|adminAuthorized|isAuthorizedAdmin/,path+' must authenticate admin requests');
+}
+console.log('Admin session foundation: static checks passed (NOT integration tests)');

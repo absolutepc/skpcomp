@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../lib/admin-passkey-reauth.ts',import.meta.url),'utf8');
+assert.match(source,/isPostgres\(\)/);
+assert.match(source,/typeof password!=='string'/);
+assert.match(source,/password\.length>1024/);
+assert.match(source,/await allowNewAdminQrRequest\(\)/);
+assert.match(source,/await isAuthorizedAdmin\(request\)/);
+assert.match(source,/if\(!ADMIN_PASSWORD\)return false/);
+assert.match(source,/timingSafeEqual\(actual,expected\)/);
+assert.ok(source.indexOf('await allowNewAdminQrRequest()')<source.indexOf('await isAuthorizedAdmin(request)'));
+assert.ok(source.indexOf('await isAuthorizedAdmin(request)')<source.indexOf('timingSafeEqual(actual,expected)'));
+console.log('Passkey enrollment password reauthentication prerequisites passed (static only).');

@@ -1,5 +1,8 @@
-import {localAdminAccess} from '../../../lib/local-admin-access';
+import {withAdminOperation} from '../../../lib/admin-operation';
+import {isAuthorizedAdmin} from '../../../lib/admin-authorization';
 import {adminCookie} from '../../../lib/admin-cookie';
+import {revokeAdminSession} from '../../../lib/vercel-admin-session';
+import {isPostgres} from '../../../db/platform-store';
 import {storeEnv} from '../../../db/platform-store';
 import {seed} from '../../../lib/seed';
 import {upgradeLogitechGamingMice} from '../../../lib/logitech-mouse-upgrade';
@@ -15,7 +18,7 @@ const E=await storeEnv();
 // A fresh local D1 database has no tables until its first request.
 async function ensureShop(){await E.DB.prepare('CREATE TABLE IF NOT EXISTS shop (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)').run()}
 async function token(){let a=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('skp-session:'+E.ADMIN_PASSWORD));return Array.from(new Uint8Array(a)).map(x=>x.toString(16).padStart(2,'0')).join('')}
-async function auth(r:Request){if(localAdminAccess(r))return true;return !!E.ADMIN_PASSWORD && (r.headers.get('cookie')||'').split(';').map(x=>x.trim()).includes('skp_admin='+await token())}
+async function auth(r:Request){return isAuthorizedAdmin(r)}
 export async function GET(){
  await ensureShop();
  const row=await E.DB.prepare('SELECT value FROM shop WHERE id=?').bind('catalog').first<{value:string}>();
@@ -147,9 +150,21 @@ export async function GET(){
   computerHeroImageVersion:COMPUTER_HERO_IMAGE_VERSION,
   heroSlideOrderVersion:HERO_SLIDE_ORDER_VERSION},{headers:{'Cache-Control':'no-store'}});
 }
-export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});const b=await r.json() as any;
-if(b.action==='login'){if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,await token(),28800)}})}
-if(b.action==='logout')return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,'',0)}});
+export async function POST(r:Request){if(r.headers.get('origin')!==new URL(r.url).origin)return new Response('Forbidden',{status:403});let b:any;
+try{b=await r.json()}catch{return Response.json({error:'Некорректный JSON'},{status:400})}
+if(!b||typeof b!=='object'||Array.isArray(b))return Response.json({error:'Некорректный запрос'},{status:400});
+if(b.action==='login'){
+ if(process.env.SKP_ADMIN_REQUIRE_PASSKEY==='true')return Response.json({error:'Вход по паролю отключён. Используйте SKP Admin Key.'},{status:403,headers:{'Cache-Control':'no-store'}});
+ if(!E.ADMIN_PASSWORD||b.password!==E.ADMIN_PASSWORD)return Response.json({error:'Неверный пароль'},{status:401});return Response.json({ok:true},{headers:{'Set-Cookie':adminCookie(r,await token(),28800)}})}
+if(b.action==='logout'){
+ // Revoke database-backed QR sessions before clearing the browser cookie.
+ // Do not report success if revocation fails: the stolen token would remain valid.
+ if(isPostgres()){
+  try{return Response.json({ok:true},{headers:{'Cache-Control':'no-store','Set-Cookie':await revokeAdminSession(r)}})}
+  catch{return Response.json({error:'Не удалось завершить сессию'},{status:503,headers:{'Cache-Control':'no-store'}})}
+ }
+ return Response.json({ok:true},{headers:{'Cache-Control':'no-store','Set-Cookie':adminCookie(r,'',0)}});
+}
 if(!await auth(r))return Response.json({error:'Войдите в административную панель'},{status:401});if(b.action==='check')return Response.json({ok:true});
 const d=b.data;if(!d||!Array.isArray(d.products)||d.products.length>1000)return Response.json({error:'Некорректный каталог'},{status:400});
 if(!validateHeroSlides(d.heroSlides))return Response.json({error:'Проверьте настройки слайдов, ссылки и изображения. Максимум 12 слайдов.'},{status:400});
@@ -173,5 +188,6 @@ if(d.products.some((p:any)=>p.buildExtras!==undefined&&(
 )))return Response.json({error:'Проверьте дополнительные комплектующие'},{status:400});
 if(d.products.some((p:any)=>(p.variantGroup!==undefined&&(typeof p.variantGroup!=='string'||p.variantGroup.length>80))||(p.colorHex!==undefined&&(typeof p.colorHex!=='string'||!/^#[0-9a-fA-F]{6}$/.test(p.colorHex)))))return Response.json({error:'Проверьте группу вариантов и HEX-код цвета'},{status:400});
 if(d.instagram&&!/^https:\/\/(www\.)?instagram\.com\//.test(d.instagram))return Response.json({error:'Введите ссылку Instagram'},{status:400});if(d.whatsapp&&!/^\d{10,15}$/.test(d.whatsapp))return Response.json({error:'Номер WhatsApp: 10–15 цифр без плюса'},{status:400});
+return withAdminOperation(r,async()=>{
 await ensureShop();
-await E.DB.prepare('INSERT INTO shop (id,value) VALUES (?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value').bind('catalog',JSON.stringify(d)).run();return Response.json({ok:true});}
+await E.DB.prepare('INSERT INTO shop (id,value) VALUES (?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value').bind('catalog',JSON.stringify(d)).run();return Response.json({ok:true});});}

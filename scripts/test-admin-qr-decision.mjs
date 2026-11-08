@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync(new URL('../lib/admin-qr-decision.ts',import.meta.url),'utf8');
+assert.match(src,/markQrApprovedAfterVerification/);
+assert.match(src,/status='approved',approved_credential_id=\?,[\s\S]*approved_user_id=[\s\S]*approved_at=now\(\)/);
+assert.match(src,/status='pending' AND expires_at>now\(\)/);
+assert.match(src,/revoked_at IS NULL/);
+assert.match(src,/u.status='active'/);
+assert.match(src,/status='denied'/);
+assert.match(src,/RETURNING request_hash/);
+assert.doesNotMatch(src,/issueAdminSession|adminCookie|Set-Cookie/);
+console.log('QR approval/denial storage checks passed; caller WebAuthn verification not implemented.');
