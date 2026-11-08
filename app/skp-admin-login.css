@@ -88,3 +88,38 @@ body:has(.skp-auth-stage),html:has(.skp-auth-stage){background:#050607!important
 @media(max-width:950px){.skp-auth-panel{padding:25px!important}.skp-auth-unified{grid-template-columns:minmax(190px,1fr) 240px;gap:20px}.skp-auth-unified>.skp-auth-info{grid-column:1/-1;border-left:0;border-top:1px solid #3c3f41;padding:16px 0 0;text-align:center}.skp-auth-methods{max-width:400px;margin:auto}.skp-auth-unified>form{padding-right:18px}}
 @media(max-width:610px){.skp-auth-panel{width:calc(100vw - 20px)!important;padding:23px 16px!important}.skp-auth-unified{grid-template-columns:1fr;gap:20px;margin-top:20px}.skp-auth-unified>form{border-right:0;border-bottom:1px solid #3c3f41;padding:0 0 20px}.skp-auth-unified>.skp-auth-qr-frame{width:100%;max-width:290px;margin:auto}.skp-auth-unified>.skp-auth-info{grid-column:auto}.skp-auth-password-inline p{margin-bottom:4px}.skp-auth-footer{margin-top:17px}}
 @media(prefers-reduced-motion:reduce){.skp-auth-loader{animation:none}}
+
+
+/* Compact, high-contrast unified owner login */
+.skp-auth-stage{padding:16px 18px!important}
+.skp-auth-panel{width:min(950px,calc(100vw - 36px))!important;padding:22px 32px 18px!important;border-radius:27px!important;background:linear-gradient(145deg,#141617f5,#060708f9 80%)!important}
+.skp-auth-header .skp-auth-brand{font-size:46px!important}
+.skp-auth-header .skp-auth-tagline{margin:6px 0 12px!important;font-size:8px!important}
+.skp-auth-header h1{font-size:23px!important;margin-bottom:4px!important;color:#fff!important}
+.skp-auth-header p{font-size:12px!important;margin:0!important;color:#c4c6c8!important}
+.skp-auth-unified{grid-template-columns:minmax(195px,1fr) 235px minmax(195px,1fr)!important;gap:19px!important;margin-top:18px!important;align-items:center!important}
+.skp-auth-unified>form{padding-right:18px!important}
+.skp-auth-unified>.skp-auth-info{padding-left:18px!important}
+.skp-auth-password-inline h2,.skp-auth-qr-frame>h2,.skp-auth-info h2{color:#f6f7f8!important;opacity:1!important;text-shadow:none!important;font-size:17px!important;line-height:1.35!important;font-weight:750!important}
+.skp-auth-password-inline p,.skp-auth-info p{color:#c1c3c6!important;font-size:12px!important;line-height:1.5!important}
+.skp-auth-password-inline{gap:8px!important}
+.skp-auth-password-inline p{margin:0 0 5px!important}
+.skp-auth-password-inline label{color:#c6c8ca!important}
+.skp-auth-password-inline input{height:43px!important;background:#101214!important;border:1px solid #515458!important;color:#fff!important}
+.skp-auth-password-inline input::placeholder{color:#85898e!important}
+.skp-auth-password-inline button{padding:11px!important;margin-top:4px!important;display:flex;justify-content:center;align-items:center;gap:10px}
+.skp-auth-qr-frame>h2{margin:0 0 6px!important;text-align:center}
+.skp-auth-qr .skp-auth-status{font-size:10px!important;margin:0 0 5px!important}
+.skp-auth-qr img{width:180px!important;height:180px!important;max-width:180px!important}
+.skp-auth-qr .skp-auth-qr-placeholder{width:180px!important;height:180px!important}
+.skp-auth-qr button{padding:8px 5px!important;margin:4px 0!important;font-size:10px!important;line-height:1.3!important}
+.skp-auth-qr [role=timer]{font-size:10px!important;margin:3px 0!important}
+.skp-auth-qr-frame{max-width:235px!important;margin:auto}
+.skp-auth-info p{margin:6px 0 15px!important}
+.skp-auth-methods{gap:5px!important}
+.skp-auth-methods span{min-height:62px!important;padding:8px 2px!important;border-color:#45494d!important}
+.skp-auth-methods svg{width:22px;height:22px}
+.skp-auth-methods small{font-size:8px!important;color:#c9cacc!important}
+.skp-auth-footer{margin-top:15px!important;padding-top:12px!important;color:#b3b5b7!important}
+@media(max-width:950px){.skp-auth-unified{grid-template-columns:minmax(185px,1fr) 235px!important}.skp-auth-unified>.skp-auth-info{grid-column:1/-1!important;padding:12px 0 0!important;border-left:0!important;border-top:1px solid #3c3f41!important}.skp-auth-panel{max-width:680px!important}}
+@media(max-width:610px){.skp-auth-stage{padding:12px 8px!important}.skp-auth-panel{width:100%!important;padding:20px 15px!important}.skp-auth-unified{grid-template-columns:1fr!important;gap:15px!important}.skp-auth-unified>form{padding:0 0 14px!important;border-right:0!important;border-bottom:1px solid #3c3f41!important}.skp-auth-unified>.skp-auth-info{grid-column:auto!important}.skp-auth-qr-frame{width:100%!important}}
