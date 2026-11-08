@@ -14,7 +14,7 @@ function isTrustedApprovalUrl(raw:string,requestToken:string){
    &&!url.hash&&!url.username&&!url.password;
  }catch{return false;}
 }
-export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void}){
+export default function AdminQrLogin({onAuthenticated,autoStart=false}:{onAuthenticated:()=>void;autoStart?:boolean}){
  const [request,setRequest]=useState<QrRequest|null>(null);
  const [status,setStatus]=useState<Status>('pending');
  const [error,setError]=useState('');
@@ -44,6 +44,7 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   }catch(e){if(generation===requestGeneration.current)setError(e instanceof Error?e.message:'Ошибка соединения');}
   finally{if(generation===requestGeneration.current){creating.current=false;setBusy(false);}}
  }
+ useEffect(()=>{if(autoStart)void start();},[autoStart]);
  useEffect(()=>{
   if(!request||status!=='pending'){setSecondsLeft(0);return;}
   const update=()=>setSecondsLeft(Math.max(0,Math.ceil(request.expiresAt-Date.now()/1000)));
@@ -107,13 +108,13 @@ export default function AdminQrLogin({onAuthenticated}:{onAuthenticated:()=>void
   const timer=setInterval(()=>{void poll();},2500);
   return()=>{active=false;clearInterval(timer);clearTimeout(expiryTimer);};
  },[request]);
- return <div className="skp-admin-qr-login">
-  <h3>Войти по QR-коду</h3>
-  <p>Отсканируйте QR-код устройством с зарегистрированным Passkey. Пароль по-прежнему доступен.</p>
+ return <div className="skp-admin-qr-login skp-auth-qr">
+
+
   {!request?<button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>{busy?'Создаём запрос…':'Войти по QR-коду'}</button>:<>
-   <p role="status">{status==='pending'?'Ожидание подтверждения на устройстве':status==='approved'?'Завершаем вход…':status==='denied'?'Запрос отклонён':status==='expired'?'Время запроса истекло':status==='consumed'?'Запрос уже использован':status==='error'?'Не удалось завершить вход. Создайте новый запрос.':'Статус: '+status}</p>
+   <p className="skp-auth-status" role="status">{status==='pending'?'Ожидание подтверждения на устройстве':status==='approved'?'Завершаем вход…':status==='denied'?'Запрос отклонён':status==='expired'?'Время запроса истекло':status==='consumed'?'Запрос уже использован':status==='error'?'Не удалось завершить вход. Создайте новый запрос.':'Статус: '+status}</p>
    {canApprove&&<div style={{display:'flex',justifyContent:'center',margin:'16px 0'}}>
-    {qrDataUrl?<img src={qrDataUrl} alt="QR-код для подтверждения входа в SKP" width={264} height={264} style={{display:'block',maxWidth:'100%',borderRadius:12}}/>:
+    {qrDataUrl?<img src={qrDataUrl} alt="QR-код для подтверждения входа в SKP" width={244} height={244} style={{display:'block',maxWidth:'100%',borderRadius:5}}/>:
      <p role="status">{qrError||'Создаём QR-код…'}</p>}
    </div>}
    {canApprove&&<a href={request.approvalUrl} target="_blank" rel="noopener noreferrer">Открыть страницу подтверждения</a>}
