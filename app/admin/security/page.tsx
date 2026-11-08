@@ -5,7 +5,7 @@ import {ArrowLeft,KeyRound,ShieldCheck,RefreshCw} from 'lucide-react';
 
 type KeyInfo={fingerprint:string;device_label:string;created_at:string;last_used_at:string|null;status:'active'|'revoked'};
 type Inventory={passkeys:KeyInfo[];backupVerified:boolean};
-type Challenge={challenge:string;rpID:string;allowCredentials?:{id:string;type:string}[]};
+type Challenge={challenge:string;rpID:string;allowCredentials?:{id:string;type:string;transports?:AuthenticatorTransport[]}[]};
 const decode=(s:string)=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0));
 const hexChallenge=(s:string)=>{if(!/^[a-f0-9]{64}$/.test(s))throw Error('Неверный запрос подтверждения');return Uint8Array.from(s.match(/.{2}/g)!,x=>parseInt(x,16));};
 const encode=(bytes:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -18,8 +18,8 @@ async function post<T>(url:string,body:object):Promise<T>{
 async function authenticate(options:Challenge){
  const credential=await navigator.credentials.get({publicKey:{
   challenge:hexChallenge(options.challenge),rpId:options.rpID,userVerification:'required',
-  allowCredentials:(options.allowCredentials||[]).map(c=>({type:'public-key' as const,id:decode(c.id)})),
-  timeout:60000,
+  allowCredentials:(options.allowCredentials||[]).map(c=>({type:'public-key' as const,id:decode(c.id),transports:c.transports})),
+  timeout:110000,
  }}) as PublicKeyCredential|null;
  if(!credential)throw Error('Подтверждение не выполнено');
  const response=credential.response as AuthenticatorAssertionResponse;
