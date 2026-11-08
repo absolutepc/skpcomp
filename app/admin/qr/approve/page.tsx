@@ -1,23 +1,22 @@
 'use client';
-import {useRef,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 const encode=(b:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const hex=(s:string)=>Uint8Array.from(s.match(/.{2}/g)??[],v=>parseInt(v,16));
 export default function ApproveQr(){
  const [busy,setBusy]=useState(false),[message,setMessage]=useState(''),[approved,setApproved]=useState(false);
  const submitting=useRef(false);
- const token=typeof window==='undefined'?'':(()=>{
+ const [token,setToken]=useState('');
+ const [linkError,setLinkError]=useState('Проверяем ссылку…');
+ useEffect(()=>{
   const url=new URL(window.location.href);
-  return url.hash===''&&url.searchParams.size===1&&url.searchParams.has('request')
-   ?url.searchParams.get('request')||'':'';
- })();
- const linkError=typeof window==='undefined'?'':(()=>{
-  const url=new URL(window.location.href);
-  if(url.hash)return 'В ссылке есть лишний фрагмент после #. Откройте исходную QR-ссылку.';
-  if(!url.searchParams.has('request'))return 'В адресе отсутствует параметр request. Откройте полную ссылку из QR-кода, а не страницу подтверждения вручную.';
-  if(url.searchParams.size!==1||url.searchParams.getAll('request').length!==1)return 'Ссылка содержит лишние или повторяющиеся параметры.';
-  if(!/^[a-f0-9]{64}$/.test(token))return 'Параметр request повреждён или обрезан. Скопируйте новую ссылку целиком.';
-  return '';
- })();
+  const value=url.searchParams.get('request')||'';
+  setToken(value);
+  if(url.hash)setLinkError('В ссылке есть лишний фрагмент после #. Откройте исходную QR-ссылку.');
+  else if(!url.searchParams.has('request'))setLinkError('В адресе отсутствует параметр request. Откройте полную QR-ссылку.');
+  else if(url.searchParams.size!==1||url.searchParams.getAll('request').length!==1)setLinkError('Ссылка содержит лишние или повторяющиеся параметры.');
+  else if(!/^[a-f0-9]{64}$/.test(value))setLinkError('Параметр request повреждён или обрезан. Скопируйте новую ссылку целиком.');
+  else setLinkError('');
+ },[]);
  async function approve(){
   if(submitting.current||approved)return;
   submitting.current=true;
@@ -53,7 +52,7 @@ export default function ApproveQr(){
  }
  return <main style={{minHeight:'100dvh',background:'#080808',color:'#fff',display:'grid',placeItems:'center',padding:24}}><section style={{maxWidth:420,width:'100%',textAlign:'center'}}>
   <h1>SKP — подтверждение входа</h1><p>Подтверждайте только тот вход, который вы начали на своём компьютере.</p>
-  <button type="button" disabled={busy||approved||!/^[a-f0-9]{64}$/.test(token)} onClick={()=>void approve()} style={{padding:'14px 24px',background:'#ffd22e',color:'#111',border:0,borderRadius:10,fontWeight:700}}>{approved?'Вход подтверждён':busy?'Подтверждение…':'Подтвердить через Face ID / Passkey'}</button>
+  <button type="button" disabled={busy||approved||!!linkError||!/^[a-f0-9]{64}$/.test(token)} onClick={()=>void approve()} style={{padding:'14px 24px',background:'#ffd22e',color:'#111',border:0,borderRadius:10,fontWeight:700}}>{approved?'Вход подтверждён':busy?'Подтверждение…':'Подтвердить через Face ID / Passkey'}</button>
   <p role="status" aria-live="polite">{message||linkError}</p>
  </section></main>;
 }
