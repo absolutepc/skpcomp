@@ -45,3 +45,15 @@
 .skp-admin-page:has(.skp-auth-stage){min-height:100dvh!important;background:#050607!important}
 .skp-admin-page:has(.skp-auth-stage) .skp-auth-stage{min-height:100dvh!important;min-height:100svh!important}
 body:has(.skp-auth-stage),html:has(.skp-auth-stage){background:#050607!important}
+
+
+/* User-approved SKP neon waves background. Keep the image centred and cover the viewport. */
+.skp-auth-stage{
+ background-color:#050607!important;
+ background-image:linear-gradient(90deg,rgba(0,0,0,.08),rgba(0,0,0,.08)),url('/images/skp-admin-background.webp')!important;
+ background-position:center center!important;
+ background-size:cover!important;
+ background-repeat:no-repeat!important;
+}
+.skp-auth-stage::before,.skp-auth-stage::after,.skp-auth-art{display:none!important}
+@media(max-width:700px){.skp-auth-stage{background-position:50% 50%!important}}
