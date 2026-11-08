@@ -111,11 +111,11 @@ export default function AdminQrLogin({onAuthenticated,autoStart=false}:{onAuthen
  return <div className="skp-admin-qr-login skp-auth-qr">
 
 
-  {!request?<button type="button" className="button outline" disabled={busy} onClick={()=>void start()}>{busy?'Создаём запрос…':'Войти по QR-коду'}</button>:<>
+  {!request?<div className="skp-auth-qr-loading"><div className="skp-auth-qr-placeholder" role="status" aria-label="Подготавливаем защищённый QR-код"><span className="skp-auth-loader"/></div><p>{busy?'Создаём защищённый QR-код…':'QR-код ещё не создан'}</p><button type="button" className="button outline skp-auth-refresh" disabled={busy} onClick={()=>void start()}>{busy?'Подождите…':'Создать QR-код'}</button></div>:<>
    <p className="skp-auth-status" role="status">{status==='pending'?'Ожидание подтверждения на устройстве':status==='approved'?'Завершаем вход…':status==='denied'?'Запрос отклонён':status==='expired'?'Время запроса истекло':status==='consumed'?'Запрос уже использован':status==='error'?'Не удалось завершить вход. Создайте новый запрос.':'Статус: '+status}</p>
    {canApprove&&<div style={{display:'flex',justifyContent:'center',margin:'16px 0'}}>
     {qrDataUrl?<img src={qrDataUrl} alt="QR-код для подтверждения входа в SKP" width={244} height={244} style={{display:'block',maxWidth:'100%',borderRadius:5}}/>:
-     <p role="status">{qrError||'Создаём QR-код…'}</p>}
+     <div className="skp-auth-qr-placeholder" role="status" aria-label={qrError||'Готовим QR-код'}><span className="skp-auth-loader"/></div>}
    </div>}
 
    {canApprove&&<button type="button" className="button outline" onClick={()=>{if(request.expiresAt*1000<=Date.now()){setStatus('expired');return;}void navigator.clipboard.writeText(request.approvalUrl).catch(()=>setError('Не удалось скопировать ссылку. Откройте её вручную.'));}}>Скопировать ссылку для подтверждения</button>}
