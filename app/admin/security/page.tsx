@@ -1,0 +1,107 @@
+'use client';
+import {useEffect,useState} from 'react';
+import Link from 'next/link';
+import {ArrowLeft,KeyRound,ShieldCheck,RefreshCw} from 'lucide-react';
+
+type KeyInfo={fingerprint:string;device_label:string;created_at:string;last_used_at:string|null;status:'active'|'revoked'};
+type Inventory={passkeys:KeyInfo[];backupVerified:boolean};
+type Challenge={challenge:string;rpID:string;allowCredentials?:{id:string;type:string}[]};
+const decode=(s:string)=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0));
+const encode=(bytes:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+async function post<T>(url:string,body:object):Promise<T>{
+ const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',body:JSON.stringify(body)});
+ const data=await res.json().catch(()=>({})) as T & {error?:string};
+ if(!res.ok)throw Error(data.error||'Ошибка запроса ('+res.status+')');
+ return data;
+}
+async function authenticate(options:Challenge){
+ const credential=await navigator.credentials.get({publicKey:{
+  challenge:decode(options.challenge),rpId:options.rpID,userVerification:'required',
+  allowCredentials:(options.allowCredentials||[]).map(c=>({type:'public-key' as const,id:decode(c.id)})),
+  timeout:60000,
+ }}) as PublicKeyCredential|null;
+ if(!credential)throw Error('Подтверждение не выполнено');
+ const response=credential.response as AuthenticatorAssertionResponse;
+ return {id:credential.id,rawId:encode(credential.rawId),type:'public-key',response:{
+  clientDataJSON:encode(response.clientDataJSON),authenticatorData:encode(response.authenticatorData),
+  signature:encode(response.signature),userHandle:response.userHandle?encode(response.userHandle):undefined,
+ },clientExtensionResults:credential.getClientExtensionResults()};
+}
+async function register(options:Challenge){
+ const credential=await navigator.credentials.create({publicKey:{
+  challenge:decode(options.challenge),rp:{id:options.rpID,name:'SKP Admin'},
+  user:{id:crypto.getRandomValues(new Uint8Array(32)),name:'SKP Owner backup',displayName:'SKP Owner backup'},
+  pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+  authenticatorSelection:{userVerification:'required',residentKey:'preferred'},
+  attestation:'none',timeout:60000,
+ }}) as PublicKeyCredential|null;
+ if(!credential)throw Error('Ключ не создан');
+ const response=credential.response as AuthenticatorAttestationResponse;
+ return {id:credential.id,rawId:encode(credential.rawId),type:'public-key',response:{
+  clientDataJSON:encode(response.clientDataJSON),attestationObject:encode(response.attestationObject),
+  transports:response.getTransports?.()||[],
+ },clientExtensionResults:credential.getClientExtensionResults()};
+}
+export default function AdminSecurityPage(){
+ const [data,setData]=useState<Inventory|null>(null);
+ const [busy,setBusy]=useState(false);
+ const [error,setError]=useState('');
+ const [message,setMessage]=useState('');
+ const [label,setLabel]=useState('');
+ async function refresh(){
+  const res=await fetch('/api/admin/owner/passkeys',{credentials:'same-origin',cache:'no-store'});
+  if(!res.ok)throw Error(res.status===403?'Войдите в админ-панель как владелец.':'Не удалось получить список ключей');
+  setData(await res.json() as Inventory);
+ }
+ useEffect(()=>{void refresh().catch(e=>setError(String(e.message||e)));},[]);
+ async function stepUp(action:'owner-passkey-enroll'|'owner-passkey-test',fingerprint?:string){
+  const options=await post<Challenge>('/api/admin/owner/step-up/options',{action,...(fingerprint?{fingerprint}:{})});
+  const response=await authenticate(options);
+  const result=await post<{verified:boolean}>('/api/admin/owner/step-up/complete',{
+   challenge:options.challenge,response,action,...(fingerprint?{fingerprint}:{})
+  });
+  if(!result.verified)throw Error('Не удалось подтвердить основной ключ');
+ }
+ async function perform(work:()=>Promise<void>){
+  if(busy)return;setBusy(true);setError('');setMessage('');
+  try{await work();await refresh();}catch(e){setError(e instanceof Error?e.message:'Ошибка операции');}
+  finally{setBusy(false);}
+ }
+ const active=data?.passkeys.filter(k=>k.status==='active')||[];
+ return <main style={{minHeight:'100vh',background:'#08090b',color:'#f4f4f4',padding:'clamp(20px,5vw,64px)',fontFamily:'inherit'}}>
+  <div style={{maxWidth:820,margin:'0 auto'}}>
+   <Link href="/admin" style={{display:'inline-flex',gap:8,alignItems:'center',color:'#e8dc54',textDecoration:'none'}}><ArrowLeft size={18}/> В админ-панель</Link>
+   <header style={{margin:'34px 0 28px'}}>
+    <div style={{display:'flex',alignItems:'center',gap:12}}><ShieldCheck color="#e8dc54"/><h1 style={{fontSize:30,margin:0}}>Безопасность владельца</h1></div>
+    <p style={{color:'#a7a9ae',lineHeight:1.6}}>Управление резервными Passkey. Основной ключ и пароль не меняются при добавлении нового.</p>
+   </header>
+   <section style={{border:'1px solid #35383c',borderRadius:18,padding:24,background:'#141619'}}>
+    <h2 style={{fontSize:19,margin:'0 0 8px'}}>Зарегистрированные ключи</h2>
+    <p style={{color:'#a7a9ae',fontSize:14}}>{data?active.length+' активных · '+(data.backupVerified?'резервный вход проверен':'резервный вход ещё не подтверждён'):'Загрузка…'}</p>
+    {data?.passkeys.map(k=><div key={k.fingerprint} style={{borderTop:'1px solid #33363a',padding:'17px 0',display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}>
+     <div><div style={{display:'flex',alignItems:'center',gap:9}}><KeyRound size={18} color="#e8dc54"/><strong>{k.device_label||'Passkey владельца'}</strong></div>
+      <div style={{color:'#a7a9ae',fontSize:13,marginTop:6}}>{k.status==='revoked'?'Отозван':k.last_used_at?'Использовался':'Ещё не проверен'} · {new Date(k.created_at).toLocaleDateString('ru-RU')}</div></div>
+     {k.status==='active'&&<button disabled={busy} onClick={()=>void perform(async()=>{await stepUp('owner-passkey-test',k.fingerprint);setMessage('Подтверждение ключа прошло успешно.');})} style={{padding:'10px 14px',borderRadius:9,border:'1px solid #555',background:'#24272b',color:'#fff',cursor:'pointer'}}>Проверить ключ</button>}
+    </div>)}
+   </section>
+   <section style={{border:'1px solid #35383c',borderRadius:18,padding:24,background:'#141619',marginTop:18}}>
+    <h2 style={{fontSize:19,margin:'0 0 10px'}}>Добавить резервный Passkey</h2>
+    <p style={{color:'#a7a9ae',fontSize:14,lineHeight:1.6}}>Сначала подтвердите действующий ключ владельца. Затем выберите другое устройство или аппаратный ключ. Не регистрируйте резервный ключ на том же единственном устройстве.</p>
+    <label htmlFor="backup-name" style={{display:'block',marginBottom:8}}>Название ключа</label>
+    <input id="backup-name" value={label} maxLength={100} onChange={e=>setLabel(e.target.value)} placeholder="Например, запасной ключ USB/NFC" style={{boxSizing:'border-box',width:'100%',padding:13,border:'1px solid #555',borderRadius:9,background:'#0b0c0e',color:'#fff'}}/>
+    <button disabled={busy||!data||!label.trim()} onClick={()=>void perform(async()=>{
+      await stepUp('owner-passkey-enroll');
+      const options=await post<Challenge>('/api/admin/owner/passkeys/options',{});
+      const response=await register(options);
+      const result=await post<{registered:boolean}>('/api/admin/owner/passkeys/complete',{challenge:options.challenge,response,deviceLabel:label.trim()});
+      if(!result.registered)throw Error('Регистрация не подтверждена сервером');
+      setMessage('Резервный ключ зарегистрирован. Теперь проверьте его отдельной кнопкой.');
+      setLabel('');
+    })} style={{marginTop:16,padding:'13px 20px',border:0,borderRadius:9,background:'#e8dc54',color:'#111',fontWeight:700,cursor:'pointer',opacity:busy||!label.trim()?0.5:1}}>{busy?'Выполняется…':'Добавить ключ'}</button>
+   </section>
+   {error&&<p role="alert" style={{color:'#ff8b8b',marginTop:20}}>{error}</p>}
+   {message&&<p role="status" style={{color:'#e8dc54',marginTop:20}}>{message}</p>}
+   <button disabled={busy} onClick={()=>void perform(async()=>{setMessage('Список обновлён');})} style={{display:'flex',alignItems:'center',gap:8,marginTop:22,background:'transparent',color:'#aaa',border:'none',cursor:'pointer'}}><RefreshCw size={16}/> Обновить список</button>
+  </div>
+ </main>;
+}
