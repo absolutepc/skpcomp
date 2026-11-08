@@ -15,10 +15,10 @@ async function post<T>(url:string,body:object):Promise<T>{
  if(!res.ok)throw Error(data.error||'Ошибка запроса ('+res.status+')');
  return data;
 }
-async function authenticate(options:Challenge){
+async function authenticate(options:Challenge,discoverable=false){
  const credential=await navigator.credentials.get({publicKey:{
   challenge:hexChallenge(options.challenge),rpId:options.rpID,userVerification:'required',
-  allowCredentials:(options.allowCredentials||[]).map(c=>({type:'public-key' as const,id:decode(c.id),transports:c.transports})),
+  allowCredentials:discoverable?[]:(options.allowCredentials||[]).map(c=>({type:'public-key' as const,id:decode(c.id),transports:c.transports})),
   timeout:110000,
  }}) as PublicKeyCredential|null;
  if(!credential)throw Error('Подтверждение не выполнено');
@@ -57,7 +57,7 @@ export default function AdminSecurityPage(){
  useEffect(()=>{void refresh().catch(e=>setError(String(e.message||e)));},[]);
  async function stepUp(action:'owner-passkey-enroll'|'owner-passkey-test',fingerprint?:string){
   const options=await post<Challenge>('/api/admin/owner/step-up/options',{action,...(fingerprint?{fingerprint}:{})});
-  const response=await authenticate(options);
+  const response=await authenticate(options,action==='owner-passkey-test');
   const result=await post<{verified:boolean}>('/api/admin/owner/step-up/complete',{
    challenge:options.challenge,response,action,...(fingerprint?{fingerprint}:{})
   });
