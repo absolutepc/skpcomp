@@ -31,10 +31,10 @@ export async function POST(request:Request){
   if(fingerprint!==undefined&&(typeof fingerprint!=='string'||!/^[a-f0-9]{32}$/.test(fingerprint)))return Response.json({error:'Invalid fingerprint'},{status:400,headers});
   if(action==='owner-passkey-test'&&typeof fingerprint!=='string')return Response.json({error:'Select a key'},{status:400,headers});
   const {DB}=await storeEnv();
-  const keys=await DB.prepare("SELECT credential_id FROM skp_admin_passkeys WHERE user_id=?::uuid AND revoked_at IS NULL AND (?::text IS NULL OR CASE WHEN ?='owner-passkey-revoke' THEN md5(credential_id)<>? ELSE md5(credential_id)=? END)").bind(binding.ownerId,fingerprint??null,action,fingerprint??null,fingerprint??null).all<{credential_id:string}>();
+  const keys=await DB.prepare("SELECT credential_id,transports FROM skp_admin_passkeys WHERE user_id=?::uuid AND revoked_at IS NULL AND (?::text IS NULL OR CASE WHEN ?='owner-passkey-revoke' THEN md5(credential_id)<>? ELSE md5(credential_id)=? END)").bind(binding.ownerId,fingerprint??null,action,fingerprint??null,fingerprint??null).all<{credential_id:string;transports:string[]|string}>();
   if(!keys.results.length)return Response.json({error:'No eligible owner key'},{status:403,headers});
   const {rpID}=adminWebAuthnConfig(request.headers.get('origin')||'');
   const {challenge,expiresAt}=await issueWebAuthnChallenge('authenticate',ownerStepUpContext(binding.ownerId,binding.sessionHash,action as OwnerStepUpAction,fingerprint as string|undefined));
-  return Response.json({challenge,expiresAt,rpID,userVerification:'required',allowCredentials:keys.results.map(key=>({type:'public-key',id:key.credential_id}))},{headers});
+  return Response.json({challenge,expiresAt,rpID,userVerification:'required',allowCredentials:keys.results.map(key=>({type:'public-key',id:key.credential_id,transports:typeof key.transports==='string'?JSON.parse(key.transports):key.transports}))},{headers});
  }catch{return Response.json({error:'Unavailable'},{status:503,headers})}
 }
