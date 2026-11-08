@@ -35,7 +35,7 @@ export default function ApproveQr(){
    if(credential.type!=='public-key')throw Error('Недействительный тип учётных данных.');
    const response=credential.response as AuthenticatorAssertionResponse;
    const assertion={id:credential.id,rawId:encode(credential.rawId),type:'public-key',response:{clientDataJSON:encode(response.clientDataJSON),authenticatorData:encode(response.authenticatorData),signature:encode(response.signature),userHandle:response.userHandle?encode(response.userHandle):undefined},clientExtensionResults:credential.getClientExtensionResults()};
-   if(options.expiresAt*1000<=Date.now())throw Error('Время подтверждения истекло во время Face ID. Создайте новый QR-запрос на компьютере.');
+   if(options.expiresAt*1000<=Date.now())throw Error('Время подтверждения истекло во время проверки Passkey. Создайте новый QR-запрос на компьютере.');
    // Only submit an assertion after the user has explicitly initiated approval.
    const result=await fetch('/api/admin/qr/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestToken:token,challenge:options.challenge,response:assertion,approved:true}),credentials:'same-origin',cache:'no-store'});
    if(!result.ok){
@@ -56,7 +56,8 @@ export default function ApproveQr(){
  }
  return <main style={{minHeight:'100dvh',background:'#080808',color:'#fff',display:'grid',placeItems:'center',padding:24}}><section style={{maxWidth:420,width:'100%',textAlign:'center'}}>
   <h1>SKP — подтверждение входа</h1><p>Подтверждайте только тот вход, который вы начали на своём компьютере.</p>
-  <button type="button" disabled={busy||approved||!!linkError||!/^[a-f0-9]{64}$/.test(token)} onClick={()=>void approve()} style={{padding:'14px 24px',background:'#ffd22e',color:'#111',border:0,borderRadius:10,fontWeight:700}}>{approved?'Вход подтверждён':busy?'Подтверждение…':'Подтвердить через Face ID / Passkey'}</button>
+  <button type="button" disabled={busy||approved||!!linkError||!/^[a-f0-9]{64}$/.test(token)} onClick={()=>void approve()} style={{padding:'14px 24px',background:'#ffd22e',color:'#111',border:0,borderRadius:10,fontWeight:700}}>{approved?'Вход подтверждён':busy?'Подтверждение…':'Подтвердить вход'}</button>
+  <p style={{color:"#aaa",fontSize:13,lineHeight:1.5}}>Используйте доступный на устройстве способ подтверждения: Face ID, отпечаток пальца, PIN-код или аппаратный ключ. Требуется Passkey, зарегистрированный для SKP.</p>
   <p role="status" aria-live="polite">{message||linkError}</p>
  </section></main>;
 }
