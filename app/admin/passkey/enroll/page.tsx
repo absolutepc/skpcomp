@@ -25,7 +25,7 @@ export default function EnrollAdminPasskey(){
    });
    // Never keep the admin password in the page after the server has checked it.
    setPassword('');
-   if(!issued.ok)throw Error(issued.status===403?'Неверный пароль, нет активной сессии администратора или превышен лимит запросов.':'Не удалось начать регистрацию.');
+   if(!issued.ok)throw Error(issued.status===403?'Нужна активная сессия владельца SKP и подтверждение пароля. Обычный парольный вход не создаёт учётную запись владельца.':'Не удалось начать регистрацию.');
    const options=await issued.json() as Options;
    if(options.rpID!==window.location.hostname||!/^[a-f0-9]{64}$/.test(options.challenge)||
     !Number.isFinite(options.expiresAt)||options.expiresAt*1000<=Date.now()||
@@ -55,7 +55,7 @@ export default function EnrollAdminPasskey(){
     body:JSON.stringify({challenge:options.challenge,response:registration,deviceLabel:label.trim().slice(0,100)}),
    });
    const result=await saved.json() as {registered?:boolean};
-   if(!saved.ok||result.registered!==true)throw Error('Не удалось сохранить Passkey. Повторите регистрацию.');
+   if(!saved.ok||result.registered!==true)throw Error(saved.status===403?'Не удалось подтвердить права владельца. Нельзя регистрировать непривязанный Passkey.':'Не удалось сохранить Passkey.');
    setSuccess(true);setMessage('Passkey зарегистрирован. Теперь можно подтверждать QR-вход на iPhone.');
   }catch(e){setMessage(e instanceof Error?e.message:'Ошибка регистрации Passkey.');}
   finally{setPassword('');setBusy(false);}
@@ -63,7 +63,7 @@ export default function EnrollAdminPasskey(){
  return <main style={{minHeight:'100dvh',background:'#080808',color:'#fff',display:'grid',placeItems:'center',padding:24}}>
   <section style={{maxWidth:440,width:'100%',display:'grid',gap:16}}>
    <h1 style={{fontSize:28,fontWeight:700}}>SKP — регистрация Passkey</h1>
-   <p style={{color:'#bbb'}}>Откройте эту страницу на iPhone в Safari, войдите в админ-панель и подтвердите пароль. Затем создайте Passkey через Face ID.</p>
+   <p style={{color:'#bbb'}}>Регистрация доступна только владельцу с подтверждённой учётной записью и действующей сессией. Обычного пароля администратора недостаточно. Если учётная запись владельца ещё не создана, сначала требуется безопасная первоначальная настройка.</p>
    <label style={{display:'grid',gap:6}}>Название устройства
     <input value={label} onChange={e=>setLabel(e.target.value)} maxLength={100} autoComplete="off" style={{padding:12,borderRadius:8,color:'#fff',background:'#202020',border:'1px solid #555'}}/>
    </label>
