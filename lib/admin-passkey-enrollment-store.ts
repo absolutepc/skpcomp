@@ -6,6 +6,7 @@ export type VerifiedPasskeyRegistration={
  counter:number;
  transports:string[];
  deviceLabel?:string;
+ ownerId:string;
 };
 
 /**
@@ -18,7 +19,8 @@ export async function saveVerifiedAdminPasskey(
  verified:VerifiedPasskeyRegistration
 ):Promise<boolean>{
  if(!isPostgres())throw new Error('PostgreSQL required');
- const {credentialId,publicKey,counter,transports}=verified;
+ const {credentialId,publicKey,counter,transports,ownerId}=verified;
+ if(!/^[0-9a-f-]{36}$/i.test(ownerId))return false;
  if(!credentialId||credentialId.length>2048||
   !(publicKey instanceof Uint8Array)||publicKey.length<16||publicKey.length>4096||
   !Number.isSafeInteger(counter)||counter<0||
@@ -27,11 +29,12 @@ export async function saveVerifiedAdminPasskey(
  const label=(verified.deviceLabel||'').trim().slice(0,100);
  const {DB}=await storeEnv();
  const row=await DB.prepare(`INSERT INTO skp_admin_passkeys
- (credential_id,public_key,counter,transports,device_label)
- VALUES (?,?,?,?::jsonb,?)
+ (credential_id,public_key,counter,transports,device_label,user_id)
+ SELECT ?,?,?,?::jsonb,?,id FROM skp_admin_users
+ WHERE id=?::uuid AND role='owner' AND status='active'
  ON CONFLICT (credential_id) DO NOTHING
  RETURNING credential_id`)
-  .bind(credentialId,publicKey,counter,JSON.stringify(transports),label)
+  .bind(credentialId,publicKey,counter,JSON.stringify(transports),label,ownerId)
   .first<{credential_id:string}>();
  return !!row;
 }
