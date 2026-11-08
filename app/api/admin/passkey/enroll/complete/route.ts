@@ -1,5 +1,5 @@
 import {isTrustedAdminOrigin} from '../../../../../../lib/admin-passkey-config';
-import {isAuthorizedAdmin} from '../../../../../../lib/admin-authorization';
+import {activeSessionOwnerId} from '../../../../../../lib/vercel-admin-session';
 import {allowNewAdminQrRequest} from '../../../../../../lib/admin-qr-rate-limit';
 import {enrollmentContextFromRequest} from '../../../../../../lib/admin-passkey-enrollment-context';
 import {verifyAndStoreAdminPasskeyRegistration} from '../../../../../../lib/admin-passkey-register';
@@ -25,12 +25,13 @@ export async function POST(request:Request){
  try{
   if(!await allowNewAdminQrRequest())
    return Response.json({error:'Too many requests'},{status:429,headers:{...headers,'Retry-After':'60'}});
-  if(!await isAuthorizedAdmin(request))return Response.json({error:'Forbidden'},{status:403,headers});
+  const ownerId=await activeSessionOwnerId(request);
+  if(!ownerId)return Response.json({error:'Owner session required; use owner enrollment'},{status:403,headers});
   const contextId=await enrollmentContextFromRequest(request);
   if(!contextId)return Response.json({error:'Forbidden'},{status:403,headers});
   const registered=await verifyAndStoreAdminPasskeyRegistration({
    response:response as RegistrationResponseJSON,challenge,contextId,
-   origin:request.headers.get('origin')||'',deviceLabel:deviceLabel as string|undefined,
+   origin:request.headers.get('origin')||'',deviceLabel:deviceLabel as string|undefined,ownerId,
   });
   return Response.json({registered},{status:registered?200:403,headers});
  }catch{return Response.json({error:'Registration failed'},{status:403,headers})}
