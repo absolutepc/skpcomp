@@ -17,6 +17,14 @@ export async function redeemQrSession(request:Request,requestToken:string,deskto
  return withActiveAdminUser(qr.approved_user_id,async()=>{
   const employeeId=await consumeApprovedQr(requestToken,desktopSecret);
   if(!employeeId)return null;
-  return issueAdminSession(request,employeeId);
+  const cookie=await issueAdminSession(request,employeeId);
+  // Audit and session issuance share the redemption transaction. If logging
+  // fails, the consumed QR and newly issued session are rolled back together.
+  const {DB}=await storeEnv();
+  await DB.prepare(`INSERT INTO skp_admin_security_events
+   (actor_user_id,target_user_id,event_type,details)
+   VALUES (?::uuid,?::uuid,'login_approved',?::jsonb)`)
+   .bind(employeeId,employeeId,JSON.stringify({method:'qr_passkey'})).run();
+  return cookie;
  },null);
 }
